@@ -12,17 +12,26 @@ namespace xDC_Web {
             var scriptBundle = new ScriptBundle("~/Scripts/bundle");
             var styleBundle = new StyleBundle("~/Content/bundle");
 
-            // jQuery
+            
             scriptBundle
                 .Include("~/Scripts/jquery-3.5.1.js");
 
-            // Bootstrap
+            
             scriptBundle
-                .Include("~/Scripts/bootstrap.js");
+                .Include(
+                    "~/Scripts/bootstrap.js",
+                    "~/Scripts/adminlte.js",
+                    "~/Scripts/app.js"
+                );
 
-            // Bootstrap
+            
             styleBundle
-                .Include("~/Content/bootstrap.css");
+                .Include(
+                    "~/Content/bootstrap.css",
+                    "~/Content/AdminLTE.css",
+                    "~/Content/skin-blue.css",
+                    "~/Content/font-awesome.css"
+                );
 
             // Custom site styles
             styleBundle

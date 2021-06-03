@@ -17,6 +17,9 @@ namespace xDC_Web {
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             DevExtremeBundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            Application["AppName"] = "Kashflow";
+            Application["Version"] = "1.0";
         }
     }
 }

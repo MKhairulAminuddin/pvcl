@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>xDC_Web</title>
+    <title>@HttpContext.Current.Application["AppName"]</title>
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
 
     @* Uncomment to use the HtmlEditor control *@
@@ -20,27 +20,136 @@
     @Scripts.Render("~/Scripts/DevExtremeBundle")
 </head>
 
-<body style="padding-top: 5rem;">
+<body class="hold-transition skin-blue sidebar-mini">
+    <div class="wrapper">
+        <header class="main-header">
+            <a href="~/" class="logo">
+                <span class="logo-mini"><img src="~/Content/images/kwap_logo_sm.svg" width="40" alt="KWAP" /></span>
+                <span class="logo-lg"><img src="~/Content/images/kwap_logo_lg.svg" width="110" alt="KWAP" /></span>
+            </a>
 
-    <nav class="navbar navbar-dark bg-dark fixed-top navbar-expand-md">
-        <a class="navbar-brand" href="/">xDC_Web</a>
+            <nav class="navbar navbar-static-top" role="navigation">
+                <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                </a>
 
-        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown notifications-menu">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="fa fa-bell-o"></i>
+                                <span class="label label-danger">2</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <ul class="menu">
+                                        <li>
+                                            <a href="#">
+                                                <i class="fa fa-exclamation-triangle text-yellow"></i> 2 AMSD form submitted 
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="#">
+                                                <i class="fa fa-info-circle text-green"></i> Your form #132 have been approved
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="footer"><a href="#">View all</a></li>
+                            </ul>
+                        </li>
 
-        <div id="navbar" class="collapse navbar-collapse">
-            <ul class="navbar-nav mr-auto">
-                <li class="active nav-item"><a href="#" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
-                <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
-            </ul>
+                        <li class="dropdown user user-menu">
+                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
+                                <img src="~/Content/images/profile.png" class="user-image" alt="User Image">
+                                <span class="hidden-xs"><i class="fa fa-caret-down"></i></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-right">
+                                <li class="dropdown-header">Logged in as :</li>
+                                <li class="dropdown-header">Dean Wenchister</li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#"><i class="fa fa-wrench"></i> Settings</a></li>
+                                <li>
+                                    <a href="javascript:document.getElementById('logoutForm').submit()"><i class="fa fa-sign-out"></i> Sign Out</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        <aside class="main-sidebar">
+            <section class="sidebar">
+                <ul class="sidebar-menu" data-widget="tree" data-animation-speed="100">
+                    <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-desktop"></i> <span>Dashboard</span></a></li>
+                    <li><a href="#"><i class="fa fa-circle-thin"></i> <span>AMSD</span></a></li>
+                    <li><a href="#"><i class="fa fa-circle-thin"></i> <span>FID</span></a></li>
+                    <li><a href="#"><i class="fa fa-circle-thin"></i> <span>IISD</span></a></li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-cogs"></i> <span>Configuration</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href=""><i class="fa fa-circle-thin"></i> <span>Users</span></a></li>
+                            <li><a href=""><i class="fa fa-circle-thin"></i> <span>Group</span></a></li>
+                            <li><a href=""><i class="fa fa-circle-thin"></i> <span>Workflow</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-cube"></i> <span>System</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href=""><i class="fa fa-circle-thin"></i> <span>System Information</span></a></li>
+                            <li><a href=""><i class="fa fa-circle-thin"></i> <span>Logs</span></a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+        </aside>
+
+        <div id="loadPanelContainer"></div>
+
+        <div id="pageContent" class="content-wrapper">
+            @if (!string.IsNullOrEmpty(@ViewBag.Title))
+            {
+                <section class="content-header content-header">
+                    <p class="title">
+                        @ViewBag.Title
+                    </p>
+                </section>
+            }
+
+            <section class="content-header content-alert">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="error_container"></div>
+                    </div>
+                </div>
+            </section>
+
+            @RenderBody()
+
         </div>
-    </nav>
 
-    <main role="main" class="container">
-        @RenderBody()
-    </main>
+        <footer class="main-footer clearfix">
+            <div class="pull-left">
+                
+            </div>
+            <div class="pull-right hidden-xs">
+                <a class="label label-default">v @HttpContext.Current.Application["Version"]</a>
+            </div>
+        </footer>
+    </div>
+
+    @RenderSection("scripts", required: false)
 </body>
 
 </html>
