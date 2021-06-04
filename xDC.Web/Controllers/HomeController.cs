@@ -5,6 +5,8 @@ using System.Web;
 using System.Web.Mvc;
 
 namespace xDC_Web.Controllers {
+
+    [Authorize]
     public class HomeController : Controller {
         public ActionResult Index() {
             return View();

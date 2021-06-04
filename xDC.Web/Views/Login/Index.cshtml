@@ -1,0 +1,53 @@
+﻿@model xDC_Web.Models.LoginViewModel
+
+@{
+    ViewBag.Title = "Sign In";
+    Layout = "~/Views/Shared/_LayoutEmpty.cshtml";
+}
+
+<div class="login-box">
+    <div class="login-logo">
+        <p><b>@HttpContext.Current.Application["AppName"]</b></p>
+    </div>
+
+    <div class="login-box-body">
+
+        @using (Html.BeginForm("Index", "Login", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { role = "form" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group has-feedback">
+                @Html.TextBoxFor(m => m.Username, new { @class = "form-control", @autofocus = "autofocus", @placeholder = "Username" })
+                <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                @Html.ValidationMessageFor(m => m.Username, "", new { @class = "help-block" })
+            </div>
+            <div class="form-group has-feedback">
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = "Password" })
+                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "help-block" })
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <span>
+                        <i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="Please use your VDI ID as login credential."></i>
+                    </span>
+                    <div class="pull-right">
+                        <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+                    </div>
+
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+
+@section scripts
+{
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+}

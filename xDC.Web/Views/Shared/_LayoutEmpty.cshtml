@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>@HttpContext.Current.Application["AppName"] | @ViewBag.Title</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+
+    @Styles.Render("~/Content/bundle")
+    @Scripts.Render("~/Scripts/bundle")
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+</head>
+<body class="hold-transition login-page">
+
+@RenderBody()
+    
+<div style="right: 0; bottom: 0; position: absolute; padding: 20px;">
+    <span class="label label-default">v 1.1</span>
+</div>
+@RenderSection("scripts", required: false)
+</body>
+</html>

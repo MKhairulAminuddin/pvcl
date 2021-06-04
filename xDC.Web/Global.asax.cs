@@ -11,6 +11,7 @@ namespace xDC_Web {
 
     public class MvcApplication : HttpApplication {
         protected void Application_Start() {
+
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             GlobalConfiguration.Configure(WebApiConfig.Register);
