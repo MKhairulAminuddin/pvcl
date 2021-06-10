@@ -47,7 +47,7 @@
                                         <i class="fa fa-bell-o"></i>
                                         <span class="label label-danger">2</span>
                                     </a>
-                                    <ul class="dropdown-menu">
+                                    <ul class="dropdown-menu dropdown-menu-right">
                                         <li>
                                             <ul class="menu">
                                                 <li>
@@ -73,8 +73,8 @@
                                         <span class="hidden-xs"><i class="fa fa-caret-down"></i></span>
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-right">
-                                        <li class="dropdown-header">Logged in as :</li>
-                                        <li class="dropdown-header">@User.Identity.Name</li>
+                                        <li class="dropdown-header" style="color: white">Logged in as :</li>
+                                        <li class="dropdown-header" style="color: white">@User.Identity.Name</li>
                                         <li role="separator" class="divider"></li>
                                         <li><a href="#"><i class="fa fa-wrench"></i> Settings</a></li>
                                         <li>
@@ -106,9 +106,9 @@
                             </span>
                         </a>
                         <ul class="treeview-menu">
-                            <li><a href=""><i class="fa fa-circle-thin"></i> <span>Users</span></a></li>
-                            <li><a href=""><i class="fa fa-circle-thin"></i> <span>Group</span></a></li>
-                            <li><a href=""><i class="fa fa-circle-thin"></i> <span>Workflow</span></a></li>
+                            <li><a href="#"><i class="fa fa-circle-thin"></i> <span>Users</span></a></li>
+                            <li><a href="#"><i class="fa fa-circle-thin"></i> <span>Group</span></a></li>
+                            <li><a href="#"><i class="fa fa-circle-thin"></i> <span>Workflow</span></a></li>
                         </ul>
                     </li>
                     <li class="treeview">
@@ -119,8 +119,8 @@
                             </span>
                         </a>
                         <ul class="treeview-menu">
-                            <li><a href=""><i class="fa fa-circle-thin"></i> <span>System Information</span></a></li>
-                            <li><a href=""><i class="fa fa-circle-thin"></i> <span>Logs</span></a></li>
+                            <li><a href="@Url.Action("SystemInformation", "System")"><i class="fa fa-circle-thin"></i> <span>System Information</span></a></li>
+                            <li><a href="#"><i class="fa fa-circle-thin"></i> <span>Logs</span></a></li>
                         </ul>
                     </li>
                 </ul>
@@ -133,9 +133,9 @@
             @if (!string.IsNullOrEmpty(@ViewBag.Title))
             {
                 <section class="content-header content-header">
-                    <p class="title">
+                    <h1>
                         @ViewBag.Title
-                    </p>
+                    </h1>
                 </section>
             }
 

@@ -11,14 +11,10 @@ namespace xDC_Web {
 
             var scriptBundle = new ScriptBundle("~/Scripts/bundle");
             var styleBundle = new StyleBundle("~/Content/bundle");
-
-            
-            scriptBundle
-                .Include("~/Scripts/jquery-3.5.1.js");
-
             
             scriptBundle
                 .Include(
+                    "~/Scripts/jquery-3.5.1.js",
                     "~/Scripts/bootstrap.js",
                     "~/Scripts/adminlte.js",
                     "~/Scripts/app.js"
@@ -30,12 +26,9 @@ namespace xDC_Web {
                     "~/Content/bootstrap.css",
                     "~/Content/AdminLTE.css",
                     "~/Content/skin-blue.css",
-                    "~/Content/font-awesome.css"
+                    "~/Content/font-awesome.css",
+                    "~/Content/Site.css"
                 );
-
-            // Custom site styles
-            styleBundle
-                .Include("~/Content/Site.css");
 
             bundles.Add(scriptBundle);
             bundles.Add(styleBundle);

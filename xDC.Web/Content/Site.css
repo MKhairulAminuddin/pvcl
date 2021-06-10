@@ -18,4 +18,7 @@
 
 .field-validation-error.help-block {
     color: #e74c3c !important;
+    font-style: italic;
+    font-size: small;
+    font-weight: bold;
 }
