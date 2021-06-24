@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using xDC.Utils;
 
 namespace xDC_Web.Models
 {
@@ -21,7 +22,7 @@ namespace xDC_Web.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            : base(Config.DbCon, throwIfV1Schema: false)
         {
         }
 

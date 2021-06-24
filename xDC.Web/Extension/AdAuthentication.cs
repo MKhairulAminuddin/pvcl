@@ -5,6 +5,9 @@ using System.Security.Claims;
 using System.Web;
 using Microsoft.Owin.Security;
 using System.DirectoryServices.AccountManagement;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using xDC_Web.Models;
 
 namespace xDC_Web.Extension
 {
@@ -67,6 +70,12 @@ namespace xDC_Web.Extension
 				{
 					return new AuthenticationResult(Resources.ErrorMessages.AD_NoAccessKRC);
 				}*/
+                /*var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
+
+				if (userManager.FindByName(username) != null)
+                {
+                    return new AuthenticationResult("You did not have access into the system.");
+                }*/
 
 				var identity = CreateIdentity(userPrincipal);
 

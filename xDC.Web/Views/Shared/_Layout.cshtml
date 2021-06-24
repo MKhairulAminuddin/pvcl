@@ -1,3 +1,4 @@
+@using xDC_Web.Extension
 <!DOCTYPE html>
 
 <html>
@@ -95,34 +96,46 @@
             <section class="sidebar">
                 <ul class="sidebar-menu" data-widget="tree" data-animation-speed="100">
                     <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-desktop"></i> <span>Dashboard</span></a></li>
-                    <li><a href="#"><i class="fa fa-circle-thin"></i> <span>AMSD</span></a></li>
-                    <li><a href="#"><i class="fa fa-circle-thin"></i> <span>FID</span></a></li>
-                    <li><a href="#"><i class="fa fa-circle-thin"></i> <span>IISD</span></a></li>
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-cogs"></i> <span>Configuration</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="#"><i class="fa fa-circle-thin"></i> <span>Users</span></a></li>
-                            <li><a href="#"><i class="fa fa-circle-thin"></i> <span>Group</span></a></li>
-                            <li><a href="#"><i class="fa fa-circle-thin"></i> <span>Workflow</span></a></li>
-                        </ul>
-                    </li>
-                    <li class="treeview">
-                        <a href="#">
-                            <i class="fa fa-cube"></i> <span>System</span>
-                            <span class="pull-right-container">
-                                <i class="fa fa-angle-left pull-right"></i>
-                            </span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li><a href="@Url.Action("SystemInformation", "System")"><i class="fa fa-circle-thin"></i> <span>System Information</span></a></li>
-                            <li><a href="#"><i class="fa fa-circle-thin"></i> <span>Logs</span></a></li>
-                        </ul>
-                    </li>
+                    @if (MenuSecurity.AmsdMenu)
+                    {
+                        <li><a href="@Url.Action("Index", "Amsd")"><i class="fa fa-circle-thin"></i> <span>AMSD</span></a></li>
+                    }
+                    @if (MenuSecurity.FidMenu)
+                    {
+                        <li><a href="#"><i class="fa fa-circle-thin"></i> <span>FID</span></a></li>
+                    }
+                    @if (MenuSecurity.IisdMenu)
+                    {
+                        <li><a href="#"><i class="fa fa-circle-thin"></i> <span>IISD</span></a></li>
+                    }
+                    @if (MenuSecurity.AdminOnlyMenu)
+                    {
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-cogs"></i> <span>Configuration</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="#"><i class="fa fa-circle-thin"></i> <span>Users</span></a></li>
+                                <li><a href="#"><i class="fa fa-circle-thin"></i> <span>Group</span></a></li>
+                                <li><a href="#"><i class="fa fa-circle-thin"></i> <span>Workflow</span></a></li>
+                            </ul>
+                        </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-cube"></i> <span>System</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("SystemInformation", "System")"><i class="fa fa-circle-thin"></i> <span>System Information</span></a></li>
+                                <li><a href="#"><i class="fa fa-circle-thin"></i> <span>Logs</span></a></li>
+                            </ul>
+                        </li>
+                    }
                 </ul>
             </section>
         </aside>

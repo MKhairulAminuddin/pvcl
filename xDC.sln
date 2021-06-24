@@ -13,6 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.Infrastructure", "xDC.I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.Application", "xDC.Application\xDC.Application.csproj", "{5CCA0E1B-622C-4AFF-B365-2E0F0480F306}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xDC.DbScripts", "xDC.DbScripts", "{7122A0F2-D963-4FF2-A899-44463EA526B5}"
+	ProjectSection(SolutionItems) = preProject
+		xDC.DbScripts\AspNetActiveDirectoryUsers.sql = xDC.DbScripts\AspNetActiveDirectoryUsers.sql
+		xDC.DbScripts\AspNetAuth.sql = xDC.DbScripts\AspNetAuth.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

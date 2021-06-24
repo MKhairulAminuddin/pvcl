@@ -22,3 +22,46 @@
     font-size: small;
     font-weight: bold;
 }
+
+
+.content-header.content-toolbar {
+    padding: 10px 30px 0 30px;
+    margin: 0;
+    background-color: #ECF0F5;
+}
+
+.content-header.content-toolbar .left-container > * {
+    float: left;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.content-header.content-toolbar .right-container {
+    float: right;
+    display: inline-block;
+}
+
+
+
+.amd-form-container {
+    border: 1px solid grey;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    background-color: white;
+}
+
+.amd-form-title {
+    text-align: center;
+    background-color: #222d32;
+    color: #fff;
+    padding: 10px 0;
+    border-radius: 5px;
+}
+
+.amd-form-subtitle {
+    background-color: #7aa7bd;
+    color: #fff;
+    padding: 5px 15px;
+    display: inline-block;
+}
