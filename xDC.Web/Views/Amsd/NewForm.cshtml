@@ -1,7 +1,8 @@
 ﻿@model dynamic
 
 @{
-    ViewBag.Title = "New AMSD Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "New Inflow Funds";
 }
 
 
@@ -21,111 +22,47 @@
 
 <section class="content container-fluid">
     <div class="row">
-        <div class="col-md-12">
-                <form action="" id="amsd-form">
-                    <div class="row">
-                        <div class="col-md-7">
+        <div class="col-md-11">
+            <form action="" id="amsd-form">
+                <div class="row">
+                    <div class="col-md-7">
 
-                        </div>
-                        <div class="col-md-5">
-                            <div class="dx-fieldset" style="height: 30px;">
-                                <div class="dx-field">
-                                    <div class="dx-field-label">Form ID: </div>
-                                    <div class="dx-field-value">
-                                        <div id="tbFormId"></div>
-                                    </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="dx-fieldset" style="height: 30px;">
+                            <div class="dx-field">
+                                <div class="dx-field-label">Form ID: </div>
+                                <div class="dx-field-value">
+                                    <div id="tbFormId"></div>
                                 </div>
-                                <div class="dx-field">
-                                    <div class="dx-field-label">Form Status: </div>
-                                    <div class="dx-field-value">
-                                        <div id="tbFormStatus"></div>
-                                    </div>
+                            </div>
+                            <div class="dx-field">
+                                <div class="dx-field-label">Form Status: </div>
+                                <div class="dx-field-value">
+                                    <div id="tbFormStatus"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="amd-form-container">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h2 class="amd-form-title">CASHFLOW: RENTAS SETTLEMENT ACCOUNT (Account No. 1554190885)</h2>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-7">
-                            </div>
-                            <div class="col-md-5">
-                                <div class="dx-fieldset" style="height: 30px;">
-                                    <div class="dx-field">
-                                        <div class="dx-field-label">BALANCE BNM-02: </div>
-                                        <div class="dx-field-value">
-                                            <div id="balance-account"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h4><span class="label label-success">INFLOW FUNDS</span></h4>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div id="inflowFundsGrid1"></div>
-                            </div>
-                        </div>
+                </div>
 
-                        
-
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h4><span class="label label-warning">OUTFLOW FUNDS</span> <span class="label label-default">Placement Made at Financial Institutions</span></h4>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div id="outflowFundsGrid1"></div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h4><span class="label label-warning">OUTFLOW FUNDS</span> <span class="label label-default">Transfer of fund made to</span></h4>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div id="outflowFundsGrid2"></div>
-                            </div>
-                        </div>
-                        
-
-                        <div class="row">
-                            <div class="col-md-7">
-                            </div>
-                            <div class="col-md-5">
-                                <div class="dx-fieldset" style="height: 30px;">
-                                    <div class="dx-field">
-                                        <div class="dx-field-label" style="font-weight: bold">CALCULATED CLOSING BALANCE AT THE END OF THE DAY: </div>
-                                        <div class="dx-field-value">
-                                            <div id="nbTotalClosingBalance"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4><span class="label label-success">INFLOW FUNDS</span></h4>
+                        <div id="inflowFundsGrid1"></div>
+                        <input type="hidden" name="inflowFundsInput"/>
                     </div>
+                </div>
 
-                    <div class="row">
-                        <div class="col-md-12">
-                            <p style="float: right;">
-                                <button class="btn btn-default" id="btnBtnCancel">Cancel</button>
-                                <button class="btn btn-default" id="btnSaveAsDraft">Save as Draft</button>
-                                <button class="btn btn-primary" type="submit">Submit</button>
-                            </p>
-                        </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p style="float: right;margin-top: 10px">
+                            <button class="btn btn-default" id="cancelBtn">Cancel</button>
+                            <button class="btn btn-primary" type="submit">Submit</button>
+                        </p>
                     </div>
-                </form>
-
+                </div>
+            </form>
         </div>
     </div>
 </section>

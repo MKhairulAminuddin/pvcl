@@ -5,6 +5,21 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="kashflowDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="AmsdInflowFunds">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FormHeaderId" Type="int" Nullable="false" />
+          <Property Name="FundType" Type="nvarchar" MaxLength="250" />
+          <Property Name="Bank" Type="nvarchar" MaxLength="150" />
+          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="LatestSubmission" Type="datetime" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="UpdatedDate" Type="datetime" />
+        </EntityType>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
             <PropertyRef Name="Username" />
@@ -48,6 +63,31 @@
           <Property Name="LastLogin" Type="datetime" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="FormHeader">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Title" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="FormType" Type="nvarchar" MaxLength="150" />
+          <Property Name="Submission" Type="datetime" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="ApprovedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="ApprovedDate" Type="datetime" />
+        </EntityType>
+        <Association Name="FK__AmsdInflo__FormH__6B24EA82">
+          <End Role="FormHeader" Type="Self.FormHeader" Multiplicity="1" />
+          <End Role="AmsdInflowFunds" Type="Self.AmsdInflowFunds" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FormHeader">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AmsdInflowFunds">
+              <PropertyRef Name="FormHeaderId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId">
           <End Role="AspNetRoles" Type="Self.AspNetRoles" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -77,10 +117,16 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="kashflowDbModelStoreContainer">
+          <EntitySet Name="AmsdInflowFunds" EntityType="Self.AmsdInflowFunds" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetActiveDirectoryUsers" EntityType="Self.AspNetActiveDirectoryUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FormHeader" EntityType="Self.FormHeader" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__AmsdInflo__FormH__6B24EA82" Association="Self.FK__AmsdInflo__FormH__6B24EA82">
+            <End Role="FormHeader" EntitySet="FormHeader" />
+            <End Role="AmsdInflowFunds" EntitySet="AmsdInflowFunds" />
+          </AssociationSet>
           <AssociationSet Name="FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId" Association="Self.FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId">
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
             <End Role="AspNetUserRoles" EntitySet="AspNetUserRoles" />
@@ -101,6 +147,12 @@
           <AssociationSet Name="AspNetUserRoles" Association="kashflowDbModel.AspNetUserRoles">
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+          </AssociationSet>
+          <EntitySet Name="AmsdInflowFunds" EntityType="kashflowDbModel.AmsdInflowFunds" />
+          <EntitySet Name="FormHeader" EntityType="kashflowDbModel.FormHeader" />
+          <AssociationSet Name="FK__AmsdInflo__FormH__6B24EA82" Association="kashflowDbModel.FK__AmsdInflo__FormH__6B24EA82">
+            <End Role="FormHeader" EntitySet="FormHeader" />
+            <End Role="AmsdInflowFunds" EntitySet="AmsdInflowFunds" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
@@ -143,6 +195,48 @@
         <Association Name="AspNetUserRoles">
           <End Type="kashflowDbModel.AspNetRoles" Role="AspNetRoles" Multiplicity="*" />
           <End Type="kashflowDbModel.AspNetUsers" Role="AspNetUsers" Multiplicity="*" />
+        </Association>
+        <EntityType Name="AmsdInflowFunds">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FormHeaderId" Type="Int32" Nullable="false" />
+          <Property Name="FundType" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Bank" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="LatestSubmission" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="FormHeader" Relationship="kashflowDbModel.FK__AmsdInflo__FormH__6B24EA82" FromRole="AmsdInflowFunds" ToRole="FormHeader" />
+        </EntityType>
+        <EntityType Name="FormHeader">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Title" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="FormType" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Submission" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="ApprovedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ApprovedDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="AmsdInflowFunds" Relationship="kashflowDbModel.FK__AmsdInflo__FormH__6B24EA82" FromRole="FormHeader" ToRole="AmsdInflowFunds" />
+        </EntityType>
+        <Association Name="FK__AmsdInflo__FormH__6B24EA82">
+          <End Type="kashflowDbModel.FormHeader" Role="FormHeader" Multiplicity="1" />
+          <End Type="kashflowDbModel.AmsdInflowFunds" Role="AmsdInflowFunds" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FormHeader">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AmsdInflowFunds">
+              <PropertyRef Name="FormHeaderId" />
+            </Dependent>
+          </ReferentialConstraint>
         </Association>
       </Schema>
     </edmx:ConceptualModels>
@@ -196,6 +290,36 @@
               <ScalarProperty Name="Id" ColumnName="RoleId" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="AmsdInflowFunds">
+            <EntityTypeMapping TypeName="kashflowDbModel.AmsdInflowFunds">
+              <MappingFragment StoreEntitySet="AmsdInflowFunds">
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="LatestSubmission" ColumnName="LatestSubmission" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Bank" ColumnName="Bank" />
+                <ScalarProperty Name="FundType" ColumnName="FundType" />
+                <ScalarProperty Name="FormHeaderId" ColumnName="FormHeaderId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FormHeader">
+            <EntityTypeMapping TypeName="kashflowDbModel.FormHeader">
+              <MappingFragment StoreEntitySet="FormHeader">
+                <ScalarProperty Name="ApprovedDate" ColumnName="ApprovedDate" />
+                <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="Submission" ColumnName="Submission" />
+                <ScalarProperty Name="FormType" ColumnName="FormType" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

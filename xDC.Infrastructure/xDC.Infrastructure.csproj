@@ -50,6 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application\AmsdInflowFunds.cs">
+      <DependentUpon>kashflowDb.tt</DependentUpon>
+    </Compile>
     <Compile Include="Application\AspNetActiveDirectoryUsers.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
@@ -57,6 +60,9 @@
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
     <Compile Include="Application\AspNetUsers.cs">
+      <DependentUpon>kashflowDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Application\FormHeader.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
     <Compile Include="Application\kashflowDb.Context.cs">

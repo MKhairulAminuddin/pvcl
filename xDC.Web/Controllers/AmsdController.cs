@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace xDC_Web.Controllers
 {
+    [Authorize(Roles = "Administrator, Power User, Amsd")]
     public class AmsdController : Controller
     {
         public ActionResult Index()

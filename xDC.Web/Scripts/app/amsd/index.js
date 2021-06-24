@@ -21,12 +21,12 @@
         var $amsdGrid, $btnNewForm;
 
         $btnNewForm = $("#btnNewForm").dxButton({
-            text: "New Form",
+            text: "New Inflow Funds",
             type: "default",
-            icon: "file",
+            icon: "plus",
             useSubmitBehavior: true,
             onClick: function (e) {
-                window.location.replace("../amsd/form");
+                window.location.replace("../amsd/newform");
             }
         }).dxButton("instance");
 

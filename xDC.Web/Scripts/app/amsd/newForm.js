@@ -2,66 +2,40 @@
 
     $(function () {
         var inflowFundsTypes = ["Funds Received", "Maturity", "Proceed", "Interest Received"];
-        var inflowFundsFunds = ["RHB Bank -01", "RHB Bank -02", "RHB Bank -03", "BNM -01", "BA", "CP Matured", " Cagamas Int", "Loan SPnb", "Bon Int"];
-
-        var inflowFundsGridData = [
-            {
-                type: "Funds Received",
-                fund: "RHB Bank -01",
-                amount: 10000256.29
-            },
-            {
-                type: "Funds Received",
-                fund: "RHB Bank -02",
-                amount: 0
-            },
-            {
-                type: "Funds Received",
-                fund: "RHB Bank -03",
-                amount: 0
-            }
-        ];
+        var inflowFundsBank = ["RHB Bank -01", "RHB Bank -02", "RHB Bank -03", "BNM -01", "BA", "CP Matured", " Cagamas Int", "Loan SPnb", "Bon Int"];
+        
+        var $inflowFundsGrid, $historyBtn, $cancelBtn, $tbFormId, $tbFormStatus;
 
 
-        var $inflowFundsGrid, $outflowFundsGrid1, $outflowFundsGrid2;
-
-
-        $("#tbFormId").dxTextBox({
-            value: "1",
+        $tbFormId = $("#tbFormId").dxTextBox({
             disabled: true
-        });
+        }).dxTextBox("instance");
 
-        $("#tbFormStatus").dxTextBox({
+        $tbFormStatus = $("#tbFormStatus").dxTextBox({
             value: "New",
             disabled: true
-        });
+        }).dxTextBox("instance");;
 
-        $("#balance-account").dxNumberBox({
-            value: 200000.50,
-            showSpinButtons: true,
-            showClearButton: true,
-        });
-
-        $("#nbTotalClosingBalance").dxNumberBox({
-            showClearButton: true,
-        });
-        
+        $historyBtn = $("#historyBtn").dxButton({
+            type: "default",
+            icon: "detailslayout"
+        }).dxButton("instance");
 
         $inflowFundsGrid = $("#inflowFundsGrid1").dxDataGrid({
-            dataSource: inflowFundsGridData,
+            dataSource: [],
             columns: [
                 {
-                    dataField: "type",
-                    caption: "Types",
+                    dataField: "fundTypes",
+                    caption: "Fund Types",
                     lookup: {
                         dataSource: inflowFundsTypes
                     }
                 },
                 {
-                    dataField: "fund",
-                    caption: "Funds",
+                    dataField: "bank",
+                    caption: "Bank",
                     lookup: {
-                        dataSource: inflowFundsFunds
+                        dataSource: inflowFundsBank
                     }
                 },
                 {
@@ -103,98 +77,22 @@
                 ]
             }
         }).dxDataGrid("instance");;
-
-        $outflowFundsGrid1 = $("#outflowFundsGrid1").dxDataGrid({
-            dataSource: [],
-            columns: [
-                {
-                    dataField: "item",
-                    caption: "Items"
-                },
-                {
-                    dataField: "amount",
-                    caption: "Amount",
-                    dataType: "number"
-                }
-            ],
-            showBorders: true,
-            height: 300,
-            editing: {
-                refreshMode: "reshape",
-                mode: "batch",
-                allowAdding: true,
-                allowUpdating: true,
-                allowDeleting: true
-            },
-            summary: {
-                totalItems: [
-                    {
-                        column: "item",
-                        displayFormat: "TOTAL"
-                    },
-                    {
-                        column: "amount",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    }
-                ]
-            }
-        }).dxDataGrid("instance");;
-
-        $outflowFundsGrid2 = $("#outflowFundsGrid2").dxDataGrid({
-            dataSource: [],
-            columns: [
-                {
-                    dataField: "funds",
-                    caption: "Funds"
-                },
-                {
-                    dataField: "amount",
-                    caption: "Amount",
-                    dataType: "number"
-                }
-            ],
-            showBorders: true,
-            height: 300,
-            editing: {
-                refreshMode: "reshape",
-                mode: "batch",
-                allowAdding: true,
-                allowUpdating: true,
-                allowDeleting: true
-            },
-            summary: {
-                totalItems: [
-                    {
-                        column: "funds",
-                        displayFormat: "TOTAL"
-                    },
-                    {
-                        column: "amount",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    }
-                ]
-            }
-        }).dxDataGrid("instance");
-
+        
         $("#amsd-form").submit(function (event) {
+            $inflowFundsGrid.getDataSource().store().load().done(function(items) {
+                $("input[name='inflowFundsInput']").val(JSON.stringify(items));
+            });
+
+            console.log($inflowFundsGrid.getDataSource());
+
             if (confirm("You sure to submit?")) {
                 alert("Thanks!");
             }
             event.preventDefault();
         });
 
-        $("#backBtn").click(function (event) {
-            window.location.replace("./AMSD-Home.html");
+        $cancelBtn = $("#cancelBtn").click(function (event) {
+            window.location.replace("../amsd");
             event.preventDefault();
         });
     });

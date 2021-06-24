@@ -386,6 +386,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AmsdController.cs" />
+    <Compile Include="Controllers\Api\AmsdController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\SampleDataController.cs" />
@@ -405,10 +406,13 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controllers\Api\" />
     <Folder Include="Views\Setting\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\xDC.Infrastructure\xDC.Infrastructure.csproj">
+      <Project>{2672ed98-2d96-458e-b2ce-0488e163eb98}</Project>
+      <Name>xDC.Infrastructure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\xDC.Utils\xDC.Utils.csproj">
       <Project>{87fa4c9c-f3bf-4cd4-83f2-0be4d31674e5}</Project>
       <Name>xDC.Utils</Name>
