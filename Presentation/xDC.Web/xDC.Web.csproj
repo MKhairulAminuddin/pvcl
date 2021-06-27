@@ -366,10 +366,13 @@
     <Content Include="Web.config" />
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\Shared\_LayoutEmpty.cshtml" />
-    <Content Include="Views\System\SystemInformation.cshtml" />
     <Content Include="Views\Amsd\Index.cshtml" />
     <Content Include="Views\Amsd\NewForm.cshtml" />
     <Content Include="Views\Amsd\ApproveForm.cshtml" />
+    <Content Include="Views\Setting\DropdownConfig.cshtml" />
+    <Content Include="Views\Setting\ApplicationConfig.cshtml" />
+    <Content Include="Views\Setting\Workflow.cshtml" />
+    <Content Include="Views\Setting\AuditTrail.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -390,7 +393,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\SampleDataController.cs" />
-    <Compile Include="Controllers\SystemController.cs" />
+    <Compile Include="Controllers\SettingController.cs" />
     <Compile Include="Extension\AdAuthentication.cs" />
     <Compile Include="Extension\MenuSecurity.cs" />
     <Compile Include="Global.asax.cs">
@@ -405,15 +408,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Views\Setting\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\xDC.Infrastructure\xDC.Infrastructure.csproj">
+    <ProjectReference Include="..\..\Libraries\xDC.Infrastructure\xDC.Infrastructure.csproj">
       <Project>{2672ed98-2d96-458e-b2ce-0488e163eb98}</Project>
       <Name>xDC.Infrastructure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\xDC.Utils\xDC.Utils.csproj">
+    <ProjectReference Include="..\..\Libraries\xDC.Utils\xDC.Utils.csproj">
       <Project>{87fa4c9c-f3bf-4cd4-83f2-0be4d31674e5}</Project>
       <Name>xDC.Utils</Name>
     </ProjectReference>

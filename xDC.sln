@@ -3,21 +3,24 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31229.75
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.Web", "xDC.Web\xDC.Web.csproj", "{2EC9C2B9-4657-4A3A-8484-14AC09BC11FA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.Utils", "xDC.Utils\xDC.Utils.csproj", "{87FA4C9C-F3BF-4CD4-83F2-0BE4D31674E5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.Domain", "xDC.Domain\xDC.Domain.csproj", "{EFEF74C6-2D1F-4D4B-A185-95290133C42D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.Infrastructure", "xDC.Infrastructure\xDC.Infrastructure.csproj", "{2672ED98-2D96-458E-B2CE-0488E163EB98}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.Application", "xDC.Application\xDC.Application.csproj", "{5CCA0E1B-622C-4AFF-B365-2E0F0480F306}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xDC.DbScripts", "xDC.DbScripts", "{7122A0F2-D963-4FF2-A899-44463EA526B5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{7122A0F2-D963-4FF2-A899-44463EA526B5}"
 	ProjectSection(SolutionItems) = preProject
-		xDC.DbScripts\AspNetActiveDirectoryUsers.sql = xDC.DbScripts\AspNetActiveDirectoryUsers.sql
-		xDC.DbScripts\AspNetAuth.sql = xDC.DbScripts\AspNetAuth.sql
+		Database\AspNetActiveDirectoryUsers.sql = Database\AspNetActiveDirectoryUsers.sql
+		Database\AspNetAuth.sql = Database\AspNetAuth.sql
+		Form.sql = Form.sql
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{288D30C0-C4F9-4D78-BD96-15D52D9FEB14}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{D82837EF-EEC1-4823-9684-DA51B9FDC489}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.Domain", "Libraries\xDC.Domain\xDC.Domain.csproj", "{EFEF74C6-2D1F-4D4B-A185-95290133C42D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.Infrastructure", "Libraries\xDC.Infrastructure\xDC.Infrastructure.csproj", "{2672ED98-2D96-458E-B2CE-0488E163EB98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.Utils", "Libraries\xDC.Utils\xDC.Utils.csproj", "{87FA4C9C-F3BF-4CD4-83F2-0BE4D31674E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.Web", "Presentation\xDC.Web\xDC.Web.csproj", "{2EC9C2B9-4657-4A3A-8484-14AC09BC11FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +28,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2EC9C2B9-4657-4A3A-8484-14AC09BC11FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2EC9C2B9-4657-4A3A-8484-14AC09BC11FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2EC9C2B9-4657-4A3A-8484-14AC09BC11FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2EC9C2B9-4657-4A3A-8484-14AC09BC11FA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{87FA4C9C-F3BF-4CD4-83F2-0BE4D31674E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{87FA4C9C-F3BF-4CD4-83F2-0BE4D31674E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{87FA4C9C-F3BF-4CD4-83F2-0BE4D31674E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{87FA4C9C-F3BF-4CD4-83F2-0BE4D31674E5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EFEF74C6-2D1F-4D4B-A185-95290133C42D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EFEF74C6-2D1F-4D4B-A185-95290133C42D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFEF74C6-2D1F-4D4B-A185-95290133C42D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -41,13 +36,23 @@ Global
 		{2672ED98-2D96-458E-B2CE-0488E163EB98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2672ED98-2D96-458E-B2CE-0488E163EB98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2672ED98-2D96-458E-B2CE-0488E163EB98}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5CCA0E1B-622C-4AFF-B365-2E0F0480F306}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5CCA0E1B-622C-4AFF-B365-2E0F0480F306}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5CCA0E1B-622C-4AFF-B365-2E0F0480F306}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5CCA0E1B-622C-4AFF-B365-2E0F0480F306}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87FA4C9C-F3BF-4CD4-83F2-0BE4D31674E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87FA4C9C-F3BF-4CD4-83F2-0BE4D31674E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87FA4C9C-F3BF-4CD4-83F2-0BE4D31674E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87FA4C9C-F3BF-4CD4-83F2-0BE4D31674E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EC9C2B9-4657-4A3A-8484-14AC09BC11FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EC9C2B9-4657-4A3A-8484-14AC09BC11FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EC9C2B9-4657-4A3A-8484-14AC09BC11FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EC9C2B9-4657-4A3A-8484-14AC09BC11FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EFEF74C6-2D1F-4D4B-A185-95290133C42D} = {288D30C0-C4F9-4D78-BD96-15D52D9FEB14}
+		{2672ED98-2D96-458E-B2CE-0488E163EB98} = {288D30C0-C4F9-4D78-BD96-15D52D9FEB14}
+		{87FA4C9C-F3BF-4CD4-83F2-0BE4D31674E5} = {288D30C0-C4F9-4D78-BD96-15D52D9FEB14}
+		{2EC9C2B9-4657-4A3A-8484-14AC09BC11FA} = {D82837EF-EEC1-4823-9684-DA51B9FDC489}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {34EB544F-2415-4B65-AE15-70E167AB330D}
