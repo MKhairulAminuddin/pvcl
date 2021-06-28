@@ -8,11 +8,21 @@
     <div class="row">
         <div class="col-md-6">
             <div class="left-container">
+                <div>
+                    @(Html.DevExtreme().Button()
+                        .Text("New Inflow Funds")
+                        .Icon("plus")
+                        .Type(ButtonType.Default)
+                        .StylingMode(ButtonStylingMode.Outlined)
+                        .OnClick(@<text>  function(){ window.location = "@Url.Action("NewInflowFundsForm", "Amsd")"; } </text>)
+                        )
+                </div>
+                
             </div>
         </div>
         <div class="col-md-6">
             <div id="right-toolbar-container" class="right-container">
-                <div id="btnNewForm"></div>
+                
             </div>
         </div>
     </div>

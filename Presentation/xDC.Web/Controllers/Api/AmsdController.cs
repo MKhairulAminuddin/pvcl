@@ -18,6 +18,7 @@ namespace xDC_Web.Controllers.Api
     public class AmsdController : ApiController
     {
         [HttpGet]
+        [Route("GetAmsdForms")]
         public HttpResponseMessage GetAmsdForms(DataSourceLoadOptions loadOptions)
         {
             var result = new Apps.kashflowDBEntities().FormHeader.Where(x => x.FormType == "Amsd - Inflow Funds");

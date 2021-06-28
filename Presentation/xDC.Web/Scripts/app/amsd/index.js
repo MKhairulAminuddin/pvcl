@@ -19,19 +19,13 @@
         ];
 
         var $amsdGrid, $btnNewForm;
-
-        $btnNewForm = $("#btnNewForm").dxButton({
-            text: "New Inflow Funds",
-            type: "default",
-            icon: "plus",
-            useSubmitBehavior: true,
-            onClick: function (e) {
-                window.location.replace("../amsd/NewInflowFundsForm");
-            }
-        }).dxButton("instance");
+        
 
         $amsdGrid = $("#amsdGrid").dxDataGrid({
-            dataSource: amsdGridData,
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: "../api/amsd/GetAmsdForms"
+            }),
             columns: [
                 {
                     dataField: "formId",
