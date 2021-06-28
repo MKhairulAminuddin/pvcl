@@ -21,7 +21,6 @@ namespace xDC.Infrastructure.Application
         }
     
         public int Id { get; set; }
-        public string Title { get; set; }
         public string FormType { get; set; }
         public Nullable<System.DateTime> Submission { get; set; }
         public string CreatedBy { get; set; }

@@ -26,7 +26,7 @@
             icon: "plus",
             useSubmitBehavior: true,
             onClick: function (e) {
-                window.location.replace("../amsd/newform");
+                window.location.replace("../amsd/NewInflowFundsForm");
             }
         }).dxButton("instance");
 

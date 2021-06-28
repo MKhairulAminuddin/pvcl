@@ -68,7 +68,6 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Title" Type="nvarchar(max)" Nullable="false" />
           <Property Name="FormType" Type="nvarchar" MaxLength="150" />
           <Property Name="Submission" Type="datetime" />
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
@@ -76,7 +75,7 @@
           <Property Name="ApprovedBy" Type="nvarchar" MaxLength="50" />
           <Property Name="ApprovedDate" Type="datetime" />
         </EntityType>
-        <Association Name="FK__AmsdInflo__FormH__6B24EA82">
+        <Association Name="FK__AmsdInflo__FormH__72C60C4A">
           <End Role="FormHeader" Type="Self.FormHeader" Multiplicity="1" />
           <End Role="AmsdInflowFunds" Type="Self.AmsdInflowFunds" Multiplicity="*" />
           <ReferentialConstraint>
@@ -123,7 +122,7 @@
           <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FormHeader" EntityType="Self.FormHeader" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__AmsdInflo__FormH__6B24EA82" Association="Self.FK__AmsdInflo__FormH__6B24EA82">
+          <AssociationSet Name="FK__AmsdInflo__FormH__72C60C4A" Association="Self.FK__AmsdInflo__FormH__72C60C4A">
             <End Role="FormHeader" EntitySet="FormHeader" />
             <End Role="AmsdInflowFunds" EntitySet="AmsdInflowFunds" />
           </AssociationSet>
@@ -150,7 +149,7 @@
           </AssociationSet>
           <EntitySet Name="AmsdInflowFunds" EntityType="kashflowDbModel.AmsdInflowFunds" />
           <EntitySet Name="FormHeader" EntityType="kashflowDbModel.FormHeader" />
-          <AssociationSet Name="FK__AmsdInflo__FormH__6B24EA82" Association="kashflowDbModel.FK__AmsdInflo__FormH__6B24EA82">
+          <AssociationSet Name="FK__AmsdInflo__FormH__72C60C4A" Association="kashflowDbModel.FK__AmsdInflo__FormH__72C60C4A">
             <End Role="FormHeader" EntitySet="FormHeader" />
             <End Role="AmsdInflowFunds" EntitySet="AmsdInflowFunds" />
           </AssociationSet>
@@ -210,23 +209,22 @@
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="FormHeader" Relationship="kashflowDbModel.FK__AmsdInflo__FormH__6B24EA82" FromRole="AmsdInflowFunds" ToRole="FormHeader" />
+          <NavigationProperty Name="FormHeader" Relationship="kashflowDbModel.FK__AmsdInflo__FormH__72C60C4A" FromRole="AmsdInflowFunds" ToRole="FormHeader" />
         </EntityType>
         <EntityType Name="FormHeader">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Title" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="FormType" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="Submission" Type="DateTime" Precision="3" />
           <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
           <Property Name="ApprovedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ApprovedDate" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="AmsdInflowFunds" Relationship="kashflowDbModel.FK__AmsdInflo__FormH__6B24EA82" FromRole="FormHeader" ToRole="AmsdInflowFunds" />
+          <NavigationProperty Name="AmsdInflowFunds" Relationship="kashflowDbModel.FK__AmsdInflo__FormH__72C60C4A" FromRole="FormHeader" ToRole="AmsdInflowFunds" />
         </EntityType>
-        <Association Name="FK__AmsdInflo__FormH__6B24EA82">
+        <Association Name="FK__AmsdInflo__FormH__72C60C4A">
           <End Type="kashflowDbModel.FormHeader" Role="FormHeader" Multiplicity="1" />
           <End Type="kashflowDbModel.AmsdInflowFunds" Role="AmsdInflowFunds" Multiplicity="*" />
           <ReferentialConstraint>
@@ -315,12 +313,11 @@
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="Submission" ColumnName="Submission" />
                 <ScalarProperty Name="FormType" ColumnName="FormType" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-        </EntityContainerMapping>
+          </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

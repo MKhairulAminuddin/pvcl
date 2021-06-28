@@ -1,7 +1,6 @@
 ﻿
 CREATE TABLE [dbo].[FormHeader](
 	[Id] INT NOT NULL Identity(1,1) PRIMARY KEY, 
-    [Title] NVARCHAR(MAX) NOT NULL, 
 
     [FormType] NVARCHAR(150) NULL, 
 

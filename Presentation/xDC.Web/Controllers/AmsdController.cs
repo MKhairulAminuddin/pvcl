@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
+using System.Web.Http.Results;
 using System.Web.Mvc;
+using Newtonsoft.Json;
+using xDC_Web.Models;
 
 namespace xDC_Web.Controllers
 {
@@ -14,12 +18,12 @@ namespace xDC_Web.Controllers
             return View();
         }
 
-        public ActionResult NewForm()
+        public ActionResult NewInflowFundsForm()
         {
             return View();
         }
 
-        public ActionResult ApproveForm()
+        public ActionResult ViewInflowFundsForm(string id)
         {
             return View();
         }

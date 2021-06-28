@@ -1,0 +1,52 @@
+﻿@using xDC_Web.Models
+@{
+    ViewBag.Title = "New Inflow Funds";
+}
+
+
+<section class="content-header content-toolbar">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="left-container">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div id="right-toolbar-container" class="right-container">
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary" id="amsd-form">
+                <div class="box-header">
+                    <i class="fa fa-money"></i>
+
+                    <h3 class="box-title">Inflow Funds</h3>
+                    
+                </div>
+
+                <div class="box-body">
+                    <div id="inflowFundsGrid1"></div>
+
+                    <input type="hidden" name="formType" value="AMSD - Inflow Funds" />
+                </div>
+
+                <div class="box-footer clearfix no-border">
+                    <p style="float: right; margin-top: 10px">
+                        <button class="btn btn-default" id="cancelBtn"></button>
+                        <button class="btn btn-primary" id="submitBtn"></button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts
+{
+    <script src="~/Scripts/app/amsd/newInflowFundsForm.js"></script>
+}

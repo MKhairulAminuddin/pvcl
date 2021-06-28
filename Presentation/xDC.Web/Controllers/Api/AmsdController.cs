@@ -8,11 +8,13 @@ using System.Web.Http;
 using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
 using Newtonsoft.Json;
+using xDC_Web.Models;
 using Apps = xDC.Infrastructure.Application;
 
 namespace xDC_Web.Controllers.Api
 {
     [Authorize(Roles="Administrator, Power User, Amsd")]
+    [RoutePrefix("api/amsd")]
     public class AmsdController : ApiController
     {
         [HttpGet]
@@ -25,16 +27,28 @@ namespace xDC_Web.Controllers.Api
 
 
         [HttpPost]
-        public HttpResponseMessage SubmitInflowFundsForm(FormDataCollection form)
+        [Route("NewInflowFundsForm")]
+        public HttpResponseMessage NewInflowFundsForm([FromBody] InflowFundsModel inputs)
         {
             try
             {
                 using (var db = new Apps.kashflowDBEntities())
                 {
-                    var values = form.Get("values");
 
-                    var newRecord = new Apps.FormHeader();
-                    JsonConvert.PopulateObject(values, newRecord);
+                    var newRecord = new Apps.FormHeader()
+                    {
+                        FormType = inputs.FormType
+                    };
+
+                    foreach (var item in inputs.AmsdInflowFunds)
+                    {
+                        newRecord.AmsdInflowFunds.Add(new Apps.AmsdInflowFunds()
+                        {
+                            FundType = item.FundType,
+                            Bank = item.Bank,
+                            Amount = item.Amount
+                        });
+                    }
 
                     newRecord.CreatedBy = User.Identity.Name;
                     newRecord.CreatedDate = DateTime.Now;
@@ -47,7 +61,7 @@ namespace xDC_Web.Controllers.Api
                     db.FormHeader.Add(newRecord);
                     db.SaveChanges();
 
-                    return Request.CreateResponse(HttpStatusCode.Created, newRecord);
+                    return Request.CreateResponse(HttpStatusCode.Created, newRecord.Id);
                 }
             }
             catch (Exception ex)

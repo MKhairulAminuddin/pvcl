@@ -13,4 +13,17 @@ namespace xDC_Web.Models {
         public string ShipCountry { get; set; }
         public string ShipCity { get; set; }
     }
+
+    public class InflowFundsModel
+    {
+        public string FormType { get; set; }
+        public List<AmsdInflowFunds> AmsdInflowFunds { get; set; }
+    }
+
+    public class AmsdInflowFunds
+    {
+        public string FundType { get; set; }
+        public string Bank { get; set; }
+        public decimal Amount { get; set; }
+    }
 }
