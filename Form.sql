@@ -3,15 +3,20 @@ CREATE TABLE [dbo].[FormHeader](
 	[Id] INT NOT NULL Identity(1,1) PRIMARY KEY, 
 
     [FormType] NVARCHAR(150) NULL, 
+	[FormStatus] NVARCHAR(150) NULL, 
 
-	[Submission] DATETIME NULL,
-
-    [CreatedBy] NVARCHAR(50) NULL, 
-    [CreatedDate] DATETIME NULL DEFAULT GETDATE(), 
+    [PreparedBy] NVARCHAR(50) NULL, 
+    [PreparedDate] DATETIME NULL DEFAULT GETDATE(), 
 
     [ApprovedBy] NVARCHAR(50) NULL, 
-    [ApprovedDate] DATETIME NULL
+    [ApprovedDate] DATETIME NULL,
+
+	[AdminEditted] BIT NOT NULL DEFAULT 1, 
+	[AdminEdittedBy] NVARCHAR(50) NULL, 
+    [AdminEdittedDate] DATETIME NULL DEFAULT GETDATE(), 
 )
+
+
 
 CREATE TABLE [dbo].[AmsdInflowFunds](
 	[Id] INT NOT NULL Identity(1,1) PRIMARY KEY, 
@@ -28,6 +33,7 @@ CREATE TABLE [dbo].[AmsdInflowFunds](
     [UpdatedBy] NVARCHAR(50) NULL, 
     [UpdatedDate] DATETIME NULL
 )
+
 
 CREATE TABLE [dbo].[AmsdInflowFundsHistory](
 	[Id] INT NOT NULL Identity(1,1) PRIMARY KEY, 

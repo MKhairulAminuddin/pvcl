@@ -69,13 +69,16 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="FormType" Type="nvarchar" MaxLength="150" />
-          <Property Name="Submission" Type="datetime" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
-          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="FormStatus" Type="nvarchar" MaxLength="150" />
+          <Property Name="PreparedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="PreparedDate" Type="datetime" />
           <Property Name="ApprovedBy" Type="nvarchar" MaxLength="50" />
           <Property Name="ApprovedDate" Type="datetime" />
+          <Property Name="AdminEditted" Type="bit" Nullable="false" />
+          <Property Name="AdminEdittedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="AdminEdittedDate" Type="datetime" />
         </EntityType>
-        <Association Name="FK__AmsdInflo__FormH__72C60C4A">
+        <Association Name="FK__AmsdInflo__FormH__07C12930">
           <End Role="FormHeader" Type="Self.FormHeader" Multiplicity="1" />
           <End Role="AmsdInflowFunds" Type="Self.AmsdInflowFunds" Multiplicity="*" />
           <ReferentialConstraint>
@@ -122,7 +125,7 @@
           <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FormHeader" EntityType="Self.FormHeader" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__AmsdInflo__FormH__72C60C4A" Association="Self.FK__AmsdInflo__FormH__72C60C4A">
+          <AssociationSet Name="FK__AmsdInflo__FormH__07C12930" Association="Self.FK__AmsdInflo__FormH__07C12930">
             <End Role="FormHeader" EntitySet="FormHeader" />
             <End Role="AmsdInflowFunds" EntitySet="AmsdInflowFunds" />
           </AssociationSet>
@@ -149,7 +152,7 @@
           </AssociationSet>
           <EntitySet Name="AmsdInflowFunds" EntityType="kashflowDbModel.AmsdInflowFunds" />
           <EntitySet Name="FormHeader" EntityType="kashflowDbModel.FormHeader" />
-          <AssociationSet Name="FK__AmsdInflo__FormH__72C60C4A" Association="kashflowDbModel.FK__AmsdInflo__FormH__72C60C4A">
+          <AssociationSet Name="FK__AmsdInflo__FormH__07C12930" Association="kashflowDbModel.FK__AmsdInflo__FormH__07C12930">
             <End Role="FormHeader" EntitySet="FormHeader" />
             <End Role="AmsdInflowFunds" EntitySet="AmsdInflowFunds" />
           </AssociationSet>
@@ -209,7 +212,7 @@
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="FormHeader" Relationship="kashflowDbModel.FK__AmsdInflo__FormH__72C60C4A" FromRole="AmsdInflowFunds" ToRole="FormHeader" />
+          <NavigationProperty Name="FormHeader" Relationship="kashflowDbModel.FK__AmsdInflo__FormH__07C12930" FromRole="AmsdInflowFunds" ToRole="FormHeader" />
         </EntityType>
         <EntityType Name="FormHeader">
           <Key>
@@ -217,14 +220,17 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="FormType" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="Submission" Type="DateTime" Precision="3" />
-          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="FormStatus" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="PreparedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PreparedDate" Type="DateTime" Precision="3" />
           <Property Name="ApprovedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ApprovedDate" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="AmsdInflowFunds" Relationship="kashflowDbModel.FK__AmsdInflo__FormH__72C60C4A" FromRole="FormHeader" ToRole="AmsdInflowFunds" />
+          <Property Name="AdminEditted" Type="Boolean" Nullable="false" />
+          <Property Name="AdminEdittedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AdminEdittedDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="AmsdInflowFunds" Relationship="kashflowDbModel.FK__AmsdInflo__FormH__07C12930" FromRole="FormHeader" ToRole="AmsdInflowFunds" />
         </EntityType>
-        <Association Name="FK__AmsdInflo__FormH__72C60C4A">
+        <Association Name="FK__AmsdInflo__FormH__07C12930">
           <End Type="kashflowDbModel.FormHeader" Role="FormHeader" Multiplicity="1" />
           <End Type="kashflowDbModel.AmsdInflowFunds" Role="AmsdInflowFunds" Multiplicity="*" />
           <ReferentialConstraint>
@@ -307,11 +313,14 @@
           <EntitySetMapping Name="FormHeader">
             <EntityTypeMapping TypeName="kashflowDbModel.FormHeader">
               <MappingFragment StoreEntitySet="FormHeader">
+                <ScalarProperty Name="AdminEdittedDate" ColumnName="AdminEdittedDate" />
+                <ScalarProperty Name="AdminEdittedBy" ColumnName="AdminEdittedBy" />
+                <ScalarProperty Name="AdminEditted" ColumnName="AdminEditted" />
                 <ScalarProperty Name="ApprovedDate" ColumnName="ApprovedDate" />
                 <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="Submission" ColumnName="Submission" />
+                <ScalarProperty Name="PreparedDate" ColumnName="PreparedDate" />
+                <ScalarProperty Name="PreparedBy" ColumnName="PreparedBy" />
+                <ScalarProperty Name="FormStatus" ColumnName="FormStatus" />
                 <ScalarProperty Name="FormType" ColumnName="FormType" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>

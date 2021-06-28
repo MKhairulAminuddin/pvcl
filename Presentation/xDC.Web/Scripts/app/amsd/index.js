@@ -28,7 +28,7 @@
             }),
             columns: [
                 {
-                    dataField: "formId",
+                    dataField: "id",
                     caption: "Form ID"
                 },
                 {
@@ -36,14 +36,14 @@
                     caption: "Form Type"
                 },
                 {
-                    dataField: "submittedDatetime",
-                    caption: "Submitted Datetime",
-                    dataType: "datetime",
-
+                    dataField: "preparedBy",
+                    caption: "Preparer"
                 },
                 {
-                    dataField: "submittedBy",
-                    caption: "Submitted By"
+                    dataField: "preparedDate",
+                    caption: "Prepared Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy HH:mm"
                 },
                 {
                     dataField: "formStatus",

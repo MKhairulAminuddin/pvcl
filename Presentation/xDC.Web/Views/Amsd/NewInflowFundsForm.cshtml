@@ -36,15 +36,35 @@
                 </div>
 
                 <div class="box-footer clearfix no-border">
-                    <p style="float: right; margin-top: 10px">
-                        <button class="btn btn-default" id="cancelBtn"></button>
-                        <button class="btn btn-primary" id="submitBtn"></button>
-                    </p>
+                    
                 </div>
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-12">
+            <p style="float: right; margin-top: 10px">
+                <div style="display: inline-block">
+                    @(Html.DevExtreme().Button()
+                        .ID("submitBtn")
+                        .Text("Submit")
+                        .Type(ButtonType.Default)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        )
+                </div>
+                <div style="display: inline-block">
+                    @(Html.DevExtreme().Button()
+                        .Text("Cancel")
+                        .Type(ButtonType.Normal)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
+                        )
+                </div>
+            </p>
+        </div>
+    </div>
 </section>
+
 
 @section scripts
 {

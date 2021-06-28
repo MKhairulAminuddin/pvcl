@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DevExtreme.AspNet.Data;
+using DevExtreme.AspNet.Mvc;
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Formatting;
 using System.Web.Http;
-using DevExtreme.AspNet.Data;
-using DevExtreme.AspNet.Mvc;
-using Newtonsoft.Json;
 using xDC_Web.Models;
+using System.Data.Entity;
+using xDC.Utils;
 using Apps = xDC.Infrastructure.Application;
 
 namespace xDC_Web.Controllers.Api
@@ -21,9 +20,22 @@ namespace xDC_Web.Controllers.Api
         [Route("GetAmsdForms")]
         public HttpResponseMessage GetAmsdForms(DataSourceLoadOptions loadOptions)
         {
-            var result = new Apps.kashflowDBEntities().FormHeader.Where(x => x.FormType == "Amsd - Inflow Funds");
+            try
+            {
+                using (var db = new Apps.kashflowDBEntities())
+                {
+                    db.Configuration.LazyLoadingEnabled = false;
+                    db.Configuration.ProxyCreationEnabled = false;
+                    var result = db.FormHeader.Where(x => x.FormType == "Amsd - Inflow Funds").Include(x => x.AmsdInflowFunds).ToList();
 
-            return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+            
         }
 
 
@@ -51,14 +63,16 @@ namespace xDC_Web.Controllers.Api
                         });
                     }
 
-                    newRecord.CreatedBy = User.Identity.Name;
-                    newRecord.CreatedDate = DateTime.Now;
-                    
+                    newRecord.PreparedBy = User.Identity.Name;
+                    newRecord.PreparedDate = DateTime.Now;
+                    newRecord.FormStatus = Common.FormStatusMapping(2);
+
+
                     Validate(newRecord);
 
                     if (!ModelState.IsValid)
                         return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
-
+                    
                     db.FormHeader.Add(newRecord);
                     db.SaveChanges();
 

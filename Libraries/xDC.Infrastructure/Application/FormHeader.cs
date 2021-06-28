@@ -22,11 +22,14 @@ namespace xDC.Infrastructure.Application
     
         public int Id { get; set; }
         public string FormType { get; set; }
-        public Nullable<System.DateTime> Submission { get; set; }
-        public string CreatedBy { get; set; }
-        public Nullable<System.DateTime> CreatedDate { get; set; }
+        public string FormStatus { get; set; }
+        public string PreparedBy { get; set; }
+        public Nullable<System.DateTime> PreparedDate { get; set; }
         public string ApprovedBy { get; set; }
         public Nullable<System.DateTime> ApprovedDate { get; set; }
+        public bool AdminEditted { get; set; }
+        public string AdminEdittedBy { get; set; }
+        public Nullable<System.DateTime> AdminEdittedDate { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AmsdInflowFunds> AmsdInflowFunds { get; set; }

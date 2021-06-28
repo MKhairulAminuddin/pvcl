@@ -5,13 +5,14 @@ using System.Linq;
 using System.Web.Mvc;
 using DevExpress.Spreadsheet;
 using xDC.Infrastructure.Application;
+using xDC.Utils;
 using xDC_Web.Extension.MailMerge;
 using xDC_Web.Models.MailMerge;
 
 namespace xDC_Web.Controllers
 {
     [Authorize(Roles = "Administrator, Power User, Amsd")]
-    public class AmsdController : Controller
+    public class AmsdController : BaseController
     {
         public ActionResult Index()
         {
@@ -56,8 +57,8 @@ namespace xDC_Web.Controllers
                     if (getForm != null)
                     {
                         formModel.Id = getForm.Id;
-                        formModel.Preparer = getForm.CreatedBy;
-                        formModel.PreparedDate = getForm.CreatedDate.Value;
+                        formModel.Preparer = getForm.PreparedBy;
+                        formModel.PreparedDate = getForm.PreparedDate.Value;
                         formModel.InflowFunds = new List<AmsdInflowFundItems>();
 
                         foreach (var item in getForm.AmsdInflowFunds)
@@ -108,6 +109,26 @@ namespace xDC_Web.Controllers
             stream.Seek(0, SeekOrigin.Begin);
             StreamReader reader = new StreamReader(stream);
             return reader.ReadToEnd();
+        }
+
+        public ActionResult SpreadsheetDocumentTemplateExportTo(AmsdInflowFundFormPreviewModel model)
+        {
+            AmsdInflowFundFormGenerator generator = new AmsdInflowFundFormGenerator();
+            IWorkbook workbook = generator.GenerateDocument(model);
+            
+
+            MemoryStream stream = new MemoryStream();
+            DocumentFormat documentFormat = Common.ConvertIndexToFormat(model.ExportToDocumentType);
+            if (documentFormat == DocumentFormat.Undefined)
+                workbook.ExportToPdf(stream);
+            else
+                workbook.SaveDocument(stream, documentFormat);
+
+            string contentType = Common.ConvertIndexToContentType(model.ExportToDocumentType);
+            string fileExtension = Common.ConvertIndexToFileExtension(model.ExportToDocumentType);
+
+
+            return CreateFileStreamResult(stream, contentType, fileExtension);
         }
     }
 }

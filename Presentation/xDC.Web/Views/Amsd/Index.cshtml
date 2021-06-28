@@ -11,9 +11,8 @@
                 <div>
                     @(Html.DevExtreme().Button()
                         .Text("New Inflow Funds")
-                        .Icon("plus")
                         .Type(ButtonType.Default)
-                        .StylingMode(ButtonStylingMode.Outlined)
+                        .StylingMode(ButtonStylingMode.Contained)
                         .OnClick(@<text>  function(){ window.location = "@Url.Action("NewInflowFundsForm", "Amsd")"; } </text>)
                         )
                 </div>
