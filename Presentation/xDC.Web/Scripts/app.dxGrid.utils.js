@@ -116,43 +116,62 @@ var dxGridUtils = (function () {
         }
     };
 
-    /**
-    * @param {string} reportName - Report title
-    * @param {dxObject} $fromDate - From date (date range for the report)
-    * @param {dxObject} $toDate - To date (date range for the report)
-    * @param {boolean} isDownload - Is this for download ?
-    */
-    var dataGridTitleWithDateRange = function (reportName, $fromDate, $toDate, isDownload) {
-        if (isDownload) {
-            return moment().format('YYMMDDHHmm') + " - " + reportName + " (" + $fromDate.option("text") + " - " + $toDate.option("text") + ")";
-        } else {
-            return reportName + " (" + $fromDate.option("text") + " - " + $toDate.option("text") + ")";
-        }
-    };
+    var editingGridConfig = {
+        showRowLines: true,
+        rowAlternationEnabled: false,
+        showBorders: true,
+        allowColumnReordering: true,
+        allowColumnResizing: true,
+        editing: {
+            mode: "batch",
+            allowUpdating: true,
+            allowDeleting: true,
+            allowAdding: true
+        },
+        sorting: {
+            mode: "multiple",
+            showSortIndexes: true
+        },
+        groupPanel: {
+            visible: false
+        },
+        headerFilter: { visible: true },
+        pager: {
+            infoText: "Page {0} of {1} ({2} items)",
+            showPageSizeSelector: true,
+            allowedPageSizes: [10, 20, 50],
+            showNavigationButtons: true,
+            showInfo: true
+        },
+        paging: {
+            pageSize: 20,
+            pageIndex: 0
+        },
+        wordWrapEnabled: true,
+        onToolbarPreparing: function (gridElem) {
 
-    var dataGridTitleWithYear = function (reportName, $yearDate, isDownload) {
-        if (isDownload) {
-            return moment().format('YYMMDDHHmm') + " - " + reportName + " (" + $yearDate.option("text") + ")";
-        } else {
-            return reportName + " (" + $yearDate.option("text") + ")";
+            gridElem.toolbarOptions.items.unshift(
+                {
+                    location: "after",
+                    widget: "dxButton",
+                    options: {
+                        icon: "refresh",
+                        hint: "Clear Grid la",
+                        onClick: function (btnElem) {
+                            gridElem.component.state({});
+                        }
+                    }
+                }
+            );
+        },
+        onCellPrepared: function (e) {
+            if (e.rowType === 'header') {
+                e.cellElement.css("backgroundColor", "#5B8EFB");
+                e.cellElement.css("color", "white");
+            }
         }
     };
-
-    var dataGridTitleWithAsAtDate = function (reportName, $asAtDate, isDownload) {
-        if (isDownload) {
-            return moment().format('YYMMDDHHmm') + " - " + reportName + " as at " + $asAtDate.option("text");
-        } else {
-            return reportName + " as at " + $asAtDate.option("text");
-        }
-    };
-
-    var dataGridTitleWithAsAtToday = function (reportName, isDownload) {
-        if (isDownload) {
-            return moment().format('YYMMDDHHmm') + " - " + reportName + " as at " + moment().subtract(1, "days").format('DD/MM/YYYY');
-        } else {
-            return reportName + " as at " + moment().subtract(1, "days").format('DD/MM/YYYY');
-        }
-    };
+    
 
     var commonFileTitle = function (reportName, isDownload) {
         if (isDownload) {
@@ -226,18 +245,14 @@ var dxGridUtils = (function () {
         return exportPromise;
 
     }
-
-
+    
     return {
-        dataGridTitleWithDateRange: dataGridTitleWithDateRange,
-        dataGridTitleWithYear: dataGridTitleWithYear,
-        dataGridTitleWithAsAtDate: dataGridTitleWithAsAtDate,
-        dataGridTitleWithAsAtToday: dataGridTitleWithAsAtToday,
         commonFileTitle: commonFileTitle,
         clearGrid: clearGrid,
         exportGrid: exportGrid,
 
         commonMainGridConfig: commonMainGridConfig,
-        commonSummaryGridConfig: commonSummaryGridConfig
+        commonSummaryGridConfig: commonSummaryGridConfig,
+        editingGridConfig: editingGridConfig
     };
 })();

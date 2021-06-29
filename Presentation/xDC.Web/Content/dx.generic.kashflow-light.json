@@ -1,0 +1,70 @@
+{
+    "items": [
+        {
+            "key": "$base-accent",
+            "value": "rgb(91, 142, 251)"
+        },
+        {
+            "key": "$base-text-color",
+            "value": "rgba(44, 62, 80, 1)"
+        },
+        {
+            "key": "$datagrid-base-color",
+            "value": "rgba(16, 21, 26, 1)"
+        },
+        {
+            "key": "$datagrid-columnchooser-item-color",
+            "value": "rgba(44, 62, 80, 1)"
+        },
+        {
+            "key": "$datagrid-columnchooser-font-weight",
+            "value": "bold"
+        },
+        {
+            "key": "$datagrid-menu-icon-color",
+            "value": "rgba(44, 62, 80, 1)"
+        },
+        {
+            "key": "$datagrid-nodata-color",
+            "value": "rgba(231, 76, 60, 1)"
+        },
+        {
+            "key": "$loadindicator-bg",
+            "value": "rgba(91, 142, 251, 1)"
+        },
+        {
+            "key": "$toast-warning-bg",
+            "value": "rgba(243, 156, 18, 1)"
+        },
+        {
+            "key": "$toast-error-bg",
+            "value": "rgba(231, 76, 60, 1)"
+        },
+        {
+            "key": "$toast-success-bg",
+            "value": "rgba(46, 204, 113, 1)"
+        },
+        {
+            "key": "$pivotgrid-area-color",
+            "value": "rgba(44, 62, 80, 1)"
+        },
+        {
+            "key": "$tabs-tab-selected-bg",
+            "value": "rgba(91, 142, 251, 1)"
+        },
+        {
+            "key": "$navbar-tab-selected-bg",
+            "value": "rgba(255, 255, 255, 1)"
+        },
+        {
+            "key": "$tabs-tab-selected-color",
+            "value": "rgba(255, 255, 255, 1)"
+        }
+    ],
+    "baseTheme": "generic.light.compact",
+    "outputColorScheme": "kashflow-light",
+    "makeSwatch": false,
+    "version": "21.1.4",
+    "widgets": [],
+    "removeExternalResources": false
+}

@@ -233,6 +233,7 @@
     <Content Include="Content\dx.darkmoon.css" />
     <Content Include="Content\dx.darkviolet.compact.css" />
     <Content Include="Content\dx.darkviolet.css" />
+    <Content Include="Content\dx.generic.kashflow-light.css" />
     <Content Include="Content\dx.greenmist.compact.css" />
     <Content Include="Content\dx.greenmist.css" />
     <Content Include="Content\dx.light.compact.css" />
@@ -279,6 +280,7 @@
     <Content Include="Scripts\app\amsd\newInflowFundsForm.js" />
     <Content Include="Scripts\app\amsd\index.js" />
     <Content Include="Scripts\app.dxGrid.utils.js" />
+    <Content Include="Scripts\app\iisd\newTradeSettlement.js" />
     <Content Include="Scripts\app\setting\applicationConfig.js" />
     <Content Include="Scripts\app\setting\dropdownConfig.js" />
     <Content Include="Scripts\aspnet\dx.aspnet.data.js" />
@@ -329,6 +331,7 @@
     <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="fonts\fontawesome-webfont.eot" />
     <Content Include="App_Data\AMSD - Inflow Funds Template.xltx" />
+    <Content Include="Content\dx.generic.kashflow-light.json" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
     <Content Include="Scripts\jquery-3.5.1.min.js" />
@@ -448,6 +451,8 @@
     <Content Include="Views\Admin\SystemLogs.cshtml" />
     <Content Include="Views\Admin\UserManagement.cshtml" />
     <Content Include="Views\Amsd\_viewInflowFundsForm.cshtml" />
+    <Content Include="Views\Iisd\Index.cshtml" />
+    <Content Include="Views\Iisd\NewTradeSettlement.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -469,6 +474,7 @@
     <Compile Include="Controllers\Api\SettingController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\IisdController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\MailMerge\AmsdController.cs" />
     <Compile Include="Controllers\SampleDataController.cs" />

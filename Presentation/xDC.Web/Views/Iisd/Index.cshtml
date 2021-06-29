@@ -1,0 +1,41 @@
+﻿
+@{
+    ViewBag.Title = "IISD";
+}
+
+<section class="content-header content-toolbar">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="left-container">
+                <div>
+                    @(Html.DevExtreme().Button()
+                        .Text("New Trade Settlement")
+                        .Type(ButtonType.Default)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        .OnClick(@<text>  function(){ window.location = "@Url.Action("NewTradeSettlement", "Iisd")"; } </text>)
+                        )
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div id="right-toolbar-container" class="right-container">
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div id="amsdGrid" class="grid-container"></div>
+        </div>
+    </div>
+</section>
+
+@section scripts
+{
+    <script src="~/Scripts/app/amsd/index.js"></script>
+}
