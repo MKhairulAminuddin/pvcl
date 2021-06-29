@@ -25,12 +25,12 @@ namespace xDC.Infrastructure.Application
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<AspNetActiveDirectoryUsers> AspNetActiveDirectoryUsers { get; set; }
         public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<AmsdInflowFunds> AmsdInflowFunds { get; set; }
         public virtual DbSet<FormHeader> FormHeader { get; set; }
         public virtual DbSet<ApplicationConfig> ApplicationConfig { get; set; }
         public virtual DbSet<DropdownConfig> DropdownConfig { get; set; }
+        public virtual DbSet<AspNetActiveDirectoryUsers> AspNetActiveDirectoryUsers { get; set; }
     }
 }

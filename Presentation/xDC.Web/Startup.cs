@@ -6,6 +6,7 @@ using Microsoft.Owin;
 using Owin;
 using xDC_Web;
 using xDC.Utils;
+using xDC_Web.Extension.SchedulerTask;
 
 [assembly: OwinStartup(typeof(Startup))]
 namespace xDC_Web
@@ -22,9 +23,9 @@ namespace xDC_Web
             // Let's also create a sample background job
             //BackgroundJob.Enqueue(() => Debug.WriteLine("Hello world from Hangfire!"));
 
-            /*RecurringJob.AddOrUpdate(
+            RecurringJob.AddOrUpdate(
                 () => SyncActiveDirectory.Sync(),
-                Cron.Weekly);*/
+                Cron.Weekly);
         }
 
         private IEnumerable<IDisposable> GetHangfireServers()

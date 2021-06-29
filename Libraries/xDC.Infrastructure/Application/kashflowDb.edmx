@@ -39,9 +39,14 @@
           <Property Name="Username" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="Email" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="DisplayName" Type="nvarchar" MaxLength="256" />
+          <Property Name="Title" Type="nvarchar" MaxLength="256" />
+          <Property Name="Department" Type="nvarchar" MaxLength="256" />
           <Property Name="TelNo" Type="nvarchar" MaxLength="256" />
+          <Property Name="Office" Type="nvarchar" MaxLength="256" />
           <Property Name="AdType" Type="nvarchar" MaxLength="256" />
           <Property Name="DistinguishedName" Type="nvarchar" MaxLength="256" />
+          <Property Name="AdAccountCreated" Type="datetime" />
+          <Property Name="AdAccountChanged" Type="datetime" />
           <Property Name="LastBadPasswordAttempt" Type="datetime" />
           <Property Name="LastLogon" Type="datetime" />
           <Property Name="LastPasswordSet" Type="datetime" />
@@ -169,7 +174,6 @@
     <edmx:ConceptualModels>
       <Schema Namespace="kashflowDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="kashflowDBEntities" annotation:LazyLoadingEnabled="true" >
-          <EntitySet Name="AspNetActiveDirectoryUsers" EntityType="kashflowDbModel.AspNetActiveDirectoryUsers" />
           <EntitySet Name="AspNetRoles" EntityType="kashflowDbModel.AspNetRoles" />
           <EntitySet Name="AspNetUsers" EntityType="kashflowDbModel.AspNetUsers" />
           <AssociationSet Name="AspNetUserRoles" Association="kashflowDbModel.AspNetUserRoles">
@@ -184,21 +188,8 @@
           </AssociationSet>
           <EntitySet Name="ApplicationConfig" EntityType="kashflowDbModel.ApplicationConfig" />
           <EntitySet Name="DropdownConfig" EntityType="kashflowDbModel.DropdownConfig" />
+          <EntitySet Name="AspNetActiveDirectoryUsers" EntityType="kashflowDbModel.AspNetActiveDirectoryUsers" />
         </EntityContainer>
-        <EntityType Name="AspNetActiveDirectoryUsers">
-          <Key>
-            <PropertyRef Name="Username" />
-          </Key>
-          <Property Name="Username" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="Email" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="DisplayName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="TelNo" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="AdType" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="DistinguishedName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="LastBadPasswordAttempt" Type="DateTime" Precision="3" />
-          <Property Name="LastLogon" Type="DateTime" Precision="3" />
-          <Property Name="LastPasswordSet" Type="DateTime" Precision="3" />
-        </EntityType>
         <EntityType Name="AspNetRoles">
           <Key>
             <PropertyRef Name="Id" />
@@ -294,27 +285,31 @@
           <Property Name="UpdatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
         </EntityType>
+        <EntityType Name="AspNetActiveDirectoryUsers">
+          <Key>
+            <PropertyRef Name="Username" />
+          </Key>
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="DisplayName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Department" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="TelNo" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Office" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="AdType" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="DistinguishedName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="AdAccountCreated" Type="DateTime" Precision="3" />
+          <Property Name="AdAccountChanged" Type="DateTime" Precision="3" />
+          <Property Name="LastBadPasswordAttempt" Type="DateTime" Precision="3" />
+          <Property Name="LastLogon" Type="DateTime" Precision="3" />
+          <Property Name="LastPasswordSet" Type="DateTime" Precision="3" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="kashflowDbModelStoreContainer" CdmEntityContainer="kashflowDBEntities" >
-          <EntitySetMapping Name="AspNetActiveDirectoryUsers">
-            <EntityTypeMapping TypeName="kashflowDbModel.AspNetActiveDirectoryUsers">
-              <MappingFragment StoreEntitySet="AspNetActiveDirectoryUsers">
-                <ScalarProperty Name="LastPasswordSet" ColumnName="LastPasswordSet" />
-                <ScalarProperty Name="LastLogon" ColumnName="LastLogon" />
-                <ScalarProperty Name="LastBadPasswordAttempt" ColumnName="LastBadPasswordAttempt" />
-                <ScalarProperty Name="DistinguishedName" ColumnName="DistinguishedName" />
-                <ScalarProperty Name="AdType" ColumnName="AdType" />
-                <ScalarProperty Name="TelNo" ColumnName="TelNo" />
-                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="AspNetRoles">
             <EntityTypeMapping TypeName="kashflowDbModel.AspNetRoles">
               <MappingFragment StoreEntitySet="AspNetRoles">
@@ -401,6 +396,26 @@
                 <ScalarProperty Name="Value" ColumnName="Value" />
                 <ScalarProperty Name="Key" ColumnName="Key" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AspNetActiveDirectoryUsers">
+            <EntityTypeMapping TypeName="kashflowDbModel.AspNetActiveDirectoryUsers">
+              <MappingFragment StoreEntitySet="AspNetActiveDirectoryUsers">
+                <ScalarProperty Name="LastPasswordSet" ColumnName="LastPasswordSet" />
+                <ScalarProperty Name="LastLogon" ColumnName="LastLogon" />
+                <ScalarProperty Name="LastBadPasswordAttempt" ColumnName="LastBadPasswordAttempt" />
+                <ScalarProperty Name="AdAccountChanged" ColumnName="AdAccountChanged" />
+                <ScalarProperty Name="AdAccountCreated" ColumnName="AdAccountCreated" />
+                <ScalarProperty Name="DistinguishedName" ColumnName="DistinguishedName" />
+                <ScalarProperty Name="AdType" ColumnName="AdType" />
+                <ScalarProperty Name="Office" ColumnName="Office" />
+                <ScalarProperty Name="TelNo" ColumnName="TelNo" />
+                <ScalarProperty Name="Department" ColumnName="Department" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
