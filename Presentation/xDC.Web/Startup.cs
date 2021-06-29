@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using Hangfire;
+﻿using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.Owin;
 using Owin;
-using xDC_Web;
+using System;
+using System.Collections.Generic;
 using xDC.Utils;
+using xDC_Web;
 using xDC_Web.Extension.SchedulerTask;
 
 [assembly: OwinStartup(typeof(Startup))]
@@ -17,17 +17,16 @@ namespace xDC_Web
         {
             ConfigureAuth(app);
 
+            // Hangfire Setup
             app.UseHangfireAspNet(GetHangfireServers);
             app.UseHangfireDashboard();
-
-            // Let's also create a sample background job
             //BackgroundJob.Enqueue(() => Debug.WriteLine("Hello world from Hangfire!"));
-
             RecurringJob.AddOrUpdate(
                 () => SyncActiveDirectory.Sync(),
                 Cron.Weekly);
+            
         }
-
+        
         private IEnumerable<IDisposable> GetHangfireServers()
         {
             GlobalConfiguration.Configuration
@@ -45,5 +44,6 @@ namespace xDC_Web
 
             yield return new BackgroundJobServer();
         }
+        
     }
 }

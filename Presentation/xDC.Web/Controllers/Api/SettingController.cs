@@ -10,6 +10,8 @@ using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
 using Newtonsoft.Json;
 using xDC.Infrastructure.Application;
+using xDC.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -17,6 +19,7 @@ namespace xDC_Web.Controllers.Api
     [Route("api/setting/{action}", Name = "setting")]
     public class SettingController : ApiController
     {
+
         #region Dropdown Configuration
 
         [HttpGet]
@@ -33,6 +36,7 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -75,6 +79,7 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -108,6 +113,7 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -129,6 +135,7 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
 
@@ -146,12 +153,13 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var result = db.ApplicationConfig.ToList();
-
+                    
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -193,6 +201,7 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -226,6 +235,7 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -247,6 +257,7 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
 

@@ -11,6 +11,8 @@ namespace xDC.Utils
     {
         public static string DbCon => ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
+        public static string LoggerFilePathFormat => ConfigurationManager.AppSettings["Logger.FilePathFormat"];
+        
         public static string AclAdministrator = "Administrator";
         public static string AclPowerUser = "Power User";
         public static string AclAmsd = "Amsd";
