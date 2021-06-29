@@ -12,6 +12,8 @@
         <EntityTypeShape EntityType="kashflowDbModel.AmsdInflowFunds" Width="1.5" PointX="5.625" PointY="5" />
         <EntityTypeShape EntityType="kashflowDbModel.FormHeader" Width="1.5" PointX="3.375" PointY="5" />
         <AssociationConnector Association="kashflowDbModel.FK__AmsdInflo__FormH__07C12930" />
+        <EntityTypeShape EntityType="kashflowDbModel.ApplicationConfig" Width="1.5" PointX="5.375" PointY="0.75" />
+        <EntityTypeShape EntityType="kashflowDbModel.DropdownConfig" Width="1.5" PointX="7.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

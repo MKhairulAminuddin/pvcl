@@ -30,5 +30,7 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<AmsdInflowFunds> AmsdInflowFunds { get; set; }
         public virtual DbSet<FormHeader> FormHeader { get; set; }
+        public virtual DbSet<ApplicationConfig> ApplicationConfig { get; set; }
+        public virtual DbSet<DropdownConfig> DropdownConfig { get; set; }
     }
 }

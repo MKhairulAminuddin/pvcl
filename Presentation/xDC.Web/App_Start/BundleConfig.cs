@@ -17,6 +17,7 @@ namespace xDC_Web {
                     "~/Scripts/jquery-3.5.1.js",
                     "~/Scripts/bootstrap.js",
                     "~/Scripts/adminlte.js",
+                    "~/Scripts/app.dxGrid.utils.js",
                     "~/Scripts/app.js"
                 );
 

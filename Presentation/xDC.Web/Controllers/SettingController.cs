@@ -13,11 +13,7 @@ namespace xDC_Web.Controllers
         {
             return View();
         }
-
-        public ActionResult DropdownConfig()
-        {
-            return View();
-        }
+        
 
         public ActionResult ApplicationConfig()
         {
@@ -34,5 +30,13 @@ namespace xDC_Web.Controllers
             return View();
         }
 
+        #region Dropdown Configuration
+
+        public ActionResult DropdownConfig()
+        {
+            return View();
+        }
+
+        #endregion
     }
 }
