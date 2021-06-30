@@ -171,6 +171,37 @@ var dxGridUtils = (function () {
             }
         }
     };
+
+    var viewOnlyGridConfig = {
+        showRowLines: true,
+        rowAlternationEnabled: false,
+        showBorders: true,
+        allowColumnReordering: true,
+        allowColumnResizing: true,
+        sorting: {
+            mode: "multiple",
+            showSortIndexes: true
+        },
+        columnFixing: {
+            enabled: true
+        },
+        groupPanel: {
+            visible: true
+        },
+        headerFilter: { visible: true },
+        pager: {
+            infoText: "Page {0} of {1} ({2} items)",
+            showPageSizeSelector: true,
+            allowedPageSizes: [10, 20, 50],
+            showNavigationButtons: true,
+            showInfo: true
+        },
+        paging: {
+            pageSize: 20,
+            pageIndex: 0
+        },
+        wordWrapEnabled: true
+    };
     
 
     var commonFileTitle = function (reportName, isDownload) {
@@ -251,8 +282,10 @@ var dxGridUtils = (function () {
         clearGrid: clearGrid,
         exportGrid: exportGrid,
 
+
         commonMainGridConfig: commonMainGridConfig,
         commonSummaryGridConfig: commonSummaryGridConfig,
-        editingGridConfig: editingGridConfig
+        editingGridConfig: editingGridConfig,
+        viewOnlyGridConfig: viewOnlyGridConfig
     };
 })();

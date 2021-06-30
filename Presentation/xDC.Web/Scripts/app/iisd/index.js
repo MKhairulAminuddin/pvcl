@@ -2,19 +2,17 @@
 
     $(function () {
 
-        var $amsdGrid;
+        var $iisdGrid;
         
-
-        $amsdGrid = $("#amsdGrid").dxDataGrid({
+        $iisdGrid = $("#iisdGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/amsd/GetAmsdForms"
+                loadUrl: "../api/Iisd/GetIisdForms"
             }),
             columns: [
                 {
                     dataField: "id",
-                    caption: "Form ID",
-                    alignment: "left"
+                    caption: "Form ID"
                 },
                 {
                     dataField: "formType",
@@ -49,8 +47,6 @@
                     width: "100px"
                 }
             ],
-            showBorders: true,
-            height: 300,
             editing: {
                 mode: "row",
                 allowUpdating: false,
@@ -59,7 +55,8 @@
             }
         }).dxDataGrid("instance");
 
-        $amsdGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $iisdGrid.option(dxGridUtils.viewOnlyGridConfig);
+
 
     });
 }(window.jQuery, window, document));

@@ -66,6 +66,13 @@
     display: inline-block;
 }
 
+.dx-datagrid-headers {
+    background-color: #5b8efb;
+}
+
+.dx-header-row {
+    color: white;
+}
 
 .dx-header-filter {
     color: white !important;

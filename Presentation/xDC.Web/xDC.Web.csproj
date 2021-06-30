@@ -280,6 +280,7 @@
     <Content Include="Scripts\app\amsd\newInflowFundsForm.js" />
     <Content Include="Scripts\app\amsd\index.js" />
     <Content Include="Scripts\app.dxGrid.utils.js" />
+    <Content Include="Scripts\app\iisd\index.js" />
     <Content Include="Scripts\app\iisd\newTradeSettlement.js" />
     <Content Include="Scripts\app\setting\applicationConfig.js" />
     <Content Include="Scripts\app\setting\dropdownConfig.js" />
@@ -471,6 +472,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AmsdController.cs" />
     <Compile Include="Controllers\Api\AmsdController.cs" />
+    <Compile Include="Controllers\Api\IisdController.cs" />
     <Compile Include="Controllers\Api\SettingController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
