@@ -276,6 +276,7 @@
     <Content Include="Scripts\adminlte.js" />
     <Content Include="Scripts\adminlte.min.js" />
     <Content Include="Scripts\app.js" />
+    <Content Include="Scripts\app\admin\userManagement.js" />
     <Content Include="Scripts\app\amsd\viewInflowFundsForm.js" />
     <Content Include="Scripts\app\amsd\newInflowFundsForm.js" />
     <Content Include="Scripts\app\amsd\index.js" />
@@ -471,7 +472,9 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AmsdController.cs" />
+    <Compile Include="Controllers\Api\AdminController.cs" />
     <Compile Include="Controllers\Api\AmsdController.cs" />
+    <Compile Include="Controllers\Api\CommonController.cs" />
     <Compile Include="Controllers\Api\IisdController.cs" />
     <Compile Include="Controllers\Api\SettingController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
@@ -497,6 +500,7 @@
     <Compile Include="Models\MailMerge\SpreadsheetPreviewModel.cs" />
     <Compile Include="Models\SampleData.cs" />
     <Compile Include="Models\SampleOrder.cs" />
+    <Compile Include="Models\UserVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
