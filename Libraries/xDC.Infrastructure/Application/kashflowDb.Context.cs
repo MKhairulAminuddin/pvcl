@@ -27,10 +27,11 @@ namespace xDC.Infrastructure.Application
     
         public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
-        public virtual DbSet<AmsdInflowFunds> AmsdInflowFunds { get; set; }
-        public virtual DbSet<FormHeader> FormHeader { get; set; }
         public virtual DbSet<ApplicationConfig> ApplicationConfig { get; set; }
         public virtual DbSet<DropdownConfig> DropdownConfig { get; set; }
         public virtual DbSet<AspNetActiveDirectoryUsers> AspNetActiveDirectoryUsers { get; set; }
+        public virtual DbSet<Amsd_InflowFunds> Amsd_InflowFunds { get; set; }
+        public virtual DbSet<FormHeader> FormHeader { get; set; }
+        public virtual DbSet<Iisd_TradeSettlement> Iisd_TradeSettlement { get; set; }
     }
 }

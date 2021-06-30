@@ -31,12 +31,25 @@ namespace xDC_Web.Models {
 
     public class TradeSettlementModel
     {
-        public string FormType { get; set; }
-        public List<Trades> Trades { get; set; }
+        public string currency { get; set; }
+        public List<Trades> Equity { get; set; }
+        public List<Trades> Bond { get; set; }
+        public List<Trades> Cp { get; set; }
+        public List<Trades> NotesPaper { get; set; }
+        public List<Trades> Repo { get; set; }
+        public List<Trades> Coupon { get; set; }
+        public List<Trades> Fees { get; set; }
+        public List<Trades> Mtm { get; set; }
+        public List<Trades> FxSettlement { get; set; }
+        public List<Trades> ContributionCredited { get; set; }
+        public List<Trades> Altid { get; set; }
+        public List<Trades> Others { get; set; }
     }
 
     public class Trades
     {
+        public int Id { get; set; }
+        public int FormId { get; set; }
         public string InstrumentType { get; set; }
         public string InstrumentCode { get; set; }
         public string StockCode { get; set; }
@@ -44,7 +57,7 @@ namespace xDC_Web.Models {
         public decimal Sales { get; set; }
         public decimal Purchase { get; set; }
         public decimal FirstLeg { get; set; }
-        public decimal SecondLed { get; set; }
+        public decimal SecondLeg { get; set; }
         public decimal AmountPlus { get; set; }
         public decimal AmountMinus { get; set; }
     }

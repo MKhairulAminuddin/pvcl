@@ -61,7 +61,9 @@ namespace xDC_Web.Controllers
                         formModel.PreparedDate = getForm.PreparedDate.Value;
                         formModel.InflowFunds = new List<AmsdInflowFundItems>();
 
-                        foreach (var item in getForm.AmsdInflowFunds)
+                        var getInflowFunds = db.Amsd_InflowFunds.Where(x => x.FormId == getForm.Id);
+
+                        foreach (var item in getInflowFunds)
                         {
                             formModel.InflowFunds.Add(new AmsdInflowFundItems()
                             {

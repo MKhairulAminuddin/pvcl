@@ -4,6 +4,7 @@ CREATE TABLE [dbo].[FormHeader](
 
     [FormType] NVARCHAR(150) NULL, 
 	[FormStatus] NVARCHAR(150) NULL, 
+    [Currency] NVARCHAR(150) NULL, 
 
     [PreparedBy] NVARCHAR(50) NULL, 
     [PreparedDate] DATETIME NULL DEFAULT GETDATE(), 
@@ -18,9 +19,9 @@ CREATE TABLE [dbo].[FormHeader](
 
 
 
-CREATE TABLE [dbo].[AmsdInflowFunds](
+CREATE TABLE [dbo].[Amsd.InflowFunds](
 	[Id] INT NOT NULL Identity(1,1) PRIMARY KEY, 
-    [FormHeaderId] INT NOT NULL FOREIGN KEY REFERENCES FormHeader(Id), 
+    [FormId] INT NOT NULL, 
 
 	[FundType] NVARCHAR(250) NULL,
 	[Bank] NVARCHAR(150) NULL,

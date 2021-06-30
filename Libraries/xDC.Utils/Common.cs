@@ -114,5 +114,49 @@ namespace xDC.Utils
             }
             return String.Empty;
         }
+
+        public static string TradeSettlementMapping(int value)
+        {
+            switch (value)
+            {
+                case 1:
+                    return "Equity";
+                case 2:
+                    return "Bond";
+                case 3:
+                    return "CP";
+                case 4:
+                    return "Notes & Papers";
+                case 5:
+                    return "REPO";
+                case 6:
+                    return "Coupon Received";
+                case 7:
+                    return "Fees";
+                case 8:
+                    return "Payment/ Received (MTM)";
+                case 9:
+                    return "FX Settlement";
+                case 10:
+                    return "Contribution Credited";
+                case 11:
+                    return "ALTID Distribution & Drawdown";
+                case 12:
+                    return "Others";
+            }
+            return String.Empty;
+        }
+
+        public static string FormTypeMapping(int value)
+        {
+            switch (value)
+            {
+                case 1:
+                    return "Inflow Funds";
+                case 2:
+                    return "Trade Settlement";
+            }
+            return String.Empty;
+        }
     }
 }

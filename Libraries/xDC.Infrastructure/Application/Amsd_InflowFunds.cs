@@ -12,10 +12,10 @@ namespace xDC.Infrastructure.Application
     using System;
     using System.Collections.Generic;
     
-    public partial class AmsdInflowFunds
+    public partial class Amsd_InflowFunds
     {
         public int Id { get; set; }
-        public int FormHeaderId { get; set; }
+        public int FormId { get; set; }
         public string FundType { get; set; }
         public string Bank { get; set; }
         public Nullable<decimal> Amount { get; set; }
@@ -24,7 +24,5 @@ namespace xDC.Infrastructure.Application
         public Nullable<System.DateTime> CreatedDate { get; set; }
         public string UpdatedBy { get; set; }
         public Nullable<System.DateTime> UpdatedDate { get; set; }
-    
-        public virtual FormHeader FormHeader { get; set; }
     }
 }

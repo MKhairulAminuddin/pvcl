@@ -1,6 +1,7 @@
 ﻿using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -8,7 +9,7 @@ using System.Web.Http;
 using xDC_Web.Models;
 using System.Data.Entity;
 using xDC.Utils;
-using Apps = xDC.Infrastructure.Application;
+using xDC.Infrastructure.Application;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -22,11 +23,12 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                using (var db = new Apps.kashflowDBEntities())
+                using (var db = new kashflowDBEntities())
                 {
-                    db.Configuration.LazyLoadingEnabled = false;
-                    db.Configuration.ProxyCreationEnabled = false;
-                    var result = db.FormHeader.Where(x => x.FormType == "Amsd - Inflow Funds").Include(x => x.AmsdInflowFunds).ToList();
+                    /*db.Configuration.LazyLoadingEnabled = false;
+                    db.Configuration.ProxyCreationEnabled = false;*/
+                    var result = db.FormHeader
+                        .Where(x => x.FormType == "Inflow Funds").ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -45,35 +47,46 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                using (var db = new Apps.kashflowDBEntities())
+                using (var db = new kashflowDBEntities())
                 {
 
-                    var newRecord = new Apps.FormHeader()
+                    var newRecord = new FormHeader()
                     {
-                        FormType = inputs.FormType
+                        FormType = inputs.FormType,
+                        PreparedBy = User.Identity.Name,
+                        PreparedDate = DateTime.Now,
+                        FormStatus = Common.FormStatusMapping(2),
                     };
-
-                    foreach (var item in inputs.AmsdInflowFunds)
-                    {
-                        newRecord.AmsdInflowFunds.Add(new Apps.AmsdInflowFunds()
-                        {
-                            FundType = item.FundType,
-                            Bank = item.Bank,
-                            Amount = item.Amount
-                        });
-                    }
-
-                    newRecord.PreparedBy = User.Identity.Name;
-                    newRecord.PreparedDate = DateTime.Now;
-                    newRecord.FormStatus = Common.FormStatusMapping(2);
-
 
                     Validate(newRecord);
 
                     if (!ModelState.IsValid)
                         return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
-                    
+
                     db.FormHeader.Add(newRecord);
+                    db.SaveChanges();
+
+                    var newRecordInflowFunds = new List<Amsd_InflowFunds>();
+
+                    foreach (var item in inputs.AmsdInflowFunds)
+                    {
+                        newRecordInflowFunds.Add(new Amsd_InflowFunds()
+                        {
+                            FormId = newRecord.Id,
+                            FundType = item.FundType,
+                            Bank = item.Bank,
+                            Amount = item.Amount,
+                            CreatedBy = User.Identity.Name,
+                            CreatedDate = DateTime.Now
+                        });
+                    }
+                    
+                    Validate(newRecord);
+
+                    if (!ModelState.IsValid)
+                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+                    
+                    db.Amsd_InflowFunds.AddRange(newRecordInflowFunds);
                     db.SaveChanges();
 
                     return Request.CreateResponse(HttpStatusCode.Created, newRecord.Id);

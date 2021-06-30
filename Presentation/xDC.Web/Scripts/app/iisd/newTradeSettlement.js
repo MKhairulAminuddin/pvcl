@@ -6,7 +6,38 @@
 
         var $tabpanel, $equityGrid, $bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid, $feesGrid,
             $mtmGrid, $fxSettlementGrid, $contributionCreditedGrid, $altidGrid, $othersGrid,
-            $tradeSettlementForm;
+            $tradeSettlementForm, $currencySelectBox, $obRentasTb, $obMmaTb, $cbRentasTb, $cbMmaTb;
+
+        $currencySelectBox =
+            $("#currencySelectBox").dxSelectBox({
+                items: ["MYR", "USD"],
+                placeHolder: "Currency.."
+            })
+            .dxValidator({
+                validationRules: [
+                    {
+                        type: "required",
+                        message: "Currency is required"
+                    }
+                ]
+            })
+            .dxSelectBox("instance");
+
+        $obRentasTb = $("#obRentasTb").dxNumberBox({
+            disabled: true
+        }).dxNumberBox("instance");
+
+        $obMmaTb = $("#obMmaTb").dxNumberBox({
+            disabled: true
+        }).dxNumberBox("instance");
+
+        $cbRentasTb = $("#cbRentasTb").dxNumberBox({
+            disabled: true
+        }).dxNumberBox("instance");
+
+        $cbMmaTb = $("#cbMmaTb").dxNumberBox({
+            disabled: true
+        }).dxNumberBox("instance");
 
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
@@ -776,8 +807,36 @@
 
         $othersGrid.option(dxGridUtils.editingGridConfig);
 
-        $tradeSettlementForm = $("#tradeSettlementForm").submit(function(e) {
-            alert("Woi Submit!");
+        $tradeSettlementForm = $("#tradeSettlementForm").on("submit", function(e) {
+            var data = {
+                currency: $currencySelectBox.option("value"),
+                equity: $equityGrid.getDataSource().items(),
+                bond: $bondGrid.getDataSource().items(),
+                cp: $cpGrid.getDataSource().items(),
+                notesPaper: $notesPaperGrid.getDataSource().items(),
+                repo: $repoGrid.getDataSource().items(),
+                coupon: $couponGrid.getDataSource().items(),
+                fees: $feesGrid.getDataSource().items(),
+                mtm: $mtmGrid.getDataSource().items(),
+                fxSettlement: $fxSettlementGrid.getDataSource().items(),
+                contributionCredited: $contributionCreditedGrid.getDataSource().items(),
+                altid: $altidGrid.getDataSource().items(),
+                others: $othersGrid.getDataSource().items()
+            };
+
+            $.ajax({
+                data: data,
+                dataType: 'json',
+                url: '../api/iisd/InsertIisdTradeSettlement',
+                method: 'post'
+            }).done(function (data) {
+                window.location.href = "/iisd/ViewTradeSettlement?id=" + data;
+
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+            });
+
+
             e.preventDefault();
         });
     });
