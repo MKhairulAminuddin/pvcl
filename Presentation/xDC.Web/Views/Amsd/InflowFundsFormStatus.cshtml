@@ -46,26 +46,26 @@
                             )
                     </div>
                 }
-                
+                <div>
+                    @(Html.DevExtreme().DropDownButton()
+                            .ID("PrintBtn")
+                            .Text("Print")
+                            .Icon("print")
+                            .DropDownOptions(options => options.Width(230))
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .DataSource(new List<string>()
+                            {
+                                "Excel Workbook (*.xlsx)",
+                                "PDF"
+                            })
+                            .OnItemClick(@<text> function(e){ alert(e); }</text>)
+                            )
+                </div>
             </div>
         </div>
         <div class="col-md-6">
             <div id="right-toolbar-container" class="right-container">
-                <div>
-                    @(Html.DevExtreme().DropDownButton()
-                        .ID("PrintBtn")
-                        .Text("Print")
-                        .Icon("print")
-                        .DropDownOptions(options => options.Width(230))
-                        .StylingMode(ButtonStylingMode.Contained)
-                        .DataSource(new List<string>()
-                        {
-                            "Excel Workbook (*.xlsx)",
-                            "PDF"
-                        })
-                        .OnItemClick(@<text> function(e){ alert(e); }</text>)
-                        )
-                </div>
+                
             </div>
         </div>
     </div>

@@ -1,6 +1,16 @@
 ﻿(function ($, window, document) {
 
     $(function () {
+        var fundTypeStore = DevExpress.data.AspNet.createStore({
+            key: "id",
+            loadUrl: "../api/common/GetInflowFundsFundType"
+        });
+
+        var bankStore = DevExpress.data.AspNet.createStore({
+            key: "id",
+            loadUrl: "../api/common/GetInflowFundsBank"
+        });
+
         var inflowFundsTypes = ["Funds Received", "Maturity", "Proceed", "Interest Received"];
         var inflowFundsBank = ["RHB Bank -01", "RHB Bank -02", "RHB Bank -03", "BNM -01", "BA", "CP Matured", " Cagamas Int", "Loan SPnb", "Bon Int"];
         
@@ -43,14 +53,18 @@
                     dataField: "fundType",
                     caption: "Fund Types",
                     lookup: {
-                        dataSource: inflowFundsTypes
+                        dataSource: fundTypeStore,
+                        valueExpr: "value",
+                        displayExpr: "value"
                     }
                 },
                 {
                     dataField: "bank",
                     caption: "Bank",
                     lookup: {
-                        dataSource: inflowFundsBank
+                        dataSource: bankStore,
+                        valueExpr: "value",
+                        displayExpr: "value"
                     }
                 },
                 {

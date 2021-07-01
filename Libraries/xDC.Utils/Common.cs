@@ -158,5 +158,17 @@ namespace xDC.Utils
             }
             return String.Empty;
         }
+
+        public static string DropdownConfigKeyMapping(int value)
+        {
+            switch (value)
+            {
+                case 1:
+                    return "Amsd.InflowFunds.FundType";
+                case 2:
+                    return "Amsd.InflowFunds.Bank";
+            }
+            return String.Empty;
+        }
     }
 }

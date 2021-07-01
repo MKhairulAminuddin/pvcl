@@ -45,8 +45,27 @@
                     caption: "Status"
                 },
                 {
-                    caption: "",
-                    width: "100px"
+                    caption: "Actions",
+                    type: "buttons",
+                    width: 110,
+                    buttons: [
+                        {
+                            hint: "View Form",
+                            icon: "fa fa-external-link",
+                            onClick: function (e) {
+                                window.location.href = "/amsd/InflowFundsFormStatus?id=" + e.row.data.id;
+                                e.event.preventDefault();
+                            }
+                        },
+                        {
+                            hint: "Print Form",
+                            icon: "fa fa-print",
+                            onClick: function (e) {
+                                alert("Development in Progress....");
+                                e.event.preventDefault();
+                            }
+                        }
+                    ]
                 }
             ],
             showBorders: true,

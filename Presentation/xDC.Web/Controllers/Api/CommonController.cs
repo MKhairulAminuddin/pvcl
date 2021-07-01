@@ -9,6 +9,7 @@ using DevExtreme.AspNet.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using xDC.Infrastructure.Application;
+using xDC.Utils;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -50,6 +51,48 @@ namespace xDC_Web.Controllers.Api
                     db.Configuration.LazyLoadingEnabled = false;
                     db.Configuration.ProxyCreationEnabled = false;
                     var result = db.AspNetRoles.ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region Dropdown List
+
+        [HttpGet]
+        public HttpResponseMessage GetInflowFundsFundType(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var key = Common.DropdownConfigKeyMapping(1);
+                    var result = db.DropdownConfig.Where(x => x.Key == key).ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public HttpResponseMessage GetInflowFundsBank(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var key = Common.DropdownConfigKeyMapping(2);
+                    var result = db.DropdownConfig.Where(x => x.Key == key).ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
