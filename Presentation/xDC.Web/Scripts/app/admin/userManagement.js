@@ -5,7 +5,7 @@
 
     var aduserStores = DevExpress.data.AspNet.createStore({
         key: "username",
-        loadUrl: "../api/common/adusers"
+        loadUrl: "../api/common/GetActiveDirectoryUsers"
     });
 
     var $grid1;
@@ -14,24 +14,24 @@
         dataSource: DevExpress.data.AspNet.createStore({
             key: "userName",
             loadUrl: "../api/admin/GetUsers",
-            /*insertUrl: "../api/admin/insertUser",
+            insertUrl: "../api/admin/insertUser",
             updateUrl: "../api/admin/updateUser",
-            deleteUrl: "../api/admin/deleteUser"*/
+            deleteUrl: "../api/admin/deleteUser"
         }),
         remoteOperations: true,
         searchPanel: {
             visible: true
         },
         selection: { mode: "single" },
-        /*editing: {
+        editing: {
             mode: "form",
             allowUpdating: true,
             allowDeleting: true,
             allowAdding: true
-        },*/
+        },
         columns: [
             {
-                caption: "Username",
+                caption: "User",
                 dataField: "userName",
                 lookup: {
                     dataSource: aduserStores,
@@ -65,13 +65,23 @@
                 }
             },
             {
+                caption: "Title",
+                dataField: "title",
+                allowEditing: false
+            },
+            {
+                caption: "Department",
+                dataField: "department",
+                allowEditing: false
+            },
+            {
                 caption: "Email",
                 dataField: "email",
                 allowEditing: false
             },
             {
                 caption: "Tel No",
-                dataField: "telNo",
+                dataField: "telephoneNumber",
                 allowEditing: false
             },
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -15,6 +16,9 @@ using xDC.Infrastructure.Application;
 using xDC.Utils;
 using xDC_Web.Models;
 using xReport.Web.ViewModels;
+using System.Data.Entity;
+using xDC.Services;
+
 
 namespace xDC_Web.Controllers.Api
 {
@@ -30,23 +34,21 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
-                var xdfad = UserManager.FindByName("abdulkhaliq.h");
-
                 using (var db = new kashflowDBEntities())
                 {
                     db.Configuration.LazyLoadingEnabled = false;
                     db.Configuration.ProxyCreationEnabled = false;
-                    var result = db.AspNetUsers.Select(x => new
+                    var result = db.AspNetUsers.Include(x => x.AspNetRoles).Select(y => new
                     {
-                        UserName = x.UserName,
-                        Locked = x.Locked,
-                        Email = x.Email,
-                        TelNo = x.TelNo,
-                        LastLogin = x.LastLogin,
-                        CreatedDate = x.CreatedDate,
-
-                        roleName = x.AspNetRoles.FirstOrDefault().Name
+                        UserName = y.UserName,
+                        Locked = !y.Locked,
+                        Email = y.Email,
+                        TelephoneNumber = y.TelephoneNumber,
+                        Title = y.Title,
+                        Department = y.Department,
+                        RoleName = y.AspNetRoles.Select(z => z.Name).FirstOrDefault(),
+                        CreatedDate = y.CreatedDate,
+                        LastLogin = y.LastLogin
                     }).ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
@@ -60,7 +62,7 @@ namespace xDC_Web.Controllers.Api
             
         }
         
-        /*
+        
         [HttpPost]
         public HttpResponseMessage InsertUser(FormDataCollection form)
         {
@@ -70,26 +72,43 @@ namespace xDC_Web.Controllers.Api
                 var values = form.Get("values");
                 var userVm = new UserVM();
                 JsonConvert.PopulateObject(values, userVm);
+                
 
-                var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
-                UserManager.FindByName(userVm.UserName);
                 var isUserExist = new AuthService().IsUserExist(userVm.UserName);
-                var detailsFromAd = new SupportingService().GetAdUser(userVm.UserName);
+                var isUserExistInAd = new AuthService().IsUserExistInAd(userVm.UserName);
 
-                if (!isUserExist && detailsFromAd != null)
+                if (!isUserExist && isUserExistInAd)
                 {
-                    var result = new AuthService().InsertUser(userVm.UserName, detailsFromAd.Email, userVm.RoleName, detailsFromAd.TelNo);
+                    var getUserInfoFromAd = new AuthService().GetUserFromAd(userVm.UserName);
 
-                    if (result)
+                    using (var db = new kashflowDBEntities())
                     {
-                        new ActivityLogService().LogActivity(User.Identity.Name, Config.LogType.Create,
-                            "Created a user record: " + userVm.UserName);
-                        return Request.CreateResponse(HttpStatusCode.OK);
+                        var newUser = new AspNetUsers()
+                        {
+                            UserName = userVm.UserName,
+                            Email = getUserInfoFromAd.Email,
+                            Department = getUserInfoFromAd.Department,
+                            Title = getUserInfoFromAd.Title,
+                            TelephoneNumber = getUserInfoFromAd.TelNo,
+                            FullName = getUserInfoFromAd.DisplayName,
+                            CreatedDate = DateTime.Now,
+                            Locked = userVm.Locked != null ? (bool)userVm.Locked : false,
+                            /*AspNetRoles = new List<AspNetRoles>()
+                            {
+                                new AuthService().GetRole(userVm.RoleName)
+                            }*/
+                        };
+                        db.AspNetUsers.Add(newUser);
+                        db.SaveChanges();
+
+                        var role = db.AspNetRoles.FirstOrDefault(x => x.Name == userVm.RoleName);
+                        role.AspNetUsers.Add(newUser);
+                        
+                        db.SaveChanges();
+
+                        return Request.CreateResponse(HttpStatusCode.Created, userVm);
                     }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "User creation failed!");
-                    }
+                    
                 }
                 else
                 {
@@ -100,10 +119,9 @@ namespace xDC_Web.Controllers.Api
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
-        }*/
-/*
+        }
+
         [HttpPut]
-        [Route("admin/updateUser")]
         public HttpResponseMessage UpdateUser(FormDataCollection form)
         {
             try
@@ -113,20 +131,19 @@ namespace xDC_Web.Controllers.Api
                 var userVm = new UserVM();
                 JsonConvert.PopulateObject(values, userVm);
 
-                var isUserExist = new AuthService().IsUserExist(key);
+                var isUserExist = new AuthService().GetUser(key);
 
-                if (isUserExist)
+                if (isUserExist != null)
                 {
                     if (userVm.UserName != null)
                     {
                         return Request.CreateResponse(HttpStatusCode.BadRequest, "Editing username is not allowed as username treated as primary key. Kindly create new record instead.");
                     }
-
-                    var result = new AuthService().UpdateUser(key, userVm.Email, userVm.RoleName, !userVm.Locked);
+                    
+                    var result = new AuthService().UpdateUser(key, userVm.RoleName, !userVm.Locked);
 
                     if (result)
                     {
-                        new ActivityLogService().LogActivity(User.Identity.Name, Config.LogType.Update, "Updated a user record: " + key);
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
                     else
@@ -148,7 +165,6 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpDelete]
-        [Route("admin/deleteUser")]
         public HttpResponseMessage DeleteUser(FormDataCollection form)
         {
             try
@@ -165,8 +181,6 @@ namespace xDC_Web.Controllers.Api
 
                 if (result)
                 {
-                    new ActivityLogService().LogActivity(User.Identity.Name, Config.LogType.Delete,
-                        "Delete a user record: " + key);
                     return Request.CreateResponse(HttpStatusCode.OK);
                 }
                 else
@@ -180,7 +194,7 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
         }
-        */
+        
 
         #endregion
 

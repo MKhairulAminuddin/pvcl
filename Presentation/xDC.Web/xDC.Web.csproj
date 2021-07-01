@@ -466,7 +466,6 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\DevExtremeBundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
-    <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
@@ -493,7 +492,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\LoginViewModel.cs" />
     <Compile Include="Models\MailMerge\AmsdInflowFundFormPreviewModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -515,6 +513,10 @@
     <ProjectReference Include="..\..\Libraries\xDC.Logging\xDC.Logging.csproj">
       <Project>{6522dc6d-0ba9-4d84-944e-0127e120e3b1}</Project>
       <Name>xDC.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\xDC.Services\xDC.Services.csproj">
+      <Project>{2743cd31-64ae-483d-8b52-02ae6f2550dc}</Project>
+      <Name>xDC.Services</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\xDC.Utils\xDC.Utils.csproj">
       <Project>{87fa4c9c-f3bf-4cd4-83f2-0be4d31674e5}</Project>

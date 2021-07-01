@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.Web", "Presentation\xDC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.Logging", "Libraries\xDC.Logging\xDC.Logging.csproj", "{6522DC6D-0BA9-4D84-944E-0127E120E3B1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.Services", "Libraries\xDC.Services\xDC.Services.csproj", "{2743CD31-64AE-483D-8B52-02AE6F2550DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{6522DC6D-0BA9-4D84-944E-0127E120E3B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6522DC6D-0BA9-4D84-944E-0127E120E3B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6522DC6D-0BA9-4D84-944E-0127E120E3B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2743CD31-64AE-483D-8B52-02AE6F2550DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2743CD31-64AE-483D-8B52-02AE6F2550DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2743CD31-64AE-483D-8B52-02AE6F2550DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2743CD31-64AE-483D-8B52-02AE6F2550DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -63,6 +69,7 @@ Global
 		{87FA4C9C-F3BF-4CD4-83F2-0BE4D31674E5} = {288D30C0-C4F9-4D78-BD96-15D52D9FEB14}
 		{2EC9C2B9-4657-4A3A-8484-14AC09BC11FA} = {D82837EF-EEC1-4823-9684-DA51B9FDC489}
 		{6522DC6D-0BA9-4D84-944E-0127E120E3B1} = {288D30C0-C4F9-4D78-BD96-15D52D9FEB14}
+		{2743CD31-64AE-483D-8B52-02AE6F2550DC} = {288D30C0-C4F9-4D78-BD96-15D52D9FEB14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {34EB544F-2415-4B65-AE15-70E167AB330D}

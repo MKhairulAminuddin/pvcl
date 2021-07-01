@@ -22,9 +22,9 @@ namespace xDC.Infrastructure.Application
     
         public string UserName { get; set; }
         public string Department { get; set; }
-        public string Section { get; set; }
-        public string Name { get; set; }
-        public string TelNo { get; set; }
+        public string Title { get; set; }
+        public string FullName { get; set; }
+        public string TelephoneNumber { get; set; }
         public string Email { get; set; }
         public bool Locked { get; set; }
         public Nullable<System.DateTime> LastLogin { get; set; }

@@ -7,11 +7,12 @@ using Microsoft.Owin.Security;
 using System.DirectoryServices.AccountManagement;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using xDC.Services;
 using xDC_Web.Models;
 
 namespace xDC_Web.Extension
 {
-	public class AdAuthentication
+	public class  AdAuthentication
 	{
 		private readonly IAuthenticationManager _authManager;
 
@@ -70,12 +71,11 @@ namespace xDC_Web.Extension
 				{
 					return new AuthenticationResult(Resources.ErrorMessages.AD_NoAccessKRC);
 				}*/
-                /*var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ApplicationDbContext()));
-
-				if (userManager.FindByName(username) != null)
+				
+                if (!new AuthService().IsUserExist(username))
                 {
                     return new AuthenticationResult("You did not have access into the system.");
-                }*/
+                }
 
 				var identity = CreateIdentity(userPrincipal);
 
@@ -104,11 +104,11 @@ namespace xDC_Web.Extension
 
 			// add your own claims if you need to add more information stored on the cookie
 			// machine - local dev
-			// identity.AddClaim(new Claim(ClaimTypes.Role, new AuthService().GetRoles(userPrincipal.Name)));
+			identity.AddClaim(new Claim(ClaimTypes.Role, new AuthService().GetUserRoles(userPrincipal.Name)));
 			// prod/uat - domain
 			// identity.AddClaim(new Claim(ClaimTypes.Role, new AuthService().GetRoles(userPrincipal.SamAccountName)));
 
-			identity.AddClaim(new Claim(ClaimTypes.Role, "Administrator"));
+			// identity.AddClaim(new Claim(ClaimTypes.Role, "Administrator"));
 
 			return identity;
 		}

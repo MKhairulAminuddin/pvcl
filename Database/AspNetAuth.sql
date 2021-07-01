@@ -21,12 +21,12 @@ CREATE TABLE [dbo].[AspNetUserRoles](
 
 CREATE TABLE [dbo].[AspNetUsers](
 	[UserName] [nvarchar](128) NOT NULL,
-	[Department] [nvarchar](20) NULL,
-	[Section] [nvarchar](20) NULL,
-	[Name] [nvarchar](256) NULL,
-	[TelNo] [nvarchar](256) NULL,
-	[Email] [nvarchar](256) NULL,
-	[Locked] [bit] NOT NULL,
+	[Department] [nvarchar](MAX) NULL,
+	[Title] [nvarchar](MAX) NULL,
+	[FullName] [nvarchar](MAX) NULL,
+	[TelephoneNumber] [nvarchar](256) NULL,
+	[Email] [nvarchar](MAX) NULL,
+	[Locked] [bit] NOT NULL Default 0,
 	[LastLogin] [datetime] NULL,
 	[CreatedDate] [datetime] NOT NULL DEFAULT GETDATE(),
  CONSTRAINT [PK_dbo.AspNetUsers] PRIMARY KEY CLUSTERED 
