@@ -43,6 +43,28 @@ namespace xDC_Web.Controllers.Api
             
         }
 
+        [HttpGet]
+        [Route("GetInflowFunds")]
+        public HttpResponseMessage GetInflowFunds(string id, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formId = Convert.ToInt32(id);
+                    var result = db.Amsd_InflowFunds
+                        .Where(x => x.FormId == formId).ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+
+        }
+
 
         [HttpPost]
         [Route("NewInflowFundsForm")]

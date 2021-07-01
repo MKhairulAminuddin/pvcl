@@ -277,6 +277,7 @@
     <Content Include="Scripts\adminlte.min.js" />
     <Content Include="Scripts\app.js" />
     <Content Include="Scripts\app\admin\userManagement.js" />
+    <Content Include="Scripts\app\amsd\inflowFundsFormStatus.js" />
     <Content Include="Scripts\app\amsd\viewInflowFundsForm.js" />
     <Content Include="Scripts\app\amsd\newInflowFundsForm.js" />
     <Content Include="Scripts\app\amsd\index.js" />
@@ -455,6 +456,7 @@
     <Content Include="Views\Amsd\_viewInflowFundsForm.cshtml" />
     <Content Include="Views\Iisd\Index.cshtml" />
     <Content Include="Views\Iisd\NewTradeSettlement.cshtml" />
+    <Content Include="Views\Amsd\InflowFundsFormStatus.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

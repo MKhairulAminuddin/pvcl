@@ -23,7 +23,29 @@ namespace xDC_Web.Controllers
         {
             return View();
         }
-        
+
+        public ActionResult InflowFundsFormStatus(string id)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formId = Convert.ToInt32(id);
+                    var getForm = db.FormHeader.FirstOrDefault(x => x.Id == formId);
+
+                    if (getForm!= null)
+                    {
+                        return View(getForm);
+                    }
+                }
+                return HttpNotFound();
+            }
+            catch (Exception ex)
+            {
+                return HttpNotFound();
+            }
+        }
+
 
         public ActionResult ViewInflowFundsForm(string id)
         {

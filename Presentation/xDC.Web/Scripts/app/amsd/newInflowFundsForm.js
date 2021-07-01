@@ -25,7 +25,7 @@
                         url: '../api/amsd/NewInflowFundsForm',
                         method: 'post'
                     }).done(function (data) {
-                        window.location.href = "../amsd/ViewInflowFundsForm?id=" + data;
+                        window.location.href = "../amsd/InflowFundsFormStatus?id=" + data;
 
                     }).fail(function (jqXHR, textStatus, errorThrown) {
                         $("#error_container").bs_alert(textStatus + ': ' + errorThrown);

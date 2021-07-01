@@ -102,7 +102,7 @@
                     }
                     @if (MenuSecurity.FidMenu)
                     {
-                        <li><a href="#"><i class="fa fa-circle-thin"></i> <span>FID</span></a></li>
+                        <li><a href="#"><i class="fa fa-circle-thin"></i> <span>FID</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>
                     }
                     @if (MenuSecurity.IisdMenu)
                     {
@@ -120,8 +120,8 @@
                             <ul class="treeview-menu">
                                 <li><a href="@Url.Action("DropdownConfig","Setting")"><i class="fa fa-circle-thin"></i> <span>Dropdown Config</span></a></li>
                                 <li><a href="@Url.Action("ApplicationConfig","Setting")"><i class="fa fa-circle-thin"></i> <span>Application Config</span></a></li>
-                                <li><a href="@Url.Action("Workflow","Setting")"><i class="fa fa-circle-thin"></i> <span>Workflow</span></a></li>
-                                <li><a href="@Url.Action("AuditTrail","Setting")"><i class="fa fa-circle-thin"></i> <span>Audit Trail</span></a></li>
+                                <li><a href="@Url.Action("Workflow","Setting")"><i class="fa fa-circle-thin"></i> <span>Workflow</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>
+                                <li><a href="@Url.Action("AuditTrail","Setting")"><i class="fa fa-circle-thin"></i> <span>Audit Trail</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>
                             </ul>
                         </li>
                     }
@@ -136,8 +136,8 @@
                             </a>
                             <ul class="treeview-menu">
                                 <li><a href="@Url.Action("UserManagement","Admin")"><i class="fa fa-circle-thin"></i> <span>Users</span></a></li>
-                                <li><a href="@Url.Action("SystemInformation","Admin")"><i class="fa fa-circle-thin"></i> <span>System Information</span></a></li>
-                                <li><a href="@Url.Action("SystemLogs","Admin")"><i class="fa fa-circle-thin"></i> <span>System Logs</span></a></li>
+                                <li><a href="@Url.Action("SystemInformation","Admin")"><i class="fa fa-circle-thin"></i> <span>System Information</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>
+                                <li><a href="@Url.Action("SystemLogs","Admin")"><i class="fa fa-circle-thin"></i> <span>System Logs</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>
                                 <li><a href="~/hangfire"><i class="fa fa-circle-thin"></i> <span>Task Scheduler</span></a></li>
                             </ul>
                         </li>

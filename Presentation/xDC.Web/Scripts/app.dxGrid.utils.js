@@ -185,9 +185,6 @@ var dxGridUtils = (function () {
         columnFixing: {
             enabled: true
         },
-        groupPanel: {
-            visible: true
-        },
         headerFilter: { visible: true },
         pager: {
             infoText: "Page {0} of {1} ({2} items)",
