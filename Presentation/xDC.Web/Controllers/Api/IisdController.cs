@@ -23,10 +23,13 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new xDC.Infrastructure.Application.kashflowDBEntities())
                 {
-                    /*db.Configuration.LazyLoadingEnabled = false;
-                    db.Configuration.ProxyCreationEnabled = false;*/
+                    var iisdFormTypes = new List<string>()
+                    {
+                        Common.FormTypeMapping(2)
+                    };
+
                     var result = db.FormHeader
-                        .Where(x => x.FormType == "Trade Settlement").ToList();
+                        .Where(x => iisdFormTypes.Contains(x.FormType)).ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }

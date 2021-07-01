@@ -6,8 +6,10 @@
         
         var $inflowFundsGrid, $historyBtn, $submitBtn, $tbFormId, $tbFormStatus;
 
-        $("#submitBtn").on({
-            "click": function() {
+        $("#inflowFundForm").on({
+            "submit": function (e) {
+                
+
                 if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
                     $("#error_container").bs_warning("Please key in at least one item.");
                 }
@@ -29,6 +31,8 @@
                         $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
                     });
                 }
+
+                e.preventDefault();
             }
         });
 

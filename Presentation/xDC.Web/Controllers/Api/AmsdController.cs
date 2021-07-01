@@ -25,10 +25,13 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    /*db.Configuration.LazyLoadingEnabled = false;
-                    db.Configuration.ProxyCreationEnabled = false;*/
+                    var amdFormTypes = new List<string>()
+                    {
+                        Common.FormTypeMapping(1)
+                    };
+
                     var result = db.FormHeader
-                        .Where(x => x.FormType == "Inflow Funds").ToList();
+                        .Where(x => amdFormTypes.Contains(x.FormType)).ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -52,10 +55,10 @@ namespace xDC_Web.Controllers.Api
 
                     var newRecord = new FormHeader()
                     {
-                        FormType = inputs.FormType,
+                        FormType = Common.FormTypeMapping(1),
                         PreparedBy = User.Identity.Name,
                         PreparedDate = DateTime.Now,
-                        FormStatus = Common.FormStatusMapping(2),
+                        FormStatus = Common.FormStatusMapping(2)
                     };
 
                     Validate(newRecord);

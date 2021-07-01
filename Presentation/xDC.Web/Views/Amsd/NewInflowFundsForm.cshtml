@@ -19,48 +19,52 @@
 
 
 <section class="content container-fluid">
+
     <div class="row">
         <div class="col-md-12">
-            <div class="box box-primary" id="amsd-form">
-                <div class="box-header">
-                    <i class="fa fa-money"></i>
-
-                    <h3 class="box-title">Inflow Funds</h3>
-                    
+            <form id="inflowFundForm">
+                <p style="float: right; margin-top: 10px">
+                    <div style="display: inline-block">
+                        @(Html.DevExtreme().Button()
+                            .Text("Submit")
+                            .Type(ButtonType.Default)
+                            .UseSubmitBehavior(true)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
+                    </div>
+                    <div style="display: inline-block">
+                        @(Html.DevExtreme().Button()
+                            .Text("Cancel")
+                            .Type(ButtonType.Normal)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
+                            )
+                    </div>
+                </p>
+                <div class="box box-solid">
+                    <div class="box-body">
+                        <div id="inflowFundsGrid1"></div>
+                    </div>
                 </div>
-
-                <div class="box-body">
-                    <div id="inflowFundsGrid1"></div>
-
-                    <input type="hidden" name="formType" value="AMSD - Inflow Funds" />
-                </div>
-
-                <div class="box-footer clearfix no-border">
-                    
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <p style="float: right; margin-top: 10px">
-                <div style="display: inline-block">
-                    @(Html.DevExtreme().Button()
-                        .ID("submitBtn")
-                        .Text("Submit")
-                        .Type(ButtonType.Default)
-                        .StylingMode(ButtonStylingMode.Contained)
-                        )
-                </div>
-                <div style="display: inline-block">
-                    @(Html.DevExtreme().Button()
-                        .Text("Cancel")
-                        .Type(ButtonType.Normal)
-                        .StylingMode(ButtonStylingMode.Contained)
-                        .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
-                        )
-                </div>
-            </p>
+                <p style="float: right; margin-top: 10px">
+                    <div style="display: inline-block">
+                        @(Html.DevExtreme().Button()
+                            .Text("Submit")
+                            .Type(ButtonType.Default)
+                            .UseSubmitBehavior(true)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
+                    </div>
+                    <div style="display: inline-block">
+                        @(Html.DevExtreme().Button()
+                            .Text("Cancel")
+                            .Type(ButtonType.Normal)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
+                            )
+                    </div>
+                </p>
+            </form>
         </div>
     </div>
 </section>
