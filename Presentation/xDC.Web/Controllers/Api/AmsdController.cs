@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Web.Http;
 using xDC_Web.Models;
 using System.Data.Entity;
+using System.Net.Http.Formatting;
+using Newtonsoft.Json;
 using xDC.Utils;
 using xDC.Infrastructure.Application;
 
@@ -33,7 +35,28 @@ namespace xDC_Web.Controllers.Api
                     var result = db.FormHeader
                         .Where(x => amdFormTypes.Contains(x.FormType)).ToList();
 
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    var resultVM = new List<ViewFormHeaderModel>();
+
+                    foreach (var item in result)
+                    {
+                        resultVM.Add(new ViewFormHeaderModel
+                        {
+                            Id = item.Id,
+                            FormType = item.FormType,
+                            FormStatus = item.FormStatus,
+                            Currency = item.Currency,
+                            PreparedBy = item.PreparedBy,
+                            PreparedDate = item.PreparedDate,
+                            ApprovedBy = item.ApprovedBy,
+                            ApprovedDate = item.ApprovedDate,
+                            AdminEditted = item.AdminEditted,
+                            AdminEdittedBy = item.AdminEdittedBy,
+                            AdminEdittedDate = item.AdminEdittedDate,
+                            IsFormOwner = User.Identity.Name == item.PreparedBy
+                        });
+                    }
+
+                    return Request.CreateResponse(DataSourceLoader.Load(resultVM, loadOptions));
                 }
             }
             catch (Exception ex)
@@ -124,6 +147,143 @@ namespace xDC_Web.Controllers.Api
             
         }
 
+        [HttpPost]
+        [Route("NewInflowFundsFormDraft")]
+        public HttpResponseMessage NewInflowFundsFormDraft([FromBody] InflowFundsModel inputs)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var isExistingDraft = db.FormHeader.FirstOrDefault(x => x.Id == inputs.Id);
+
+                    var newRecord = new FormHeader();
+
+                    if (isExistingDraft != null)
+                    {
+                        newRecord = new FormHeader()
+                        {
+                            Id = isExistingDraft.Id,
+                            FormType = isExistingDraft.FormType,
+                            PreparedBy = User.Identity.Name,
+                            PreparedDate = DateTime.Now,
+                            FormStatus = isExistingDraft.FormStatus
+                        };
+
+                        Validate(newRecord);
+
+                        if (!ModelState.IsValid)
+                            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+                        
+                        db.SaveChanges();
+                    }
+                    else
+                    {
+                        newRecord = new FormHeader()
+                        {
+                            FormType = Common.FormTypeMapping(1),
+                            PreparedBy = User.Identity.Name,
+                            PreparedDate = DateTime.Now,
+                            FormStatus = Common.FormStatusMapping(1)
+                        };
+
+                        Validate(newRecord);
+
+                        if (!ModelState.IsValid)
+                            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+
+                        db.FormHeader.Add(newRecord);
+                        db.SaveChanges();
+                    }
+                    return Request.CreateResponse(HttpStatusCode.Created, newRecord.Id);
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+
+        }
+
+
+
+        /*[System.Web.Http.HttpGet]
+        public HttpResponseMessage GetDlp(DataSourceLoadOptions loadOptions)
+        {
+            var result = new xForm.Data.xFormDbEntities().Security_DLP.ToList();
+
+            return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+        }*/
+
+        [HttpPut]
+        public HttpResponseMessage UpdateInflowFund(FormDataCollection form)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var key = Convert.ToInt32(form.Get("key"));
+                var values = form.Get("values");
+                var existingRecord = db.Amsd_InflowFunds.SingleOrDefault(o => o.Id == key);
+
+                JsonConvert.PopulateObject(values, existingRecord);
+
+                if (existingRecord != null)
+                {
+                    existingRecord.UpdatedBy = User.Identity.Name;
+                    existingRecord.UpdatedDate = DateTime.Now;
+                }
+
+                Validate(existingRecord);
+
+                if (!ModelState.IsValid)
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+
+                db.SaveChanges();
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+
+        }
+
+        [HttpPost]
+        public HttpResponseMessage InsertInflowFund(FormDataCollection form)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var values = form.Get("values");
+
+                var newRecord = new Amsd_InflowFunds();
+                JsonConvert.PopulateObject(values, newRecord);
+                
+                newRecord.CreatedBy = User.Identity.Name;
+                newRecord.CreatedDate = DateTime.Now;
+
+                Validate(newRecord);
+
+                if (!ModelState.IsValid)
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+
+                db.Amsd_InflowFunds.Add(newRecord);
+                db.SaveChanges();
+
+                return Request.CreateResponse(HttpStatusCode.Created, newRecord);
+            }
+        }
+
+        [HttpDelete]
+        public HttpResponseMessage DeleteInflowFund(FormDataCollection form)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var key = Convert.ToInt32(form.Get("key"));
+                var foundRecord = db.Amsd_InflowFunds.First(x => x.Id == key);
+
+                db.Amsd_InflowFunds.Remove(foundRecord);
+                db.SaveChanges();
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+        }
     }
 
 }

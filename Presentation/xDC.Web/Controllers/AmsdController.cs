@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Web.Mvc;
 using DevExpress.Spreadsheet;
 using xDC.Infrastructure.Application;
@@ -23,6 +24,11 @@ namespace xDC_Web.Controllers
         public ActionResult NewInflowFundsForm()
         {
             return View();
+        }
+
+        public ActionResult EditInflowFundsForm(string id)
+        {
+            return View("NewInflowFundsForm");
         }
 
         public ActionResult InflowFundsFormStatus(string id)
@@ -165,6 +171,145 @@ namespace xDC_Web.Controllers
 
 
             return CreateFileStreamResult(stream, contentType, fileExtension);
+        }
+
+
+
+        [HttpPost]
+        // called first
+        public ActionResult PrintInflowFund(string id)
+        {
+            try
+            {
+                var formId = Convert.ToInt32(id);
+                AmsdInflowFundFormPreviewModel formModel = new AmsdInflowFundFormPreviewModel();
+
+                using (var db = new kashflowDBEntities())
+                {
+                    var getForm = db.FormHeader.FirstOrDefault(x => x.Id == formId);
+
+                    if (getForm != null)
+                    {
+                        formModel.Id = getForm.Id;
+                        formModel.Preparer = getForm.PreparedBy;
+                        formModel.PreparedDate = getForm.PreparedDate.Value;
+                        formModel.InflowFunds = new List<AmsdInflowFundItems>();
+
+                        var getInflowFunds = db.Amsd_InflowFunds.Where(x => x.FormId == getForm.Id);
+
+                        foreach (var item in getInflowFunds)
+                        {
+                            formModel.InflowFunds.Add(new AmsdInflowFundItems()
+                            {
+                                Id = item.Id,
+                                FundType = item.FundType,
+                                Bank = item.Bank,
+                                Amount = item.Amount.Value
+                            });
+                        }
+
+                        SpreadsheetPreviewModel previewModel = new SpreadsheetPreviewModel();
+                        previewModel.Workbook = CreateSpreadsheetMailMergeWorkbook(formModel);
+
+                        DocumentFormat documentFormat = DocumentFormat.Xlsx;
+                        IWorkbook workbook = previewModel.Workbook;
+                        var docBytes = workbook.SaveDocument(documentFormat);
+                        var ms = new MemoryStream(docBytes);
+
+                        var randomFileName = Guid.NewGuid().ToString();
+                        SaveFile(randomFileName, ms);
+
+                        return Content(id);
+                    }
+                    else
+                    {
+                        return HttpNotFound();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return HttpNotFound();
+            }
+        }
+
+
+        public ActionResult GetPrintInflowFund(string id)
+        {
+            try
+            {
+                // stream out the contents - don't need to dispose because File() does it for you
+                var fileStream = GetFile(id);
+
+                if (fileStream != null)
+                {
+                    Response.AddHeader("Content-Disposition", "attachment; filename=test.xlsx");
+                    return File(fileStream, Common.ConvertIndexToContentType(4));
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                return HttpNotFound();
+            }
+        }
+        
+
+        public static FileStream GetFile(string filename)
+        {
+            var tempFolder = "D:\\";
+
+            tempFolder = Path.Combine(tempFolder, "xDCPrintedFiles");
+
+            tempFolder = Path.Combine(tempFolder, filename);
+
+            // tempFolder should contain 1 eml file
+            var filePath = Directory.GetFiles(tempFolder).SingleOrDefault();
+
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                var fs = new FileStream(filePath, FileMode.Open);
+                return fs;
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
+        public static void SaveFile(string filename, MemoryStream ms)
+        {
+            try
+            {
+                var tempFolder = "D:\\";
+                tempFolder = Path.Combine(tempFolder, "xDCPrintedFiles");
+
+                // create a temp folder to hold just this .eml file so that we can find it easily.
+                tempFolder = Path.Combine(tempFolder, filename + ".xlsx");
+
+                if (!Directory.Exists(tempFolder))
+                {
+                    Directory.CreateDirectory(tempFolder);
+                }
+
+                FileStream file = new FileStream(tempFolder, FileMode.Create, FileAccess.Write);
+                ms.WriteTo(file);
+                file.Close();
+                ms.Close();
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
+            
+
+            
         }
     }
 }

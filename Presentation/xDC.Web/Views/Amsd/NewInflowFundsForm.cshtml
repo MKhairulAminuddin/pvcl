@@ -26,18 +26,25 @@
                 <p style="float: right; margin-top: 10px">
                     <div style="display: inline-block">
                         @(Html.DevExtreme().Button()
-                            .Text("Submit")
+                            .Type(ButtonType.Back)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
+                            )
+                    </div>
+                    <div style="display: inline-block">
+                        @(Html.DevExtreme().Button()
+                            .ID("submitBtn")
+                            .Text("Submit for Approval")
                             .Type(ButtonType.Default)
-                            .UseSubmitBehavior(true)
                             .StylingMode(ButtonStylingMode.Contained)
                             )
                     </div>
                     <div style="display: inline-block">
                         @(Html.DevExtreme().Button()
-                            .Text("Cancel")
+                            .ID("saveAsDraftBtn")
+                            .Text("Save as Draft")
                             .Type(ButtonType.Normal)
                             .StylingMode(ButtonStylingMode.Contained)
-                            .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
                             )
                     </div>
                 </p>
@@ -46,24 +53,6 @@
                         <div id="inflowFundsGrid1"></div>
                     </div>
                 </div>
-                <p style="float: right; margin-top: 10px">
-                    <div style="display: inline-block">
-                        @(Html.DevExtreme().Button()
-                            .Text("Submit")
-                            .Type(ButtonType.Default)
-                            .UseSubmitBehavior(true)
-                            .StylingMode(ButtonStylingMode.Contained)
-                            )
-                    </div>
-                    <div style="display: inline-block">
-                        @(Html.DevExtreme().Button()
-                            .Text("Cancel")
-                            .Type(ButtonType.Normal)
-                            .StylingMode(ButtonStylingMode.Contained)
-                            .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
-                            )
-                    </div>
-                </p>
             </form>
         </div>
     </div>

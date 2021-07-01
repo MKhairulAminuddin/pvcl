@@ -50,6 +50,17 @@
                     width: 110,
                     buttons: [
                         {
+                            hint: "Edit Draft",
+                            icon: "fa fa-pencil-square-o",
+                            visible: function (e) {
+                                return (e.row.data.formStatus == "Preparation" && e.row.data.isFormOwner);
+                            },
+                            onClick: function (e) {
+                                window.location.href = "/amsd/EditInflowFundsForm?id=" + e.row.data.id;
+                                e.event.preventDefault();
+                            }
+                        },
+                        {
                             hint: "View Form",
                             icon: "fa fa-external-link",
                             onClick: function (e) {
@@ -61,7 +72,20 @@
                             hint: "Print Form",
                             icon: "fa fa-print",
                             onClick: function (e) {
-                                alert("Development in Progress....");
+                                var data = {
+                                    id: e.row.data.id
+                                };
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: '/amsd/PrintInflowFund',
+                                    data: data,
+                                    dataType: "text",
+                                    success: function (data) {
+                                        var url = '/amsd/GetPrintInflowFund?id=' + data;
+                                        window.location = url;
+                                    }
+                                });
                                 e.event.preventDefault();
                             }
                         }

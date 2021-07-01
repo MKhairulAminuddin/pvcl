@@ -106,7 +106,7 @@ namespace xDC.Utils
             switch (value)
             {
                 case 1:
-                    return "New";
+                    return "Preparation";
                 case 2:
                     return "Pending Approval";
                 case 3:
