@@ -1,4 +1,4 @@
-﻿@model xDC.Infrastructure.Application.FormHeader
+﻿@model xDC_Web.Models.ViewInflowFundStatusForm
 
 @{
     ViewBag.Title = "View Inflow Funds";
@@ -16,30 +16,37 @@
                         .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
                         )
                 </div>
-                <div>
-                    @(Html.DevExtreme().Button()
-                        .Text("Approve")
-                        .Icon("check")
-                        .Type(ButtonType.Success)
-                        .StylingMode(ButtonStylingMode.Contained)
-                        )
-                </div>
-                <div>
-                    @(Html.DevExtreme().Button()
-                        .Text("Reject")
-                        .Icon("remove")
-                        .Type(ButtonType.Normal)
-                        .StylingMode(ButtonStylingMode.Contained)
-                        )
-                </div>
-                <div>
-                    @(Html.DevExtreme().Button()
-                        .Text("Admin Edit")
-                        .Icon("edit")
-                        .Type(ButtonType.Default)
-                        .StylingMode(ButtonStylingMode.Contained)
-                        )
-                </div>
+                @if (Model.ApprovePermission)
+                {
+                    <div>
+                        @(Html.DevExtreme().Button()
+                            .Text("Approve")
+                            .Icon("check")
+                            .Type(ButtonType.Success)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
+                    </div>
+                    <div>
+                        @(Html.DevExtreme().Button()
+                            .Text("Reject")
+                            .Icon("remove")
+                            .Type(ButtonType.Normal)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
+                    </div>
+                }
+                @if (User.IsInRole("Power User"))
+                {
+                    <div>
+                        @(Html.DevExtreme().Button()
+                            .Text("Admin Edit")
+                            .Icon("edit")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
+                    </div>
+                }
+                
             </div>
         </div>
         <div class="col-md-6">

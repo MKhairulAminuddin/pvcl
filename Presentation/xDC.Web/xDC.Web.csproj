@@ -501,6 +501,7 @@
     <Compile Include="Models\SampleData.cs" />
     <Compile Include="Models\SampleOrder.cs" />
     <Compile Include="Models\UserVM.cs" />
+    <Compile Include="Models\ViewInflowFundStatusForm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

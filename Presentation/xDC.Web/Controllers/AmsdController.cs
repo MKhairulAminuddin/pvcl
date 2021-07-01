@@ -7,6 +7,7 @@ using DevExpress.Spreadsheet;
 using xDC.Infrastructure.Application;
 using xDC.Utils;
 using xDC_Web.Extension.MailMerge;
+using xDC_Web.Models;
 using xDC_Web.Models.MailMerge;
 
 namespace xDC_Web.Controllers
@@ -35,7 +36,18 @@ namespace xDC_Web.Controllers
 
                     if (getForm!= null)
                     {
-                        return View(getForm);
+                        var formObj = new ViewInflowFundStatusForm()
+                        {
+                            Id = getForm.Id,
+                            PreparedBy = getForm.PreparedBy,
+                            PreparedDate = getForm.PreparedDate,
+                            ApprovedBy = getForm.ApprovedBy,
+                            ApprovedDate = getForm.ApprovedDate,
+                            FormStatus = getForm.FormStatus,
+
+                            ApprovePermission = false // to ganti with workflow checking
+                        };
+                        return View(formObj);
                     }
                 }
                 return HttpNotFound();
