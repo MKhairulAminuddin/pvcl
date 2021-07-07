@@ -284,8 +284,9 @@
     <Content Include="Scripts\app.dxGrid.utils.js" />
     <Content Include="Scripts\app\iisd\index.js" />
     <Content Include="Scripts\app\iisd\newTradeSettlement.js" />
-    <Content Include="Scripts\app\setting\applicationConfig.js" />
+    <Content Include="Scripts\app\admin\applicationConfig.js" />
     <Content Include="Scripts\app\setting\dropdownConfig.js" />
+    <Content Include="Scripts\app\setting\notificationConfig.js" />
     <Content Include="Scripts\aspnet\dx.aspnet.data.js" />
     <Content Include="Scripts\aspnet\dx.aspnet.mvc.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -447,7 +448,7 @@
     <Content Include="Views\Amsd\NewInflowFundsForm.cshtml" />
     <Content Include="Views\Amsd\ViewInflowFundsForm.cshtml" />
     <Content Include="Views\Setting\DropdownConfig.cshtml" />
-    <Content Include="Views\Setting\ApplicationConfig.cshtml" />
+    <Content Include="Views\Setting\NotificationConfig.cshtml" />
     <Content Include="Views\Setting\Workflow.cshtml" />
     <Content Include="Views\Setting\AuditTrail.cshtml" />
     <Content Include="Views\Admin\SystemInformation.cshtml" />
@@ -457,6 +458,7 @@
     <Content Include="Views\Iisd\Index.cshtml" />
     <Content Include="Views\Iisd\NewTradeSettlement.cshtml" />
     <Content Include="Views\Amsd\InflowFundsFormStatus.cshtml" />
+    <Content Include="Views\Admin\ApplicationConfig.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

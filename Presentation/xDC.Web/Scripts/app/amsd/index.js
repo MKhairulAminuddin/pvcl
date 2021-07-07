@@ -53,7 +53,7 @@
                             hint: "Edit Draft",
                             icon: "fa fa-pencil-square-o",
                             visible: function (e) {
-                                return (e.row.data.formStatus == "Preparation" && e.row.data.isFormOwner);
+                                return (e.row.data.formStatus == "Draft" && e.row.data.isFormOwner);
                             },
                             onClick: function (e) {
                                 window.location.href = "/amsd/EditInflowFundsForm?id=" + e.row.data.id;

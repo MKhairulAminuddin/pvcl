@@ -15,7 +15,7 @@ namespace xDC_Web.Controllers
         }
         
 
-        public ActionResult ApplicationConfig()
+        public ActionResult NotificationConfig()
         {
             return View();
         }

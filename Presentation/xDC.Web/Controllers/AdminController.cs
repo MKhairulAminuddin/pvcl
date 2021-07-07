@@ -13,6 +13,11 @@ namespace xDC_Web.Controllers
             return View();
         }
 
+        public ActionResult ApplicationConfig()
+        {
+            return View();
+        }
+
         public ActionResult SystemLogs()
         {
             return View();

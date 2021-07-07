@@ -52,10 +52,17 @@
                     $("#error_container").bs_warning("Please key in at least one item.");
                 }
                 else {
-                    var data = {
-                        id: getUrlParameter('id'),
-                        amsdInflowFunds: $inflowFundsGrid.getDataSource().items()
-                    };
+                    var data;
+                    if (getUrlParameter('id') != false) {
+                        data = {
+                            id: getUrlParameter('id'),
+                            amsdInflowFunds: $inflowFundsGrid.getDataSource().items()
+                        };
+                    } else {
+                        data = {
+                            amsdInflowFunds: $inflowFundsGrid.getDataSource().items()
+                        };
+                    }
 
                     $.ajax({
                         data: data,

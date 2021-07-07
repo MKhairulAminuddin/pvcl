@@ -1,6 +1,5 @@
 .content-header.content-header {
     color: #2c3e50;
-    padding: 10px;
 }
 
 .content-header.content-header > .title {
@@ -11,7 +10,6 @@
 }
 
 .content-header.content-alert {
-    padding: 5px 30px 0 30px;
     margin: 0;
 }
 
@@ -25,7 +23,6 @@
 
 
 .content-header.content-toolbar {
-    padding: 10px 30px 0 30px;
     margin: 0;
     background-color: #ECF0F5;
 }
@@ -41,33 +38,12 @@
     display: inline-block;
 }
 
-
-
-.amd-form-container {
-    border: 1px solid grey;
-    padding: 5px 10px;
-    border-radius: 5px;
-    margin: 10px 0;
-    background-color: white;
-}
-
-.amd-form-title {
-    text-align: center;
-    background-color: #222d32;
-    color: #fff;
-    padding: 10px 0;
-    border-radius: 5px;
-}
-
-.amd-form-subtitle {
-    background-color: #7aa7bd;
-    color: #fff;
-    padding: 5px 15px;
-    display: inline-block;
+.dx-texteditor-input:read-only {
+    background-color: #e5f1ff;
+    cursor: not-allowed;
 }
 
 /* dxDataGrid Header */
-
 .dx-datagrid-headers {
     background-color: #5b8efb;
 }
@@ -163,4 +139,78 @@
 
 .stepper-item:last-child::after {
     content: none;
+}
+
+
+
+
+/*
+    Bootstrap overwrite
+*/
+
+.alert {
+    margin-bottom: 0;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #323130 !important;
+    border: none;
+}
+
+.alert i {
+    margin-right: 8px;
+}
+
+.alert-warning {
+    background-color: #fff4ce !important;
+}
+
+.alert-warning i {
+    color: rgb(121, 119, 117) !important;
+}
+
+.alert-danger {
+    background-color: #fde7e9 !important;
+}
+
+.alert-danger i {
+    color: rgb(168, 0, 0) !important;
+}
+
+.alert-danger .alert-title {
+    color: rgb(168, 0, 0) !important;
+    font-weight: bold;
+}
+
+.alert-success {
+    background-color: #dff6dd !important;
+}
+
+.alert-success i {
+    color: rgb(16, 124, 16) !important;
+}
+
+.alert-info {
+    background-color: #D9EDF7 !important;
+}
+
+.alert-info i {
+    color: rgb(121, 119, 117) !important;
+}
+
+
+div .validation-summary-errors.text-danger {
+    border: 1px solid #E74856;
+    background-color: #FCE4EC;
+    margin-bottom: 10px;
+    padding: 10px 0;
+}
+
+
+/*
+    AdminLTE Edit
+*/
+
+.box-header {
+    background-color: #5B8EFB;
+    border-left: 5px solid #2c3e50;
 }

@@ -1,0 +1,109 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Notification Configuration";
+}
+
+<section class="content-header content-toolbar">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="left-container">
+                <div>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div id="right-toolbar-container" class="right-container">
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="box box-solid">
+                <div class="box-header">
+                    <div class="box-title">AMSD - Inflow Funds</div>
+                    <div class="pull-right">
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Enable Notification</p>
+                        </div>
+                        <div class="col-md-6">
+                            @(Html.DevExtreme().CheckBox())
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Enable Admin Modification Notification</p>
+                        </div>
+                        <div class="col-md-6">
+                            @(Html.DevExtreme().CheckBox())
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Cut Off Time</p>
+                        </div>
+                        <div class="col-md-6">
+                            <div>
+                                @(Html.DevExtreme().DateBox()
+                                    .Type(DateBoxType.Time)
+                                    )
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="pull-right">
+                        @(Html.DevExtreme().Button()
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .Text("Save Changes")
+                            .Type(ButtonType.Default))
+                    </div>
+                </div>
+            </div>
+
+            <div class="box box-solid">
+                <div class="box-header">
+                    <div class="box-title">IISD - Trade Settlement</div>
+                    <div class="pull-right">
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Contribution Email</p>
+                        </div>
+                        <div class="col-md-6">
+                            @(Html.DevExtreme().TagBox())
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="pull-right">
+                        @(Html.DevExtreme().Button()
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .Text("Save Changes")
+                            .Type(ButtonType.Default))
+                    </div>
+                </div>
+            </div>
+            
+
+        </div>
+    </div>
+</section>
+
+@section scripts
+{
+    <script src="~/Scripts/app/setting/notificationConfig.js"></script>
+}

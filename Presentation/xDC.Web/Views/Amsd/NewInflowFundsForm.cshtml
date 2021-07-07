@@ -1,4 +1,5 @@
-﻿@using xDC_Web.Models
+﻿@model xDC_Web.Models.ViewInflowFundStatusForm
+
 @{
     ViewBag.Title = "New Inflow Funds";
 }
@@ -50,6 +51,36 @@
                 </p>
                 <div class="box box-solid">
                     <div class="box-body">
+                        <div class="dx-fieldset">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Preparer</div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
+                                            .ReadOnly(true))
+                                        </div>
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Prepared Date</div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
+                                            .ReadOnly(true))
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Status</div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
+                                            .ReadOnly(true))
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4"></div>
+                            </div>
+                        </div>
                         <div id="inflowFundsGrid1"></div>
                     </div>
                 </div>

@@ -23,12 +23,44 @@ namespace xDC_Web.Controllers
 
         public ActionResult NewInflowFundsForm()
         {
-            return View();
+            var model = new ViewInflowFundStatusForm()
+            {
+                PreparedBy = User.Identity.Name,
+                FormStatus = Common.FormStatusMapping(1)
+            };
+
+            return View(model);
         }
 
         public ActionResult EditInflowFundsForm(string id)
         {
-            return View("NewInflowFundsForm");
+            using (var db = new kashflowDBEntities())
+            {
+                var formId = Convert.ToInt32(id);
+                var getForm = db.FormHeader.FirstOrDefault(x => x.Id == formId);
+
+                if (getForm != null)
+                {
+                    var formObj = new ViewInflowFundStatusForm()
+                    {
+                        Id = getForm.Id,
+                        PreparedBy = getForm.PreparedBy,
+                        PreparedDate = getForm.PreparedDate,
+                        ApprovedBy = getForm.ApprovedBy,
+                        ApprovedDate = getForm.ApprovedDate,
+                        FormStatus = getForm.FormStatus,
+
+                        ApprovePermission = false // to ganti with workflow checking
+                    };
+                    return View("NewInflowFundsForm", formObj);
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+            }
+
+            
         }
 
         public ActionResult InflowFundsFormStatus(string id)

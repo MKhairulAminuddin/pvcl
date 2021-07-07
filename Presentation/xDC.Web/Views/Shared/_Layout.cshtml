@@ -119,7 +119,7 @@
                             </a>
                             <ul class="treeview-menu">
                                 <li><a href="@Url.Action("DropdownConfig","Setting")"><i class="fa fa-circle-thin"></i> <span>Dropdown Config</span></a></li>
-                                <li><a href="@Url.Action("ApplicationConfig","Setting")"><i class="fa fa-circle-thin"></i> <span>Application Config</span></a></li>
+                                <li><a href="@Url.Action("NotificationConfig","Setting")"><i class="fa fa-circle-thin"></i> <span>Notification Config</span></a></li>
                                 <li><a href="@Url.Action("Workflow","Setting")"><i class="fa fa-circle-thin"></i> <span>Workflow</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>
                                 <li><a href="@Url.Action("AuditTrail","Setting")"><i class="fa fa-circle-thin"></i> <span>Audit Trail</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>
                             </ul>
@@ -136,6 +136,7 @@
                             </a>
                             <ul class="treeview-menu">
                                 <li><a href="@Url.Action("UserManagement","Admin")"><i class="fa fa-circle-thin"></i> <span>Users</span></a></li>
+                                <li><a href="@Url.Action("ApplicationConfig","Admin")"><i class="fa fa-circle-thin"></i> <span>Application Config</span></a></li>
                                 <li><a href="@Url.Action("SystemInformation","Admin")"><i class="fa fa-circle-thin"></i> <span>System Information</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>
                                 <li><a href="@Url.Action("SystemLogs","Admin")"><i class="fa fa-circle-thin"></i> <span>System Logs</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>
                                 <li><a href="~/hangfire"><i class="fa fa-circle-thin"></i> <span>Task Scheduler</span></a></li>
@@ -151,7 +152,7 @@
         <div id="pageContent" class="content-wrapper">
             @if (!string.IsNullOrEmpty(@ViewBag.Title))
             {
-                <section class="content-header content-header">
+                <section class="content-header">
                     <h1>
                         @ViewBag.Title
                     </h1>
@@ -159,11 +160,7 @@
             }
 
             <section class="content-header content-alert">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div id="error_container"></div>
-                    </div>
-                </div>
+                <div id="error_container"></div>
             </section>
 
             @RenderBody()

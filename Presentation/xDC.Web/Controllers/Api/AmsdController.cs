@@ -74,11 +74,21 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var formId = Convert.ToInt32(id);
-                    var result = db.Amsd_InflowFunds
-                        .Where(x => x.FormId == formId).ToList();
+                    var result = new List<Amsd_InflowFunds>();
 
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    if (!string.IsNullOrEmpty(id))
+                    {
+                        var formId = Convert.ToInt32(id);
+                        result = db.Amsd_InflowFunds
+                            .Where(x => x.FormId == formId).ToList();
+                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    }
+
+                    
                 }
             }
             catch (Exception ex)
@@ -167,7 +177,7 @@ namespace xDC_Web.Controllers.Api
                             FormType = isExistingDraft.FormType,
                             PreparedBy = User.Identity.Name,
                             PreparedDate = DateTime.Now,
-                            FormStatus = isExistingDraft.FormStatus
+                            FormStatus = Common.FormStatusMapping(0)
                         };
 
                         Validate(newRecord);
@@ -184,7 +194,7 @@ namespace xDC_Web.Controllers.Api
                             FormType = Common.FormTypeMapping(1),
                             PreparedBy = User.Identity.Name,
                             PreparedDate = DateTime.Now,
-                            FormStatus = Common.FormStatusMapping(1)
+                            FormStatus = Common.FormStatusMapping(0)
                         };
 
                         Validate(newRecord);
@@ -193,6 +203,29 @@ namespace xDC_Web.Controllers.Api
                             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
 
                         db.FormHeader.Add(newRecord);
+                        db.SaveChanges();
+
+                        var newRecordInflowFunds = new List<Amsd_InflowFunds>();
+
+                        foreach (var item in inputs.AmsdInflowFunds)
+                        {
+                            newRecordInflowFunds.Add(new Amsd_InflowFunds()
+                            {
+                                FormId = newRecord.Id,
+                                FundType = item.FundType,
+                                Bank = item.Bank,
+                                Amount = item.Amount,
+                                CreatedBy = User.Identity.Name,
+                                CreatedDate = DateTime.Now
+                            });
+                        }
+
+                        Validate(newRecord);
+
+                        if (!ModelState.IsValid)
+                            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+
+                        db.Amsd_InflowFunds.AddRange(newRecordInflowFunds);
                         db.SaveChanges();
                     }
                     return Request.CreateResponse(HttpStatusCode.Created, newRecord.Id);

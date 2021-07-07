@@ -105,6 +105,8 @@ namespace xDC.Utils
         {
             switch (value)
             {
+                case 0:
+                    return "Draft";
                 case 1:
                     return "Preparation";
                 case 2:
