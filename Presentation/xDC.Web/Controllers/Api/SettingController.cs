@@ -29,7 +29,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.DropdownConfig.ToList();
+                    var result = db.Config_Dropdown.ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -52,7 +52,7 @@ namespace xDC_Web.Controllers.Api
                 {
                     var key = Convert.ToInt32(form.Get("key"));
                     var values = form.Get("values");
-                    var existingRecord = db.DropdownConfig.SingleOrDefault(o => o.Id == key);
+                    var existingRecord = db.Config_Dropdown.SingleOrDefault(o => o.Id == key);
                     
                     JsonConvert.PopulateObject(values, existingRecord);
 
@@ -93,7 +93,7 @@ namespace xDC_Web.Controllers.Api
                 {
                     var values = form.Get("values");
 
-                    var newRecord = new DropdownConfig();
+                    var newRecord = new Config_Dropdown();
                     JsonConvert.PopulateObject(values, newRecord);
 
                     newRecord.CreatedBy = User.Identity.Name;
@@ -105,7 +105,7 @@ namespace xDC_Web.Controllers.Api
                         return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
 
 
-                    db.DropdownConfig.Add(newRecord);
+                    db.Config_Dropdown.Add(newRecord);
                     db.SaveChanges();
 
                     return Request.CreateResponse(HttpStatusCode.Created, newRecord);
@@ -126,9 +126,9 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var key = Convert.ToInt32(form.Get("key"));
-                    var foundRecord = db.DropdownConfig.First(x => x.Id == key);
+                    var foundRecord = db.Config_Dropdown.First(x => x.Id == key);
 
-                    db.DropdownConfig.Remove(foundRecord);
+                    db.Config_Dropdown.Remove(foundRecord);
                     db.SaveChanges();
                     return Request.CreateResponse(HttpStatusCode.OK);
                 }
@@ -152,7 +152,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.ApplicationConfig.ToList();
+                    var result = db.Config_Application.ToList();
                     
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -174,7 +174,7 @@ namespace xDC_Web.Controllers.Api
                 {
                     var key = Convert.ToInt32(form.Get("key"));
                     var values = form.Get("values");
-                    var existingRecord = db.ApplicationConfig.SingleOrDefault(o => o.Id == key);
+                    var existingRecord = db.Config_Application.SingleOrDefault(o => o.Id == key);
 
                     JsonConvert.PopulateObject(values, existingRecord);
 
@@ -215,7 +215,7 @@ namespace xDC_Web.Controllers.Api
                 {
                     var values = form.Get("values");
 
-                    var newRecord = new ApplicationConfig();
+                    var newRecord = new Config_Application();
                     JsonConvert.PopulateObject(values, newRecord);
 
                     newRecord.CreatedBy = User.Identity.Name;
@@ -227,7 +227,7 @@ namespace xDC_Web.Controllers.Api
                         return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
 
 
-                    db.ApplicationConfig.Add(newRecord);
+                    db.Config_Application.Add(newRecord);
                     db.SaveChanges();
 
                     return Request.CreateResponse(HttpStatusCode.Created, newRecord);
@@ -248,9 +248,9 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var key = Convert.ToInt32(form.Get("key"));
-                    var foundRecord = db.ApplicationConfig.First(x => x.Id == key);
+                    var foundRecord = db.Config_Application.First(x => x.Id == key);
 
-                    db.ApplicationConfig.Remove(foundRecord);
+                    db.Config_Application.Remove(foundRecord);
                     db.SaveChanges();
                     return Request.CreateResponse(HttpStatusCode.OK);
                 }

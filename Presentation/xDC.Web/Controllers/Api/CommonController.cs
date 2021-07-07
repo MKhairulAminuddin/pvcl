@@ -73,7 +73,7 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var key = Common.DropdownConfigKeyMapping(1);
-                    var result = db.DropdownConfig.Where(x => x.Key == key).ToList();
+                    var result = db.Config_Dropdown.Where(x => x.Key == key).ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -92,7 +92,25 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var key = Common.DropdownConfigKeyMapping(2);
-                    var result = db.DropdownConfig.Where(x => x.Key == key).ToList();
+                    var result = db.Config_Dropdown.Where(x => x.Key == key).ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public HttpResponseMessage GetConfigDropdownKey(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.Config_Key.Where(x => x.KeyType == "Dropdown").ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }

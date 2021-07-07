@@ -53,9 +53,6 @@
     <Compile Include="Application\Amsd_InflowFunds.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Application\ApplicationConfig.cs">
-      <DependentUpon>kashflowDb.tt</DependentUpon>
-    </Compile>
     <Compile Include="Application\AspNetActiveDirectoryUsers.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
@@ -65,7 +62,13 @@
     <Compile Include="Application\AspNetUsers.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Application\DropdownConfig.cs">
+    <Compile Include="Application\Config_Application.cs">
+      <DependentUpon>kashflowDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Application\Config_Dropdown.cs">
+      <DependentUpon>kashflowDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Application\Config_Key.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
     <Compile Include="Application\FormHeader.cs">

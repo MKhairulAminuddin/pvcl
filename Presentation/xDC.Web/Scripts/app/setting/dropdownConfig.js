@@ -1,6 +1,10 @@
 ﻿(function ($, window, document) {
 
     $(function () {
+        var dropdownConfigKeyStore = DevExpress.data.AspNet.createStore({
+            key: "key",
+            loadUrl: "../api/common/GetConfigDropdownKey"
+        });
 
         var $dropdownConfigGrid;
 
@@ -16,7 +20,12 @@
             columns: [
                 {
                     dataField: "key",
-                    caption: "Key"
+                    caption: "Key",
+                    lookup: {
+                        dataSource: dropdownConfigKeyStore,
+                        valueExpr: "key",
+                        displayExpr: "key"
+                    }
                 },
                 {
                     dataField: "value",

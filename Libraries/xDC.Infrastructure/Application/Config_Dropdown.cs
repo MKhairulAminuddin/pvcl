@@ -12,7 +12,7 @@ namespace xDC.Infrastructure.Application
     using System;
     using System.Collections.Generic;
     
-    public partial class DropdownConfig
+    public partial class Config_Dropdown
     {
         public int Id { get; set; }
         public string Key { get; set; }

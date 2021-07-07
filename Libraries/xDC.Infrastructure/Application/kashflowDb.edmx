@@ -20,18 +20,6 @@
           <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
           <Property Name="UpdatedDate" Type="datetime" />
         </EntityType>
-        <EntityType Name="ApplicationConfig">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Key" Type="nvarchar" MaxLength="150" Nullable="false" />
-          <Property Name="Value" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="250" />
-          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
-          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="250" />
-          <Property Name="UpdatedDate" Type="datetime" />
-        </EntityType>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
             <PropertyRef Name="Username" />
@@ -80,17 +68,36 @@
           <Property Name="LastLogin" Type="datetime" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
         </EntityType>
-        <EntityType Name="DropdownConfig">
+        <EntityType Name="Config_Application">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Key" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Key" Type="nvarchar" MaxLength="250" Nullable="false" />
           <Property Name="Value" Type="nvarchar(max)" Nullable="false" />
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="250" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="UpdatedBy" Type="nvarchar" MaxLength="250" />
           <Property Name="UpdatedDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Config_Dropdown">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Key" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="Value" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="250" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="250" />
+          <Property Name="UpdatedDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Config_Key">
+          <Key>
+            <PropertyRef Name="Key" />
+          </Key>
+          <Property Name="Key" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="KeyType" Type="nvarchar" MaxLength="250" Nullable="false" />
         </EntityType>
         <EntityType Name="FormHeader">
           <Key>
@@ -159,12 +166,13 @@
         </Association>
         <EntityContainer Name="kashflowDbModelStoreContainer">
           <EntitySet Name="Amsd_InflowFunds" EntityType="Self.Amsd_InflowFunds" Schema="dbo" Table="Amsd.InflowFunds" store:Type="Tables" />
-          <EntitySet Name="ApplicationConfig" EntityType="Self.ApplicationConfig" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetActiveDirectoryUsers" EntityType="Self.AspNetActiveDirectoryUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="DropdownConfig" EntityType="Self.DropdownConfig" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Config_Application" EntityType="Self.Config_Application" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Config_Dropdown" EntityType="Self.Config_Dropdown" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Config_Key" EntityType="Self.Config_Key" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FormHeader" EntityType="Self.FormHeader" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Iisd_TradeSettlement" EntityType="Self.Iisd_TradeSettlement" Schema="dbo" Table="Iisd.TradeSettlement" store:Type="Tables" />
           <AssociationSet Name="FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId" Association="Self.FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId">
@@ -181,8 +189,6 @@
     <edmx:ConceptualModels>
       <Schema Namespace="kashflowDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="kashflowDBEntities" annotation:LazyLoadingEnabled="true" >
-          <EntitySet Name="ApplicationConfig" EntityType="kashflowDbModel.ApplicationConfig" />
-          <EntitySet Name="DropdownConfig" EntityType="kashflowDbModel.DropdownConfig" />
           <EntitySet Name="AspNetActiveDirectoryUsers" EntityType="kashflowDbModel.AspNetActiveDirectoryUsers" />
           <EntitySet Name="Amsd_InflowFunds" EntityType="kashflowDbModel.Amsd_InflowFunds" />
           <EntitySet Name="FormHeader" EntityType="kashflowDbModel.FormHeader" />
@@ -193,31 +199,10 @@
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
           </AssociationSet>
+          <EntitySet Name="Config_Application" EntityType="kashflowDbModel.Config_Application" />
+          <EntitySet Name="Config_Dropdown" EntityType="kashflowDbModel.Config_Dropdown" />
+          <EntitySet Name="Config_Key" EntityType="kashflowDbModel.Config_Key" />
         </EntityContainer>
-        <EntityType Name="ApplicationConfig">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Key" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="Value" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="UpdatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
-        </EntityType>
-        <EntityType Name="DropdownConfig">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Key" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="Value" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="UpdatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
-        </EntityType>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
             <PropertyRef Name="Username" />
@@ -316,38 +301,43 @@
           <End Type="kashflowDbModel.AspNetRoles" Role="AspNetRoles" Multiplicity="*" />
           <End Type="kashflowDbModel.AspNetUsers" Role="AspNetUsers" Multiplicity="*" />
         </Association>
+        <EntityType Name="Config_Application">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Key" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Value" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Config_Dropdown">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Key" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Value" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Config_Key">
+          <Key>
+            <PropertyRef Name="Key" />
+          </Key>
+          <Property Name="Key" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="KeyType" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="kashflowDbModelStoreContainer" CdmEntityContainer="kashflowDBEntities" >
-          <EntitySetMapping Name="ApplicationConfig">
-            <EntityTypeMapping TypeName="kashflowDbModel.ApplicationConfig">
-              <MappingFragment StoreEntitySet="ApplicationConfig">
-                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
-                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="Value" ColumnName="Value" />
-                <ScalarProperty Name="Key" ColumnName="Key" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="DropdownConfig">
-            <EntityTypeMapping TypeName="kashflowDbModel.DropdownConfig">
-              <MappingFragment StoreEntitySet="DropdownConfig">
-                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
-                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="Value" ColumnName="Value" />
-                <ScalarProperty Name="Key" ColumnName="Key" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="AspNetActiveDirectoryUsers">
             <EntityTypeMapping TypeName="kashflowDbModel.AspNetActiveDirectoryUsers">
               <MappingFragment StoreEntitySet="AspNetActiveDirectoryUsers">
@@ -454,6 +444,40 @@
               <ScalarProperty Name="Id" ColumnName="RoleId" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="Config_Application">
+            <EntityTypeMapping TypeName="kashflowDbModel.Config_Application">
+              <MappingFragment StoreEntitySet="Config_Application">
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Key" ColumnName="Key" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Config_Dropdown">
+            <EntityTypeMapping TypeName="kashflowDbModel.Config_Dropdown">
+              <MappingFragment StoreEntitySet="Config_Dropdown">
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Key" ColumnName="Key" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Config_Key">
+            <EntityTypeMapping TypeName="kashflowDbModel.Config_Key">
+              <MappingFragment StoreEntitySet="Config_Key">
+                <ScalarProperty Name="KeyType" ColumnName="KeyType" />
+                <ScalarProperty Name="Key" ColumnName="Key" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

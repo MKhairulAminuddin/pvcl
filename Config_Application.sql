@@ -1,7 +1,7 @@
-﻿CREATE TABLE [dbo].[ApplicationConfig](
+﻿CREATE TABLE [dbo].[Config_Application](
 	[Id] INT NOT NULL Identity(1,1) PRIMARY KEY, 
 
-	[Key] NVARCHAR(150) NOT NULL,
+	[Key] NVARCHAR(250) NOT NULL,
 	[Value] NVARCHAR(MAX) NOT NULL,
 
     [CreatedBy] NVARCHAR(250) NULL, 

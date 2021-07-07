@@ -12,14 +12,9 @@ namespace xDC.Infrastructure.Application
     using System;
     using System.Collections.Generic;
     
-    public partial class ApplicationConfig
+    public partial class Config_Key
     {
-        public int Id { get; set; }
         public string Key { get; set; }
-        public string Value { get; set; }
-        public string CreatedBy { get; set; }
-        public System.DateTime CreatedDate { get; set; }
-        public string UpdatedBy { get; set; }
-        public Nullable<System.DateTime> UpdatedDate { get; set; }
+        public string KeyType { get; set; }
     }
 }
