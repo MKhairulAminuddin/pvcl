@@ -38,10 +38,23 @@
     display: inline-block;
 }
 
-.dx-texteditor-input:read-only {
-    background-color: #e5f1ff;
-    cursor: not-allowed;
+.active-directory-dropdown {
+    margin-bottom: 5px;
 }
+.active-directory-dropdown > p {
+    margin: 0;
+}
+
+.active-directory-title {
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.active-directory-subtitle {
+    font-style: italic;
+    font-size: 11px;
+}
+
 
 /* dxDataGrid Header */
 .dx-datagrid-headers {
@@ -63,6 +76,12 @@
 .dx-header-filter-empty {
     color: #BDC3C7 !important;
 }
+
+.dx-texteditor-input:read-only {
+    background-color: #e5f1ff;
+    cursor: not-allowed;
+}
+
 
 
 /* Stpper CSS */
