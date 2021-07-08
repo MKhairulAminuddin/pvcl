@@ -12,6 +12,10 @@ namespace xDC.Utils
         public static string DbCon => ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
         public static string LoggerFilePathFormat => ConfigurationManager.AppSettings["Logger.FilePathFormat"];
+        public static string SmtpServerIp => ConfigurationManager.AppSettings["Smtp.ServerIp"];
+        public static string SmtpServerPort => ConfigurationManager.AppSettings["Smtp.ServerPort"];
+        public static string SmtpSenderAccount => ConfigurationManager.AppSettings["Smtp.SenderAccount"];
+        public static string SmtpSenderAccountName => ConfigurationManager.AppSettings["Smtp.SenderAccountName"];
         
         public static string AclAdministrator = "Administrator";
         public static string AclPowerUser = "Power User";

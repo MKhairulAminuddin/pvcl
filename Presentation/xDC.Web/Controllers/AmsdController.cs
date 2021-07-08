@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Web.Mvc;
 using DevExpress.Spreadsheet;
 using xDC.Infrastructure.Application;
+using xDC.Services;
 using xDC.Utils;
 using xDC_Web.Extension.MailMerge;
 using xDC_Web.Models;
@@ -18,6 +19,8 @@ namespace xDC_Web.Controllers
     {
         public ActionResult Index()
         {
+            var x = new MailService();
+            x.SendSubmitForApprovalEmail(4);
             return View();
         }
 
