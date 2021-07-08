@@ -113,7 +113,8 @@ namespace xDC_Web.Controllers.Api
                         FormType = Common.FormTypeMapping(1),
                         PreparedBy = User.Identity.Name,
                         PreparedDate = DateTime.Now,
-                        FormStatus = Common.FormStatusMapping(2)
+                        FormStatus = Common.FormStatusMapping(2),
+                        ApprovedBy = inputs.Approver
                     };
 
                     Validate(newRecord);

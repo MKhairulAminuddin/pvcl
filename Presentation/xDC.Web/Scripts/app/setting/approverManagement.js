@@ -6,10 +6,10 @@
 
     var formTypes = [
         {
-            "id": "Amsd.InflowFunds",
+            "id": "Inflow Funds",
             "name": "AMSD Inflow Funds"
         }, {
-            "id": "Iisd.TradeSettlement",
+            "id": "Trade Settlement",
             "name": "IISD Trade Settlement"
         }
     ];
@@ -19,7 +19,7 @@
 
     $grid1 = $("#grid1").dxDataGrid({
         dataSource: DevExpress.data.AspNet.createStore({
-            key: "approverUsername",
+            key: "id",
             loadUrl: "../api/setting/GetApprover",
             insertUrl: "../api/setting/insertApprover",
             updateUrl: "../api/setting/updateApprover",
@@ -38,8 +38,8 @@
         },
         columns: [
             {
-                caption: "Approver Name",
-                dataField: "approverUsername",
+                caption: "Approver",
+                dataField: "username",
                 lookup: {
                     dataSource: aduserStores,
                     valueExpr: "username",

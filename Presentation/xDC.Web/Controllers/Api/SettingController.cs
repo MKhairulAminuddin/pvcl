@@ -275,7 +275,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.Config_ApproverList.ToList();
+                    var result = db.Config_Approver.ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -297,7 +297,7 @@ namespace xDC_Web.Controllers.Api
                 {
                     var key = Convert.ToInt32(form.Get("key"));
                     var values = form.Get("values");
-                    var existingRecord = db.Config_ApproverList.SingleOrDefault(o => o.Id == key);
+                    var existingRecord = db.Config_Approver.SingleOrDefault(o => o.Id == key);
 
                     JsonConvert.PopulateObject(values, existingRecord);
 
@@ -338,22 +338,35 @@ namespace xDC_Web.Controllers.Api
                 {
                     var values = form.Get("values");
 
-                    var newRecord = new Config_ApproverList();
+                    var newRecord = new Config_Approver();
                     JsonConvert.PopulateObject(values, newRecord);
 
                     newRecord.CreatedBy = User.Identity.Name;
 
-
                     Validate(newRecord);
-
                     if (!ModelState.IsValid)
                         return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
 
+                    var userDetailsInAd =
+                        db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == newRecord.Username);
 
-                    db.Config_ApproverList.Add(newRecord);
-                    db.SaveChanges();
+                    if (userDetailsInAd != null)
+                    {
+                        newRecord.DisplayName = userDetailsInAd.DisplayName;
+                        newRecord.Email = userDetailsInAd.Email;
+                        newRecord.Title = userDetailsInAd.Title;
+                        newRecord.Department = userDetailsInAd.Department;
 
-                    return Request.CreateResponse(HttpStatusCode.Created, newRecord);
+                        db.Config_Approver.Add(newRecord);
+                        db.SaveChanges();
+
+                        return Request.CreateResponse(HttpStatusCode.Created, newRecord);
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.InternalServerError, "User Not Exist!");
+                    }
+                    
                 }
             }
             catch (Exception ex)
@@ -371,9 +384,9 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var key = Convert.ToInt32(form.Get("key"));
-                    var foundRecord = db.Config_ApproverList.First(x => x.Id == key);
+                    var foundRecord = db.Config_Approver.First(x => x.Id == key);
 
-                    db.Config_ApproverList.Remove(foundRecord);
+                    db.Config_Approver.Remove(foundRecord);
                     db.SaveChanges();
                     return Request.CreateResponse(HttpStatusCode.OK);
                 }

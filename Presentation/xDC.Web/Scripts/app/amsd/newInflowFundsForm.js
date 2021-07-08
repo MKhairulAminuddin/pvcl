@@ -10,21 +10,50 @@
             key: "id",
             loadUrl: "../api/common/GetInflowFundsBank"
         });
+
+        var approverStore = DevExpress.data.AspNet.createStore({
+            key: "id",
+            loadUrl: "../api/common/GetApproverAmsdInflowFunds"
+        });
         
 
-        var $inflowFundsGrid, $historyBtn, $submitBtn, $tbFormId, $tbFormStatus;
+        var $inflowFundsGrid, $approverDropdown,$historyBtn, $submitBtn, $tbFormId, $tbFormStatus;
 
-        $("#submitBtn").on({
+        $approverDropdown = $("#approverDropdown").dxSelectBox({
+            dataSource: approverStore,
+            displayExpr: "displayName",
+            valueExpr: "username",
+            searchEnabled: true,
+            itemTemplate: function (data) {
+                return "<div class='active-directory-dropdown'>" +
+                    "<p class='active-directory-title'>" + data.displayName + "</p>" +
+                    "<p class='active-directory-subtitle'>" + data.title + ", " + data.department + "</p>" +
+                    "<p class='active-directory-subtitle'>" + data.email + "</p>" +
+                    "</div>";
+            }
+        }).dxSelectBox("instance");
+        
+        $("#submitForApprovalBtn").on({
             "click": function (e) {
+                if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
+                    $("#error_container").bs_warning("Please key in at least one item.");
+                } else {
+                    $('#selectApproverModal').modal('show');
+                }
                 
+                e.preventDefault();
+            }
+        });
 
+        $("#submitForApprovalModalBtn").on({
+            "click": function (e) {
                 if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
                     $("#error_container").bs_warning("Please key in at least one item.");
                 }
                 else {
                     var data = {
-                        formType: $("input[name='formType']").val(),
-                        amsdInflowFunds: $inflowFundsGrid.getDataSource().items()
+                        amsdInflowFunds: $inflowFundsGrid.getDataSource().items(),
+                        approver: $approverDropdown.option('value')
                     };
 
                     $.ajax({
@@ -43,6 +72,8 @@
                 e.preventDefault();
             }
         });
+
+
 
         $("#saveAsDraftBtn").on({
             "click": function (e) {
@@ -70,7 +101,8 @@
                         url: '../api/amsd/NewInflowFundsFormDraft',
                         method: 'post'
                     }).done(function (data) {
-                        window.location.href = "../amsd/InflowFundsFormStatus?id=" + data;
+                        //window.location.href = "../amsd/InflowFundsFormStatus?id=" + data;
+                        window.location.href = "../amsd";
 
                     }).fail(function (jqXHR, textStatus, errorThrown) {
                         $("#error_container").bs_alert(textStatus + ': ' + errorThrown);

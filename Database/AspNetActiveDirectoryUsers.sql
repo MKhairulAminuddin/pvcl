@@ -1,19 +1,16 @@
+CREATE TABLE [dbo].[Config_Approver](
+	[Id] [int] IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	[ApproverUsername] [nvarchar](150) NULL,
 
-CREATE TABLE [dbo].[AspNetActiveDirectoryUsers](
-	[Username] [nvarchar](256) PRIMARY KEY	NOT NULL,
-	[Email] [nvarchar](256) NOT NULL,
+	[Email] [nvarchar](256),
 	[DisplayName] [nvarchar](256),
 	[Title] [nvarchar](256),
 	[Department] [nvarchar](256),
-	[TelNo] [nvarchar](256),
-	[Office] [nvarchar](256),
-	[AdType] [nvarchar](256),
-	[DistinguishedName] [nvarchar](256),
-	
-	[AdAccountCreated] [datetime],
-	[AdAccountChanged] [datetime],
-	[LastBadPasswordAttempt] [datetime],
-	[LastBadPasswordAttempt] [datetime],
-	[LastLogon] [datetime],
-	[LastPasswordSet] [datetime]
+
+	[FormType] [nvarchar](150) NULL,
+
+	[CreatedBy] [nvarchar](150) NULL,
+	[CreatedDate] [datetime] NULL,
+	[UpdatedBy] [nvarchar](150) NULL,
+	[UpdatedDate] [datetime] NULL
 )

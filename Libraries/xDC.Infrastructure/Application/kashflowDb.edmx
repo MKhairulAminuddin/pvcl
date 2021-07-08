@@ -80,12 +80,16 @@
           <Property Name="UpdatedBy" Type="nvarchar" MaxLength="250" />
           <Property Name="UpdatedDate" Type="datetime" />
         </EntityType>
-        <EntityType Name="Config_ApproverList">
+        <EntityType Name="Config_Approver">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ApproverUsername" Type="nvarchar" MaxLength="150" />
+          <Property Name="Username" Type="nvarchar" MaxLength="150" />
+          <Property Name="Email" Type="nvarchar" MaxLength="256" />
+          <Property Name="DisplayName" Type="nvarchar" MaxLength="256" />
+          <Property Name="Title" Type="nvarchar" MaxLength="256" />
+          <Property Name="Department" Type="nvarchar" MaxLength="256" />
           <Property Name="FormType" Type="nvarchar" MaxLength="150" />
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="150" />
           <Property Name="CreatedDate" Type="datetime" />
@@ -183,7 +187,7 @@
           <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Config_Application" EntityType="Self.Config_Application" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Config_ApproverList" EntityType="Self.Config_ApproverList" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Config_Approver" EntityType="Self.Config_Approver" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Config_Dropdown" EntityType="Self.Config_Dropdown" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Config_Key" EntityType="Self.Config_Key" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FormHeader" EntityType="Self.FormHeader" Schema="dbo" store:Type="Tables" />
@@ -215,7 +219,7 @@
           <EntitySet Name="Config_Application" EntityType="kashflowDbModel.Config_Application" />
           <EntitySet Name="Config_Dropdown" EntityType="kashflowDbModel.Config_Dropdown" />
           <EntitySet Name="Config_Key" EntityType="kashflowDbModel.Config_Key" />
-          <EntitySet Name="Config_ApproverList" EntityType="kashflowDbModel.Config_ApproverList" />
+          <EntitySet Name="Config_Approver" EntityType="kashflowDbModel.Config_Approver" />
         </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -346,12 +350,16 @@
           <Property Name="Key" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="KeyType" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
         </EntityType>
-        <EntityType Name="Config_ApproverList">
+        <EntityType Name="Config_Approver">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ApproverUsername" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Username" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="DisplayName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Department" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="FormType" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="CreatedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
@@ -504,15 +512,19 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Config_ApproverList">
-            <EntityTypeMapping TypeName="kashflowDbModel.Config_ApproverList">
-              <MappingFragment StoreEntitySet="Config_ApproverList">
+          <EntitySetMapping Name="Config_Approver">
+            <EntityTypeMapping TypeName="kashflowDbModel.Config_Approver">
+              <MappingFragment StoreEntitySet="Config_Approver">
                 <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
                 <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="FormType" ColumnName="FormType" />
-                <ScalarProperty Name="ApproverUsername" ColumnName="ApproverUsername" />
+                <ScalarProperty Name="Department" ColumnName="Department" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

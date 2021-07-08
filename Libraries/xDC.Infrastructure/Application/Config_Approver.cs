@@ -12,10 +12,14 @@ namespace xDC.Infrastructure.Application
     using System;
     using System.Collections.Generic;
     
-    public partial class Config_ApproverList
+    public partial class Config_Approver
     {
         public int Id { get; set; }
-        public string ApproverUsername { get; set; }
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string DisplayName { get; set; }
+        public string Title { get; set; }
+        public string Department { get; set; }
         public string FormType { get; set; }
         public string CreatedBy { get; set; }
         public Nullable<System.DateTime> CreatedDate { get; set; }

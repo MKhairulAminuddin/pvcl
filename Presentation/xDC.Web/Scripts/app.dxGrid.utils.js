@@ -194,7 +194,7 @@ var dxGridUtils = (function () {
             showInfo: true
         },
         paging: {
-            pageSize: 20,
+            pageSize: 10,
             pageIndex: 0
         },
         wordWrapEnabled: true

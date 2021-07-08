@@ -14,7 +14,8 @@
                 {
                     dataField: "id",
                     caption: "Form ID",
-                    alignment: "left"
+                    alignment: "left",
+                    width: 100
                 },
                 {
                     dataField: "formType",
@@ -32,7 +33,7 @@
                 },
                 {
                     dataField: "approvedBy",
-                    caption: "Approved By"
+                    caption: "Approver"
                 },
                 {
                     dataField: "approvedDate",
@@ -51,7 +52,8 @@
                     buttons: [
                         {
                             hint: "Edit Draft",
-                            icon: "fa fa-pencil-square-o",
+                            icon: "fa fa-pencil-square",
+                            cssClass: "dx-datagrid-command-btn",
                             visible: function (e) {
                                 return (e.row.data.formStatus == "Draft" && e.row.data.isFormOwner);
                             },
@@ -62,7 +64,11 @@
                         },
                         {
                             hint: "View Form",
-                            icon: "fa fa-external-link",
+                            icon: "fa fa-eye",
+                            cssClass: "dx-datagrid-command-btn",
+                            visible: function (e) {
+                                return (e.row.data.formStatus != "Draft");
+                            },
                             onClick: function (e) {
                                 window.location.href = "/amsd/InflowFundsFormStatus?id=" + e.row.data.id;
                                 e.event.preventDefault();
@@ -71,6 +77,10 @@
                         {
                             hint: "Print Form",
                             icon: "fa fa-print",
+                            cssClass: "dx-datagrid-command-btn",
+                            visible: function (e) {
+                                return (e.row.data.formStatus != "Draft");
+                            },
                             onClick: function (e) {
                                 var data = {
                                     id: e.row.data.id
@@ -92,8 +102,6 @@
                     ]
                 }
             ],
-            showBorders: true,
-            height: 300,
             editing: {
                 mode: "row",
                 allowUpdating: false,

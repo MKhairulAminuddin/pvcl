@@ -65,7 +65,7 @@
     <Compile Include="Application\Config_Application.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Application\Config_ApproverList.cs">
+    <Compile Include="Application\Config_Approver.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
     <Compile Include="Application\Config_Dropdown.cs">

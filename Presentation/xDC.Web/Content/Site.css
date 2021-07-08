@@ -77,6 +77,11 @@
     color: #BDC3C7 !important;
 }
 
+.dx-datagrid-command-btn:hover {
+    color: #2c3e50 !important;
+    font-weight: bold;
+}
+
 .dx-texteditor-input:read-only {
     background-color: #e5f1ff;
     cursor: not-allowed;

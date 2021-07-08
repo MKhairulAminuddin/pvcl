@@ -113,6 +113,14 @@
         </div>
     </div>
     <div class="row">
+        <div class="col-md-8">
+            <div class="box box-solid">
+                <div class="box-body">
+                    <div id="inflowFundsGrid1"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="col-md-4">
             <div class="box box-solid">
                 <div class="box-body">
@@ -121,6 +129,14 @@
                             <div class="dx-field-label">Form ID</div>
                             <div class="dx-field-value">
                                 @(Html.DevExtreme().TextBoxFor(m => m.Id)
+                                    .StylingMode(EditorStylingMode.Underlined)
+                                    .ReadOnly(true))
+                            </div>
+                        </div>
+                        <div class="dx-field">
+                            <div class="dx-field-label">Status</div>
+                            <div class="dx-field-value">
+                                @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
                                     .StylingMode(EditorStylingMode.Underlined)
                                     .ReadOnly(true))
                             </div>
@@ -138,14 +154,7 @@
                             <div class="dx-field-value">
                                 @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
                                     .StylingMode(EditorStylingMode.Underlined)
-                                    .ReadOnly(true))
-                            </div>
-                        </div>
-                        <div class="dx-field">
-                            <div class="dx-field-label">Status</div>
-                            <div class="dx-field-value">
-                                @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
-                                    .StylingMode(EditorStylingMode.Underlined)
+                                    .DisplayFormat("dd/MM/yyyy hh:mm a")
                                     .ReadOnly(true))
                             </div>
                         </div>
@@ -162,6 +171,7 @@
                             <div class="dx-field-value">
                                 @(Html.DevExtreme().DateBoxFor(m => m.ApprovedDate)
                                     .StylingMode(EditorStylingMode.Underlined)
+                                    .DisplayFormat("dd/MM/yyyy hh:mm TT")
                                     .ReadOnly(true))
                             </div>
                         </div>
@@ -169,14 +179,6 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-8">
-            <div class="box box-solid">
-                <div class="box-body">
-                    <div id="inflowFundsGrid1"></div>
-                </div>
-            </div>
-        </div>
-
     </div>
 </section>
 
