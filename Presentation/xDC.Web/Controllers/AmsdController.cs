@@ -19,8 +19,6 @@ namespace xDC_Web.Controllers
     {
         public ActionResult Index()
         {
-            var x = new MailService();
-            x.SendSubmitForApprovalEmail(4);
             return View();
         }
 

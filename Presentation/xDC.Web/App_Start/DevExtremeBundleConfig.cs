@@ -25,6 +25,7 @@ namespace xDC_Web {
 
             // Predefined themes: https://js.devexpress.com/DevExtreme/Guide/Themes_and_Styles/Predefined_Themes/
             styleBundle.Include("~/Content/dx.generic.kashflow-light.css");
+            //styleBundle.Include("~/Content/dx.light.css");
 
             // Uncomment to use the Gantt control
             //scriptBundle.Include("~/Scripts/dx-gantt.js");

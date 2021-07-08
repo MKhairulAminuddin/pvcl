@@ -8,6 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{71
 		Database\AspNetActiveDirectoryUsers.sql = Database\AspNetActiveDirectoryUsers.sql
 		Database\AspNetAuth.sql = Database\AspNetAuth.sql
 		Config_Application.sql = Config_Application.sql
+		Config_ApproverList.sql = Config_ApproverList.sql
 		Config_Dropdown.sql = Config_Dropdown.sql
 		Config_Key.sql = Config_Key.sql
 		Form.sql = Form.sql

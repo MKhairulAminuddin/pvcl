@@ -285,6 +285,7 @@
     <Content Include="Scripts\app\iisd\index.js" />
     <Content Include="Scripts\app\iisd\newTradeSettlement.js" />
     <Content Include="Scripts\app\admin\applicationConfig.js" />
+    <Content Include="Scripts\app\setting\approverManagement.js" />
     <Content Include="Scripts\app\setting\dropdownConfig.js" />
     <Content Include="Scripts\app\setting\notificationConfig.js" />
     <Content Include="Scripts\aspnet\dx.aspnet.data.js" />
@@ -459,6 +460,7 @@
     <Content Include="Views\Iisd\NewTradeSettlement.cshtml" />
     <Content Include="Views\Amsd\InflowFundsFormStatus.cshtml" />
     <Content Include="Views\Admin\ApplicationConfig.cshtml" />
+    <Content Include="Views\Setting\ApproverManagement.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

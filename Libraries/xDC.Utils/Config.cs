@@ -16,7 +16,9 @@ namespace xDC.Utils
         public static string SmtpServerPort => ConfigurationManager.AppSettings["Smtp.ServerPort"];
         public static string SmtpSenderAccount => ConfigurationManager.AppSettings["Smtp.SenderAccount"];
         public static string SmtpSenderAccountName => ConfigurationManager.AppSettings["Smtp.SenderAccountName"];
-        
+
+        public static string EmailApplicationUrl => ConfigurationManager.AppSettings["Email.ApplicationUrl"];
+
         public static string AclAdministrator = "Administrator";
         public static string AclPowerUser = "Power User";
         public static string AclAmsd = "Amsd";

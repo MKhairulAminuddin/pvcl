@@ -20,6 +20,11 @@ namespace xDC_Web.Controllers
             return View();
         }
 
+        public ActionResult ApproverManagement()
+        {
+            return View();
+        }
+
         public ActionResult Workflow()
         {
             return View();

@@ -30,7 +30,7 @@ namespace xDC.Services
                         message.From.Add(new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount));
                         message.Subject = "[Kashflow] Inflow Funds Submission Require Approval";
                         
-                        var approvalPageUrl = string.Format("http://localhost/amsd/InflowFundsFormStatus?id={0}", formId);
+                        var approvalPageUrl = string.Format("{0}/amsd/InflowFundsFormStatus?id={1}", Config.EmailApplicationUrl, formId);
                         var bodyBuilder = new StringBuilder();
                         bodyBuilder.Append(string.Format("<p>Hi {0}, </p>", approverName.DisplayName));
                         bodyBuilder.AppendLine(string.Format("<p>An item is pending for your approval. </p> "));

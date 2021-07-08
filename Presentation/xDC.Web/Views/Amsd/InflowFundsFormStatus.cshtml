@@ -113,64 +113,70 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-4">
             <div class="box box-solid">
                 <div class="box-body">
                     <div class="dx-fieldset">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="dx-field">
-                                    <div class="dx-field-label">Form ID</div>
-                                    <div class="dx-field-value">
-                                        @(Html.DevExtreme().TextBoxFor(m => m.Id)
-                                            .ReadOnly(true))
-                                    </div>
-                                </div>
-                                <div class="dx-field">
-                                    <div class="dx-field-label">Preparer</div>
-                                    <div class="dx-field-value">
-                                        @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
-                                            .ReadOnly(true))
-                                    </div>
-                                </div>
-                                <div class="dx-field">
-                                    <div class="dx-field-label">Prepared Date</div>
-                                    <div class="dx-field-value">
-                                        @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
-                                            .ReadOnly(true))
-                                    </div>
-                                </div>
+                        <div class="dx-field">
+                            <div class="dx-field-label">Form ID</div>
+                            <div class="dx-field-value">
+                                @(Html.DevExtreme().TextBoxFor(m => m.Id)
+                                    .StylingMode(EditorStylingMode.Underlined)
+                                    .ReadOnly(true))
                             </div>
-                            <div class="col-md-4">
-                                <div class="dx-field">
-                                    <div class="dx-field-label">Status</div>
-                                    <div class="dx-field-value">
-                                        @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
-                                            .ReadOnly(true))
-                                    </div>
-                                </div>
-                                <div class="dx-field">
-                                    <div class="dx-field-label">Approver</div>
-                                    <div class="dx-field-value">
-                                        @(Html.DevExtreme().TextBoxFor(m => m.ApprovedBy)
-                                            .ReadOnly(true))
-                                    </div>
-                                </div>
-                                <div class="dx-field">
-                                    <div class="dx-field-label">Approved Date</div>
-                                    <div class="dx-field-value">
-                                        @(Html.DevExtreme().DateBoxFor(m => m.ApprovedDate)
-                                            .ReadOnly(true))
-                                    </div>
-                                </div>
+                        </div>
+                        <div class="dx-field">
+                            <div class="dx-field-label">Preparer</div>
+                            <div class="dx-field-value">
+                                @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
+                                    .StylingMode(EditorStylingMode.Underlined)
+                                    .ReadOnly(true))
                             </div>
-                            <div class="col-md-4"></div>
+                        </div>
+                        <div class="dx-field">
+                            <div class="dx-field-label">Prepared Date</div>
+                            <div class="dx-field-value">
+                                @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
+                                    .StylingMode(EditorStylingMode.Underlined)
+                                    .ReadOnly(true))
+                            </div>
+                        </div>
+                        <div class="dx-field">
+                            <div class="dx-field-label">Status</div>
+                            <div class="dx-field-value">
+                                @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
+                                    .StylingMode(EditorStylingMode.Underlined)
+                                    .ReadOnly(true))
+                            </div>
+                        </div>
+                        <div class="dx-field">
+                            <div class="dx-field-label">Approver</div>
+                            <div class="dx-field-value">
+                                @(Html.DevExtreme().TextBoxFor(m => m.ApprovedBy)
+                                    .StylingMode(EditorStylingMode.Underlined)
+                                    .ReadOnly(true))
+                            </div>
+                        </div>
+                        <div class="dx-field">
+                            <div class="dx-field-label">Approved Date</div>
+                            <div class="dx-field-value">
+                                @(Html.DevExtreme().DateBoxFor(m => m.ApprovedDate)
+                                    .StylingMode(EditorStylingMode.Underlined)
+                                    .ReadOnly(true))
+                            </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="box box-solid">
+                <div class="box-body">
                     <div id="inflowFundsGrid1"></div>
                 </div>
             </div>
         </div>
+
     </div>
 </section>
 
