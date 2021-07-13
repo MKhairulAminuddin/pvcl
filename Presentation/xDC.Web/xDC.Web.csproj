@@ -337,6 +337,7 @@
     <Content Include="fonts\fontawesome-webfont.eot" />
     <Content Include="App_Data\AMSD - Inflow Funds Template.xltx" />
     <Content Include="Content\dx.generic.kashflow-light.json" />
+    <Content Include="Extension\DocTemplate\Inflow Funds Template.xltx" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
     <Content Include="Scripts\jquery-3.5.1.min.js" />
@@ -490,6 +491,7 @@
     <Compile Include="Controllers\SampleDataController.cs" />
     <Compile Include="Controllers\SettingController.cs" />
     <Compile Include="Extension\AdAuthentication.cs" />
+    <Compile Include="Extension\DocGenerator\InflowFundsFormDoc.cs" />
     <Compile Include="Extension\MailMerge\AmsdInflowFundFormGenerator.cs" />
     <Compile Include="Extension\MailMerge\HtmlContentGenerator.cs" />
     <Compile Include="Extension\MenuSecurity.cs" />
