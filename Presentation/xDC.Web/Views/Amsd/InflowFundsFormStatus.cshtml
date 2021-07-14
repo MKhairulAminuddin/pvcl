@@ -16,24 +16,29 @@
                         .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
                         )
                 </div>
-                @if (Model.ApprovePermission)
+                @if (Model.ApprovePermission && (Model.FormStatus != "Approved" || Model.FormStatus != "Rejected"))
                 {
-                    <div>
-                        @(Html.DevExtreme().Button()
-                            .Text("Approve")
-                            .Icon("check")
-                            .Type(ButtonType.Success)
-                            .StylingMode(ButtonStylingMode.Contained)
-                            )
-                    </div>
-                    <div>
-                        @(Html.DevExtreme().Button()
-                            .Text("Reject")
-                            .Icon("remove")
-                            .Type(ButtonType.Normal)
-                            .StylingMode(ButtonStylingMode.Contained)
-                            )
-                    </div>
+                    if (Model.FormStatus != "Approved" && Model.FormStatus != "Rejected")
+                    {
+                        <div>
+                            @(Html.DevExtreme().Button()
+                                .ID("approveBtn")
+                                .Text("Approve")
+                                .Icon("check")
+                                .Type(ButtonType.Success)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                )
+                        </div>
+                        <div>
+                            @(Html.DevExtreme().Button()
+                                .ID("rejectBtn")
+                                .Text("Reject")
+                                .Icon("remove")
+                                .Type(ButtonType.Normal)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                )
+                        </div>
+                    }
                 }
                 @if (User.IsInRole("Power User"))
                 {
@@ -53,7 +58,7 @@
         </div>
         <div class="col-md-6">
             <div id="right-toolbar-container" class="right-container">
-                
+
             </div>
         </div>
     </div>
@@ -72,7 +77,7 @@
                     </div>
                     <div class="stepper-item">
                         <div class="step-counter">2</div>
-                        <div class="step-name">Approval</div>
+                        <div class="step-name">Pending Approval</div>
                     </div>
                     <div class="stepper-item">
                         <div class="step-counter">3</div>
@@ -90,11 +95,47 @@
                     </div>
                     <div class="stepper-item active">
                         <div class="step-counter">2</div>
-                        <div class="step-name">Approval</div>
+                        <div class="step-name">Pending Approval</div>
                     </div>
                     <div class="stepper-item">
                         <div class="step-counter">3</div>
                         <div class="step-name">Done</div>
+                    </div>
+                </div>
+            }
+
+            @if (Model.FormStatus == "Approved")
+            {
+                <div class="stepper-wrapper">
+                    <div class="stepper-item completed">
+                        <div class="step-counter">1</div>
+                        <div class="step-name">Preparation</div>
+                    </div>
+                    <div class="stepper-item completed">
+                        <div class="step-counter">2</div>
+                        <div class="step-name">Pending Approval</div>
+                    </div>
+                    <div class="stepper-item completed">
+                        <div class="step-counter">3</div>
+                        <div class="step-name">Approved</div>
+                    </div>
+                </div>
+            }
+
+            @if (Model.FormStatus == "Rejected")
+            {
+                <div class="stepper-wrapper">
+                    <div class="stepper-item completed">
+                        <div class="step-counter">1</div>
+                        <div class="step-name">Preparation</div>
+                    </div>
+                    <div class="stepper-item completed">
+                        <div class="step-counter">2</div>
+                        <div class="step-name">Pending Approval</div>
+                    </div>
+                    <div class="stepper-item completed">
+                        <div class="step-counter">3</div>
+                        <div class="step-name">Rejected</div>
                     </div>
                 </div>
             }
@@ -159,7 +200,7 @@
                             <div class="dx-field-value">
                                 @(Html.DevExtreme().DateBoxFor(m => m.ApprovedDate)
                                     .StylingMode(EditorStylingMode.Underlined)
-                                    .DisplayFormat("dd/MM/yyyy hh:mm TT")
+                                    .DisplayFormat("dd/MM/yyyy hh:mm a")
                                     .ReadOnly(true))
                             </div>
                         </div>
@@ -169,6 +210,89 @@
         </div>
     </div>
 </section>
+
+<div id="approvalNoteModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Approval Note:</h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        @(Html.DevExtreme().TextArea()
+                            .ID("approvalNoteTextBox")
+                            .Height(90)
+                            )
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div>
+                    @(Html.DevExtreme().Button()
+                        .ID("approveFormBtn")
+                        .Text("Approve")
+                        .Type(ButtonType.Default)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        )
+                    @(Html.DevExtreme().Button()
+                        .Text("Cancel")
+                        .Type(ButtonType.Normal)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        .OnClick(@<text> function(){ $('#approvalNoteModal').modal('hide'); } </text>)
+                        )
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="rejectionNoteModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Rejection Note:</h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        @(Html.DevExtreme().TextArea()
+                            .ID("rejectionNoteTextBox")
+                            .Height(90)
+                            )
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div>
+                    @(Html.DevExtreme().Button()
+                        .ID("rejectFormBtn")
+                        .Text("Reject")
+                        .Type(ButtonType.Danger)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        )
+                    @(Html.DevExtreme().Button()
+                        .Text("Cancel")
+                        .Type(ButtonType.Normal)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        .OnClick(@<text> function(){ $('#rejectionNoteModal').modal('hide'); } </text>)
+                        )
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @section scripts
 {

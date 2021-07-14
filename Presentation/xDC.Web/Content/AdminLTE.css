@@ -955,7 +955,7 @@ a:focus {
 /*Dropdowns in general*/
 .dropdown-menu {
   box-shadow: none;
-  border-color: #eee;
+  border-color: transparent;
 }
 .dropdown-menu > li > a {
   color: #ecf0f1;
@@ -976,10 +976,10 @@ a:focus {
 .navbar-nav > .notifications-menu > .dropdown-menu,
 .navbar-nav > .messages-menu > .dropdown-menu,
 .navbar-nav > .tasks-menu > .dropdown-menu {
-  width: 280px;
-  padding: 0 0 0 0;
-  margin: 0;
-  top: 100%;
+    width: 280px;
+    padding: 0 0 0 0;
+    margin: 2px 0 0 0;
+    top: 100%;
 }
 .navbar-nav > .notifications-menu > .dropdown-menu > li,
 .navbar-nav > .messages-menu > .dropdown-menu > li,

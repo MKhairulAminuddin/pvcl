@@ -67,6 +67,14 @@
                             <div class="box-body">
                                 <div class="dx-fieldset">
                                     <div class="dx-field">
+                                        <div class="dx-field-label">Status</div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
+                                                .StylingMode(EditorStylingMode.Underlined)
+                                                .ReadOnly(true))
+                                        </div>
+                                    </div>
+                                    <div class="dx-field">
                                         <div class="dx-field-label">Preparer</div>
                                         <div class="dx-field-value">
                                             @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
@@ -80,14 +88,6 @@
                                             @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
                                                 .StylingMode(EditorStylingMode.Underlined)
                                                 .DisplayFormat("dd/MM/yyyy hh:mm a")
-                                                .ReadOnly(true))
-                                        </div>
-                                    </div>
-                                    <div class="dx-field">
-                                        <div class="dx-field-label">Status</div>
-                                        <div class="dx-field-value">
-                                            @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
-                                                .StylingMode(EditorStylingMode.Underlined)
                                                 .ReadOnly(true))
                                         </div>
                                     </div>
@@ -130,7 +130,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 

@@ -80,7 +80,7 @@ namespace xDC_Web.Controllers
                             ApprovedDate = getForm.ApprovedDate,
                             FormStatus = getForm.FormStatus,
 
-                            ApprovePermission = false // to ganti with workflow checking
+                            ApprovePermission = getForm.ApprovedBy == User.Identity.Name
                         };
                         return View(formObj);
                     }
@@ -110,8 +110,9 @@ namespace xDC_Web.Controllers
             
         }
 
+
+        // Print Form
         [HttpPost]
-        // called first
         public ActionResult PrintInflowFund(string id)
         {
             try
@@ -135,8 +136,7 @@ namespace xDC_Web.Controllers
                 return HttpNotFound();
             }
         }
-
-
+        
         public ActionResult GetPrintInflowFund(string id)
         {
             try

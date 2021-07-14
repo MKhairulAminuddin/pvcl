@@ -101,6 +101,13 @@ namespace xDC.Utils
             return String.Empty;
         }
 
+        /// <summary>
+        /// Get Form Status Mapping
+        /// </summary>
+        /// <param name="value">
+        /// numbers representing the statuses. 0 Draft, 1 Preparation, 2 Pending Approval, 3 Approved, 4 Rejected
+        /// </param>
+        /// <returns>string</returns>
         public static string FormStatusMapping(int value)
         {
             switch (value)
@@ -113,6 +120,8 @@ namespace xDC.Utils
                     return "Pending Approval";
                 case 3:
                     return "Approved";
+                case 4:
+                    return "Rejected";
             }
             return String.Empty;
         }

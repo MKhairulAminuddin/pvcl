@@ -3,10 +3,27 @@
     $(function () {
         var $inflowFundsGrid, $printBtn, $tbFormId, $tbFormStatus;
 
+        $("#approveBtn").on({
+            "click": function (e) {
+                $('#approvalNoteModal').modal('show');
+
+                e.preventDefault();
+            }
+        });
+
+        $("#rejectBtn").on({
+            "click": function (e) {
+                $('#rejectionNoteModal').modal('show');
+
+                e.preventDefault();
+            }
+        });
+
         $printBtn = $("#printBtn").dxDropDownButton({
             text: "Print",
             icon: "print",
             type: "normal",
+            stylingMode: "contained",
             dropDownOptions: {
                 width: 230
             },
@@ -37,7 +54,6 @@
                 "PDF"
             ]
         }).dxDropDownButton("instance");
-        
         
         $inflowFundsGrid = $("#inflowFundsGrid1").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
@@ -83,5 +99,58 @@
         }).dxDataGrid("instance");
 
         $inflowFundsGrid.option(dxGridUtils.viewOnlyGridConfig);
+
+        $("#approveFormBtn").on({
+            "click": function (e) {
+                
+                var data = {
+                    approvalNote: $("#approvalNoteTextBox").dxTextArea("instance").option('value'),
+                    approvalStatus: true,
+                    formId: getUrlParameter('id')
+                };
+
+                $.ajax({
+                    data: data,
+                    dataType: 'json',
+                    url: '../api/amsd/InflowFundsFormApproval',
+                    method: 'post'
+                }).done(function (data) {
+                    window.location.href = "../amsd/InflowFundsFormStatus?id=" + data;
+
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                });
+
+                e.preventDefault();
+            }
+        });
+
+        $("#rejectFormBtn").on({
+            "click": function (e) {
+
+                var data = {
+                    approvalNote: $("#rejectionNoteTextBox").dxTextArea("instance").option('value'),
+                    approvalStatus: false,
+                    formId: getUrlParameter('id')
+                };
+
+                $.ajax({
+                    data: data,
+                    dataType: 'json',
+                    url: '../api/amsd/InflowFundsFormApproval',
+                    method: 'post'
+                }).done(function (data) {
+                    window.location.href = "../amsd/InflowFundsFormStatus?id=" + data;
+
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                });
+
+                e.preventDefault();
+            }
+        });
+
+
+
     });
 }(window.jQuery, window, document));

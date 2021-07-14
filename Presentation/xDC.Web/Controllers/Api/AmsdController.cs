@@ -66,37 +66,7 @@ namespace xDC_Web.Controllers.Api
             
         }
 
-        [HttpGet]
-        [Route("GetInflowFunds")]
-        public HttpResponseMessage GetInflowFunds(string id, DataSourceLoadOptions loadOptions)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var result = new List<Amsd_InflowFunds>();
-
-                    if (!string.IsNullOrEmpty(id))
-                    {
-                        var formId = Convert.ToInt32(id);
-                        result = db.Amsd_InflowFunds
-                            .Where(x => x.FormId == formId).ToList();
-                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                    }
-
-                    
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-
-        }
+        
 
 
         [HttpPost]
@@ -240,15 +210,82 @@ namespace xDC_Web.Controllers.Api
 
         }
 
-
-
-        /*[System.Web.Http.HttpGet]
-        public HttpResponseMessage GetDlp(DataSourceLoadOptions loadOptions)
+        [HttpPost]
+        [Route("InflowFundsFormApproval")]
+        public HttpResponseMessage InflowFundsFormApproval([FromBody] ApprovalInflowFundsModel inputs)
         {
-            var result = new xForm.Data.xFormDbEntities().Security_DLP.ToList();
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formId = Convert.ToInt32(inputs.FormId);
+                    var form = db.FormHeader.FirstOrDefault(x => x.Id == formId);
 
-            return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-        }*/
+                    if (form!=null)
+                    {
+                        if (form.ApprovedBy == User.Identity.Name)
+                        {
+                            form.ApprovedDate = DateTime.Now;
+                            form.FormStatus = (inputs.ApprovalStatus)
+                                ? Common.FormStatusMapping(3)
+                                : Common.FormStatusMapping(4);
+
+                            // placeholder to keep approval note
+
+                            db.SaveChanges();
+
+                            return Request.CreateResponse(HttpStatusCode.Accepted, formId);
+                        }
+                        else
+                        {
+                            return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid Approver");
+                        }
+                        
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid Form");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+
+        }
+
+        [HttpGet]
+        [Route("GetInflowFunds")]
+        public HttpResponseMessage GetInflowFunds(string id, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = new List<Amsd_InflowFunds>();
+
+                    if (!string.IsNullOrEmpty(id))
+                    {
+                        var formId = Convert.ToInt32(id);
+                        result = db.Amsd_InflowFunds
+                            .Where(x => x.FormId == formId).ToList();
+                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    }
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+
+        }
 
         [HttpPut]
         public HttpResponseMessage UpdateInflowFund(FormDataCollection form)

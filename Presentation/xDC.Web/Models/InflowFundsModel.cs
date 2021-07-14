@@ -9,4 +9,11 @@ namespace xDC_Web.Models
         public List<AmsdInflowFunds> AmsdInflowFunds { get; set; }
         public string Approver { get; set; }
     }
+
+    public class ApprovalInflowFundsModel
+    {
+        public int FormId { get; set; }
+        public string ApprovalNote { get; set; }
+        public bool ApprovalStatus { get; set; }
+    }
 }
