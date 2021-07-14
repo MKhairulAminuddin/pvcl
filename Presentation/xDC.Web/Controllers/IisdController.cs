@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace xDC_Web.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Administrator, Power User, IISD")]
     public class IisdController : Controller
     {
         public ActionResult Index()

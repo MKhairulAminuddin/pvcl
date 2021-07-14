@@ -22,8 +22,8 @@ namespace xDC.Utils
 
         public static string AclAdministrator = "Administrator";
         public static string AclPowerUser = "Power User";
-        public static string AclAmsd = "Amsd";
-        public static string AclIisd = "Iisd";
-        public static string AclFid = "Fid";
+        public static string AclAmsd = "AMSD";
+        public static string AclIisd = "IISD";
+        public static string AclFid = "FID";
     }
 }

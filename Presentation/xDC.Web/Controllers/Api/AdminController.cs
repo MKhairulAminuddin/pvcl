@@ -22,7 +22,7 @@ using xDC.Services;
 
 namespace xDC_Web.Controllers.Api
 {
-    /*[Authorize(Roles = "Administrator")]*/
+    [Authorize(Roles = "Administrator")]
     [Route("api/admin/{action}", Name = "admin")]
     public class AdminController : ApiController
     {

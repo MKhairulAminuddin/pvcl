@@ -10,7 +10,7 @@ using xDC_Web.Models.MailMerge;
 
 namespace xDC_Web.Controllers
 {
-    [Authorize(Roles = "Administrator, Power User, Amsd")]
+    [Authorize(Roles = "Administrator, Power User, AMSD")]
     public class AmsdController : BaseController
     {
         public ActionResult Index()

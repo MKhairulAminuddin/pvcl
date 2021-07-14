@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace xDC_Web.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class AdminController : Controller
     {
         public ActionResult UserManagement()

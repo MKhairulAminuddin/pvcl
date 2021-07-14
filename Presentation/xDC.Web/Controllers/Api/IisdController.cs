@@ -13,7 +13,7 @@ using xDC_Web.Models;
 
 namespace xDC_Web.Controllers.Api
 {
-    [Authorize]
+    [Authorize(Roles = "Administrator, Power User, IISD")]
     public class IisdController : ApiController
     {
         [HttpGet]

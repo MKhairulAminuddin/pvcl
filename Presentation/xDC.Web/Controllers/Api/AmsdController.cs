@@ -15,7 +15,7 @@ using xDC.Infrastructure.Application;
 
 namespace xDC_Web.Controllers.Api
 {
-    [Authorize(Roles="Administrator, Power User, Amsd")]
+    [Authorize(Roles="Administrator, Power User, AMSD")]
     [RoutePrefix("api/amsd")]
     public class AmsdController : ApiController
     {

@@ -51,7 +51,7 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.AspNetUsers.Include(a => a.AspNetRoles).FirstOrDefault();
+                    var result = db.AspNetUsers.Include(a => a.AspNetRoles).FirstOrDefault(x => x.UserName == username);
 
                     if (result != null && result.AspNetRoles.Any())
                     {
