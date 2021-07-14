@@ -47,19 +47,7 @@
                     </div>
                 }
                 <div>
-                    @(Html.DevExtreme().DropDownButton()
-                            .ID("PrintBtn")
-                            .Text("Print")
-                            .Icon("print")
-                            .DropDownOptions(options => options.Width(230))
-                            .StylingMode(ButtonStylingMode.Contained)
-                            .DataSource(new List<string>()
-                            {
-                                "Excel Workbook (*.xlsx)",
-                                "PDF"
-                            })
-                            .OnItemClick(@<text> function(e){ alert(e); }</text>)
-                            )
+                    <div id="printBtn"></div>
                 </div>
             </div>
         </div>

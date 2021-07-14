@@ -1,7 +1,42 @@
 ﻿(function ($, window, document) {
 
     $(function () {
-        var $inflowFundsGrid, $historyBtn, $submitBtn, $tbFormId, $tbFormStatus;
+        var $inflowFundsGrid, $printBtn, $tbFormId, $tbFormStatus;
+
+        $printBtn = $("#printBtn").dxDropDownButton({
+            text: "Print",
+            icon: "print",
+            type: "normal",
+            dropDownOptions: {
+                width: 230
+            },
+            onItemClick: function (e) {
+                if (e.itemData == "Excel Workbook (*.xlsx)") {
+                    DevExpress.ui.notify("Download " + e.itemData, "success", 600);
+
+                    var data = {
+                        id: getUrlParameter("id")
+                    };
+
+                    $.ajax({
+                        type: "POST",
+                        url: '/amsd/PrintInflowFund',
+                        data: data,
+                        dataType: "text",
+                        success: function (data) {
+                            var url = '/amsd/GetPrintInflowFund?id=' + data;
+                            window.location = url;
+                        }
+                    });
+                    e.event.preventDefault();
+                }
+                
+            },
+            items: [
+                "Excel Workbook (*.xlsx)",
+                "PDF"
+            ]
+        }).dxDropDownButton("instance");
         
         
         $inflowFundsGrid = $("#inflowFundsGrid1").dxDataGrid({

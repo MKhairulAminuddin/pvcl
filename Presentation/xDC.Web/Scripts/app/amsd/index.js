@@ -29,7 +29,8 @@
                     dataField: "preparedDate",
                     caption: "Prepared Date",
                     dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm"
+                    format: "dd/MM/yyyy HH:mm",
+                    sortOrder: "desc"
                 },
                 {
                     dataField: "approvedBy",

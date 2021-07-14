@@ -35,5 +35,6 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<Config_Dropdown> Config_Dropdown { get; set; }
         public virtual DbSet<Config_Key> Config_Key { get; set; }
         public virtual DbSet<Config_Approver> Config_Approver { get; set; }
+        public virtual DbSet<App_Notification> App_Notification { get; set; }
     }
 }

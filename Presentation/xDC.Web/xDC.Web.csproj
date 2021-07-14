@@ -491,8 +491,8 @@
     <Compile Include="Controllers\SampleDataController.cs" />
     <Compile Include="Controllers\SettingController.cs" />
     <Compile Include="Extension\AdAuthentication.cs" />
+    <Compile Include="Extension\DocGenerator\DocGeneratorBase.cs" />
     <Compile Include="Extension\DocGenerator\InflowFundsFormDoc.cs" />
-    <Compile Include="Extension\MailMerge\AmsdInflowFundFormGenerator.cs" />
     <Compile Include="Extension\MailMerge\HtmlContentGenerator.cs" />
     <Compile Include="Extension\MenuSecurity.cs" />
     <Compile Include="Extension\SchedulerTask\SyncActiveDirectory.cs" />

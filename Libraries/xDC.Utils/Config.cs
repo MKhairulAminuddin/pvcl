@@ -11,6 +11,7 @@ namespace xDC.Utils
     {
         public static string DbCon => ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
+        public static string TempFolderPath => ConfigurationManager.AppSettings["TempFolder.Path"];
         public static string LoggerFilePathFormat => ConfigurationManager.AppSettings["Logger.FilePathFormat"];
         public static string SmtpServerIp => ConfigurationManager.AppSettings["Smtp.ServerIp"];
         public static string SmtpServerPort => ConfigurationManager.AppSettings["Smtp.ServerPort"];
