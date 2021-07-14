@@ -153,7 +153,7 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var key = Common.FormTypeMapping(1);
-                    var result = db.Config_Approver.Where(x => x.FormType == key).ToList();
+                    var result = db.Config_Approver.Where(x => x.FormType == key && x.Username != User.Identity.Name).ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
