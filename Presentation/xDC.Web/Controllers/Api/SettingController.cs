@@ -304,6 +304,18 @@ namespace xDC_Web.Controllers.Api
 
                     if (existingRecord != null)
                     {
+                        var userDetailsInAd =
+                            db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == existingRecord.Username);
+
+                        if (userDetailsInAd == null)
+                        {
+                            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "User not found in AD");
+                        }
+
+                        existingRecord.DisplayName = userDetailsInAd.DisplayName;
+                        existingRecord.Email = userDetailsInAd.Email;
+                        existingRecord.Title = userDetailsInAd.Title;
+                        existingRecord.Department = userDetailsInAd.Department;
                         existingRecord.UpdatedBy = User.Identity.Name;
                         existingRecord.UpdatedDate = DateTime.Now;
 
