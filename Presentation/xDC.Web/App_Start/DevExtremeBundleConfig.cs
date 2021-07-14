@@ -49,7 +49,7 @@ namespace xDC_Web {
             //scriptBundle.Include("~/Scripts/globalize/date.js");
 
             // Uncomment to enable client-side export
-            //scriptBundle.Include("~/Scripts/jszip.js");
+            scriptBundle.Include("~/Scripts/jszip.js");
 
             scriptBundle.Include("~/Scripts/dx.all.js");
 

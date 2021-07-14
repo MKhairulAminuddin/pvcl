@@ -22,6 +22,7 @@ namespace xDC.Infrastructure.Application
         public string Title { get; set; }
         public string ShortMessage { get; set; }
         public string Message { get; set; }
+        public string NotificationUrl { get; set; }
         public System.DateTime CreatedOn { get; set; }
     }
 }

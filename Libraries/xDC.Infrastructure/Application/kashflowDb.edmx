@@ -32,6 +32,7 @@
           <Property Name="Title" Type="nvarchar" MaxLength="150" />
           <Property Name="ShortMessage" Type="text" />
           <Property Name="Message" Type="text" />
+          <Property Name="NotificationUrl" Type="nvarchar" MaxLength="150" />
           <Property Name="CreatedOn" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="AspNetActiveDirectoryUsers">
@@ -394,6 +395,7 @@
           <Property Name="Title" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="ShortMessage" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="NotificationUrl" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
       </Schema>
@@ -563,6 +565,7 @@
             <EntityTypeMapping TypeName="kashflowDbModel.App_Notification">
               <MappingFragment StoreEntitySet="App_Notification">
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="NotificationUrl" ColumnName="NotificationUrl" />
                 <ScalarProperty Name="Message" ColumnName="Message" />
                 <ScalarProperty Name="ShortMessage" ColumnName="ShortMessage" />
                 <ScalarProperty Name="Title" ColumnName="Title" />

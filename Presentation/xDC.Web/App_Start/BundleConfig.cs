@@ -16,6 +16,8 @@ namespace xDC_Web {
                 .Include(
                     "~/Scripts/jquery-3.5.1.js",
                     "~/Scripts/bootstrap.js",
+                    "~/Scripts/underscore.js/underscore.js",
+                    "~/Scripts/moment.js/moment.js",
                     "~/Scripts/adminlte.js",
                     "~/Scripts/app.dxGrid.utils.js",
                     "~/Scripts/app.js"

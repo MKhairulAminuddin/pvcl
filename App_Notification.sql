@@ -11,5 +11,7 @@
 	[ShortMessage] [text],
 	[Message] [text],
 
+	[NotificationUrl] [nvarchar](150),
+
 	[CreatedOn] [datetime] NOT NULL DEFAULT GETDATE()
 )

@@ -1,0 +1,70 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "My Notifications";
+}
+
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-solid">
+                <div class="box-body">
+                    <div id="notificationList">
+                        <script type="text/html" id="notificationListTemplate">
+                            <div>
+                                <div class="info-box-custom">
+                                    <span class="info-box-icon bg-aqua"><i class="<%= notificationIconClass %>"></i></span>
+
+                                    <div class="info-box-content">
+                                        <span class="info-box-custom-title"><%= title %></span>
+                                        <span class="info-box-custom-minitext"><i class="fa fa-clock-o"></i> <%= moment(createdOn).format('DD/MM/YYYY hh:mm A') %></span>
+                                        <span class="info-box-custom-text"><%= message %></span>
+                                    </div>
+                                    <!-- /.info-box-content -->
+                                </div>
+                            </div>
+                        </script>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+@section scripts
+{
+    <script>
+
+        $(function () {
+            DevExpress.setTemplateEngine("underscore");
+            var $notificationList, $notificationListTemplate, $notificationBell, $notificationDropdown;
+            $notificationList = $("#notificationList");
+            $notificationListTemplate = $("#notificationListTemplate");
+
+            $notificationBell = $('#notifyBellCount');
+            $notificationDropdown = $("#notificationDropdown");
+
+            $notificationList.dxList({
+                dataSource: new DevExpress.data.AspNet.createStore({
+                    key: "id",
+                    loadUrl: "../api/common/GetMyNotification",
+                    deleteUrl: "../api/common/DeleteMyNotification"
+                }),
+                itemTemplate: $notificationListTemplate,
+                allowItemDeleting: true,
+                itemDeleteMode: "static",
+                noDataText: "No notification for you &#128123;",
+                onItemDeleted: function (e) {
+                    if ($notificationBell.text() != "") {
+                        var notifyCount = parseInt($notificationBell.text());
+                        $notificationBell.text(notifyCount - 1);
+
+                        $notificationDropdown.dxList("instance").reload();
+                    }
+                }
+            }).dxList("instance");
+        });
+    </script>
+}
+

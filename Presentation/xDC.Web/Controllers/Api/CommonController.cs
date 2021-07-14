@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Web.Http;
 using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using xDC.Infrastructure.Application;
+using xDC.Logging;
 using xDC.Utils;
 
 namespace xDC_Web.Controllers.Api
@@ -162,7 +164,55 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
-        
+
+
+        #endregion
+
+        #region My Notification
+
+        [HttpGet]
+        public HttpResponseMessage GetMyNotification(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var currentUsername = User.Identity.Name;
+                    var result = db.App_Notification.Where(x => x.UserId == currentUsername).ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        public HttpResponseMessage DeleteMyNotification(FormDataCollection form)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var key = Convert.ToInt32(form.Get("key"));
+                    var foundRecord = db.App_Notification.First(x => x.Id == key);
+
+                    db.App_Notification.Remove(foundRecord);
+                    db.SaveChanges();
+                    return Request.CreateResponse(HttpStatusCode.OK);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+
 
         #endregion
     }

@@ -55,6 +55,44 @@
     font-size: 11px;
 }
 
+/* replace long text with elipsis*/
+
+a.hide-long-text {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notification-item-datetime {
+    font-size: 11px;
+}
+
+.notification-item-title {
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.notification-item-description {
+    font-size: 13px;
+    color: #1d282c;
+}
+
+.notification-item-description > a {
+    color: #1d282c;
+    font-weight: bold;
+    text-decoration: underline dotted #e74c3c;
+}
+
+.notification-item-dismiss {
+    height: 50px;
+}
+
+.notification-item-dismiss > a {
+    color: #e74c3c;
+    display: inline-block;
+}
+
 
 /* dxDataGrid Header */
 .dx-datagrid-headers {
@@ -237,4 +275,32 @@ div .validation-summary-errors.text-danger {
 .box-header {
     background-color: #5B8EFB;
     border-left: 5px solid #2c3e50;
+}
+
+.info-box-custom {
+    display: block;
+    min-height: 90px;
+    background: none !important;
+    width: 100%;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.info-box-custom-title {
+    font-size: medium;
+    color: #1d282c;
+    font-weight: bold;
+    display: block;
+}
+
+.info-box-custom-minitext {
+    font-size: smaller;
+    color: #bdc3c7;
+}
+
+.info-box-custom-text {
+    font-size: small;
+    color: #2c3e50;
+    display: block;
 }
