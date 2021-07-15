@@ -29,9 +29,8 @@ namespace xDC.Services
         /// <summary>
         /// Send notification to a Approver for Submitted Form Approval
         /// </summary>
-        /// <param name="initiator">Username who initiate the notification</param>
         /// <param name="formId">Id of the related form</param>
-        public void PushSubmitForApprovalNotification(string initiator, int formId)
+        public void PushSubmitForApprovalNotification(int formId)
         {
             try
             {
@@ -42,19 +41,57 @@ namespace xDC.Services
                     var notificationObj = new App_Notification()
                     {
                         Title = "Pending your approval",
-                        ShortMessage = string.Format("Submitted by " + initiator +
-                                                     "form is pending your approval. <a href='../Amsd/InflowFundStatus?id=" +
-                                                     formId + "'"),
-                        Message = string.Format("Submitted by " + initiator +
-                                                "form is pending your approval. <a href='../Amsd/InflowFundStatus?id=" +
-                                                formId + "'"),
+                        ShortMessage = string.Format("Submitted form " + formHeader.FormType + " by " + formHeader.PreparedBy +
+                                                     "form is pending your approval. <a href='../amsd/InflowFundsFormStatus?id=" +
+                                                     formId + "'>Click here to open it</a>"),
+                        Message = string.Format("Submitted form " + formHeader.FormType + " by " + formHeader.PreparedBy +
+                                                "form is pending your approval. <a href='../amsd/InflowFundsFormStatus?id=" +
+                                                formId + "'>Click here to open it</a>"),
                         NotificationIconClass = "fa fa-exclamation",
-                        NotificationType = "Approval",
+                        NotificationType = "bg-aqua",
                         CreatedOn = DateTime.Now,
                         UserId = formHeader.ApprovedBy
                     };
 
                     PushNotification(notificationObj);
+                    new MailService().SendSubmitForApprovalEmail(formId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
+        /// <summary>
+        /// Send notification to a Preparer for his/her approval status
+        /// </summary>
+        /// <param name="formId">Id of the related form</param>
+        public void PushApprovalStatusNotification(int formId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formHeader = db.FormHeader.FirstOrDefault(x => x.Id == formId);
+
+                    var notificationObj = new App_Notification()
+                    {
+                        Title = "Form #" + formId + " " + formHeader.FormStatus ,
+                        ShortMessage = string.Format("Submitted form #" + formId +
+                                                     "has been "+ formHeader.FormStatus + ". <a href='../amsd/InflowFundsFormStatus?id=" +
+                                                     formId + "'>Click here to open the form</a>"),
+                        Message = string.Format("Submitted form #" + formId +
+                                                "has been " + formHeader.FormStatus + ". <a href='../amsd/InflowFundsFormStatus?id=" +
+                                                formId + "'>Click here to open the form</a>"),
+                        NotificationIconClass = (formHeader.FormStatus == "Approved")? "fa fa-check-circle" : "fa fa-times-circle",
+                        NotificationType = (formHeader.FormStatus == "Approved") ? "bg-green" : "bg-red",
+                        CreatedOn = DateTime.Now,
+                        UserId = formHeader.PreparedBy
+                    };
+
+                    PushNotification(notificationObj);
+                    new MailService().SendApprovalStatusEmail(formId);
                 }
             }
             catch (Exception ex)

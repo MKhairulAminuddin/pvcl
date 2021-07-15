@@ -12,6 +12,7 @@ using System.Net.Http.Formatting;
 using Newtonsoft.Json;
 using xDC.Utils;
 using xDC.Infrastructure.Application;
+using xDC.Services;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -118,6 +119,7 @@ namespace xDC_Web.Controllers.Api
                     db.Amsd_InflowFunds.AddRange(newRecordInflowFunds);
                     db.SaveChanges();
 
+                    new NotificationService().PushSubmitForApprovalNotification(newRecord.Id);
                     return Request.CreateResponse(HttpStatusCode.Created, newRecord.Id);
                 }
             }
@@ -234,6 +236,7 @@ namespace xDC_Web.Controllers.Api
 
                             db.SaveChanges();
 
+                            new NotificationService().PushApprovalStatusNotification(formId);
                             return Request.CreateResponse(HttpStatusCode.Accepted, formId);
                         }
                         else
