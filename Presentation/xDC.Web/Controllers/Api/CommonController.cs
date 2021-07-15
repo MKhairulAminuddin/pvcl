@@ -164,6 +164,25 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [HttpGet]
+        public HttpResponseMessage GetTradeSettlementApprover(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var key = Common.FormTypeMapping(2);
+                    var result = db.Config_Approver.Where(x => x.FormType == key && x.Username != User.Identity.Name).ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
 
 
         #endregion

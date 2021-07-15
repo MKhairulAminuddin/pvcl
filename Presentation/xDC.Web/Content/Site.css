@@ -120,10 +120,10 @@ a.hide-long-text {
     font-weight: bold;
 }
 
-.dx-texteditor-input:read-only {
+/*.dx-texteditor-input:read-only {
     background-color: #e5f1ff;
     cursor: not-allowed;
-}
+}*/
 
 
 

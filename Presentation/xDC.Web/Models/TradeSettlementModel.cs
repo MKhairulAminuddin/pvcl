@@ -4,6 +4,9 @@ namespace xDC_Web.Models
 {
     public class TradeSettlementModel
     {
+        public int Id { get; set; }
+        public string FormType { get; set; }
+        public string Approver { get; set; }
         public string currency { get; set; }
         public List<Trades> Equity { get; set; }
         public List<Trades> Bond { get; set; }

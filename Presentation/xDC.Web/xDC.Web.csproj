@@ -285,6 +285,7 @@
     <Content Include="Scripts\app\iisd\index.js" />
     <Content Include="Scripts\app\iisd\newTradeSettlement.js" />
     <Content Include="Scripts\app\admin\applicationConfig.js" />
+    <Content Include="Scripts\app\iisd\tradeSettlementFormStatus.js" />
     <Content Include="Scripts\app\setting\approverManagement.js" />
     <Content Include="Scripts\app\setting\dropdownConfig.js" />
     <Content Include="Scripts\app\setting\notificationConfig.js" />
@@ -481,6 +482,7 @@
     <Content Include="Views\Admin\ApplicationConfig.cshtml" />
     <Content Include="Views\Setting\ApproverManagement.cshtml" />
     <Content Include="Views\User\MyNotification.cshtml" />
+    <Content Include="Views\Iisd\TradeSettlementFormStatus.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

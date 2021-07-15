@@ -158,6 +158,38 @@ namespace xDC.Utils
             return String.Empty;
         }
 
+        public static string TradeSettlementUrlParamMapping(string value)
+        {
+            switch (value)
+            {
+                case "equity":
+                    return "Equity";
+                case "bond":
+                    return "Bond";
+                case "cp":
+                    return "CP";
+                case "notesPaper":
+                    return "Notes & Papers";
+                case "repo":
+                    return "REPO";
+                case "coupon":
+                    return "Coupon Received";
+                case "fees":
+                    return "Fees";
+                case "mtm":
+                    return "Payment/ Received (MTM)";
+                case "fxSettlement":
+                    return "FX Settlement";
+                case "contributionCredited":
+                    return "Contribution Credited";
+                case "altid":
+                    return "ALTID Distribution & Drawdown";
+                case "others":
+                    return "Others";
+            }
+            return String.Empty;
+        }
+
         public static string FormTypeMapping(int value)
         {
             switch (value)

@@ -1,122 +1,66 @@
 ﻿(function ($, window, document) {
 
     $(function () {
-        var approverStore = DevExpress.data.AspNet.createStore({
-            key: "id",
-            loadUrl: "../api/common/GetTradeSettlementApprover"
-        });
-
         var instrumentCodeEquityData = ["Stock AA", "Stock BB"];
         var stockCodeData = ["GT170006", "MX070003", "MO170004", "GJ180003", "MZ160002", "MO140001"];
-
+        
         var $tabpanel, $equityGrid, $bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid, $feesGrid,
             $mtmGrid, $fxSettlementGrid, $contributionCreditedGrid, $altidGrid, $othersGrid,
             $tradeSettlementForm, $currencySelectBox, $obRentasTb, $obMmaTb, $cbRentasTb, $cbMmaTb,
             $approverDropdown;
-        
 
-        $approverDropdown = $("#approverDropdown").dxSelectBox({
-            dataSource: approverStore,
-            displayExpr: "displayName",
-            valueExpr: "username",
-            searchEnabled: true,
-            itemTemplate: function (data) {
-                return "<div class='active-directory-dropdown'>" +
-                    "<p class='active-directory-title'>" + data.displayName + "</p>" +
-                    "<p class='active-directory-subtitle'>" + data.title + ", " + data.department + "</p>" +
-                    "<p class='active-directory-subtitle'>" + data.email + "</p>" +
-                    "</div>";
-            }
-        }).dxSelectBox("instance");
-
-        $tradeSettlementForm = $("#tradeSettlementForm").on("submit", function (e) {
-            if (
-                jQuery.isEmptyObject($equityGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($bondGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($cpGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($notesPaperGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($repoGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($feesGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($mtmGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($fxSettlementGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($contributionCreditedGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($altidGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($othersGrid.getDataSource().items())
-            ) {
-                $("#error_container").bs_warning("Please key in at least one item.");
-            } else {
-                $('#selectApproverModal').modal('show');
-            }
-            e.preventDefault();
-        });
-
-        $("#submitForApprovalModalBtn").on({
+        $("#approveBtn").on({
             "click": function (e) {
-                var data = {
-                    currency: $currencySelectBox.option("value"),
-                    equity: $equityGrid.getDataSource().items(),
-                    bond: $bondGrid.getDataSource().items(),
-                    cp: $cpGrid.getDataSource().items(),
-                    notesPaper: $notesPaperGrid.getDataSource().items(),
-                    repo: $repoGrid.getDataSource().items(),
-                    coupon: $couponGrid.getDataSource().items(),
-                    fees: $feesGrid.getDataSource().items(),
-                    mtm: $mtmGrid.getDataSource().items(),
-                    fxSettlement: $fxSettlementGrid.getDataSource().items(),
-                    contributionCredited: $contributionCreditedGrid.getDataSource().items(),
-                    altid: $altidGrid.getDataSource().items(),
-                    others: $othersGrid.getDataSource().items(),
-
-                    approver: $approverDropdown.option('value')
-                };
-
-                $.ajax({
-                    data: data,
-                    dataType: 'json',
-                    url: '../api/iisd/NewTradeSettlementForm',
-                    method: 'post'
-                }).done(function (data) {
-                    window.location.href = "/iisd/TradeSettlementFormStatus?id=" + data;
-
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
-                });
+                $('#approvalNoteModal').modal('show');
 
                 e.preventDefault();
             }
         });
 
-        $currencySelectBox =
-            $("#currencySelectBox").dxSelectBox({
-                items: ["MYR", "USD"],
-                placeHolder: "Currency.."
-            })
-            .dxValidator({
-                validationRules: [
-                    {
-                        type: "required",
-                        message: "Currency is required"
-                    }
-                ]
-            })
-            .dxSelectBox("instance");
+        $("#rejectBtn").on({
+            "click": function (e) {
+                $('#rejectionNoteModal').modal('show');
 
-        $obRentasTb = $("#obRentasTb").dxNumberBox({
-            disabled: true
-        }).dxNumberBox("instance");
+                e.preventDefault();
+            }
+        });
 
-        $obMmaTb = $("#obMmaTb").dxNumberBox({
-            disabled: true
-        }).dxNumberBox("instance");
+        $printBtn = $("#printBtn").dxDropDownButton({
+            text: "Print",
+            icon: "print",
+            type: "normal",
+            stylingMode: "contained",
+            dropDownOptions: {
+                width: 230
+            },
+            onItemClick: function (e) {
+                if (e.itemData == "Excel Workbook (*.xlsx)") {
+                    DevExpress.ui.notify("Download " + e.itemData, "success", 600);
 
-        $cbRentasTb = $("#cbRentasTb").dxNumberBox({
-            disabled: true
-        }).dxNumberBox("instance");
+                    var data = {
+                        id: getUrlParameter("id")
+                    };
 
-        $cbMmaTb = $("#cbMmaTb").dxNumberBox({
-            disabled: true
-        }).dxNumberBox("instance");
+                    $.ajax({
+                        type: "POST",
+                        url: '/iisd/PrintTradeSettlement',
+                        data: data,
+                        dataType: "text",
+                        success: function (data) {
+                            var url = '/iisd/GetPrintTradeSettlement?id=' + data;
+                            window.location = url;
+                        }
+                    });
+                    e.event.preventDefault();
+                }
 
+            },
+            items: [
+                "Excel Workbook (*.xlsx)",
+                "PDF"
+            ]
+        }).dxDropDownButton("instance");
+        
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
                 { title: "Equity", template: "equityTab" },
@@ -136,7 +80,10 @@
         });
 
         $equityGrid = $("#equityGrid").dxDataGrid({
-            dataSource: [],
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=equity"
+            }),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -220,7 +167,10 @@
         $equityGrid.option(dxGridUtils.editingGridConfig);
 
         $bondGrid = $("#bondGrid").dxDataGrid({
-            dataSource: [],
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=bond"
+            }),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -304,7 +254,10 @@
         $bondGrid.option(dxGridUtils.editingGridConfig);
 
         $cpGrid = $("#cpGrid").dxDataGrid({
-            dataSource: [],
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=cp"
+            }),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -388,7 +341,10 @@
         $cpGrid.option(dxGridUtils.editingGridConfig);
 
         $notesPaperGrid = $("#notesPaperGrid").dxDataGrid({
-            dataSource: [],
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=notesPaper"
+            }),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -472,7 +428,10 @@
         $notesPaperGrid.option(dxGridUtils.editingGridConfig);
 
         $repoGrid = $("#repoGrid").dxDataGrid({
-            dataSource: [],
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=repo"
+            }),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -538,7 +497,10 @@
         $repoGrid.option(dxGridUtils.editingGridConfig);
 
         $couponGrid = $("#couponGrid").dxDataGrid({
-            dataSource: [],
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=coupon"
+            }),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -586,7 +548,10 @@
         $couponGrid.option(dxGridUtils.editingGridConfig);
 
         $feesGrid = $("#feesGrid").dxDataGrid({
-            dataSource: [],
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=fees"
+            }),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -624,7 +589,10 @@
         $feesGrid.option(dxGridUtils.editingGridConfig);
 
         $mtmGrid = $("#mtmGrid").dxDataGrid({
-            dataSource: [],
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=mtm"
+            }),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -680,7 +648,10 @@
         $mtmGrid.option(dxGridUtils.editingGridConfig);
 
         $fxSettlementGrid = $("#fxSettlementGrid").dxDataGrid({
-            dataSource: [],
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=fxSettlement"
+            }),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -736,7 +707,10 @@
         $fxSettlementGrid.option(dxGridUtils.editingGridConfig);
 
         $contributionCreditedGrid = $("#contributionCreditedGrid").dxDataGrid({
-            dataSource: [],
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=contributionCredited"
+            }),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -774,7 +748,10 @@
         $contributionCreditedGrid.option(dxGridUtils.editingGridConfig);
 
         $altidGrid = $("#altidGrid").dxDataGrid({
-            dataSource: [],
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=altid"
+            }),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -830,7 +807,10 @@
         $altidGrid.option(dxGridUtils.editingGridConfig);
 
         $othersGrid = $("#othersGrid").dxDataGrid({
-            dataSource: [],
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=others"
+            }),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -884,5 +864,58 @@
         }).dxDataGrid("instance");
 
         $othersGrid.option(dxGridUtils.editingGridConfig);
+
+        $("#approveFormBtn").on({
+            "click": function (e) {
+
+                var data = {
+                    approvalNote: $("#approvalNoteTextBox").dxTextArea("instance").option('value'),
+                    approvalStatus: true,
+                    formId: getUrlParameter('id')
+                };
+
+                $.ajax({
+                    data: data,
+                    dataType: 'json',
+                    url: '../api/amsd/InflowFundsFormApproval',
+                    method: 'post'
+                }).done(function (data) {
+                    window.location.href = "../amsd/InflowFundsFormStatus?id=" + data;
+
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                });
+
+                e.preventDefault();
+            }
+        });
+
+        $("#rejectFormBtn").on({
+            "click": function (e) {
+
+                var data = {
+                    approvalNote: $("#rejectionNoteTextBox").dxTextArea("instance").option('value'),
+                    approvalStatus: false,
+                    formId: getUrlParameter('id')
+                };
+
+                $.ajax({
+                    data: data,
+                    dataType: 'json',
+                    url: '../api/amsd/InflowFundsFormApproval',
+                    method: 'post'
+                }).done(function (data) {
+                    window.location.href = "../amsd/InflowFundsFormStatus?id=" + data;
+
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                });
+
+                e.preventDefault();
+            }
+        });
+
+
+
     });
 }(window.jQuery, window, document));

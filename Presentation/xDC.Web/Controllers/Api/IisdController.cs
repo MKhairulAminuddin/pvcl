@@ -4,9 +4,11 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Web.Http;
 using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
+using Newtonsoft.Json;
 using xDC.Infrastructure.Application;
 using xDC.Utils;
 using xDC_Web.Models;
@@ -14,6 +16,7 @@ using xDC_Web.Models;
 namespace xDC_Web.Controllers.Api
 {
     [Authorize(Roles = "Administrator, Power User, IISD")]
+    [RoutePrefix("api/iisd")]
     public class IisdController : ApiController
     {
         [HttpGet]
@@ -43,7 +46,8 @@ namespace xDC_Web.Controllers.Api
 
 
         [HttpPost]
-        public HttpResponseMessage InsertIisdTradeSettlement([FromBody] TradeSettlementModel inputs)
+        [Route("NewTradeSettlementForm")]
+        public HttpResponseMessage NewTradeSettlementForm([FromBody] TradeSettlementModel inputs)
         {
             try
             {
@@ -55,7 +59,8 @@ namespace xDC_Web.Controllers.Api
                         PreparedBy = User.Identity.Name,
                         PreparedDate = DateTime.Now,
                         FormStatus = Common.FormStatusMapping(2),
-                        Currency = inputs.currency
+                        Currency = inputs.currency,
+                        ApprovedBy = inputs.Approver
                     };
 
                     Validate(newFormHeader);
@@ -297,6 +302,106 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
 
+        }
+
+        [HttpGet]
+        [Route("GetTradeSettlement")]
+        public HttpResponseMessage GetInflowFunds(string id, string tradeType,  DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = new List<Iisd_TradeSettlement>();
+
+                    if (!string.IsNullOrEmpty(id))
+                    {
+                        var formId = Convert.ToInt32(id);
+                        var instrumentType = Common.TradeSettlementUrlParamMapping(tradeType);
+                        result = db.Iisd_TradeSettlement
+                            .Where(x => x.FormId == formId && x.InstrumentType == instrumentType).ToList();
+                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+
+        }
+
+        [HttpPut]
+        public HttpResponseMessage UpdateTradeSettlement(FormDataCollection form)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var key = Convert.ToInt32(form.Get("key"));
+                var values = form.Get("values");
+                var existingRecord = db.Iisd_TradeSettlement.SingleOrDefault(o => o.Id == key);
+
+                JsonConvert.PopulateObject(values, existingRecord);
+
+                if (existingRecord != null)
+                {
+                    existingRecord.UpdatedBy = User.Identity.Name;
+                    existingRecord.UpdatedDate = DateTime.Now;
+                }
+
+                Validate(existingRecord);
+
+                if (!ModelState.IsValid)
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+
+                db.SaveChanges();
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+
+        }
+
+        [HttpPost]
+        public HttpResponseMessage InsertTradeSettlement(FormDataCollection form)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var values = form.Get("values");
+
+                var newRecord = new Amsd_InflowFunds();
+                JsonConvert.PopulateObject(values, newRecord);
+
+                newRecord.CreatedBy = User.Identity.Name;
+                newRecord.CreatedDate = DateTime.Now;
+
+                Validate(newRecord);
+
+                if (!ModelState.IsValid)
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+
+                db.Amsd_InflowFunds.Add(newRecord);
+                db.SaveChanges();
+
+                return Request.CreateResponse(HttpStatusCode.Created, newRecord);
+            }
+        }
+
+        [HttpDelete]
+        public HttpResponseMessage DeleteTradeSettlement(FormDataCollection form)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var key = Convert.ToInt32(form.Get("key"));
+                var foundRecord = db.Amsd_InflowFunds.First(x => x.Id == key);
+
+                db.Amsd_InflowFunds.Remove(foundRecord);
+                db.SaveChanges();
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
         }
     }
 }
