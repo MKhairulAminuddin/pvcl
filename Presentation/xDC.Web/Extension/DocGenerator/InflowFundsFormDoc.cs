@@ -31,7 +31,7 @@ namespace xDC_Web.Extension.DocGenerator
                         DocumentFormat documentFormat = DocumentFormat.Xlsx;
                         IWorkbook workbook = new Workbook();
                         workbook.Options.Culture = new CultureInfo("en-US");
-                        workbook.LoadDocument(MapPath("~/App_Data/AMSD - Inflow Funds Template.xltx"));
+                        workbook.LoadDocument(MapPath("~/App_Data/Inflow Funds Template.xltx"));
                         workbook = GenerateDocument(workbook, getForm, getInflowFunds);
 
                         var docBytes = workbook.SaveDocument(documentFormat);
