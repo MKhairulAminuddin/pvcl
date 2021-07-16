@@ -213,5 +213,15 @@ namespace xDC.Utils
             }
             return String.Empty;
         }
+
+        public static string ApplicationConfigKeyMapping(int value)
+        {
+            switch (value)
+            {
+                case 1:
+                    return "Amsd.InflowFunds.CutOffTime";
+            }
+            return String.Empty;
+        }
     }
 }

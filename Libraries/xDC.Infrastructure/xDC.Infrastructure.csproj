@@ -77,7 +77,10 @@
     <Compile Include="Application\Config_Key.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Application\FormHeader.cs">
+    <Compile Include="Application\Form_Header.cs">
+      <DependentUpon>kashflowDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Application\Form_Workflow.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
     <Compile Include="Application\Iisd_TradeSettlement.cs">

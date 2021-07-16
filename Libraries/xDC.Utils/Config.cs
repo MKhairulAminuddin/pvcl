@@ -20,6 +20,8 @@ namespace xDC.Utils
 
         public static string EmailApplicationUrl => ConfigurationManager.AppSettings["Email.ApplicationUrl"];
 
+        public static string UrlAmsdInflowFundsStatus => ConfigurationManager.AppSettings["Url.AMSD.InflowFundsFormStatus"];
+
         public static string AclAdministrator = "Administrator";
         public static string AclPowerUser = "Power User";
         public static string AclAmsd = "AMSD";

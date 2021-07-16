@@ -34,7 +34,7 @@ namespace xDC_Web.Controllers
             using (var db = new kashflowDBEntities())
             {
                 var formId = Convert.ToInt32(id);
-                var getForm = db.FormHeader.FirstOrDefault(x => x.Id == formId);
+                var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
 
                 if (getForm != null)
                 {
@@ -67,7 +67,7 @@ namespace xDC_Web.Controllers
                 using (var db = new kashflowDBEntities())
                 {
                     var formId = Convert.ToInt32(id);
-                    var getForm = db.FormHeader.FirstOrDefault(x => x.Id == formId);
+                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
 
                     if (getForm!= null)
                     {
@@ -89,6 +89,7 @@ namespace xDC_Web.Controllers
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex);
                 return HttpNotFound();
             }
         }
@@ -105,6 +106,7 @@ namespace xDC_Web.Controllers
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex);
                 return HttpNotFound();
             }
             

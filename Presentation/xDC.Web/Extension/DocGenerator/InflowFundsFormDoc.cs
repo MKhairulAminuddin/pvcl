@@ -18,7 +18,7 @@ namespace xDC_Web.Extension.DocGenerator
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var getForm = db.FormHeader.FirstOrDefault(x => x.Id == formId);
+                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
 
                     if (getForm != null)
                     {
@@ -56,7 +56,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private IWorkbook GenerateDocument(IWorkbook workbook, FormHeader formHeader, List<Amsd_InflowFunds> inflowFunds)
+        private IWorkbook GenerateDocument(IWorkbook workbook, Form_Header formHeader, List<Amsd_InflowFunds> inflowFunds)
         {
             workbook.BeginUpdate();
             try

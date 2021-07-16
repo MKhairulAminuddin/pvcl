@@ -12,6 +12,7 @@ using System.Net.Http.Formatting;
 using Newtonsoft.Json;
 using xDC.Utils;
 using xDC.Infrastructure.Application;
+using xDC.Logging;
 using xDC.Services;
 
 namespace xDC_Web.Controllers.Api
@@ -33,7 +34,7 @@ namespace xDC_Web.Controllers.Api
                         Common.FormTypeMapping(1)
                     };
 
-                    var result = db.FormHeader
+                    var result = db.Form_Header
                         .Where(x => amdFormTypes.Contains(x.FormType)).ToList();
 
                     var resultVM = new List<ViewFormHeaderModel>();
@@ -67,7 +68,34 @@ namespace xDC_Web.Controllers.Api
             
         }
 
-        
+        [HttpGet]
+        [Route("IsTodayInflowFormExisted")]
+        public HttpResponseMessage IsTodayInflowFormExisted()
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var todaysDate = DateTime.Now.Date;
+                    var existingRecord = db.Form_Header.ToList();
+                    existingRecord = existingRecord.Where(x => x.PreparedDate.Value.Date == todaysDate).ToList();
+
+                    if (existingRecord.Any())
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, true);
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, false);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex);
+            }
+        }
 
 
         [HttpPost]
@@ -79,7 +107,7 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
 
-                    var newRecord = new FormHeader()
+                    var newRecord = new Form_Header()
                     {
                         FormType = Common.FormTypeMapping(1),
                         PreparedBy = User.Identity.Name,
@@ -93,7 +121,7 @@ namespace xDC_Web.Controllers.Api
                     if (!ModelState.IsValid)
                         return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
 
-                    db.FormHeader.Add(newRecord);
+                    db.Form_Header.Add(newRecord);
                     db.SaveChanges();
 
                     var newRecordInflowFunds = new List<Amsd_InflowFunds>();
@@ -120,6 +148,7 @@ namespace xDC_Web.Controllers.Api
                     db.SaveChanges();
 
                     new NotificationService().PushSubmitForApprovalNotification(newRecord.Id);
+                    new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(newRecord.Id);
                     return Request.CreateResponse(HttpStatusCode.Created, newRecord.Id);
                 }
             }
@@ -138,13 +167,13 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var isExistingDraft = db.FormHeader.FirstOrDefault(x => x.Id == inputs.Id);
+                    var isExistingDraft = db.Form_Header.FirstOrDefault(x => x.Id == inputs.Id);
 
-                    var newRecord = new FormHeader();
+                    var newRecord = new Form_Header();
 
                     if (isExistingDraft != null)
                     {
-                        newRecord = new FormHeader()
+                        newRecord = new Form_Header()
                         {
                             Id = isExistingDraft.Id,
                             FormType = isExistingDraft.FormType,
@@ -162,7 +191,7 @@ namespace xDC_Web.Controllers.Api
                     }
                     else
                     {
-                        newRecord = new FormHeader()
+                        newRecord = new Form_Header()
                         {
                             FormType = Common.FormTypeMapping(1),
                             PreparedBy = User.Identity.Name,
@@ -175,7 +204,7 @@ namespace xDC_Web.Controllers.Api
                         if (!ModelState.IsValid)
                             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
 
-                        db.FormHeader.Add(newRecord);
+                        db.Form_Header.Add(newRecord);
                         db.SaveChanges();
 
                         var newRecordInflowFunds = new List<Amsd_InflowFunds>();
@@ -221,7 +250,7 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var formId = Convert.ToInt32(inputs.FormId);
-                    var form = db.FormHeader.FirstOrDefault(x => x.Id == formId);
+                    var form = db.Form_Header.FirstOrDefault(x => x.Id == formId);
 
                     if (form!=null)
                     {
@@ -237,6 +266,11 @@ namespace xDC_Web.Controllers.Api
                             db.SaveChanges();
 
                             new NotificationService().PushApprovalStatusNotification(formId);
+                            if (inputs.ApprovalStatus)
+                            {
+                                new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(formId);
+                            }
+                            
                             return Request.CreateResponse(HttpStatusCode.Accepted, formId);
                         }
                         else

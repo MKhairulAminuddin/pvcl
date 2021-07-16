@@ -27,7 +27,6 @@ namespace xDC.Infrastructure.Application
     
         public virtual DbSet<AspNetActiveDirectoryUsers> AspNetActiveDirectoryUsers { get; set; }
         public virtual DbSet<Amsd_InflowFunds> Amsd_InflowFunds { get; set; }
-        public virtual DbSet<FormHeader> FormHeader { get; set; }
         public virtual DbSet<Iisd_TradeSettlement> Iisd_TradeSettlement { get; set; }
         public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
@@ -36,5 +35,7 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<Config_Key> Config_Key { get; set; }
         public virtual DbSet<Config_Approver> Config_Approver { get; set; }
         public virtual DbSet<App_Notification> App_Notification { get; set; }
+        public virtual DbSet<Form_Header> Form_Header { get; set; }
+        public virtual DbSet<Form_Workflow> Form_Workflow { get; set; }
     }
 }

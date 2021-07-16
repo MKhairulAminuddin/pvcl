@@ -130,7 +130,7 @@
           <Property Name="Key" Type="nvarchar" MaxLength="250" Nullable="false" />
           <Property Name="KeyType" Type="nvarchar" MaxLength="250" Nullable="false" />
         </EntityType>
-        <EntityType Name="FormHeader">
+        <EntityType Name="Form_Header">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -138,13 +138,26 @@
           <Property Name="FormType" Type="nvarchar" MaxLength="150" />
           <Property Name="FormStatus" Type="nvarchar" MaxLength="150" />
           <Property Name="Currency" Type="nvarchar" MaxLength="150" />
-          <Property Name="PreparedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="PreparedBy" Type="nvarchar" MaxLength="150" />
           <Property Name="PreparedDate" Type="datetime" />
-          <Property Name="ApprovedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="ApprovedBy" Type="nvarchar" MaxLength="150" />
           <Property Name="ApprovedDate" Type="datetime" />
           <Property Name="AdminEditted" Type="bit" Nullable="false" />
-          <Property Name="AdminEdittedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="AdminEdittedBy" Type="nvarchar" MaxLength="150" />
           <Property Name="AdminEdittedDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Form_Workflow">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FormId" Type="int" Nullable="false" />
+          <Property Name="RequestBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="RequestTo" Type="nvarchar" MaxLength="50" />
+          <Property Name="StartDate" Type="datetime" />
+          <Property Name="EndDate" Type="datetime" />
+          <Property Name="WorkflowStatus" Type="nvarchar" MaxLength="150" />
+          <Property Name="WorkflowNotes" Type="text" />
         </EntityType>
         <EntityType Name="Iisd_TradeSettlement">
           <Key>
@@ -206,7 +219,8 @@
           <EntitySet Name="Config_Approver" EntityType="Self.Config_Approver" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Config_Dropdown" EntityType="Self.Config_Dropdown" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Config_Key" EntityType="Self.Config_Key" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="FormHeader" EntityType="Self.FormHeader" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Form_Header" EntityType="Self.Form_Header" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Form_Workflow" EntityType="Self.Form_Workflow" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Iisd_TradeSettlement" EntityType="Self.Iisd_TradeSettlement" Schema="dbo" Table="Iisd.TradeSettlement" store:Type="Tables" />
           <AssociationSet Name="FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId" Association="Self.FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId">
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
@@ -224,7 +238,6 @@
         <EntityContainer Name="kashflowDBEntities" annotation:LazyLoadingEnabled="true" >
           <EntitySet Name="AspNetActiveDirectoryUsers" EntityType="kashflowDbModel.AspNetActiveDirectoryUsers" />
           <EntitySet Name="Amsd_InflowFunds" EntityType="kashflowDbModel.Amsd_InflowFunds" />
-          <EntitySet Name="FormHeader" EntityType="kashflowDbModel.FormHeader" />
           <EntitySet Name="Iisd_TradeSettlement" EntityType="kashflowDbModel.Iisd_TradeSettlement" />
           <EntitySet Name="AspNetRoles" EntityType="kashflowDbModel.AspNetRoles" />
           <EntitySet Name="AspNetUsers" EntityType="kashflowDbModel.AspNetUsers" />
@@ -237,6 +250,8 @@
           <EntitySet Name="Config_Key" EntityType="kashflowDbModel.Config_Key" />
           <EntitySet Name="Config_Approver" EntityType="kashflowDbModel.Config_Approver" />
           <EntitySet Name="App_Notification" EntityType="kashflowDbModel.App_Notification" />
+          <EntitySet Name="Form_Header" EntityType="kashflowDbModel.Form_Header" />
+          <EntitySet Name="Form_Workflow" EntityType="kashflowDbModel.Form_Workflow" />
         </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -271,22 +286,6 @@
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
-        </EntityType>
-        <EntityType Name="FormHeader">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FormType" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="FormStatus" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="Currency" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="PreparedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="PreparedDate" Type="DateTime" Precision="3" />
-          <Property Name="ApprovedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ApprovedDate" Type="DateTime" Precision="3" />
-          <Property Name="AdminEditted" Type="Boolean" Nullable="false" />
-          <Property Name="AdminEdittedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="AdminEdittedDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="Iisd_TradeSettlement">
           <Key>
@@ -398,6 +397,35 @@
           <Property Name="NotificationUrl" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
+        <EntityType Name="Form_Header">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FormType" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="FormStatus" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Currency" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="PreparedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="PreparedDate" Type="DateTime" Precision="3" />
+          <Property Name="ApprovedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ApprovedDate" Type="DateTime" Precision="3" />
+          <Property Name="AdminEditted" Type="Boolean" Nullable="false" />
+          <Property Name="AdminEdittedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="AdminEdittedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Form_Workflow">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FormId" Type="Int32" Nullable="false" />
+          <Property Name="RequestBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RequestTo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="StartDate" Type="DateTime" Precision="3" />
+          <Property Name="EndDate" Type="DateTime" Precision="3" />
+          <Property Name="WorkflowStatus" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="WorkflowNotes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -436,23 +464,6 @@
                 <ScalarProperty Name="Bank" ColumnName="Bank" />
                 <ScalarProperty Name="FundType" ColumnName="FundType" />
                 <ScalarProperty Name="FormId" ColumnName="FormId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="FormHeader">
-            <EntityTypeMapping TypeName="kashflowDbModel.FormHeader">
-              <MappingFragment StoreEntitySet="FormHeader">
-                <ScalarProperty Name="AdminEdittedDate" ColumnName="AdminEdittedDate" />
-                <ScalarProperty Name="AdminEdittedBy" ColumnName="AdminEdittedBy" />
-                <ScalarProperty Name="AdminEditted" ColumnName="AdminEditted" />
-                <ScalarProperty Name="ApprovedDate" ColumnName="ApprovedDate" />
-                <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
-                <ScalarProperty Name="PreparedDate" ColumnName="PreparedDate" />
-                <ScalarProperty Name="PreparedBy" ColumnName="PreparedBy" />
-                <ScalarProperty Name="Currency" ColumnName="Currency" />
-                <ScalarProperty Name="FormStatus" ColumnName="FormStatus" />
-                <ScalarProperty Name="FormType" ColumnName="FormType" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -573,6 +584,37 @@
                 <ScalarProperty Name="NotificationIconClass" ColumnName="NotificationIconClass" />
                 <ScalarProperty Name="NotificationType" ColumnName="NotificationType" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Form_Header">
+            <EntityTypeMapping TypeName="kashflowDbModel.Form_Header">
+              <MappingFragment StoreEntitySet="Form_Header">
+                <ScalarProperty Name="AdminEdittedDate" ColumnName="AdminEdittedDate" />
+                <ScalarProperty Name="AdminEdittedBy" ColumnName="AdminEdittedBy" />
+                <ScalarProperty Name="AdminEditted" ColumnName="AdminEditted" />
+                <ScalarProperty Name="ApprovedDate" ColumnName="ApprovedDate" />
+                <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
+                <ScalarProperty Name="PreparedDate" ColumnName="PreparedDate" />
+                <ScalarProperty Name="PreparedBy" ColumnName="PreparedBy" />
+                <ScalarProperty Name="Currency" ColumnName="Currency" />
+                <ScalarProperty Name="FormStatus" ColumnName="FormStatus" />
+                <ScalarProperty Name="FormType" ColumnName="FormType" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Form_Workflow">
+            <EntityTypeMapping TypeName="kashflowDbModel.Form_Workflow">
+              <MappingFragment StoreEntitySet="Form_Workflow">
+                <ScalarProperty Name="WorkflowNotes" ColumnName="WorkflowNotes" />
+                <ScalarProperty Name="WorkflowStatus" ColumnName="WorkflowStatus" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="RequestTo" ColumnName="RequestTo" />
+                <ScalarProperty Name="RequestBy" ColumnName="RequestBy" />
+                <ScalarProperty Name="FormId" ColumnName="FormId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

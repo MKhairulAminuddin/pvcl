@@ -23,6 +23,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex);
                 return false;
             }
             
@@ -40,6 +41,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex);
                 return false;
             }
 
@@ -65,6 +67,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex);
                 return "Anonymous";
             }
 

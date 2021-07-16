@@ -12,7 +12,7 @@ namespace xDC.Infrastructure.Application
     using System;
     using System.Collections.Generic;
     
-    public partial class FormHeader
+    public partial class Form_Header
     {
         public int Id { get; set; }
         public string FormType { get; set; }

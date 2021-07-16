@@ -2,7 +2,28 @@
 
     $(function () {
 
-        var $amsdGrid;
+        var $amsdGrid, $newInflowFundBtn;
+
+        $newInflowFundBtn = $("#newInflowFundBtn").dxButton({
+            text: "New Inflow Funds",
+            type: "default",
+            stylingMode: "contained",
+            onClick: function(e) {
+                $.ajax({
+                    dataType: 'json',
+                    url: '../api/amsd/IsTodayInflowFormExisted',
+                    method: 'get'
+                }).done(function (data) {
+                    if (data) {
+                        $("#error_container").bs_warning("Today's form already existed.");
+                    } else {
+                        window.location = "../amsd/NewInflowFundsForm";
+                    }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                });
+            } 
+        }).dxButton("instance");
         
 
         $amsdGrid = $("#amsdGrid").dxDataGrid({

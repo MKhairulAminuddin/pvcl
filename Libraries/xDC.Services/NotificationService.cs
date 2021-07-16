@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Utils;
 
 namespace xDC.Services
 {
@@ -36,7 +37,7 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var formHeader = db.FormHeader.FirstOrDefault(x => x.Id == formId);
+                    var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == formId);
 
                     var notificationObj = new App_Notification()
                     {
@@ -73,7 +74,7 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var formHeader = db.FormHeader.FirstOrDefault(x => x.Id == formId);
+                    var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == formId);
 
                     var notificationObj = new App_Notification()
                     {
@@ -92,6 +93,62 @@ namespace xDC.Services
 
                     PushNotification(notificationObj);
                     new MailService().SendApprovalStatusEmail(formId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
+        public void PushInflowFundAfterCutOffSubmissionNotification(int formId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var cutOffTimeConfigKey = Common.ApplicationConfigKeyMapping(1);
+                    var cutOffTime = db.Config_Application.FirstOrDefault(x => x.Key == cutOffTimeConfigKey);
+
+                    if (cutOffTime != null)
+                    {
+                        var cutOffTimeParsed = TimeSpan.Parse(cutOffTime.Value);
+                        var isViolateCutOffTime = DateTime.Now.TimeOfDay > cutOffTimeParsed;
+
+                        if (isViolateCutOffTime)
+                        {
+                            var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+
+                            var shortMessage =
+                                string.Format(
+                                    "{0} Form submitted/approved after Cut-off time <a href='{1}{2}'>Click here to open it</a>",
+                                    formHeader.FormType, Config.UrlAmsdInflowFundsStatus, formId);
+
+                            var longMessage =
+                                string.Format(
+                                    "{0} Form submitted/approved after Cut-off time <a href='{1}{2}'>Click here to open it</a>",
+                                    formHeader.FormType, Config.UrlAmsdInflowFundsStatus, formId);
+
+
+                            var notificationObj = new App_Notification()
+                            {
+                                Title = "Inflow Funds Submitted after cut off Time",
+                                ShortMessage = shortMessage,
+                                Message = longMessage,
+                                NotificationIconClass = "fa fa-exclamation",
+                                NotificationType = "bg-aqua",
+                                CreatedOn = DateTime.Now,
+                                UserId = formHeader.ApprovedBy
+                            };
+
+                            PushNotification(notificationObj);
+                            new MailService().SendSubmitForApprovalEmail(formId);
+                        }
+                    }
+                    else
+                    {
+                        Logger.LogError("PushInflowFundAfterCutOffSubmissionNotification no cut off time setup");
+                    }
                 }
             }
             catch (Exception ex)

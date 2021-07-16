@@ -19,7 +19,7 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var getForm = db.FormHeader.FirstOrDefault(x => x.Id == formId);
+                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
 
                     if (getForm != null)
                     {
@@ -62,7 +62,7 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var getForm = db.FormHeader.FirstOrDefault(x => x.Id == formId);
+                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
 
                     if (getForm != null)
                     {
@@ -77,6 +77,48 @@ namespace xDC.Services
                         var bodyBuilder = new StringBuilder();
                         bodyBuilder.Append(string.Format("<p>Hi {0}, </p>", preparerName.DisplayName));
                         bodyBuilder.AppendLine(string.Format("<p>Your form  <a href='" + approvalPageUrl + "'>#" + getForm.Id +"</a> have been " + getForm.FormStatus));
+
+                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                        {
+                            Text = bodyBuilder.ToString()
+                        };
+
+                        message.To.Add(new MailboxAddress(preparerName.DisplayName, preparerName.Email));
+                        SendEmailToSmtp(message);
+                    }
+                    else
+                    {
+                        Logger.LogError("SendApprovalStatusEmail FAILED, form data error: " + formId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
+        public void SendCutOffTimeViolationEmail(int formId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+
+                    if (getForm != null)
+                    {
+                        var preparerName =
+                            db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == getForm.PreparedBy);
+
+                        var message = new MimeMessage();
+                        message.From.Add(new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount));
+                        message.Subject = "[Kashflow] Inflow Funds Approval Status";
+
+                        var approvalPageUrl = string.Format("{0}/amsd/InflowFundsFormStatus?id={1}", Config.EmailApplicationUrl, formId);
+                        var bodyBuilder = new StringBuilder();
+                        bodyBuilder.Append(string.Format("<p>Hi {0}, </p>", preparerName.DisplayName));
+                        bodyBuilder.AppendLine(string.Format("<p>Your form  <a href='" + approvalPageUrl + "'>#" + getForm.Id + "</a> have been " + getForm.FormStatus));
 
                         message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                         {

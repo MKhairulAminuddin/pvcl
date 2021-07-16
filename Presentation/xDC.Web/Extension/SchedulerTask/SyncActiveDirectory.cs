@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using xDC.Infrastructure.Application;
+using xDC.Logging;
 
 namespace xDC_Web.Extension.SchedulerTask
 {
@@ -103,7 +104,7 @@ namespace xDC_Web.Extension.SchedulerTask
             }
             catch (Exception ex)
             {
-                
+                Logger.LogError(ex);
             }
 
         }

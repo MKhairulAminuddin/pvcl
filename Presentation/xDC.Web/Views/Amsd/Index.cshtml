@@ -8,15 +8,7 @@
     <div class="row">
         <div class="col-md-6">
             <div class="left-container">
-                <div>
-                    @(Html.DevExtreme().Button()
-                        .Text("New Inflow Funds")
-                        .Type(ButtonType.Default)
-                        .StylingMode(ButtonStylingMode.Contained)
-                        .OnClick(@<text>  function(){ window.location = "@Url.Action("NewInflowFundsForm", "Amsd")"; } </text>)
-                        )
-                </div>
-                
+                <div id="newInflowFundBtn"></div>
             </div>
         </div>
         <div class="col-md-6">

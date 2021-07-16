@@ -31,7 +31,7 @@ namespace xDC_Web.Controllers.Api
                         Common.FormTypeMapping(2)
                     };
 
-                    var result = db.FormHeader
+                    var result = db.Form_Header
                         .Where(x => iisdFormTypes.Contains(x.FormType)).ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
@@ -53,7 +53,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new xDC.Infrastructure.Application.kashflowDBEntities())
                 {
-                    var newFormHeader = new xDC.Infrastructure.Application.FormHeader()
+                    var newFormHeader = new xDC.Infrastructure.Application.Form_Header()
                     {
                         FormType = Common.FormTypeMapping(2),
                         PreparedBy = User.Identity.Name,
@@ -68,7 +68,7 @@ namespace xDC_Web.Controllers.Api
                     if (!ModelState.IsValid)
                         return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
 
-                    db.FormHeader.Add(newFormHeader);
+                    db.Form_Header.Add(newFormHeader);
                     db.SaveChanges();
 
 
