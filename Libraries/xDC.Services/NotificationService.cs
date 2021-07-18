@@ -56,7 +56,6 @@ namespace xDC.Services
 
                     PushNotification(notificationObj);
                     new MailService().SendSubmitForApprovalEmail(formId);
-                    PushInflowFundAfterCutOffSubmissionNotification(formId);
                 }
             }
             catch (Exception ex)
@@ -130,14 +129,12 @@ namespace xDC.Services
                                     "{0} Form submitted/approved after Cut-off time <a href='{1}{2}'>Click here to open it</a>",
                                     formHeader.FormType, Config.UrlAmsdInflowFundsStatus, formId);
                             
-                            var fidAdminRole = db.AspNetRoles.FirstOrDefault(x => x.Name == "Power User");
-                            var adminList = db.AspNetUsers.Where(x => x.AspNetRoles.Any(y => y.Name == fidAdminRole.Name)).ToList();
+                            var adminList = db.AspNetRoles.FirstOrDefault(x => x.Name == "Power User");
 
-                            if (adminList.Any())
+                            if (adminList != null)
                             {
-                                var adminListEmail = new List<string>();
 
-                                foreach (var admin in adminList)
+                                foreach (var admin in adminList.AspNetUsers)
                                 {
                                     var notificationObj = new App_Notification()
                                     {
@@ -151,10 +148,9 @@ namespace xDC.Services
                                     };
 
                                     PushNotification(notificationObj);
-                                    adminListEmail.Add(admin.Email);
                                 }
 
-                                new MailService().SendCutOffTimeViolationEmail(formId, adminListEmail);
+                                new MailService().SendCutOffTimeViolationEmail(formId, adminList.AspNetUsers.ToList(), cutOffTimeParsed);
                             }
                             else
                             {

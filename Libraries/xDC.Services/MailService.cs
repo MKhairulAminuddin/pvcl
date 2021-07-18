@@ -98,12 +98,13 @@ namespace xDC.Services
             }
         }
 
-        public void SendCutOffTimeViolationEmail(int formId, List<string> adminEmail)
+        public void SendCutOffTimeViolationEmail(int formId, List<AspNetUsers> fidAdmins, TimeSpan cutOffTime)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
+                    var cutOffTimeString = new DateTime(cutOffTime.Ticks).ToString("HH:mm");
                     var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
 
                     if (getForm != null)
@@ -113,19 +114,24 @@ namespace xDC.Services
 
                         var message = new MimeMessage();
                         message.From.Add(new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount));
-                        message.Subject = "[Kashflow] Inflow Funds Approval Status";
+                        message.Subject = "[Kashflow] Inflow Funds Form Violate Cut Off Time";
 
                         var approvalPageUrl = string.Format("{0}/amsd/InflowFundsFormStatus?id={1}", Config.EmailApplicationUrl, formId);
                         var bodyBuilder = new StringBuilder();
-                        bodyBuilder.Append(string.Format("<p>Hi {0}, </p>", preparerName.DisplayName));
-                        bodyBuilder.AppendLine(string.Format("<p>Your form  <a href='" + approvalPageUrl + "'>#" + getForm.Id + "</a> have been " + getForm.FormStatus));
+                        bodyBuilder.Append($"<p>Hello there, </p>");
+                        bodyBuilder.AppendLine(
+                            $" <p>FIY, {getForm.FormType} form <a href='{approvalPageUrl}'>#{getForm.Id}</a> has been submitted/edited/approved outside agreed Cut Off time ({cutOffTimeString}).");
 
                         message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                         {
                             Text = bodyBuilder.ToString()
                         };
+
+                        foreach (var admin in fidAdmins)
+                        {
+                            message.To.Add(new MailboxAddress(admin.FullName, admin.Email));
+                        }
                         
-                        message.To.Add(new MailboxAddress(preparerName.DisplayName, preparerName.Email));
                         SendEmailToSmtp(message);
                     }
                     else
@@ -147,10 +153,7 @@ namespace xDC.Services
                 using (var client = new SmtpClient())
                 {
                     client.Connect(Config.SmtpServerIp, Convert.ToInt32(Config.SmtpServerPort), false);
-
-                    // Note: only needed if the SMTP server requires authentication
-                    //client.Authenticate("joey", "password");
-
+                    
                     client.Send(message);
                     client.Disconnect(true);
                 }
