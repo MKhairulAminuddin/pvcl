@@ -56,6 +56,7 @@ namespace xDC.Services
 
                     PushNotification(notificationObj);
                     new MailService().SendSubmitForApprovalEmail(formId);
+                    PushInflowFundAfterCutOffSubmissionNotification(formId);
                 }
             }
             catch (Exception ex)
@@ -128,21 +129,38 @@ namespace xDC.Services
                                 string.Format(
                                     "{0} Form submitted/approved after Cut-off time <a href='{1}{2}'>Click here to open it</a>",
                                     formHeader.FormType, Config.UrlAmsdInflowFundsStatus, formId);
+                            
+                            var fidAdminRole = db.AspNetRoles.FirstOrDefault(x => x.Name == "Power User");
+                            var adminList = db.AspNetUsers.Where(x => x.AspNetRoles.Any(y => y.Name == fidAdminRole.Name)).ToList();
 
-
-                            var notificationObj = new App_Notification()
+                            if (adminList.Any())
                             {
-                                Title = "Inflow Funds Submitted after cut off Time",
-                                ShortMessage = shortMessage,
-                                Message = longMessage,
-                                NotificationIconClass = "fa fa-exclamation",
-                                NotificationType = "bg-aqua",
-                                CreatedOn = DateTime.Now,
-                                UserId = formHeader.ApprovedBy
-                            };
+                                var adminListEmail = new List<string>();
 
-                            PushNotification(notificationObj);
-                            new MailService().SendSubmitForApprovalEmail(formId);
+                                foreach (var admin in adminList)
+                                {
+                                    var notificationObj = new App_Notification()
+                                    {
+                                        Title = "Inflow Funds Submitted after cut off Time",
+                                        ShortMessage = shortMessage,
+                                        Message = longMessage,
+                                        NotificationIconClass = "fa fa-exclamation",
+                                        NotificationType = "bg-aqua",
+                                        CreatedOn = DateTime.Now,
+                                        UserId = admin.UserName
+                                    };
+
+                                    PushNotification(notificationObj);
+                                    adminListEmail.Add(admin.Email);
+                                }
+
+                                new MailService().SendCutOffTimeViolationEmail(formId, adminListEmail);
+                            }
+                            else
+                            {
+                                Logger.LogError("PushInflowFundAfterCutOffSubmissionNotification no admin email");
+                            }
+                            
                         }
                     }
                     else

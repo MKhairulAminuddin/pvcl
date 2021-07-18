@@ -98,7 +98,7 @@ namespace xDC.Services
             }
         }
 
-        public void SendCutOffTimeViolationEmail(int formId)
+        public void SendCutOffTimeViolationEmail(int formId, List<string> adminEmail)
         {
             try
             {
@@ -124,7 +124,7 @@ namespace xDC.Services
                         {
                             Text = bodyBuilder.ToString()
                         };
-
+                        
                         message.To.Add(new MailboxAddress(preparerName.DisplayName, preparerName.Email));
                         SendEmailToSmtp(message);
                     }
