@@ -483,6 +483,7 @@
     <Content Include="Views\Setting\ApproverManagement.cshtml" />
     <Content Include="Views\User\MyNotification.cshtml" />
     <Content Include="Views\Iisd\TradeSettlementFormStatus.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -533,6 +534,7 @@
     <Compile Include="Models\ViewInflowFundStatusForm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\NotificationConfigViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Base\" />

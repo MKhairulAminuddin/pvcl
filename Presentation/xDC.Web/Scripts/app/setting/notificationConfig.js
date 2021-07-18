@@ -6,6 +6,29 @@
             loadUrl: "../api/common/GetActiveDirectoryUsers"
         });
 
+        $("#inflowFundSaveButton").dxButton("instance").option("onClick", function (e) {
+
+            var data = {
+                "inflowFundEnableNotification": $("#inFundEnableNotiCb").dxCheckBox("instance").option('value'),
+                "inflowFundEnableAdminModificationNotification": $("#inFundEnableAdminEditNotiCb").dxCheckBox("instance").option('value'),
+                "inflowFundCutOffTime": new Date(moment($("#inFundCutOffTimeDb").dxDateBox("instance").option('value'))).toISOString()
+            };
+
+            $.ajax({
+                data: data,
+                dataType: 'json',
+                url: '../api/setting/UpdateInflowFundFormNotificationSetting',
+                method: 'post'
+            }).done(function (data) {
+                $("#error_container").bs_success("Inflow Form setting updates saved");
+
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+            });
+
+
+        });
+
         $("#contributionEmailList").dxTagBox({
             dataSource: adUsersStore,
             displayExpr: "displayName",

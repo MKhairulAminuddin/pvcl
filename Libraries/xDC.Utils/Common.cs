@@ -220,6 +220,12 @@ namespace xDC.Utils
             {
                 case 1:
                     return "Amsd.InflowFunds.CutOffTime";
+                case 2:
+                    return "Amsd.InflowFunds.Notification";
+                case 3:
+                    return "Amsd.InflowFunds.AdminEditNotification";
+                    
+                    
             }
             return String.Empty;
         }

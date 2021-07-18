@@ -1,4 +1,4 @@
-﻿@model dynamic
+﻿@model xDC_Web.ViewModels.NotificationConfigViewModel
 
 @{
     ViewBag.Title = "Notification Configuration";
@@ -9,7 +9,7 @@
         <div class="col-md-6">
             <div class="left-container">
                 <div>
-
+                    
                 </div>
 
             </div>
@@ -38,7 +38,9 @@
                             <p>Enable Notification</p>
                         </div>
                         <div class="col-md-6">
-                            @(Html.DevExtreme().CheckBox())
+                            @(Html.DevExtreme()
+                                .CheckBoxFor(m => m.InflowFundEnableNotification)
+                                .ID("inFundEnableNotiCb"))
                         </div>
                     </div>
                     <div class="row">
@@ -46,7 +48,9 @@
                             <p>Enable Admin Modification Notification</p>
                         </div>
                         <div class="col-md-6">
-                            @(Html.DevExtreme().CheckBox())
+                            @(Html.DevExtreme()
+                                .CheckBoxFor(m => m.InflowFundEnableAdminModificationNotification)
+                                .ID("inFundEnableAdminEditNotiCb"))
                         </div>
                     </div>
                     <div class="row">
@@ -54,17 +58,17 @@
                             <p>Cut Off Time</p>
                         </div>
                         <div class="col-md-6">
-                            <div>
-                                @(Html.DevExtreme().DateBox()
-                                    .Type(DateBoxType.Time)
-                                    )
-                            </div>
+                            @(Html.DevExtreme()
+                                .DateBoxFor(m => m.InflowFundCutOffTime)
+                                .ID("inFundCutOffTimeDb")
+                                .Type(DateBoxType.Time))
                         </div>
                     </div>
                 </div>
                 <div class="box-footer">
                     <div class="pull-right">
                         @(Html.DevExtreme().Button()
+                            .ID("inflowFundSaveButton")
                             .StylingMode(ButtonStylingMode.Contained)
                             .Text("Save Changes")
                             .Type(ButtonType.Default))

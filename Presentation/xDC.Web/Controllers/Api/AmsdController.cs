@@ -149,6 +149,9 @@ namespace xDC_Web.Controllers.Api
 
                     new NotificationService().PushSubmitForApprovalNotification(newRecord.Id);
                     new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(newRecord.Id);
+
+                    new WorkflowService().SubmitForApprovalWorkflow(newRecord.Id);
+
                     return Request.CreateResponse(HttpStatusCode.Created, newRecord.Id);
                 }
             }
@@ -270,7 +273,9 @@ namespace xDC_Web.Controllers.Api
                             {
                                 new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(formId);
                             }
-                            
+
+                            new WorkflowService().ApprovalFeedbackWorkflow(formId, inputs.ApprovalStatus, inputs.ApprovalNote);
+
                             return Request.CreateResponse(HttpStatusCode.Accepted, formId);
                         }
                         else

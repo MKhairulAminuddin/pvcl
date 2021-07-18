@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -12,6 +13,8 @@ using Newtonsoft.Json;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using Microsoft.Extensions.Logging;
+using xDC.Utils;
+using xDC_Web.ViewModels;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -413,5 +416,80 @@ namespace xDC_Web.Controllers.Api
 
         #endregion
 
+        #region Notification
+
+        [HttpGet]
+        public HttpResponseMessage GetInflowFundFormCutOffTime()
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var cutOffTimeConfigKey = Common.ApplicationConfigKeyMapping(1);
+                    var result = db.Config_Application.FirstOrDefault(x => x.Key == cutOffTimeConfigKey);
+
+                    if (result != null)
+                    {
+                        DateTime.TryParseExact(result.Value, "HH:mm",
+                            System.Globalization.CultureInfo.InvariantCulture,
+                            System.Globalization.DateTimeStyles.None, out var tryParseValue);
+
+                        return Request.CreateResponse(HttpStatusCode.Accepted, tryParseValue);
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Cut Off Time not defined");
+                    }
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost]
+
+        public HttpResponseMessage UpdateInflowFundFormNotificationSetting([FromBody] NotificationConfigViewModel req)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var config = db.Config_Application.ToList();
+
+                    var infFundCutOffTimeKey = Common.ApplicationConfigKeyMapping(1);
+                    var infFundCutOffTime = config.FirstOrDefault(x => x.Key == infFundCutOffTimeKey);
+                    infFundCutOffTime.Value = req.InflowFundCutOffTime.ToString("HH:mm");
+
+                    var infFundNotificationKey = Common.ApplicationConfigKeyMapping(2);
+                    var infFundNotification = config.FirstOrDefault(x => x.Key == infFundNotificationKey);
+                    infFundNotification.Value = req.InflowFundEnableNotification.ToString();
+
+                    var infFundAdminEditNotificationKey = Common.ApplicationConfigKeyMapping(3);
+                    var infFundAdminEditNotification = config.FirstOrDefault(x => x.Key == infFundAdminEditNotificationKey);
+                    if (infFundAdminEditNotification.Value != req.InflowFundEnableAdminModificationNotification.ToString())
+                    {
+                        infFundAdminEditNotification.Value = req.InflowFundEnableAdminModificationNotification.ToString();
+                        infFundAdminEditNotification.UpdatedBy = User.Identity.Name;
+                        infFundAdminEditNotification.UpdatedDate = DateTime.Now;
+                    }
+                    
+
+                    db.SaveChanges();
+
+                    return Request.CreateResponse(HttpStatusCode.Accepted, req);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        #endregion
     }
 }
