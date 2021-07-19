@@ -52,41 +52,47 @@ namespace xDC_Web.Controllers
         [Authorize(Roles = "Power User, AMSD")]
         public ActionResult EditInflowFundsForm(string id)
         {
-            using (var db = new kashflowDBEntities())
+            try
             {
-                var formId = Convert.ToInt32(id);
-                var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
-
-                if (getForm != null)
+                using (var db = new kashflowDBEntities())
                 {
-                    var formObj = new ViewInflowFundStatusForm()
+                    var formId = Convert.ToInt32(id);
+                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+
+                    if (getForm != null)
                     {
-                        Id = getForm.Id,
-                        PreparedBy = getForm.PreparedBy,
-                        PreparedDate = getForm.PreparedDate,
-                        FormStatus = getForm.FormStatus,
+                        var formObj = new ViewInflowFundStatusForm()
+                        {
+                            Id = getForm.Id,
+                            PreparedBy = getForm.PreparedBy,
+                            PreparedDate = getForm.PreparedDate,
+                            FormStatus = getForm.FormStatus,
 
-                        IsApproved = (getForm.FormStatus == Common.FormStatusMapping(3)),
-                        ApprovedBy = getForm.ApprovedBy,
-                        ApprovedDate = getForm.ApprovedDate,
+                            IsApproved = (getForm.FormStatus == Common.FormStatusMapping(3)),
+                            ApprovedBy = getForm.ApprovedBy,
+                            ApprovedDate = getForm.ApprovedDate,
 
-                        IsAdminEdited = getForm.AdminEditted,
-                        AdminEditedBy = getForm.AdminEdittedBy,
-                        AdminEditedDate = getForm.AdminEdittedDate,
+                            IsAdminEdited = getForm.AdminEditted,
+                            AdminEditedBy = getForm.AdminEdittedBy,
+                            AdminEditedDate = getForm.AdminEdittedDate,
 
-                        ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
-                        AdminEditPermission = User.IsInRole(Config.AclPowerUser)
+                            ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
+                            AdminEditPermission = User.IsInRole(Config.AclPowerUser)
 
-                    };
-                    return View("NewInflowFundsForm", formObj);
-                }
-                else
-                {
-                    return HttpNotFound();
+                        };
+                        return View("NewInflowFundsForm", formObj);
+                    }
+                    else
+                    {
+                        return HttpNotFound();
+                    }
                 }
             }
-
-            
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return new HttpUnauthorizedResult();
+            }
         }
         
         public ActionResult InflowFundsFormStatus(string id)
@@ -108,6 +114,10 @@ namespace xDC_Web.Controllers
                             ApprovedBy = getForm.ApprovedBy,
                             ApprovedDate = getForm.ApprovedDate,
                             FormStatus = getForm.FormStatus,
+                            
+                            IsAdminEdited = getForm.AdminEditted,
+                            AdminEditedBy = getForm.AdminEdittedBy,
+                            AdminEditedDate = getForm.AdminEdittedDate,
 
                             ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
                             AdminEditPermission = User.IsInRole(Config.AclPowerUser)
@@ -124,25 +134,6 @@ namespace xDC_Web.Controllers
             }
         }
         
-        public ActionResult ViewInflowFundsForm(string id)
-        {
-            try
-            {
-                var formId = Convert.ToInt32(id);
-                AmsdInflowFundFormPreviewModel model = new AmsdInflowFundFormPreviewModel();
-                model.Id = formId;
-
-                return View(model);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return HttpNotFound();
-            }
-            
-        }
-
-
         // Print Form
         [HttpPost]
         public ActionResult PrintInflowFund(string id)

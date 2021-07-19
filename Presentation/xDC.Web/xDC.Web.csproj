@@ -467,7 +467,6 @@
     <Content Include="Views\Shared\_LayoutEmpty.cshtml" />
     <Content Include="Views\Amsd\Index.cshtml" />
     <Content Include="Views\Amsd\NewInflowFundsForm.cshtml" />
-    <Content Include="Views\Amsd\ViewInflowFundsForm.cshtml" />
     <Content Include="Views\Setting\DropdownConfig.cshtml" />
     <Content Include="Views\Setting\NotificationConfig.cshtml" />
     <Content Include="Views\Setting\Workflow.cshtml" />

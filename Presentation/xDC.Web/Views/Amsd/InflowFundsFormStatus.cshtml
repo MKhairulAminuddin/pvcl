@@ -40,7 +40,7 @@
                         </div>
                     }
                 }
-                @if (User.IsInRole("Power User"))
+                @if (Model.AdminEditPermission)
                 {
                     <div>
                         @(Html.DevExtreme().Button()
@@ -48,6 +48,7 @@
                             .Icon("edit")
                             .Type(ButtonType.Default)
                             .StylingMode(ButtonStylingMode.Contained)
+                            .OnClick(@<text> function(){ window.location = "@Url.Action("EditInflowFundsForm", "Amsd")?id=@Model.Id"; } </text>)
                             )
                     </div>
                 }
@@ -81,7 +82,7 @@
                     </div>
                     <div class="stepper-item">
                         <div class="step-counter">3</div>
-                        <div class="step-name">Done</div>
+                        <div class="step-name">Approve/Reject</div>
                     </div>
                 </div>
             }
@@ -99,7 +100,7 @@
                     </div>
                     <div class="stepper-item">
                         <div class="step-counter">3</div>
-                        <div class="step-name">Done</div>
+                        <div class="step-name">Approve/Reject</div>
                     </div>
                 </div>
             }
@@ -204,6 +205,26 @@
                                     .ReadOnly(true))
                             </div>
                         </div>
+                        @if (Model.IsAdminEdited)
+                        {
+                            <div class="dx-field">
+                                <div class="dx-field-label text-red">Admin Edited By</div>
+                                <div class="dx-field-value">
+                                    @(Html.DevExtreme().TextBoxFor(m => m.AdminEditedBy)
+                                        .StylingMode(EditorStylingMode.Underlined)
+                                        .ReadOnly(true))
+                                </div>
+                            </div>
+                            <div class="dx-field">
+                                <div class="dx-field-label text-red">Admin Edited Date</div>
+                                <div class="dx-field-value">
+                                    @(Html.DevExtreme().DateBoxFor(m => m.AdminEditedDate)
+                                        .StylingMode(EditorStylingMode.Underlined)
+                                        .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                        .ReadOnly(true))
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
