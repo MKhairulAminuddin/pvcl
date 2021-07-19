@@ -81,7 +81,7 @@ namespace xDC_Web.Controllers.Api
                 {
                     var todaysDate = DateTime.Now.Date;
                     var existingRecord = db.Form_Header.ToList();
-                    existingRecord = existingRecord.Where(x => x.PreparedDate.Value.Date == todaysDate).ToList();
+                    existingRecord = existingRecord.Where(x => x.PreparedDate.Value.Date == todaysDate.Date).ToList();
 
                     if (existingRecord.Any())
                     {
@@ -248,7 +248,43 @@ namespace xDC_Web.Controllers.Api
             }
 
         }
-        
+
+        [HttpDelete]
+        [Authorize(Roles = "Administrator, AMSD")]
+        [Route("DeleteInflowFundDraftForm")]
+        public HttpResponseMessage DeleteInflowFundDraftForm(FormDataCollection form)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var key = Convert.ToInt32(form.Get("id"));
+
+                    var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == key);
+                    var inflowFunds = db.Amsd_InflowFunds.Where(x => x.FormId == formHeader.Id);
+
+                    //only authorized person to delete
+                    if (formHeader.PreparedBy != User.Identity.Name)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.Unauthorized);
+                    }
+
+                    db.Form_Header.Remove(formHeader);
+                    db.Amsd_InflowFunds.RemoveRange(inflowFunds);
+                    db.SaveChanges();
+
+                    return Request.CreateResponse(HttpStatusCode.OK);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+            
+        }
+
+
         [HttpPost]
         [Route("InflowFundsFormApproval")]
         [Authorize(Roles = "AMSD")]
@@ -302,6 +338,12 @@ namespace xDC_Web.Controllers.Api
             }
 
         }
+
+
+
+
+
+
 
         [HttpGet]
         [Route("GetInflowFunds")]

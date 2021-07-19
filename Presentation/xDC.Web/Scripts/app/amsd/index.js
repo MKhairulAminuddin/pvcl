@@ -85,6 +85,36 @@
                             }
                         },
                         {
+                            hint: "Delete Draft",
+                            icon: "fa fa-trash-o",
+                            cssClass: "dx-datagrid-command-btn text-red",
+                            visible: function (e) {
+                                return (e.row.data.formStatus == "Draft" && e.row.data.isFormOwner);
+                            },
+                            onClick: function (e) {
+                                var data = {
+                                    id: e.row.data.id
+                                };
+
+                                $.ajax({
+                                    type: "delete",
+                                    url: '../api/amsd/DeleteInflowFundDraftForm',
+                                    data: data,
+                                    success: function (data) {
+                                        $("#error_container").bs_success("Draft deleted");
+                                        $amsdGrid.refresh();
+                                    },
+                                    fail: function(jqXHR, textStatus, errorThrown) {
+                                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                                    }
+                                });
+                                e.event.preventDefault();
+
+
+                                e.event.preventDefault();
+                            }
+                        },
+                        {
                             hint: "Admin Edit",
                             icon: "fa fa-pencil-square-o",
                             cssClass: "dx-datagrid-command-btn text-red",
