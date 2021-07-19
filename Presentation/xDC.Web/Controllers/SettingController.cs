@@ -21,9 +21,6 @@ namespace xDC_Web.Controllers
 
         public ActionResult NotificationConfig()
         {
-            Logger.LogError(HttpContext.Request.UserHostName);
-            Logger.LogError(HttpContext.Request.UserHostAddress);
-
             try
             {
                 using (var db = new kashflowDBEntities())
