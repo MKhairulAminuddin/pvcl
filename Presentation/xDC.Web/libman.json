@@ -30,6 +30,46 @@
         "underscore.js",
         "underscore.min.js"
       ]
+    },
+    {
+      "library": "pace@1.2.4",
+      "destination": "Scripts/pace/",
+      "files": [
+        "pace.min.js",
+        "themes/blue/pace-theme-barber-shop.css",
+        "themes/blue/pace-theme-barber-shop.min.css",
+        "themes/blue/pace-theme-big-counter.css",
+        "themes/blue/pace-theme-big-counter.min.css",
+        "themes/blue/pace-theme-bounce.css",
+        "themes/blue/pace-theme-bounce.min.css",
+        "themes/blue/pace-theme-center-atom.css",
+        "themes/blue/pace-theme-center-atom.min.css",
+        "themes/blue/pace-theme-center-circle.css",
+        "themes/blue/pace-theme-center-circle.min.css",
+        "themes/blue/pace-theme-center-radar.css",
+        "themes/blue/pace-theme-center-radar.min.css",
+        "themes/blue/pace-theme-center-simple.css",
+        "themes/blue/pace-theme-center-simple.min.css",
+        "themes/blue/pace-theme-corner-indicator.css",
+        "themes/blue/pace-theme-corner-indicator.min.css",
+        "themes/blue/pace-theme-fill-left.css",
+        "themes/blue/pace-theme-fill-left.min.css",
+        "themes/blue/pace-theme-flash.css",
+        "themes/blue/pace-theme-flash.min.css",
+        "themes/blue/pace-theme-flat-top.css",
+        "themes/blue/pace-theme-flat-top.min.css",
+        "themes/blue/pace-theme-loading-bar.css",
+        "themes/blue/pace-theme-loading-bar.min.css",
+        "themes/blue/pace-theme-mac-osx.css",
+        "themes/blue/pace-theme-mac-osx.min.css",
+        "themes/blue/pace-theme-material.css",
+        "themes/blue/pace-theme-material.min.css",
+        "themes/blue/pace-theme-minimal.css",
+        "themes/blue/pace-theme-minimal.min.css",
+        "pace.js",
+        "pace-theme-default.min.css",
+        "pace-theme-default.css"
+      ]
     }
   ]
 }

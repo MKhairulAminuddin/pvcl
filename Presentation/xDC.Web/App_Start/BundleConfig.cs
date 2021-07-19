@@ -18,6 +18,7 @@ namespace xDC_Web {
                     "~/Scripts/bootstrap.js",
                     "~/Scripts/underscore.js/underscore.js",
                     "~/Scripts/moment.js/moment.js",
+                    "~/Scripts/pace/pace.min.js",
                     "~/Scripts/adminlte.js",
                     "~/Scripts/app.dxGrid.utils.js",
                     "~/Scripts/app.js"
@@ -26,6 +27,7 @@ namespace xDC_Web {
             
             styleBundle
                 .Include(
+                    "~/Scripts/pace/themes/blue/pace-theme-center-simple.min.css",
                     "~/Content/bootstrap.css",
                     "~/Content/AdminLTE.css",
                     "~/Content/skin-blue.css",
