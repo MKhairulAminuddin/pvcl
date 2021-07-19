@@ -162,6 +162,11 @@
                 onRowUpdated: function (e) {
                     console.log(e);
                 },
+                onRowInserting: function (e) {
+                    e.data["formId"] = getUrlParameter('id');
+                    
+                    e.cancel = false;
+                },
                 summary: {
                     totalItems: [
                         {

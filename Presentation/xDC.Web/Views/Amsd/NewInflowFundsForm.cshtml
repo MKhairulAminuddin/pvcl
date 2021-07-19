@@ -34,22 +34,29 @@
                                     .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
                                     )
                             </div>
-                            <div style="display: inline-block">
-                                @(Html.DevExtreme().Button()
-                                    .ID("submitForApprovalBtn")
-                                    .Text("Submit for Approval")
-                                    .Type(ButtonType.Default)
-                                    .StylingMode(ButtonStylingMode.Contained)
-                                    )
-                            </div>
-                            <div style="display: inline-block">
-                                @(Html.DevExtreme().Button()
-                                    .ID("saveAsDraftBtn")
-                                    .Text("Save as Draft")
-                                    .Type(ButtonType.Normal)
-                                    .StylingMode(ButtonStylingMode.Contained)
-                                    )
-                            </div>
+                            @if (!Model.AdminEditPermission)
+                            {
+                                <div style="display: inline-block">
+                                    @(Html.DevExtreme().Button()
+                                        .ID("submitForApprovalBtn")
+                                        .Text("Submit for Approval")
+                                        .Type(ButtonType.Default)
+                                        .StylingMode(ButtonStylingMode.Contained)
+                                        )
+                                </div>
+
+                                if (Model.FormStatus != "Draft")
+                                {
+                                    <div style="display: inline-block">
+                                        @(Html.DevExtreme().Button()
+                                            .ID("saveAsDraftBtn")
+                                            .Text("Save as Draft")
+                                            .Type(ButtonType.Normal)
+                                            .StylingMode(ButtonStylingMode.Contained)
+                                            )
+                                    </div>
+                                }
+                            }
                         </div>
                     </div>
                 </div>
@@ -91,6 +98,48 @@
                                                 .ReadOnly(true))
                                         </div>
                                     </div>
+                                    @if (Model.IsApproved)
+                                    {
+                                        <div class="dx-field">
+                                            <div class="dx-field-label">Approved By</div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().TextBoxFor(m => m.ApprovedBy)
+                                                    .StylingMode(EditorStylingMode.Underlined)
+                                                    .ReadOnly(true))
+                                            </div>
+                                        </div>
+                                        <div class="dx-field">
+                                            <div class="dx-field-label">Approved Date</div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().DateBoxFor(m => m.ApprovedDate)
+                                                    .StylingMode(EditorStylingMode.Underlined)
+                                                    .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                                    .ReadOnly(true))
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (Model.IsAdminEdited)
+                                    {
+                                        <div class="dx-field">
+                                            <div class="dx-field-label text-red">Admin Edited By</div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().TextBoxFor(m => m.AdminEditedBy)
+                                                    .StylingMode(EditorStylingMode.Underlined)
+                                                    .ReadOnly(true))
+                                            </div>
+                                        </div>
+                                        <div class="dx-field">
+                                            <div class="dx-field-label text-red">Admin Edited Date</div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().DateBoxFor(m => m.AdminEditedDate)
+                                                    .StylingMode(EditorStylingMode.Underlined)
+                                                    .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                                    .ReadOnly(true))
+                                            </div>
+                                        </div>
+                                    }
+
+
                                 </div>
                             </div>
                         </div>

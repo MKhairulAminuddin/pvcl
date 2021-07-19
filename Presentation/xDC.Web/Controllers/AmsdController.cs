@@ -7,6 +7,7 @@ using xDC.Utils;
 using xDC_Web.Extension.DocGenerator;
 using xDC_Web.Models;
 using xDC_Web.Models.MailMerge;
+using xDC_Web.ViewModels;
 
 namespace xDC_Web.Controllers
 {
@@ -15,9 +16,28 @@ namespace xDC_Web.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            try
+            {
+                var model = new AmsdViewModel();
+
+                using (var db = new kashflowDBEntities())
+                {
+                    var isApprover = db.Config_Approver.Any(x => x.Username == User.Identity.Name);
+
+                    var isAmsdUser = User.IsInRole(Config.AclAmsd) || User.IsInRole(Config.AclAdministrator);
+
+                    model.isAllowedToCreateForm = (!isApprover && isAmsdUser);
+                    return View(model);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return View("Error");
+            }
         }
 
+        [Authorize(Roles = "AMSD")]
         public ActionResult NewInflowFundsForm()
         {
             var model = new ViewInflowFundStatusForm()
@@ -29,6 +49,7 @@ namespace xDC_Web.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Power User, AMSD")]
         public ActionResult EditInflowFundsForm(string id)
         {
             using (var db = new kashflowDBEntities())
@@ -43,11 +64,19 @@ namespace xDC_Web.Controllers
                         Id = getForm.Id,
                         PreparedBy = getForm.PreparedBy,
                         PreparedDate = getForm.PreparedDate,
-                        ApprovedBy = getForm.ApprovedBy,
-                        ApprovedDate = getForm.ApprovedDate,
                         FormStatus = getForm.FormStatus,
 
-                        ApprovePermission = false // to ganti with workflow checking
+                        IsApproved = (getForm.FormStatus == Common.FormStatusMapping(3)),
+                        ApprovedBy = getForm.ApprovedBy,
+                        ApprovedDate = getForm.ApprovedDate,
+
+                        IsAdminEdited = getForm.AdminEditted,
+                        AdminEditedBy = getForm.AdminEdittedBy,
+                        AdminEditedDate = getForm.AdminEdittedDate,
+
+                        ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
+                        AdminEditPermission = User.IsInRole(Config.AclPowerUser)
+
                     };
                     return View("NewInflowFundsForm", formObj);
                 }
@@ -59,7 +88,7 @@ namespace xDC_Web.Controllers
 
             
         }
-
+        
         public ActionResult InflowFundsFormStatus(string id)
         {
             try
@@ -80,7 +109,8 @@ namespace xDC_Web.Controllers
                             ApprovedDate = getForm.ApprovedDate,
                             FormStatus = getForm.FormStatus,
 
-                            ApprovePermission = getForm.ApprovedBy == User.Identity.Name
+                            ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
+                            AdminEditPermission = User.IsInRole(Config.AclPowerUser)
                         };
                         return View(formObj);
                     }

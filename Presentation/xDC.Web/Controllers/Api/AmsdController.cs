@@ -9,11 +9,13 @@ using System.Web.Http;
 using xDC_Web.Models;
 using System.Data.Entity;
 using System.Net.Http.Formatting;
+using DevExpress.Utils;
 using Newtonsoft.Json;
 using xDC.Utils;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services;
+using xDC_Web.Extension.CustomAttribute;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -54,7 +56,8 @@ namespace xDC_Web.Controllers.Api
                             AdminEditted = item.AdminEditted,
                             AdminEdittedBy = item.AdminEdittedBy,
                             AdminEdittedDate = item.AdminEdittedDate,
-                            IsFormOwner = User.Identity.Name == item.PreparedBy
+                            IsFormOwner = (User.Identity.Name == item.PreparedBy),
+                            IsCanAdminEdit = (User.IsInRole(Config.AclPowerUser))
                         });
                     }
 
@@ -100,6 +103,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Route("NewInflowFundsForm")]
+        [Authorize(Roles = "AMSD")]
         public HttpResponseMessage NewInflowFundsForm([FromBody] InflowFundsModel inputs)
         {
             try
@@ -164,6 +168,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Route("NewInflowFundsFormDraft")]
+        [Authorize(Roles = "AMSD")]
         public HttpResponseMessage NewInflowFundsFormDraft([FromBody] InflowFundsModel inputs)
         {
             try
@@ -243,9 +248,10 @@ namespace xDC_Web.Controllers.Api
             }
 
         }
-
+        
         [HttpPost]
         [Route("InflowFundsFormApproval")]
+        [Authorize(Roles = "AMSD")]
         public HttpResponseMessage InflowFundsFormApproval([FromBody] ApprovalInflowFundsModel inputs)
         {
             try
@@ -328,37 +334,54 @@ namespace xDC_Web.Controllers.Api
             }
 
         }
-
+        
         [HttpPut]
+        [Authorize(Roles = "Power User, AMSD")]
         public HttpResponseMessage UpdateInflowFund(FormDataCollection form)
         {
-            using (var db = new kashflowDBEntities())
+            try
             {
-                var key = Convert.ToInt32(form.Get("key"));
-                var values = form.Get("values");
-                var existingRecord = db.Amsd_InflowFunds.SingleOrDefault(o => o.Id == key);
-
-                JsonConvert.PopulateObject(values, existingRecord);
-
-                if (existingRecord != null)
+                using (var db = new kashflowDBEntities())
                 {
-                    existingRecord.UpdatedBy = User.Identity.Name;
-                    existingRecord.UpdatedDate = DateTime.Now;
+                    var key = Convert.ToInt32(form.Get("key"));
+                    var values = form.Get("values");
+                    var existingRecord = db.Amsd_InflowFunds.SingleOrDefault(o => o.Id == key);
+
+                    JsonConvert.PopulateObject(values, existingRecord);
+
+                    if (existingRecord != null)
+                    {
+                        existingRecord.UpdatedBy = User.Identity.Name;
+                        existingRecord.UpdatedDate = DateTime.Now;
+                    }
+
+                    var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == existingRecord.FormId);
+                    var isAdminEdit = User.IsInRole(Config.AclPowerUser);
+                    if (isAdminEdit)
+                    {
+                        formHeader.AdminEditted = true;
+                        formHeader.AdminEdittedBy = User.Identity.Name;
+                        formHeader.AdminEdittedDate = DateTime.Now;
+                    }
+                    
+                    Validate(existingRecord);
+
+                    if (!ModelState.IsValid)
+                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+
+                    db.SaveChanges();
+
+                    return Request.CreateResponse(HttpStatusCode.OK);
                 }
-
-                Validate(existingRecord);
-
-                if (!ModelState.IsValid)
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
-
-                db.SaveChanges();
-
-                return Request.CreateResponse(HttpStatusCode.OK);
             }
-
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
         }
 
         [HttpPost]
+        [Authorize(Roles = "Power User, AMSD")]
         public HttpResponseMessage InsertInflowFund(FormDataCollection form)
         {
             using (var db = new kashflowDBEntities())
@@ -370,6 +393,15 @@ namespace xDC_Web.Controllers.Api
                 
                 newRecord.CreatedBy = User.Identity.Name;
                 newRecord.CreatedDate = DateTime.Now;
+
+                var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == newRecord.FormId);
+                var isAdminEdit = User.IsInRole(Config.AclPowerUser);
+                if (isAdminEdit)
+                {
+                    formHeader.AdminEditted = true;
+                    formHeader.AdminEdittedBy = User.Identity.Name;
+                    formHeader.AdminEdittedDate = DateTime.Now;
+                }
 
                 Validate(newRecord);
 
@@ -384,12 +416,22 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpDelete]
+        [Authorize(Roles = "Power User, AMSD")]
         public HttpResponseMessage DeleteInflowFund(FormDataCollection form)
         {
             using (var db = new kashflowDBEntities())
             {
                 var key = Convert.ToInt32(form.Get("key"));
                 var foundRecord = db.Amsd_InflowFunds.First(x => x.Id == key);
+
+                var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == foundRecord.FormId);
+                var isAdminEdit = User.IsInRole(Config.AclPowerUser);
+                if (isAdminEdit)
+                {
+                    formHeader.AdminEditted = true;
+                    formHeader.AdminEdittedBy = User.Identity.Name;
+                    formHeader.AdminEdittedDate = DateTime.Now;
+                }
 
                 db.Amsd_InflowFunds.Remove(foundRecord);
                 db.SaveChanges();

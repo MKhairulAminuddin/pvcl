@@ -85,6 +85,18 @@
                             }
                         },
                         {
+                            hint: "Admin Edit",
+                            icon: "fa fa-pencil-square-o",
+                            cssClass: "dx-datagrid-command-btn text-red",
+                            visible: function (e) {
+                                return (e.row.data.isCanAdminEdit);
+                            },
+                            onClick: function (e) {
+                                window.location.href = "/amsd/EditInflowFundsForm?id=" + e.row.data.id;
+                                e.event.preventDefault();
+                            }
+                        },
+                        {
                             hint: "View Form",
                             icon: "fa fa-eye",
                             cssClass: "dx-datagrid-command-btn",

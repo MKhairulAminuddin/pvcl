@@ -40,7 +40,7 @@ namespace xDC_Web.Controllers
 
                     if (getForm != null)
                     {
-                        var formObj = new ViewInflowFundStatusForm()
+                        var formObj = new ViewTradeSettlementForm()
                         {
                             Id = getForm.Id,
                             PreparedBy = getForm.PreparedBy,

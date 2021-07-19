@@ -20,5 +20,7 @@ namespace xDC_Web.Models
         public Nullable<System.DateTime> AdminEdittedDate { get; set; }
 
         public bool IsFormOwner { get; set; }
+
+        public bool IsCanAdminEdit { get; set; }
     }
 }
