@@ -1,0 +1,74 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Utility";
+}
+
+<section class="content-header content-toolbar">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="left-container">
+                <div>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div id="right-toolbar-container" class="right-container">
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-solid">
+                <div class="box-header">
+                    <div class="box-title">SMTP Server Test</div>
+                    <div class="pull-right">
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Enable Notification</p>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="emailPicker"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="pull-right">
+                        <div id="testEmailBtn"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box box-solid">
+                <div class="box-header">
+                    <div class="box-title">Active Directory Users (Extracted by system every week)</div>
+                    <div class="pull-right">
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="activeDirectoryGrid"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+@section scripts
+{
+    <script src="~/Scripts/app/admin/utility.js"></script>
+}

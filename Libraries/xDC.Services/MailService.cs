@@ -13,6 +13,40 @@ namespace xDC.Services
 {
     public class MailService
     {
+        public void TestSendEmailToSmtp(string recipient)
+        {
+            try
+            {
+                using (var client = new SmtpClient())
+                {
+                    client.Connect(Config.SmtpServerIp, Convert.ToInt32(Config.SmtpServerPort), false);
+
+                    var message = new MimeMessage();
+                    message.From.Add(new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount));
+                    message.Subject = "[Kashflow] Test Email";
+                    
+                    var bodyBuilder = new StringBuilder();
+                    bodyBuilder.Append($"<p>Testing, testing....</p>");
+                    bodyBuilder.AppendLine($"<p>Plz... just ignore kay...</p>");
+
+                    message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                    {
+                        Text = bodyBuilder.ToString()
+                    };
+
+                    message.To.Add(new MailboxAddress(recipient, recipient));
+
+                    client.Send(message);
+                    client.Disconnect(true);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+
+        }
+
         public void SendSubmitForApprovalEmail(int formId)
         {
             try

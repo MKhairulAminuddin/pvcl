@@ -28,5 +28,10 @@ namespace xDC_Web.Controllers
         {
             return View();
         }
+
+        public ActionResult Utility()
+        {
+            return View();
+        }
     }
 }

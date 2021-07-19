@@ -277,6 +277,7 @@
     <Content Include="Scripts\adminlte.min.js" />
     <Content Include="Scripts\app.js" />
     <Content Include="Scripts\app\admin\userManagement.js" />
+    <Content Include="Scripts\app\admin\utility.js" />
     <Content Include="Scripts\app\amsd\inflowFundsFormStatus.js" />
     <Content Include="Scripts\app\amsd\viewInflowFundsForm.js" />
     <Content Include="Scripts\app\amsd\newInflowFundsForm.js" />
@@ -517,6 +518,7 @@
     <Content Include="Views\User\MyNotification.cshtml" />
     <Content Include="Views\Iisd\TradeSettlementFormStatus.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Admin\Utility.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

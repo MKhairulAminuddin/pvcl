@@ -194,9 +194,35 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
         }
-        
+
 
         #endregion
 
+        #region Utility
+
+        [HttpPost]
+        public HttpResponseMessage TestEmail(FormDataCollection form)
+        {
+            try
+            {
+                var recipient = form.Get("emailRecipient");
+
+                if (!string.IsNullOrEmpty(recipient))
+                {
+                    new MailService().TestSendEmailToSmtp(recipient);
+                    return Request.CreateResponse(HttpStatusCode.OK, true);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, false);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        #endregion
     }
 }
