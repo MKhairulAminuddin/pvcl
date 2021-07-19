@@ -6,3 +6,6 @@
 
 INSERT INTO [dbo].[Config_Key]([Key],[KeyType]) VALUES ('Amsd.InflowFunds.Bank' ,'Dropdown');
 INSERT INTO [dbo].[Config_Key]([Key],[KeyType]) VALUES ('Amsd.InflowFunds.FundType' ,'Dropdown');
+INSERT INTO [dbo].[Config_Key]([Key],[KeyType]) VALUES ('Amsd.InflowFunds.AmsdEditNotification' ,'Application');
+INSERT INTO [dbo].[Config_Key]([Key],[KeyType]) VALUES ('Amsd.InflowFunds.CutOffTime' ,'Application');
+INSERT INTO [dbo].[Config_Key]([Key],[KeyType]) VALUES ('Amsd.InflowFunds.Notification' ,'Application');

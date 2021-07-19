@@ -9,3 +9,7 @@
     [UpdatedBy] NVARCHAR(250) NULL, 
     [UpdatedDate] DATETIME NULL
 )
+
+INSERT INTO [dbo].[Config_Application]([Key],[Value]) VALUES ('Amsd.InflowFunds.CutOffTime' ,'10:00');
+INSERT INTO [dbo].[Config_Application]([Key],[Value]) VALUES ('Amsd.InflowFunds.Notification' ,'true');
+INSERT INTO [dbo].[Config_Application]([Key],[Value]) VALUES ('Amsd.InflowFunds.AmsdEditNotification' ,'true');
