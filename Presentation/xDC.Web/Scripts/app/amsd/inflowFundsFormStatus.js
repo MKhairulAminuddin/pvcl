@@ -28,7 +28,7 @@
                 width: 230
             },
             onItemClick: function (e) {
-                if (e.itemData == "Excel Workbook (*.xlsx)") {
+                if (e.itemData.id == 1) {
                     DevExpress.ui.notify("Download " + e.itemData, "success", 600);
 
                     var data = {
@@ -69,9 +69,11 @@
                 }
                 
             },
+            displayExpr: "name",
+            keyExpr: "id",
             items: [
-                "Excel Workbook (*.xlsx)",
-                "PDF"
+                { id: 1, name: "Excel Workbook (*.xlsx)", icon: "fa fa-file-excel-o" },
+                { id: 4, name: "PDF", icon: "fa fa-file-pdf-o"}
             ]
         }).dxDropDownButton("instance");
         
