@@ -106,6 +106,13 @@ namespace xDC_Web.Controllers
 
                     if (getForm!= null)
                     {
+                        var isApprovedOrRejected = (getForm.FormStatus == Common.FormStatusMapping(3) ||
+                                                    getForm.FormStatus == Common.FormStatusMapping(4));
+                        var getFormWorkflow = db.Form_Workflow
+                            .Where(x => (x.WorkflowStatus == "Approved" || x.WorkflowStatus == "Rejected") &&
+                                        x.FormId == getForm.Id).OrderByDescending(x => x.EndDate)
+                            .FirstOrDefault();
+
                         var formObj = new ViewInflowFundStatusForm()
                         {
                             Id = getForm.Id,
@@ -120,7 +127,10 @@ namespace xDC_Web.Controllers
                             AdminEditedDate = getForm.AdminEdittedDate,
 
                             ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
-                            AdminEditPermission = User.IsInRole(Config.AclPowerUser)
+                            AdminEditPermission = User.IsInRole(Config.AclPowerUser),
+
+                            IsApprovedOrRejected = (getForm.FormStatus == Common.FormStatusMapping(3) || getForm.FormStatus == Common.FormStatusMapping(4)),
+                            ApprovalOrRejectionNotes = getFormWorkflow.WorkflowNotes
                         };
                         return View(formObj);
                     }

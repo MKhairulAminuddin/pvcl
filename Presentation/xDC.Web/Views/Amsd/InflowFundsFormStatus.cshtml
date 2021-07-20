@@ -228,6 +228,24 @@
                     </div>
                 </div>
             </div>
+            
+            @if (Model.IsApprovedOrRejected)
+            {
+                <div class="box box-solid">
+                    <div class="box-body">
+                        <div class="dx-fieldset">
+                            <div class="dx-field">
+                                <div class="dx-field-label">Approval/Rejection Notes</div>
+                                <div class="dx-field-value">
+                                    @(Html.DevExtreme().TextAreaFor(m => m.ApprovalOrRejectionNotes)
+                                        .StylingMode(EditorStylingMode.Underlined)
+                                        .ReadOnly(true))
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </section>

@@ -23,8 +23,10 @@ namespace xDC_Web.Models
         public DateTime? AdminEditedDate { get; set; }
 
         public bool ApprovePermission { get; set; }
-
         public bool AdminEditPermission { get; set; }
+
+        public bool IsApprovedOrRejected { get; set; }
+        public string ApprovalOrRejectionNotes { get; set; }
     }
 
     public class ViewTradeSettlementForm
