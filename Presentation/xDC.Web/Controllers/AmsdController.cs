@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Utils;
+using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.Extension.DocGenerator;
 using xDC_Web.Models;
 using xDC_Web.Models.MailMerge;
@@ -37,7 +38,7 @@ namespace xDC_Web.Controllers
             }
         }
 
-        [Authorize(Roles = "AMSD")]
+        [KashflowAuthorize(Roles = "AMSD")]
         public ActionResult NewInflowFundsForm()
         {
             var model = new ViewInflowFundStatusForm()

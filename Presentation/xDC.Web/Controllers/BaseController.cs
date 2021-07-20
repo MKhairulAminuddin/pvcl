@@ -20,5 +20,11 @@ namespace xDC_Web.Controllers
             result.FileDownloadName = Uri.EscapeDataString(String.Format("{0}.{1}", fileName, fileExtension));
             return result;
         }
+
+        [Authorize]
+        public ActionResult Unauthorized()
+        {
+            return View();
+        }
     }
 }

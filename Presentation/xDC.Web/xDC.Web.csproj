@@ -519,6 +519,7 @@
     <Content Include="Views\Iisd\TradeSettlementFormStatus.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Admin\Utility.cshtml" />
+    <Content Include="Views\Base\Unauthorized.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -548,6 +549,7 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Extension\AdAuthentication.cs" />
     <Compile Include="Extension\CustomAttribute\InflowFundFormPermissionAttribute.cs" />
+    <Compile Include="Extension\CustomAttribute\KashflowAuthorize.cs" />
     <Compile Include="Extension\DocGenerator\DocGeneratorBase.cs" />
     <Compile Include="Extension\DocGenerator\InflowFundsFormDoc.cs" />
     <Compile Include="Extension\MailMerge\HtmlContentGenerator.cs" />
@@ -573,9 +575,7 @@
     <Compile Include="ViewModels\AmsdViewModel.cs" />
     <Compile Include="ViewModels\NotificationConfigViewModel.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\Base\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\xDC.Infrastructure\xDC.Infrastructure.csproj">
       <Project>{2672ed98-2d96-458e-b2ce-0488e163eb98}</Project>
