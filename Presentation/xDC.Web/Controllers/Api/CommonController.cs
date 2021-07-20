@@ -197,7 +197,8 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var currentUsername = User.Identity.Name;
-                    var result = db.App_Notification.Where(x => x.UserId == currentUsername).ToList();
+                    var result = db.App_Notification.Where(x => x.UserId == currentUsername)
+                        .OrderByDescending(x => x.CreatedOn).ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
