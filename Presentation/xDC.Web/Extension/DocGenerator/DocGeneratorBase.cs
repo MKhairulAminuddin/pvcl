@@ -27,37 +27,10 @@ namespace xDC_Web.Extension.DocGenerator
 
         }
 
-        public void SaveExcelFile(string filename, MemoryStream ms)
-        {
-            try
-            {
-                var fileExt = ".xlsx";
-                var fullFileName = filename + fileExt;
-
-                var tempFolder = Config.TempFolderPath;
-                if (!Directory.Exists(tempFolder))
-                {
-                    Directory.CreateDirectory(tempFolder);
-                }
-
-                tempFolder = Path.Combine(tempFolder, fullFileName);
-
-                using (FileStream fs = new FileStream(tempFolder, FileMode.Create))
-                {
-                    ms.WriteTo(fs);
-                    fs.Close();
-                    ms.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-            }
-        }
-
         protected internal string MapPath(string path)
         {
             return System.Web.HttpContext.Current.Request.MapPath(path);
         }
+        
     }
 }

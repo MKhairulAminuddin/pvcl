@@ -115,6 +115,18 @@
                             }
                         },
                         {
+                            hint: "Resubmit",
+                            icon: "fa fa-repeat",
+                            cssClass: "dx-datagrid-command-btn",
+                            visible: function (e) {
+                                return (e.row.data.isResubmitEnabled);
+                            },
+                            onClick: function (e) {
+                                window.location.href = "/amsd/EditInflowFundsForm?id=" + e.row.data.id;
+                                e.event.preventDefault();
+                            }
+                        },
+                        {
                             hint: "Admin Edit",
                             icon: "fa fa-pencil-square-o",
                             cssClass: "dx-datagrid-command-btn text-red",
@@ -139,15 +151,42 @@
                             }
                         },
                         {
-                            hint: "Print Form",
-                            icon: "fa fa-print",
-                            cssClass: "dx-datagrid-command-btn",
+                            hint: "Download as Excel",
+                            icon: "fa fa-file-excel-o",
+                            cssClass: "dx-datagrid-command-btn text-green",
                             visible: function (e) {
                                 return (e.row.data.formStatus != "Draft");
                             },
                             onClick: function (e) {
                                 var data = {
-                                    id: e.row.data.id
+                                    id: e.row.data.id,
+                                    isExportAsExcel: true
+                                };
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: '/amsd/PrintInflowFund',
+                                    data: data,
+                                    dataType: "text",
+                                    success: function (data) {
+                                        var url = '/amsd/GetPrintInflowFund?id=' + data;
+                                        window.location = url;
+                                    }
+                                });
+                                e.event.preventDefault();
+                            }
+                        },
+                        {
+                            hint: "Download as PDF",
+                            icon: "fa fa-file-pdf-o",
+                            cssClass: "dx-datagrid-command-btn text-orange",
+                            visible: function (e) {
+                                return (e.row.data.formStatus != "Draft");
+                            },
+                            onClick: function (e) {
+                                var data = {
+                                    id: e.row.data.id,
+                                    isExportAsExcel: false
                                 };
 
                                 $.ajax({

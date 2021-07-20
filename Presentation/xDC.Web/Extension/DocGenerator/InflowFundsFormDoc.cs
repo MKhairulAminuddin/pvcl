@@ -7,12 +7,13 @@ using System.IO;
 using System.Linq;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Utils;
 
 namespace xDC_Web.Extension.DocGenerator
 {
     public class InflowFundsFormDoc : DocGeneratorBase
     {
-        public string GenerateExcelFile(int formId)
+        public string GenerateExcelFile(int formId, bool isExportAsExcel)
         {
             try
             {
@@ -28,17 +29,23 @@ namespace xDC_Web.Extension.DocGenerator
                         getForm.PreparedBy = getForm.PreparedBy;
                         getForm.PreparedDate = getForm.PreparedDate.Value;
 
-                        DocumentFormat documentFormat = DocumentFormat.Xlsx;
                         IWorkbook workbook = new Workbook();
                         workbook.Options.Culture = new CultureInfo("en-US");
                         workbook.LoadDocument(MapPath("~/App_Data/Inflow Funds Template.xltx"));
                         workbook = GenerateDocument(workbook, getForm, getInflowFunds);
-
-                        var docBytes = workbook.SaveDocument(documentFormat);
-                        var ms = new MemoryStream(docBytes);
-                        
                         var randomFileName = "AMSD Inflow Fund Form - " + DateTime.Now.ToString("yyyyMMddHHmmss");
-                        SaveExcelFile(randomFileName, ms);
+
+                        if (isExportAsExcel)
+                        {
+                            var documentFormat = DocumentFormat.Xlsx;
+                            var tempFolder = Common.GetSystemTempFilePath(randomFileName + ".xlsx");
+                            workbook.SaveDocument(tempFolder, documentFormat);
+                        }
+                        else
+                        {
+                            var tempFolder = Common.GetSystemTempFilePath(randomFileName + ".pdf");
+                            workbook.ExportToPdf(tempFolder);
+                        }
 
                         return randomFileName;
                     }

@@ -22,5 +22,6 @@ namespace xDC_Web.Models
         public bool IsFormOwner { get; set; }
 
         public bool IsCanAdminEdit { get; set; }
+        public bool IsResubmitEnabled { get; set; }
     }
 }

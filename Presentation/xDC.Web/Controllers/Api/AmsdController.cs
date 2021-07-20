@@ -56,8 +56,10 @@ namespace xDC_Web.Controllers.Api
                             AdminEditted = item.AdminEditted,
                             AdminEdittedBy = item.AdminEdittedBy,
                             AdminEdittedDate = item.AdminEdittedDate,
+
                             IsFormOwner = (User.Identity.Name == item.PreparedBy),
-                            IsCanAdminEdit = (User.IsInRole(Config.AclPowerUser))
+                            IsCanAdminEdit = (User.IsInRole(Config.AclPowerUser)),
+                            IsResubmitEnabled = (item.FormStatus == "Rejected" && User.IsInRole(Config.AclAmsd) && User.Identity.Name != item.ApprovedBy)
                         });
                     }
 

@@ -32,7 +32,27 @@
                     DevExpress.ui.notify("Download " + e.itemData, "success", 600);
 
                     var data = {
-                        id: getUrlParameter("id")
+                        id: getUrlParameter("id"),
+                        isExportAsExcel: true
+                    };
+
+                    $.ajax({
+                        type: "POST",
+                        url: '/amsd/PrintInflowFund',
+                        data: data,
+                        dataType: "text",
+                        success: function(data) {
+                            var url = '/amsd/GetPrintInflowFund?id=' + data;
+                            window.location = url;
+                        }
+                    });
+                    e.event.preventDefault();
+                } else {
+                    DevExpress.ui.notify("Download " + e.itemData, "success", 600);
+
+                    var data = {
+                        id: getUrlParameter("id"),
+                        isExportAsExcel: false
                     };
 
                     $.ajax({

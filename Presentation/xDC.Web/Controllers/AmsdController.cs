@@ -24,7 +24,6 @@ namespace xDC_Web.Controllers
                 using (var db = new kashflowDBEntities())
                 {
                     var isApprover = db.Config_Approver.Any(x => x.Username == User.Identity.Name);
-
                     var isAmsdUser = User.IsInRole(Config.AclAmsd) || User.IsInRole(Config.AclAdministrator);
 
                     model.isAllowedToCreateForm = (!isApprover && isAmsdUser);
@@ -137,13 +136,13 @@ namespace xDC_Web.Controllers
         
         // Print Form
         [HttpPost]
-        public ActionResult PrintInflowFund(string id)
+        public ActionResult PrintInflowFund(string id, bool isExportAsExcel)
         {
             try
             {
                 var formId = Convert.ToInt32(id);
 
-                var generatedDocumentFile = new InflowFundsFormDoc().GenerateExcelFile(formId);
+                var generatedDocumentFile = new InflowFundsFormDoc().GenerateExcelFile(formId, isExportAsExcel);
 
                 if (!string.IsNullOrEmpty(generatedDocumentFile))
                 {
@@ -169,9 +168,18 @@ namespace xDC_Web.Controllers
 
                 if (fileStream != null)
                 {
-                    var fileNameOnClient = id + ".xlsx";
-                    Response.AddHeader("Content-Disposition", "attachment; filename=" + fileNameOnClient);
-                    return File(fileStream, Common.ConvertIndexToContentType(4));
+                    var fileName = Common.GetFileName(fileStream);
+                    Response.AddHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+                    if (Common.GetFileExt(fileStream) == ".xlsx")
+                    {
+                        return File(fileStream, Common.ConvertIndexToContentType(4));
+                    }
+                    else
+                    {
+                        return File(fileStream, Common.ConvertIndexToContentType(11));
+                    }
+                   
                 }
                 else
                 {

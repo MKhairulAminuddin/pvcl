@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -228,6 +229,42 @@ namespace xDC.Utils
                     
             }
             return String.Empty;
+        }
+
+        public static string GetFileExt(FileStream fs)
+        {
+            var ext = Path.GetExtension(fs.Name);
+            return ext.ToLower();
+        }
+
+        public static string GetFileName(FileStream fs)
+        {
+            var fileName = Path.GetFileName(fs.Name);
+            return fileName;
+        }
+
+        public static string GetSystemTempFolder()
+        {
+            var tempFolder = Config.TempFolderPath;
+            if (!Directory.Exists(tempFolder))
+            {
+                Directory.CreateDirectory(tempFolder);
+            }
+
+            return tempFolder;
+        }
+
+        public static string GetSystemTempFilePath(string filenameWithPath)
+        {
+            var tempFolder = Config.TempFolderPath;
+            if (!Directory.Exists(tempFolder))
+            {
+                Directory.CreateDirectory(tempFolder);
+            }
+
+            tempFolder = Path.Combine(tempFolder, filenameWithPath);
+
+            return tempFolder;
         }
     }
 }
