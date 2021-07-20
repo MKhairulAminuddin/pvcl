@@ -550,6 +550,7 @@
     <Compile Include="Extension\AdAuthentication.cs" />
     <Compile Include="Extension\CustomAttribute\InflowFundFormPermissionAttribute.cs" />
     <Compile Include="Extension\CustomAttribute\KashflowAuthorize.cs" />
+    <Compile Include="Extension\CustomHtmlHelper\xDC_HtmlHelper.cs" />
     <Compile Include="Extension\DocGenerator\DocGeneratorBase.cs" />
     <Compile Include="Extension\DocGenerator\InflowFundsFormDoc.cs" />
     <Compile Include="Extension\MailMerge\HtmlContentGenerator.cs" />
