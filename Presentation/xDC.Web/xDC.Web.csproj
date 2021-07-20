@@ -325,7 +325,6 @@
     <Content Include="Content\adminlte.css.map" />
     <Content Include="Content\adminlte.min.css.map" />
     <Content Include="Content\dx.generic.kashflow-light.json" />
-    <Content Include="Extension\DocTemplate\Inflow Funds Template.xltx" />
     <Content Include="libman.json" />
     <Content Include="App_Data\Inflow Funds Template.xltx" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
