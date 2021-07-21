@@ -111,6 +111,7 @@ namespace xDC_Web.Extension.DocGenerator
                 sheet["A10:C10"].MoveTo(sheet["A" + startingRownumber + ":C" + startingRownumber]);
                 
                 startingRownumber += 1;
+                int actualDataRowNumber = startingRownumber;
                 foreach (var item in inflowFunds)
                 {
                     sheet["A" + startingRownumber].Value = item.FundType;
@@ -123,10 +124,10 @@ namespace xDC_Web.Extension.DocGenerator
                 sheet["A" + startingRownumber].Value = "Total";
                 sheet["A" + startingRownumber].Font.Bold = true;
 
-                sheet["C11:C" + startingRownumber].NumberFormat =
+                sheet["C" + actualDataRowNumber + ":C" + startingRownumber].NumberFormat =
                     "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
 
-                sheet["C" + startingRownumber].FormulaInvariant = "=SUM($C$11:$C$" + (startingRownumber - 1) + ")";
+                sheet["C" + startingRownumber].FormulaInvariant = "=SUM($C$" + actualDataRowNumber + ":$C$" + (startingRownumber - 1) + ")";
 
                 sheet["A" + startingRownumber + ":C" + startingRownumber].Borders.TopBorder.Color = Color.Black;
                 sheet["A" + startingRownumber + ":C" + startingRownumber].Borders.TopBorder.LineStyle = BorderLineStyle.Thick;
