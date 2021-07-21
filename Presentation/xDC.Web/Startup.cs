@@ -20,11 +20,13 @@ namespace xDC_Web
             // Hangfire Setup
             app.UseHangfireAspNet(GetHangfireServers);
             app.UseHangfireDashboard();
-            //BackgroundJob.Enqueue(() => Debug.WriteLine("Hello world from Hangfire!"));
+            
             RecurringJob.AddOrUpdate(
                 () => SyncActiveDirectory.Sync(),
                 Cron.Weekly);
-            
+            RecurringJob.AddOrUpdate(
+                () => SyncActiveDirectory.SyncUserProfileWithAd(),
+                Cron.Monthly);
         }
         
         private IEnumerable<IDisposable> GetHangfireServers()

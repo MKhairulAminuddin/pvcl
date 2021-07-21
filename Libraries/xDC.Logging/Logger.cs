@@ -30,5 +30,10 @@ namespace xDC.Logging
         {
             _errorLogger.Error("{@error}", error);
         }
+
+        public static void LogInfo(string info)
+        {
+            _errorLogger.Information("{@info}", info);
+        }
     }
 }

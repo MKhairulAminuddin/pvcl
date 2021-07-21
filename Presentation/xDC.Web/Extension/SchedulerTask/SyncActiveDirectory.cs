@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
+using System.Linq;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 
@@ -13,6 +14,7 @@ namespace xDC_Web.Extension.SchedulerTask
         {
             try
             {
+                Logger.LogInfo("Sync AD Started!");
                 var adUserList = new List<AspNetActiveDirectoryUsers>();
 
                 using (var context = new PrincipalContext(ContextType.Domain))
@@ -99,6 +101,7 @@ namespace xDC_Web.Extension.SchedulerTask
                         db.Database.ExecuteSqlCommand("TRUNCATE TABLE [AspNetActiveDirectoryUsers]");
                         db.AspNetActiveDirectoryUsers.AddRange(adUserList);
                         db.SaveChanges();
+                        Logger.LogInfo("Sync AD Completed!");
                     }
                 }
             }
@@ -107,6 +110,38 @@ namespace xDC_Web.Extension.SchedulerTask
                 Logger.LogError(ex);
             }
 
+        }
+
+        public static void SyncUserProfileWithAd()
+        {
+            try
+            {
+                Logger.LogInfo("Sync User Profile with AD Started!");
+
+                using (var db = new kashflowDBEntities())
+                {
+                    var applicationUsers = db.AspNetUsers.ToList();
+
+                    foreach (var appUser in applicationUsers)
+                    {
+                        var adInformation = db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == appUser.UserName);
+                        if (adInformation != null)
+                        {
+                            appUser.Email = adInformation.Email;
+                            appUser.Department = adInformation.Department;
+                            appUser.Title = adInformation.Title;
+                            appUser.FullName = adInformation.DisplayName;
+                            appUser.TelephoneNumber = adInformation.TelNo;
+                        }
+                    }
+
+                    Logger.LogInfo("Sync User Profile with AD Completed!");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
         }
     }
 }
