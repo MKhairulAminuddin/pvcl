@@ -62,6 +62,13 @@ namespace xDC_Web.Controllers
 
                     if (getForm != null)
                     {
+                        if (!User.IsInRole(Config.AclAdministrator) && 
+                            (getForm.FormStatus == Common.FormStatusMapping(2) || getForm.FormStatus == Common.FormStatusMapping(3)))
+                        {
+                            TempData["ErrorMessage"] = "Current form status prohibited you from editing it.";
+                            return View("Error");
+                        }
+
                         var formObj = new ViewInflowFundStatusForm()
                         {
                             Id = getForm.Id,
@@ -87,14 +94,16 @@ namespace xDC_Web.Controllers
                     }
                     else
                     {
-                        return HttpNotFound();
+                        TempData["ErrorMessage"] = "Form Not found";
+                        return View("Error");
                     }
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex);
-                return new HttpUnauthorizedResult();
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Error");
             }
         }
         
@@ -138,13 +147,19 @@ namespace xDC_Web.Controllers
 
                         return View(formObj);
                     }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Form Not found";
+                        return View("Error");
+                    }
                 }
-                return HttpNotFound();
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex);
-                return HttpNotFound();
+
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Error");
             }
         }
         
@@ -197,13 +212,16 @@ namespace xDC_Web.Controllers
                 }
                 else
                 {
-                    return HttpNotFound();
+                    TempData["ErrorMessage"] = "Generated file not found... sorry...";
+                    return View("Error");
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex);
-                return HttpNotFound();
+
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Error");
             }
         }
     }
