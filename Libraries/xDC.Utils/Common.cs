@@ -106,7 +106,7 @@ namespace xDC.Utils
         /// Get Form Status Mapping
         /// </summary>
         /// <param name="value">
-        /// numbers representing the statuses. 0 Draft, 1 Preparation, 2 Pending Approval, 3 Approved, 4 Rejected
+        /// numbers representing the statuses. 0 Draft, 1 Preparation, 2 Pending Approval, 3 Approved, 4 Rejected, 5 Resubmission (used for workflow only)
         /// </param>
         /// <returns>string</returns>
         public static string FormStatusMapping(int value)
@@ -123,6 +123,8 @@ namespace xDC.Utils
                     return "Approved";
                 case 4:
                     return "Rejected";
+                case 5:
+                    return "Pending Approval (Resubmission)";
             }
             return String.Empty;
         }
@@ -199,6 +201,18 @@ namespace xDC.Utils
                     return "Inflow Funds";
                 case 2:
                     return "Trade Settlement";
+            }
+            return String.Empty;
+        }
+
+        public static string FormCurrencyMapping(int value)
+        {
+            switch (value)
+            {
+                case 1:
+                    return "MYR";
+                case 2:
+                    return "USD";
             }
             return String.Empty;
         }

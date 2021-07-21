@@ -60,13 +60,23 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var formWorkflow = db.Form_Workflow.FirstOrDefault(x => x.FormId == formId);
+                    var currentFormWorkflow = db.Form_Workflow
+                        .Where(x => x.FormId == formId)
+                        .OrderByDescending(x => new { x.StartDate, x.Id}).FirstOrDefault();
+                    currentFormWorkflow.EndDate = DateTime.Now;
 
-                    formWorkflow.EndDate = DateTime.Now;
-                    formWorkflow.WorkflowStatus =
-                        isApproved ? Common.FormStatusMapping(3) : Common.FormStatusMapping(4);
-                    formWorkflow.WorkflowNotes = notes;
-                    
+                    var newFormWorkflow = new Form_Workflow()
+                    {
+                        FormId = formId,
+                        RequestBy = currentFormWorkflow.RequestTo,
+                        StartDate = DateTime.Now,
+                        RequestTo = currentFormWorkflow.RequestBy,
+                        EndDate = DateTime.Now,
+                        WorkflowStatus = isApproved ? Common.FormStatusMapping(3) : Common.FormStatusMapping(4),
+                        WorkflowNotes = notes
+                    };
+
+                    db.Form_Workflow.Add(newFormWorkflow);
                     db.SaveChanges();
                 }
             }

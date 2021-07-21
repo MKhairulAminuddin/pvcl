@@ -51,10 +51,19 @@
                     $("#error_container").bs_warning("Please key in at least one item.");
                 }
                 else {
-                    var data = {
-                        amsdInflowFunds: $inflowFundsGrid.getDataSource().items(),
-                        approver: $approverDropdown.option('value')
-                    };
+                    if (getUrlParameter('id') != false) {
+                        data = {
+                            id: getUrlParameter('id'),
+                            amsdInflowFunds: $inflowFundsGrid.getDataSource().items(),
+                            approver: $approverDropdown.option('value')
+                        };
+                    } else {
+                        var data = {
+                            amsdInflowFunds: $inflowFundsGrid.getDataSource().items(),
+                            approver: $approverDropdown.option('value')
+                        };
+                    }
+                    
 
                     $.ajax({
                         data: data,

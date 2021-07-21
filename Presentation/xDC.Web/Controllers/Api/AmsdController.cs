@@ -87,7 +87,7 @@ namespace xDC_Web.Controllers.Api
 
                     if (existingRecord.Any())
                     {
-                        return Request.CreateResponse(HttpStatusCode.OK, true);
+                        return Request.CreateResponse(HttpStatusCode.OK, false);
                     }
                     else
                     {
@@ -112,53 +112,84 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
+                    var newRecord = new Form_Header();
 
-                    var newRecord = new Form_Header()
+                    if (inputs.Id != 0)
                     {
-                        FormType = Common.FormTypeMapping(1),
-                        PreparedBy = User.Identity.Name,
-                        PreparedDate = DateTime.Now,
-                        FormStatus = Common.FormStatusMapping(2),
-                        ApprovedBy = inputs.Approver
-                    };
+                        // form resubmission
+                        var isExistingDraft = db.Form_Header.FirstOrDefault(x => x.Id == inputs.Id);
 
-                    Validate(newRecord);
+                        isExistingDraft.PreparedBy = User.Identity.Name;
+                        isExistingDraft.PreparedDate = DateTime.Now;
+                        isExistingDraft.FormStatus = Common.FormStatusMapping(2);
+                        isExistingDraft.ApprovedBy = inputs.Approver;
+                        isExistingDraft.ApprovedDate = null;
+                        isExistingDraft.AdminEditted = false;
+                        isExistingDraft.AdminEdittedBy = null;
+                        isExistingDraft.AdminEdittedDate = null;
 
-                    if (!ModelState.IsValid)
-                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+                        Validate(newRecord);
 
-                    db.Form_Header.Add(newRecord);
-                    db.SaveChanges();
+                        if (!ModelState.IsValid)
+                            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+                        
+                        db.SaveChanges();
 
-                    var newRecordInflowFunds = new List<Amsd_InflowFunds>();
+                        new NotificationService().PushSubmitForApprovalNotification(isExistingDraft.Id);
+                        new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(isExistingDraft.Id);
 
-                    foreach (var item in inputs.AmsdInflowFunds)
-                    {
-                        newRecordInflowFunds.Add(new Amsd_InflowFunds()
-                        {
-                            FormId = newRecord.Id,
-                            FundType = item.FundType,
-                            Bank = item.Bank,
-                            Amount = item.Amount,
-                            CreatedBy = User.Identity.Name,
-                            CreatedDate = DateTime.Now
-                        });
+                        new WorkflowService().SubmitForApprovalWorkflow(isExistingDraft.Id);
+
+                        return Request.CreateResponse(HttpStatusCode.Created, isExistingDraft.Id);
                     }
-                    
-                    Validate(newRecord);
+                    else
+                    {
 
-                    if (!ModelState.IsValid)
-                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
-                    
-                    db.Amsd_InflowFunds.AddRange(newRecordInflowFunds);
-                    db.SaveChanges();
+                        newRecord.FormType = Common.FormTypeMapping(1);
+                        newRecord.PreparedBy = User.Identity.Name;
+                        newRecord.PreparedDate = DateTime.Now;
+                        newRecord.FormStatus = Common.FormStatusMapping(2);
+                        newRecord.ApprovedBy = inputs.Approver;
+                        newRecord.Currency = Common.FormCurrencyMapping(1);
+                        
+                        Validate(newRecord);
 
-                    new NotificationService().PushSubmitForApprovalNotification(newRecord.Id);
-                    new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(newRecord.Id);
+                        if (!ModelState.IsValid)
+                            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
 
-                    new WorkflowService().SubmitForApprovalWorkflow(newRecord.Id);
+                        db.Form_Header.Add(newRecord);
+                        db.SaveChanges();
 
-                    return Request.CreateResponse(HttpStatusCode.Created, newRecord.Id);
+                        var newRecordInflowFunds = new List<Amsd_InflowFunds>();
+
+                        foreach (var item in inputs.AmsdInflowFunds)
+                        {
+                            newRecordInflowFunds.Add(new Amsd_InflowFunds()
+                            {
+                                FormId = newRecord.Id,
+                                FundType = item.FundType,
+                                Bank = item.Bank,
+                                Amount = item.Amount,
+                                CreatedBy = User.Identity.Name,
+                                CreatedDate = DateTime.Now
+                            });
+                        }
+
+                        Validate(newRecord);
+
+                        if (!ModelState.IsValid)
+                            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+
+                        db.Amsd_InflowFunds.AddRange(newRecordInflowFunds);
+                        db.SaveChanges();
+
+                        new NotificationService().PushSubmitForApprovalNotification(newRecord.Id);
+                        new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(newRecord.Id);
+
+                        new WorkflowService().SubmitForApprovalWorkflow(newRecord.Id);
+
+                        return Request.CreateResponse(HttpStatusCode.Created, newRecord.Id);
+                    }
                 }
             }
             catch (Exception ex)
