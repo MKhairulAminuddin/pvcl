@@ -168,22 +168,9 @@
             showRowLines: true,
             rowAlternationEnabled: false,
             showBorders: true,
-            allowColumnReordering: true,
-            allowColumnResizing: true,
             sorting: {
                 mode: "multiple",
                 showSortIndexes: true
-            },
-            pager: {
-                infoText: "Page {0} of {1} ({2} items)",
-                showPageSizeSelector: true,
-                allowedPageSizes: [10, 20, 50],
-                showNavigationButtons: true,
-                showInfo: true
-            },
-            paging: {
-                pageSize: 10,
-                pageIndex: 0
             },
             wordWrapEnabled: true
         }).dxDataGrid("instance");
