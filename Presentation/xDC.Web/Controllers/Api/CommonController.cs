@@ -235,5 +235,29 @@ namespace xDC_Web.Controllers.Api
 
 
         #endregion
+
+        #region Workflow Information
+
+        [HttpGet]
+        public HttpResponseMessage GetWorkflow(string id, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formId = Convert.ToInt32(id);
+                    var result = db.Form_Workflow.Where(x => x.FormId == formId).OrderByDescending(x => x.Id).ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        #endregion
     }
 }

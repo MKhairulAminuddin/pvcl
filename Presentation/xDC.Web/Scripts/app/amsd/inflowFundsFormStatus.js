@@ -1,7 +1,7 @@
 ﻿(function ($, window, document) {
 
     $(function () {
-        var $inflowFundsGrid, $printBtn, $tbFormId, $tbFormStatus;
+        var $inflowFundsGrid, $printBtn, $tbFormId, $tbFormStatus, $workflowGrid;
 
         $("#approveBtn").on({
             "click": function (e) {
@@ -14,6 +14,14 @@
         $("#rejectBtn").on({
             "click": function (e) {
                 $('#rejectionNoteModal').modal('show');
+
+                e.preventDefault();
+            }
+        });
+
+        $("#viewWorkflowBtn").on({
+            "click": function (e) {
+                $('#viewWorkflowModal').modal('show');
 
                 e.preventDefault();
             }
@@ -122,6 +130,64 @@
 
         $inflowFundsGrid.option(dxGridUtils.viewOnlyGridConfig);
 
+        $workflowGrid = $("#workflowGrid").dxDataGrid({
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: "../api/common/GetWorkflow?id=" + getUrlParameter('id')
+            }),
+            columns: [
+                {
+                    dataField: "requestBy",
+                    caption: "Requested By"
+                },
+                {
+                    dataField: "requestTo",
+                    caption: "Requested To"
+                },
+                {
+                    dataField: "startDate",
+                    caption: "Start Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy HH:mm"
+                },
+                {
+                    dataField: "endDate",
+                    caption: "End Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy HH:mm"
+                },
+                {
+                    dataField: "workflowStatus",
+                    caption: "Workflow Status"
+                },
+                {
+                    dataField: "workflowNotes",
+                    caption: "Notes"
+                }
+            ],
+            showRowLines: true,
+            rowAlternationEnabled: false,
+            showBorders: true,
+            allowColumnReordering: true,
+            allowColumnResizing: true,
+            sorting: {
+                mode: "multiple",
+                showSortIndexes: true
+            },
+            pager: {
+                infoText: "Page {0} of {1} ({2} items)",
+                showPageSizeSelector: true,
+                allowedPageSizes: [10, 20, 50],
+                showNavigationButtons: true,
+                showInfo: true
+            },
+            paging: {
+                pageSize: 10,
+                pageIndex: 0
+            },
+            wordWrapEnabled: true
+        }).dxDataGrid("instance");
+        
         $("#approveFormBtn").on({
             "click": function (e) {
                 

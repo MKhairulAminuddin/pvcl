@@ -85,5 +85,22 @@ namespace xDC.Services
                 Logger.LogError(ex);
             }
         }
+
+        public List<Form_Workflow> GetWorkflow(int formId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.Form_Workflow.Where(x => x.FormId == formId).ToList();
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return null;
+            }
+        }
     }
 }

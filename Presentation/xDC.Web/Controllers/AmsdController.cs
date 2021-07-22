@@ -37,6 +37,9 @@ namespace xDC_Web.Controllers
             }
         }
 
+
+        #region Inflow Fund Form Page
+
         [KashflowAuthorize(Roles = "AMSD")]
         public ActionResult NewInflowFundsForm()
         {
@@ -62,7 +65,7 @@ namespace xDC_Web.Controllers
 
                     if (getForm != null)
                     {
-                        if (!User.IsInRole(Config.AclAdministrator) && 
+                        if (!User.IsInRole(Config.AclAdministrator) &&
                             (getForm.FormStatus == Common.FormStatusMapping(2) || getForm.FormStatus == Common.FormStatusMapping(3)))
                         {
                             TempData["ErrorMessage"] = "Current form status prohibited you from editing it.";
@@ -106,7 +109,7 @@ namespace xDC_Web.Controllers
                 return View("Error");
             }
         }
-        
+
         public ActionResult InflowFundsFormStatus(string id)
         {
             try
@@ -116,7 +119,7 @@ namespace xDC_Web.Controllers
                     var formId = Convert.ToInt32(id);
                     var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
 
-                    if (getForm!= null)
+                    if (getForm != null)
                     {
                         var isApprovedOrRejected = (getForm.FormStatus == Common.FormStatusMapping(3) ||
                                                     getForm.FormStatus == Common.FormStatusMapping(4));
@@ -133,7 +136,7 @@ namespace xDC_Web.Controllers
                             ApprovedBy = getForm.ApprovedBy,
                             ApprovedDate = getForm.ApprovedDate,
                             FormStatus = getForm.FormStatus,
-                            
+
                             IsAdminEdited = getForm.AdminEditted,
                             AdminEditedBy = getForm.AdminEdittedBy,
                             AdminEditedDate = getForm.AdminEdittedDate,
@@ -162,8 +165,12 @@ namespace xDC_Web.Controllers
                 return View("Error");
             }
         }
+
+        #endregion
         
-        // Print Form
+
+        #region Print Form
+
         [HttpPost]
         public ActionResult PrintInflowFund(string id, bool isExportAsExcel)
         {
@@ -188,7 +195,7 @@ namespace xDC_Web.Controllers
                 return HttpNotFound();
             }
         }
-        
+
         public ActionResult GetPrintInflowFund(string id)
         {
             try
@@ -208,7 +215,7 @@ namespace xDC_Web.Controllers
                     {
                         return File(fileStream, Common.ConvertIndexToContentType(11));
                     }
-                   
+
                 }
                 else
                 {
@@ -224,5 +231,8 @@ namespace xDC_Web.Controllers
                 return View("Error");
             }
         }
+
+        #endregion
+
     }
 }
