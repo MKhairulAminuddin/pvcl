@@ -7,7 +7,7 @@
         var $tabpanel, $equityGrid, $bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid, $feesGrid,
             $mtmGrid, $fxSettlementGrid, $contributionCreditedGrid, $altidGrid, $othersGrid,
             $tradeSettlementForm, $currencySelectBox, $obRentasTb, $obMmaTb, $cbRentasTb, $cbMmaTb,
-            $approverDropdown;
+            $approverDropdown, $printBtn;
 
         $("#approveBtn").on({
             "click": function (e) {
@@ -78,6 +78,8 @@
             ],
             deferRendering: false
         });
+
+        // #region DataGrid
 
         $equityGrid = $("#equityGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
@@ -864,6 +866,8 @@
         }).dxDataGrid("instance");
 
         $othersGrid.option(dxGridUtils.editingGridConfig);
+
+        // #endregion DataGrid
 
         $("#approveFormBtn").on({
             "click": function (e) {

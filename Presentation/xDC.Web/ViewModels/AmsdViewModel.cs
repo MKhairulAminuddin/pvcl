@@ -9,4 +9,10 @@ namespace xDC_Web.ViewModels
     {
         public bool isAllowedToCreateForm { get; set; }
     }
+
+    public class IisdLandingPageViewModel
+    {
+        public bool IsAllowedToCreateForm { get; set; }
+
+    }
 }

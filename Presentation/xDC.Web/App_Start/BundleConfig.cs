@@ -27,7 +27,7 @@ namespace xDC_Web {
             
             styleBundle
                 .Include(
-                    "~/Scripts/pace/themes/blue/pace-theme-center-simple.min.css",
+                    "~/Scripts/pace/themes/blue/pace-theme-flash.css",
                     "~/Content/bootstrap.css",
                     "~/Content/AdminLTE.css",
                     "~/Content/skin-blue.css",

@@ -1,4 +1,5 @@
-﻿
+﻿@model xDC_Web.ViewModels.IisdLandingPageViewModel
+
 @{
     ViewBag.Title = "IISD";
 }
@@ -7,15 +8,17 @@
     <div class="row">
         <div class="col-md-6">
             <div class="left-container">
-                <div>
-                    @(Html.DevExtreme().Button()
-                        .Text("New Trade Settlement")
-                        .Type(ButtonType.Default)
-                        .StylingMode(ButtonStylingMode.Contained)
-                        .OnClick(@<text>  function(){ window.location = "@Url.Action("NewTradeSettlement", "Iisd")"; } </text>)
-                        )
-                </div>
-
+                @if (Model.IsAllowedToCreateForm)
+                {
+                    <div>
+                        @(Html.DevExtreme().Button()
+                            .Text("New Trade Settlement")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .OnClick(@<text> function(){ window.location = "@Url.Action("NewTradeSettlement", "Iisd")"; } </text>)
+                            )
+                    </div>
+                }
             </div>
         </div>
         <div class="col-md-6">

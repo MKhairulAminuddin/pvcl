@@ -27,7 +27,7 @@ namespace xDC.Services
                     
                     var bodyBuilder = new StringBuilder();
                     bodyBuilder.Append($"<p>Testing, testing....</p>");
-                    bodyBuilder.AppendLine($"<p>Plz... just ignore kay...</p>");
+                    bodyBuilder.AppendLine($"<p>Plz ignore...</p>");
 
                     message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                     {

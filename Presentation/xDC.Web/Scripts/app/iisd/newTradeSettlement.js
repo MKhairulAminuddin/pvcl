@@ -12,7 +12,7 @@
         var $tabpanel, $equityGrid, $bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid, $feesGrid,
             $mtmGrid, $fxSettlementGrid, $contributionCreditedGrid, $altidGrid, $othersGrid,
             $tradeSettlementForm, $currencySelectBox, $obRentasTb, $obMmaTb, $cbRentasTb, $cbMmaTb,
-            $approverDropdown;
+            $approverDropdown, $settlementDateBox, $loadPanel;
         
 
         $approverDropdown = $("#approverDropdown").dxSelectBox({
@@ -52,8 +52,12 @@
 
         $("#submitForApprovalModalBtn").on({
             "click": function (e) {
+                $loadPanel.option("position", { of: "#selectApproverModalContainer" });
+                $loadPanel.show();
+
                 var data = {
                     currency: $currencySelectBox.option("value"),
+                    settlementDate: $settlementDateBox.option("value"),
                     equity: $equityGrid.getDataSource().items(),
                     bond: $bondGrid.getDataSource().items(),
                     cp: $cpGrid.getDataSource().items(),
@@ -74,17 +78,34 @@
                     data: data,
                     dataType: 'json',
                     url: '../api/iisd/NewTradeSettlementForm',
-                    method: 'post'
-                }).done(function (data) {
-                    window.location.href = "/iisd/TradeSettlementFormStatus?id=" + data;
-
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                    method: 'post',
+                    success: function(data) {
+                        window.location.href = "/iisd/TradeSettlementFormStatus?id=" + data;
+                    },
+                    fail: function(jqXHR, textStatus, errorThrown) {
+                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                    },
+                    complete: function(data) {
+                        $loadPanel.hide();
+                    }
                 });
 
                 e.preventDefault();
             }
         });
+
+        $settlementDateBox = $("#settlementDateBox").dxDateBox({
+            type: "date",
+            displayFormat: "dd/MM/yyyy",
+            value: new Date()
+        }).dxValidator({
+            validationRules: [
+                {
+                    type: "required",
+                    message: "Settlement Date is required"
+                }
+            ]
+        }).dxDateBox("instance");
 
         $currencySelectBox =
             $("#currencySelectBox").dxSelectBox({
@@ -134,6 +155,8 @@
             ],
             deferRendering: false
         });
+
+        // #region Data Grid
 
         $equityGrid = $("#equityGrid").dxDataGrid({
             dataSource: [],
@@ -884,5 +907,16 @@
         }).dxDataGrid("instance");
 
         $othersGrid.option(dxGridUtils.editingGridConfig);
+
+        // #endregion Data Grid
+
+        $loadPanel = $("#loadpanel").dxLoadPanel({
+            shadingColor: "rgba(0,0,0,0.4)",
+            visible: false,
+            showIndicator: true,
+            showPane: true,
+            shading: true,
+            closeOnOutsideClick: false
+        }).dxLoadPanel("instance");
     });
 }(window.jQuery, window, document));

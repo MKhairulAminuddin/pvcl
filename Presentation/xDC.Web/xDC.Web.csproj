@@ -567,6 +567,7 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MailMerge\SpreadsheetPreviewModel.cs" />
     <Compile Include="Models\Trades.cs" />
+    <Compile Include="ViewModels\TradeSettlementFormViewModel.cs" />
     <Compile Include="Models\TradeSettlementModel.cs" />
     <Compile Include="Models\UserVM.cs" />
     <Compile Include="Models\ViewFormHeaderModel.cs" />

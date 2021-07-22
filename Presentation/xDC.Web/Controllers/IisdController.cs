@@ -7,23 +7,40 @@ using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Utils;
 using xDC_Web.Models;
+using xDC_Web.ViewModels;
 
 namespace xDC_Web.Controllers
 {
     [Authorize(Roles = "Administrator, Power User, IISD")]
-    public class IisdController : Controller
+    public class IisdController : BaseController
     {
         public ActionResult Index()
         {
-            return View();
+            using (var db = new kashflowDBEntities())
+            {
+                var isApprover = db.Config_Approver.Any(x => x.Username == User.Identity.Name);
+                var isIisdUser = User.IsInRole(Config.AclIisd);
+
+                var model = new IisdLandingPageViewModel()
+                {
+                    IsAllowedToCreateForm = (!isApprover && isIisdUser)
+                };
+                
+                return View(model);
+            }
+
+            
         }
 
+        [Authorize(Roles = "IISD")]
         public ActionResult NewTradeSettlement()
         {
-            var model = new ViewTradeSettlementForm()
+            var model = new TradeSettlementFormViewModel()
             {
                 PreparedBy = User.Identity.Name,
-                FormStatus = Common.FormStatusMapping(1)
+                PreparedDate = DateTime.Now,
+                FormStatus = Common.FormStatusMapping(1),
+                IsDraftEnabled = true
             };
 
             return View(model);
@@ -40,7 +57,7 @@ namespace xDC_Web.Controllers
 
                     if (getForm != null)
                     {
-                        var formObj = new ViewTradeSettlementForm()
+                        var formObj = new TradeSettlementFormViewModel()
                         {
                             Id = getForm.Id,
                             PreparedBy = getForm.PreparedBy,

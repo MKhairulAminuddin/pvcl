@@ -407,5 +407,25 @@ namespace xDC_Web.Controllers.Api
         }
 
         #endregion
+
+
+        [HttpGet]
+        [Route("TradeItemDW")]
+        public HttpResponseMessage TradeItemDW(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.EDW_TradeItem.ToList();
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+
+        }
     }
 }

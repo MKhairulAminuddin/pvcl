@@ -1,4 +1,4 @@
-﻿@model xDC_Web.Models.ViewInflowFundStatusForm
+﻿@model xDC_Web.ViewModels.TradeSettlementFormViewModel
 
 @{
     ViewBag.Title = "View Trade Settlement";
@@ -148,6 +148,16 @@
                             <div class="dx-fieldset">
                                 <div class="row">
                                     <div class="col-md-4">
+                                        <div class="dx-field">
+                                            <div class="dx-field-label">Settlement Date</div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
+                                                    .ID("tradesettlementDateBox")
+                                                    .StylingMode(EditorStylingMode.Underlined)
+                                                    .DisplayFormat("dd/MM/yyyy")
+                                                    .ReadOnly(true))
+                                            </div>
+                                        </div>
                                         <div class="dx-field">
                                             <div class="dx-field-label">Currency</div>
                                             <div class="dx-field-value">

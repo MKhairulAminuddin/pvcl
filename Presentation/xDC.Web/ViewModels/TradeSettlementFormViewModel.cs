@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
-namespace xDC_Web.Models
+namespace xDC_Web.ViewModels
 {
-    public class ViewInflowFundStatusForm
+    public class TradeSettlementFormViewModel
     {
         public int Id { get; set; }
         public string FormStatus { get; set; }
         public string PreparedBy { get; set; }
         public DateTime? PreparedDate { get; set; }
-        
 
         public bool IsApproved { get; set; }
         public string ApprovedBy { get; set; }
