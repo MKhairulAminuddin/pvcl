@@ -21,9 +21,15 @@ namespace xDC.Services
                 {
                     client.Connect(Config.SmtpServerIp, Convert.ToInt32(Config.SmtpServerPort), false);
 
-                    var message = new MimeMessage();
-                    message.From.Add(new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount));
-                    message.Subject = "[Kashflow] Test Email";
+                    var message = new MimeMessage()
+                    {
+                        Sender = new MailboxAddress(Encoding.ASCII, Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                        Subject = "[Kashflow] Test Email",
+                        To =
+                        {
+                            new MailboxAddress(recipient, recipient)
+                        }
+                    };
                     
                     var bodyBuilder = new StringBuilder();
                     bodyBuilder.Append($"<p>Testing, testing....</p>");
@@ -33,8 +39,6 @@ namespace xDC.Services
                     {
                         Text = bodyBuilder.ToString()
                     };
-
-                    message.To.Add(new MailboxAddress(recipient, recipient));
 
                     client.Send(message);
                     client.Disconnect(true);
@@ -60,9 +64,15 @@ namespace xDC.Services
                         var approverName =
                             db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == getForm.ApprovedBy);
 
-                        var message = new MimeMessage();
-                        message.From.Add(new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount));
-                        message.Subject = "[Kashflow] Inflow Funds Submission Require Approval";
+                        var message = new MimeMessage()
+                        {
+                            Sender = new MailboxAddress(Encoding.ASCII, Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                            Subject = "[Kashflow] Inflow Funds Submission Require Approval",
+                            To =
+                            {
+                                new MailboxAddress(approverName.DisplayName, approverName.Email)
+                            }
+                        };
                         
                         var approvalPageUrl = string.Format("{0}amsd/InflowFundsFormStatus?id={1}", Config.EmailApplicationUrl, formId);
                         var bodyBuilder = new StringBuilder();
@@ -74,8 +84,7 @@ namespace xDC.Services
                         {
                             Text = bodyBuilder.ToString()
                         };
-
-                        message.To.Add(new MailboxAddress(approverName.DisplayName, approverName.Email));
+                        
                         SendEmailToSmtp(message);
                     }
                     else
@@ -103,9 +112,15 @@ namespace xDC.Services
                         var preparerName =
                             db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == getForm.PreparedBy);
 
-                        var message = new MimeMessage();
-                        message.From.Add(new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount));
-                        message.Subject = "[Kashflow] Inflow Funds Approval Status";
+                        var message = new MimeMessage()
+                        {
+                            Sender = new MailboxAddress(Encoding.ASCII, Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                            Subject = "[Kashflow] Inflow Funds Approval Status",
+                            To =
+                            {
+                                new MailboxAddress(preparerName.DisplayName, preparerName.Email)
+                            }
+                        };
 
                         var approvalPageUrl = string.Format("{0}amsd/InflowFundsFormStatus?id={1}", Config.EmailApplicationUrl, formId);
                         var bodyBuilder = new StringBuilder();
@@ -116,8 +131,7 @@ namespace xDC.Services
                         {
                             Text = bodyBuilder.ToString()
                         };
-
-                        message.To.Add(new MailboxAddress(preparerName.DisplayName, preparerName.Email));
+                        
                         SendEmailToSmtp(message);
                     }
                     else
@@ -143,13 +157,13 @@ namespace xDC.Services
 
                     if (getForm != null)
                     {
-                        var preparerName =
-                            db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == getForm.PreparedBy);
-
-                        var message = new MimeMessage();
-                        message.From.Add(new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount));
-                        message.Subject = "[Kashflow] Inflow Funds Form Violate Cut Off Time";
-
+                        var message = new MimeMessage()
+                        {
+                            Sender = new MailboxAddress(Encoding.ASCII, Config.SmtpSenderAccountName,
+                                Config.SmtpSenderAccount),
+                            Subject = "[Kashflow] Inflow Funds Form Violate Cut Off Time"
+                        };
+                        
                         var approvalPageUrl = string.Format("{0}amsd/InflowFundsFormStatus?id={1}", Config.EmailApplicationUrl, formId);
                         var bodyBuilder = new StringBuilder();
                         bodyBuilder.Append($"<p>Hello there, </p>");
