@@ -1,7 +1,7 @@
 ﻿(function ($, window, document) {
 
     $(function () {
-        var $inflowFundsGrid, $printBtn, $tbFormId, $tbFormStatus, $workflowGrid;
+        var $inflowFundsGrid, $printBtn, $tbFormId, $tbFormStatus, $workflowGrid, $loadPanel;
 
         $("#approveBtn").on({
             "click": function (e) {
@@ -37,7 +37,7 @@
             },
             onItemClick: function (e) {
                 if (e.itemData.id == 1) {
-                    DevExpress.ui.notify("Download " + e.itemData, "success", 600);
+                    $loadPanel.show();
 
                     var data = {
                         id: getUrlParameter("id"),
@@ -49,14 +49,20 @@
                         url: '/amsd/PrintInflowFund',
                         data: data,
                         dataType: "text",
-                        success: function(data) {
+                        success: function (data) {
                             var url = '/amsd/GetPrintInflowFund?id=' + data;
                             window.location = url;
+                        },
+                        fail: function (jqXHR, textStatus, errorThrown) {
+                            $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                        },
+                        complete: function (data) {
+                            $loadPanel.hide();
                         }
                     });
                     e.event.preventDefault();
                 } else {
-                    DevExpress.ui.notify("Download " + e.itemData, "success", 600);
+                    $loadPanel.show();
 
                     var data = {
                         id: getUrlParameter("id"),
@@ -71,6 +77,12 @@
                         success: function (data) {
                             var url = '/amsd/GetPrintInflowFund?id=' + data;
                             window.location = url;
+                        },
+                        fail: function (jqXHR, textStatus, errorThrown) {
+                            $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                        },
+                        complete: function (data) {
+                            $loadPanel.hide();
                         }
                     });
                     e.event.preventDefault();
@@ -225,7 +237,15 @@
             }
         });
 
-
+        $loadPanel = $("#loadpanel").dxLoadPanel({
+            shadingColor: "rgba(0,0,0,0.4)",
+            position: { of: "#formContainer" },
+            visible: false,
+            showIndicator: true,
+            showPane: true,
+            shading: true,
+            closeOnOutsideClick: false
+        }).dxLoadPanel("instance");
 
     });
 }(window.jQuery, window, document));

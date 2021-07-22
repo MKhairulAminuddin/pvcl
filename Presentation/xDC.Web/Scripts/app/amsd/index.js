@@ -2,7 +2,7 @@
 
     $(function () {
 
-        var $amsdGrid, $newInflowFundBtn;
+        var $amsdGrid, $newInflowFundBtn, $loadPanel;
 
         $newInflowFundBtn = $("#newInflowFundBtn").dxButton({
             text: "New Inflow Funds",
@@ -25,7 +25,6 @@
             } 
         }).dxButton("instance");
         
-
         $amsdGrid = $("#amsdGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
@@ -159,6 +158,9 @@
                                 return (e.row.data.formStatus != "Draft");
                             },
                             onClick: function (e) {
+                                $loadPanel.option("position", { of: "#amsdGrid" });
+                                $loadPanel.show();
+
                                 var data = {
                                     id: e.row.data.id,
                                     isExportAsExcel: true
@@ -172,6 +174,12 @@
                                     success: function (data) {
                                         var url = '/amsd/GetPrintInflowFund?id=' + data;
                                         window.location = url;
+                                    },
+                                    fail: function (jqXHR, textStatus, errorThrown) {
+                                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                                    },
+                                    complete:function(data) {
+                                        $loadPanel.hide();
                                     }
                                 });
                                 e.event.preventDefault();
@@ -185,6 +193,9 @@
                                 return (e.row.data.formStatus != "Draft");
                             },
                             onClick: function (e) {
+                                $loadPanel.option("position", { of: "#amsdGrid" });
+                                $loadPanel.show();
+
                                 var data = {
                                     id: e.row.data.id,
                                     isExportAsExcel: false
@@ -198,6 +209,12 @@
                                     success: function (data) {
                                         var url = '/amsd/GetPrintInflowFund?id=' + data;
                                         window.location = url;
+                                    },
+                                    fail: function (jqXHR, textStatus, errorThrown) {
+                                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                                    },
+                                    complete: function (data) {
+                                        $loadPanel.hide();
                                     }
                                 });
                                 e.event.preventDefault();
@@ -215,6 +232,15 @@
         }).dxDataGrid("instance");
 
         $amsdGrid.option(dxGridUtils.viewOnlyGridConfig);
+
+        $loadPanel = $("#loadpanel").dxLoadPanel({
+            shadingColor: "rgba(0,0,0,0.4)",
+            visible: false,
+            showIndicator: true,
+            showPane: true,
+            shading: true,
+            closeOnOutsideClick: false
+        }).dxLoadPanel("instance");
 
     });
 }(window.jQuery, window, document));

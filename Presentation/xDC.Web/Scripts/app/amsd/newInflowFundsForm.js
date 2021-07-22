@@ -17,7 +17,7 @@
         });
         
 
-        var $inflowFundsGrid, $approverDropdown,$historyBtn, $submitBtn, $tbFormId, $tbFormStatus;
+        var $inflowFundsGrid, $approverDropdown, $historyBtn, $submitBtn, $tbFormId, $tbFormStatus, $loadPanel;
 
         $approverDropdown = $("#approverDropdown").dxSelectBox({
             dataSource: approverStore,
@@ -51,6 +51,9 @@
                     $("#error_container").bs_warning("Please key in at least one item.");
                 }
                 else {
+                    $loadPanel.option("position", { of: "#selectApproverModalContainer" });
+                    $loadPanel.show();
+
                     if (getUrlParameter('id') != false) {
                         data = {
                             id: getUrlParameter('id'),
@@ -69,29 +72,32 @@
                         data: data,
                         dataType: 'json',
                         url: '../api/amsd/NewInflowFundsForm',
-                        method: 'post'
-                    }).done(function (data) {
-                        window.location.href = "../amsd/InflowFundsFormStatus?id=" + data;
-
-                    }).fail(function (jqXHR, textStatus, errorThrown) {
-                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                        method: 'post',
+                        success: function (data) {
+                            window.location.href = "../amsd/InflowFundsFormStatus?id=" + data;
+                        },
+                        fail: function (jqXHR, textStatus, errorThrown) {
+                            $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                        },
+                        complete: function (data) {
+                            $loadPanel.hide();
+                        }
                     });
                 }
 
                 e.preventDefault();
             }
         });
-
-
-
+        
         $("#saveAsDraftBtn").on({
             "click": function (e) {
-
-
                 if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
                     $("#error_container").bs_warning("Please key in at least one item.");
                 }
                 else {
+                    $loadPanel.option("position", { of: "#formContainer" });
+                    $loadPanel.show();
+
                     var data;
                     if (getUrlParameter('id') != false) {
                         data = {
@@ -108,13 +114,16 @@
                         data: data,
                         dataType: 'json',
                         url: '../api/amsd/NewInflowFundsFormDraft',
-                        method: 'post'
-                    }).done(function (data) {
-                        //window.location.href = "../amsd/InflowFundsFormStatus?id=" + data;
-                        window.location.href = "../amsd";
-
-                    }).fail(function (jqXHR, textStatus, errorThrown) {
-                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                        method: 'post',
+                        success: function(data) {
+                            window.location.href = "../amsd";
+                        },
+                        fail: function(jqXHR, textStatus, errorThrown) {
+                            $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                        },
+                        complete: function(data) {
+                            $loadPanel.hide();
+                        }
                     });
                 }
 
@@ -256,7 +265,15 @@
                 }
             }).dxDataGrid("instance");
         }
-        
+
+        $loadPanel = $("#loadpanel").dxLoadPanel({
+            shadingColor: "rgba(0,0,0,0.4)",
+            visible: false,
+            showIndicator: true,
+            showPane: true,
+            shading: true,
+            closeOnOutsideClick: false
+        }).dxLoadPanel("instance");
         
     });
 }(window.jQuery, window, document));

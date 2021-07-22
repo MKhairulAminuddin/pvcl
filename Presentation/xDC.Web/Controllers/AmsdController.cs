@@ -47,7 +47,8 @@ namespace xDC_Web.Controllers
             {
                 PreparedBy = User.Identity.Name,
                 PreparedDate = DateTime.Now,
-                FormStatus = Common.FormStatusMapping(1)
+                FormStatus = Common.FormStatusMapping(1),
+                IsDraftEnabled = true
             };
 
             return View(model);
@@ -83,7 +84,8 @@ namespace xDC_Web.Controllers
                             ApprovedBy = getForm.ApprovedBy,
                             ApprovedDate = getForm.ApprovedDate,
 
-                            IsDraft = (getForm.FormStatus == Common.FormStatusMapping(0)),
+                            IsDraftEnabled = (getForm.FormStatus == Common.FormStatusMapping(0) ||
+                                              getForm.FormStatus == Common.FormStatusMapping(1)),
 
                             IsAdminEdited = getForm.AdminEditted,
                             AdminEditedBy = getForm.AdminEdittedBy,

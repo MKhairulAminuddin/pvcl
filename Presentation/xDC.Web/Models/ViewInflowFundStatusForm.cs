@@ -17,7 +17,7 @@ namespace xDC_Web.Models
         public string ApprovedBy { get; set; }
         public DateTime? ApprovedDate { get; set; }
 
-        public bool IsDraft { get; set; }
+        public bool IsDraftEnabled { get; set; }
 
         public bool IsAdminEdited { get; set; }
         public string AdminEditedBy { get; set; }
