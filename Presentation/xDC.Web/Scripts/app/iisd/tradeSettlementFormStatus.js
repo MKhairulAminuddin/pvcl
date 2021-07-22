@@ -7,7 +7,7 @@
         var $tabpanel, $equityGrid, $bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid, $feesGrid,
             $mtmGrid, $fxSettlementGrid, $contributionCreditedGrid, $altidGrid, $othersGrid,
             $tradeSettlementForm, $currencySelectBox, $obRentasTb, $obMmaTb, $cbRentasTb, $cbMmaTb,
-            $approverDropdown, $printBtn;
+            $approverDropdown, $printBtn, $loadPanel;
 
         $("#approveBtn").on({
             "click": function (e) {
@@ -35,10 +35,36 @@
             },
             onItemClick: function (e) {
                 if (e.itemData == "Excel Workbook (*.xlsx)") {
-                    DevExpress.ui.notify("Download " + e.itemData, "success", 600);
+                    //$loadPanel.show();
 
                     var data = {
-                        id: getUrlParameter("id")
+                        id: getUrlParameter("id"),
+                        isExportAsExcel: true
+                    };
+
+                    $.ajax({
+                        type: "POST",
+                        url: '/iisd/PrintTradeSettlement',
+                        data: data,
+                        dataType: "text",
+                        success: function(data) {
+                            var url = '/iisd/GetPrintTradeSettlement?id=' + data;
+                            window.location = url;
+                        },
+                        fail: function(jqXHR, textStatus, errorThrown) {
+                            $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                        },
+                        complete: function(data) {
+                            //$loadPanel.hide();
+                        }
+                    });
+                    e.event.preventDefault();
+                } else {
+                    //$loadPanel.show();
+
+                    var data = {
+                        id: getUrlParameter("id"),
+                        isExportAsExcel: false
                     };
 
                     $.ajax({
@@ -49,11 +75,16 @@
                         success: function (data) {
                             var url = '/iisd/GetPrintTradeSettlement?id=' + data;
                             window.location = url;
+                        },
+                        fail: function (jqXHR, textStatus, errorThrown) {
+                            $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                        },
+                        complete: function (data) {
+                            //$loadPanel.hide();
                         }
                     });
                     e.event.preventDefault();
                 }
-
             },
             items: [
                 "Excel Workbook (*.xlsx)",
@@ -919,7 +950,15 @@
             }
         });
 
-
+        $loadPanel = $("#loadpanel").dxLoadPanel({
+            shadingColor: "rgba(0,0,0,0.4)",
+            position: { of: "#formContainer" },
+            visible: false,
+            showIndicator: true,
+            showPane: true,
+            shading: true,
+            closeOnOutsideClick: false
+        }).dxLoadPanel("instance");
 
     });
 }(window.jQuery, window, document));

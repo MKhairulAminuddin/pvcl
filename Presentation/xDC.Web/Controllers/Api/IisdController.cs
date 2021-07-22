@@ -51,22 +51,23 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                using (var db = new xDC.Infrastructure.Application.kashflowDBEntities())
+                using (var db = new kashflowDBEntities())
                 {
-                    var newFormHeader = new xDC.Infrastructure.Application.Form_Header()
+                    var newFormHeader = new Form_Header()
                     {
                         FormType = Common.FormTypeMapping(2),
                         PreparedBy = User.Identity.Name,
                         PreparedDate = DateTime.Now,
                         FormStatus = Common.FormStatusMapping(2),
-                        Currency = inputs.currency,
+                        FormDate = DateTime.Now,//inputs.FormDate,
+                        Currency = inputs.Currency,
                         ApprovedBy = inputs.Approver
                     };
 
-                    Validate(newFormHeader);
+                    /*Validate(newFormHeader);
 
                     if (!ModelState.IsValid)
-                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);*/
 
                     db.Form_Header.Add(newFormHeader);
                     db.SaveChanges();

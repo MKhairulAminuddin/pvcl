@@ -39,7 +39,7 @@
                         </div>
                     }
                 }
-                @if (User.IsInRole("Power User"))
+                @if (Model.AdminEditPermission)
                 {
                     <div>
                         @(Html.DevExtreme().Button()
@@ -47,6 +47,7 @@
                             .Icon("edit")
                             .Type(ButtonType.Default)
                             .StylingMode(ButtonStylingMode.Contained)
+                            .OnClick(@<text> function(){ window.location = "@Url.Action("EditTradeSettlementForm", "Iisd")?id=@Model.Id"; } </text>)
                             )
                     </div>
                 }
@@ -151,7 +152,7 @@
                                         <div class="dx-field">
                                             <div class="dx-field-label">Settlement Date</div>
                                             <div class="dx-field-value">
-                                                @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
+                                                @(Html.DevExtreme().DateBoxFor(m => m.FormDate)
                                                     .ID("tradesettlementDateBox")
                                                     .StylingMode(EditorStylingMode.Underlined)
                                                     .DisplayFormat("dd/MM/yyyy")
@@ -161,7 +162,10 @@
                                         <div class="dx-field">
                                             <div class="dx-field-label">Currency</div>
                                             <div class="dx-field-value">
-                                                <div id="currencySelectBox"></div>
+                                                @(Html.DevExtreme().TextBoxFor(m => m.FormCurrency)
+                                                    .ID("currencySelectBox")
+                                                    .StylingMode(EditorStylingMode.Underlined)
+                                                    .ReadOnly(true))
                                             </div>
                                         </div>
                                         <div class="dx-field">

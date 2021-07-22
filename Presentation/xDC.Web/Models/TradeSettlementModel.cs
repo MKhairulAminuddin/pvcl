@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace xDC_Web.Models
@@ -6,8 +7,9 @@ namespace xDC_Web.Models
     {
         public int Id { get; set; }
         public string FormType { get; set; }
+        public DateTime? FormDate { get; set; }
         public string Approver { get; set; }
-        public string currency { get; set; }
+        public string Currency { get; set; }
         public List<Trades> Equity { get; set; }
         public List<Trades> Bond { get; set; }
         public List<Trades> Cp { get; set; }

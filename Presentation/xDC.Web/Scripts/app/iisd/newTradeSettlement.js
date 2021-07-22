@@ -57,7 +57,7 @@
 
                 var data = {
                     currency: $currencySelectBox.option("value"),
-                    settlementDate: $settlementDateBox.option("value"),
+                    //formDate: $settlementDateBox.option("value"),
                     equity: $equityGrid.getDataSource().items(),
                     bond: $bondGrid.getDataSource().items(),
                     cp: $cpGrid.getDataSource().items(),

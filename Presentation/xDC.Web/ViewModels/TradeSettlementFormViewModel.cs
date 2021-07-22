@@ -6,6 +6,8 @@ namespace xDC_Web.ViewModels
     {
         public int Id { get; set; }
         public string FormStatus { get; set; }
+        public DateTime? FormDate { get; set; }
+        public string FormCurrency { get; set; }
         public string PreparedBy { get; set; }
         public DateTime? PreparedDate { get; set; }
 

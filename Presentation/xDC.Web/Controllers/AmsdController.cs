@@ -39,8 +39,7 @@ namespace xDC_Web.Controllers
 
 
         #region Inflow Fund Form Page
-
-        [KashflowAuthorize(Roles = "AMSD")]
+        
         public ActionResult NewInflowFundsForm()
         {
             var model = new ViewInflowFundStatusForm()
@@ -53,8 +52,7 @@ namespace xDC_Web.Controllers
 
             return View(model);
         }
-
-        [Authorize(Roles = "Power User, AMSD")]
+        
         public ActionResult EditInflowFundsForm(string id)
         {
             try

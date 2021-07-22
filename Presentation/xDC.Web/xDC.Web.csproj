@@ -336,6 +336,7 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="App_Data\Trade Settlement Template.xltx" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
     <Content Include="Scripts\jquery-3.5.1.min.js" />
@@ -552,6 +553,7 @@
     <Compile Include="Extension\CustomAttribute\KashflowAuthorize.cs" />
     <Compile Include="Extension\CustomHtmlHelper\xDC_HtmlHelper.cs" />
     <Compile Include="Extension\DocGenerator\DocGeneratorBase.cs" />
+    <Compile Include="Extension\DocGenerator\TradeSettlementFormDoc.cs" />
     <Compile Include="Extension\DocGenerator\InflowFundsFormDoc.cs" />
     <Compile Include="Extension\MailMerge\HtmlContentGenerator.cs" />
     <Compile Include="Extension\MenuSecurity.cs" />
