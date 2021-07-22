@@ -5,6 +5,8 @@
 	[FormStatus] NVARCHAR(150) NULL, 
     [Currency] NVARCHAR(150) NULL, 
 
+    [FormDate] DATETIME NULL,
+
     [PreparedBy] NVARCHAR(150) NULL, 
     [PreparedDate] DATETIME NULL DEFAULT GETDATE(), 
 

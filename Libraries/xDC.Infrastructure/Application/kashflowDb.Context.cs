@@ -34,9 +34,9 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<Config_Key> Config_Key { get; set; }
         public virtual DbSet<Config_Approver> Config_Approver { get; set; }
         public virtual DbSet<App_Notification> App_Notification { get; set; }
-        public virtual DbSet<Form_Header> Form_Header { get; set; }
         public virtual DbSet<Form_Workflow> Form_Workflow { get; set; }
         public virtual DbSet<IISD_TradeSettlement> IISD_TradeSettlement { get; set; }
         public virtual DbSet<EDW_TradeItem> EDW_TradeItem { get; set; }
+        public virtual DbSet<Form_Header> Form_Header { get; set; }
     }
 }
