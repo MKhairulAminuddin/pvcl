@@ -130,6 +130,20 @@
           <Property Name="Key" Type="nvarchar" MaxLength="250" Nullable="false" />
           <Property Name="KeyType" Type="nvarchar" MaxLength="250" Nullable="false" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="EDW_TradeItem">
+          <Key>
+            <PropertyRef Name="CreatedDate" />
+          </Key>
+          <Property Name="InstrumentType" Type="nvarchar(max)" />
+          <Property Name="InstrumentCode" Type="nvarchar(max)" />
+          <Property Name="StockCode" Type="nvarchar(max)" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="250" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="250" />
+          <Property Name="UpdatedDate" Type="datetime" />
+        </EntityType>
         <EntityType Name="Form_Header">
           <Key>
             <PropertyRef Name="Id" />
@@ -159,7 +173,7 @@
           <Property Name="WorkflowStatus" Type="nvarchar" MaxLength="150" />
           <Property Name="WorkflowNotes" Type="text" />
         </EntityType>
-        <EntityType Name="Iisd_TradeSettlement">
+        <EntityType Name="IISD_TradeSettlement">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -221,7 +235,18 @@
           <EntitySet Name="Config_Key" EntityType="Self.Config_Key" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Form_Header" EntityType="Self.Form_Header" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Form_Workflow" EntityType="Self.Form_Workflow" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Iisd_TradeSettlement" EntityType="Self.Iisd_TradeSettlement" Schema="dbo" Table="Iisd.TradeSettlement" store:Type="Tables" />
+          <EntitySet Name="IISD_TradeSettlement" EntityType="Self.IISD_TradeSettlement" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EDW_TradeItem" EntityType="Self.EDW_TradeItem" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [EDW_TradeItem].[InstrumentType] AS [InstrumentType], 
+    [EDW_TradeItem].[InstrumentCode] AS [InstrumentCode], 
+    [EDW_TradeItem].[StockCode] AS [StockCode], 
+    [EDW_TradeItem].[CreatedBy] AS [CreatedBy], 
+    [EDW_TradeItem].[CreatedDate] AS [CreatedDate], 
+    [EDW_TradeItem].[UpdatedBy] AS [UpdatedBy], 
+    [EDW_TradeItem].[UpdatedDate] AS [UpdatedDate]
+    FROM [dbo].[EDW_TradeItem] AS [EDW_TradeItem]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId" Association="Self.FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId">
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
             <End Role="AspNetUserRoles" EntitySet="AspNetUserRoles" />
@@ -238,7 +263,6 @@
         <EntityContainer Name="kashflowDBEntities" annotation:LazyLoadingEnabled="true" >
           <EntitySet Name="AspNetActiveDirectoryUsers" EntityType="kashflowDbModel.AspNetActiveDirectoryUsers" />
           <EntitySet Name="Amsd_InflowFunds" EntityType="kashflowDbModel.Amsd_InflowFunds" />
-          <EntitySet Name="Iisd_TradeSettlement" EntityType="kashflowDbModel.Iisd_TradeSettlement" />
           <EntitySet Name="AspNetRoles" EntityType="kashflowDbModel.AspNetRoles" />
           <EntitySet Name="AspNetUsers" EntityType="kashflowDbModel.AspNetUsers" />
           <AssociationSet Name="AspNetUserRoles" Association="kashflowDbModel.AspNetUserRoles">
@@ -252,6 +276,8 @@
           <EntitySet Name="App_Notification" EntityType="kashflowDbModel.App_Notification" />
           <EntitySet Name="Form_Header" EntityType="kashflowDbModel.Form_Header" />
           <EntitySet Name="Form_Workflow" EntityType="kashflowDbModel.Form_Workflow" />
+          <EntitySet Name="IISD_TradeSettlement" EntityType="kashflowDbModel.IISD_TradeSettlement" />
+          <EntitySet Name="EDW_TradeItem" EntityType="kashflowDbModel.EDW_TradeItem" />
         </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -285,27 +311,6 @@
           <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
-        </EntityType>
-        <EntityType Name="Iisd_TradeSettlement">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FormId" Type="Int32" Nullable="false" />
-          <Property Name="InstrumentType" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="InstrumentCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="StockCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Maturity" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="Sales" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="Purchase" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="FirstLeg" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="SecondLeg" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="AmountPlus" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="AmountMinus" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="CreatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="UpdatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="AspNetRoles">
@@ -426,6 +431,39 @@
           <Property Name="WorkflowStatus" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="WorkflowNotes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="IISD_TradeSettlement">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FormId" Type="Int32" Nullable="false" />
+          <Property Name="InstrumentType" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="InstrumentCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="StockCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Maturity" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Sales" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Purchase" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="FirstLeg" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="SecondLeg" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="AmountPlus" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="AmountMinus" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="CreatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="EDW_TradeItem">
+          <Key>
+            <PropertyRef Name="CreatedDate" />
+          </Key>
+          <Property Name="InstrumentType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="InstrumentCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="StockCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -463,28 +501,6 @@
                 <ScalarProperty Name="Amount" ColumnName="Amount" />
                 <ScalarProperty Name="Bank" ColumnName="Bank" />
                 <ScalarProperty Name="FundType" ColumnName="FundType" />
-                <ScalarProperty Name="FormId" ColumnName="FormId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Iisd_TradeSettlement">
-            <EntityTypeMapping TypeName="kashflowDbModel.Iisd_TradeSettlement">
-              <MappingFragment StoreEntitySet="Iisd_TradeSettlement">
-                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
-                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="AmountMinus" ColumnName="AmountMinus" />
-                <ScalarProperty Name="AmountPlus" ColumnName="AmountPlus" />
-                <ScalarProperty Name="SecondLeg" ColumnName="SecondLeg" />
-                <ScalarProperty Name="FirstLeg" ColumnName="FirstLeg" />
-                <ScalarProperty Name="Purchase" ColumnName="Purchase" />
-                <ScalarProperty Name="Sales" ColumnName="Sales" />
-                <ScalarProperty Name="Maturity" ColumnName="Maturity" />
-                <ScalarProperty Name="StockCode" ColumnName="StockCode" />
-                <ScalarProperty Name="InstrumentCode" ColumnName="InstrumentCode" />
-                <ScalarProperty Name="InstrumentType" ColumnName="InstrumentType" />
                 <ScalarProperty Name="FormId" ColumnName="FormId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
@@ -616,6 +632,41 @@
                 <ScalarProperty Name="RequestBy" ColumnName="RequestBy" />
                 <ScalarProperty Name="FormId" ColumnName="FormId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IISD_TradeSettlement">
+            <EntityTypeMapping TypeName="kashflowDbModel.IISD_TradeSettlement">
+              <MappingFragment StoreEntitySet="IISD_TradeSettlement">
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="AmountMinus" ColumnName="AmountMinus" />
+                <ScalarProperty Name="AmountPlus" ColumnName="AmountPlus" />
+                <ScalarProperty Name="SecondLeg" ColumnName="SecondLeg" />
+                <ScalarProperty Name="FirstLeg" ColumnName="FirstLeg" />
+                <ScalarProperty Name="Purchase" ColumnName="Purchase" />
+                <ScalarProperty Name="Sales" ColumnName="Sales" />
+                <ScalarProperty Name="Maturity" ColumnName="Maturity" />
+                <ScalarProperty Name="StockCode" ColumnName="StockCode" />
+                <ScalarProperty Name="InstrumentCode" ColumnName="InstrumentCode" />
+                <ScalarProperty Name="InstrumentType" ColumnName="InstrumentType" />
+                <ScalarProperty Name="FormId" ColumnName="FormId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EDW_TradeItem">
+            <EntityTypeMapping TypeName="kashflowDbModel.EDW_TradeItem">
+              <MappingFragment StoreEntitySet="EDW_TradeItem">
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="StockCode" ColumnName="StockCode" />
+                <ScalarProperty Name="InstrumentCode" ColumnName="InstrumentCode" />
+                <ScalarProperty Name="InstrumentType" ColumnName="InstrumentType" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

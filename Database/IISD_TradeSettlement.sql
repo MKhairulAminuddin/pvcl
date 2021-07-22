@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[Iisd.TradeSettlement](
+﻿CREATE TABLE [dbo].[IISD_TradeSettlement](
 	[Id] INT NOT NULL Identity(1,1) PRIMARY KEY,
 	[FormId] INT NOT NULL,
 

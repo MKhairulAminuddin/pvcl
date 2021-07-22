@@ -72,13 +72,13 @@ namespace xDC_Web.Controllers.Api
                     db.SaveChanges();
 
 
-                    var newTrades = new List<Iisd_TradeSettlement> ();
+                    var newTrades = new List<IISD_TradeSettlement> ();
 
                     if (inputs.Equity != null)
                     {
                         foreach (var item in inputs.Equity)
                         {
-                            newTrades.Add(new Iisd_TradeSettlement()
+                            newTrades.Add(new IISD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
                                 InstrumentType = Common.TradeSettlementMapping(1),
@@ -97,7 +97,7 @@ namespace xDC_Web.Controllers.Api
                     {
                         foreach (var item in inputs.Bond)
                         {
-                            newTrades.Add(new Iisd_TradeSettlement()
+                            newTrades.Add(new IISD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
                                 InstrumentType = Common.TradeSettlementMapping(2),
@@ -116,7 +116,7 @@ namespace xDC_Web.Controllers.Api
                     {
                         foreach (var item in inputs.Cp)
                         {
-                            newTrades.Add(new Iisd_TradeSettlement()
+                            newTrades.Add(new IISD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
                                 InstrumentType = Common.TradeSettlementMapping(3),
@@ -135,7 +135,7 @@ namespace xDC_Web.Controllers.Api
                     {
                         foreach (var item in inputs.NotesPaper)
                         {
-                            newTrades.Add(new Iisd_TradeSettlement()
+                            newTrades.Add(new IISD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
                                 InstrumentType = Common.TradeSettlementMapping(4),
@@ -154,7 +154,7 @@ namespace xDC_Web.Controllers.Api
                     {
                         foreach (var item in inputs.Repo)
                         {
-                            newTrades.Add(new Iisd_TradeSettlement()
+                            newTrades.Add(new IISD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
                                 InstrumentType = Common.TradeSettlementMapping(5),
@@ -172,7 +172,7 @@ namespace xDC_Web.Controllers.Api
                     {
                         foreach (var item in inputs.Coupon)
                         {
-                            newTrades.Add(new Iisd_TradeSettlement()
+                            newTrades.Add(new IISD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
                                 InstrumentType = Common.TradeSettlementMapping(6),
@@ -189,7 +189,7 @@ namespace xDC_Web.Controllers.Api
                     {
                         foreach (var item in inputs.Fees)
                         {
-                            newTrades.Add(new Iisd_TradeSettlement()
+                            newTrades.Add(new IISD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
                                 InstrumentType = Common.TradeSettlementMapping(7),
@@ -205,7 +205,7 @@ namespace xDC_Web.Controllers.Api
                     {
                         foreach (var item in inputs.Mtm)
                         {
-                            newTrades.Add(new Iisd_TradeSettlement()
+                            newTrades.Add(new IISD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
                                 InstrumentType = Common.TradeSettlementMapping(8),
@@ -223,7 +223,7 @@ namespace xDC_Web.Controllers.Api
                     {
                         foreach (var item in inputs.FxSettlement)
                         {
-                            newTrades.Add(new Iisd_TradeSettlement()
+                            newTrades.Add(new IISD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
                                 InstrumentType = Common.TradeSettlementMapping(9),
@@ -240,7 +240,7 @@ namespace xDC_Web.Controllers.Api
                     {
                         foreach (var item in inputs.ContributionCredited)
                         {
-                            newTrades.Add(new Iisd_TradeSettlement()
+                            newTrades.Add(new IISD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
                                 InstrumentType = Common.TradeSettlementMapping(10),
@@ -256,7 +256,7 @@ namespace xDC_Web.Controllers.Api
                     {
                         foreach (var item in inputs.Altid)
                         {
-                            newTrades.Add(new Iisd_TradeSettlement()
+                            newTrades.Add(new IISD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
                                 InstrumentType = Common.TradeSettlementMapping(11),
@@ -273,7 +273,7 @@ namespace xDC_Web.Controllers.Api
                     {
                         foreach (var item in inputs.Others)
                         {
-                            newTrades.Add(new Iisd_TradeSettlement()
+                            newTrades.Add(new IISD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
                                 InstrumentType = Common.TradeSettlementMapping(12),
@@ -291,7 +291,7 @@ namespace xDC_Web.Controllers.Api
                     if (!ModelState.IsValid)
                         return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
 
-                    db.Iisd_TradeSettlement.AddRange(newTrades);
+                    db.IISD_TradeSettlement.AddRange(newTrades);
                     db.SaveChanges();
 
                     return Request.CreateResponse(HttpStatusCode.Created, newFormHeader.Id);
@@ -314,13 +314,13 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = new List<Iisd_TradeSettlement>();
+                    var result = new List<IISD_TradeSettlement>();
 
                     if (!string.IsNullOrEmpty(id))
                     {
                         var formId = Convert.ToInt32(id);
                         var instrumentType = Common.TradeSettlementUrlParamMapping(tradeType);
-                        result = db.Iisd_TradeSettlement
+                        result = db.IISD_TradeSettlement
                             .Where(x => x.FormId == formId && x.InstrumentType == instrumentType).ToList();
                         return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                     }
@@ -344,7 +344,7 @@ namespace xDC_Web.Controllers.Api
             {
                 var key = Convert.ToInt32(form.Get("key"));
                 var values = form.Get("values");
-                var existingRecord = db.Iisd_TradeSettlement.SingleOrDefault(o => o.Id == key);
+                var existingRecord = db.IISD_TradeSettlement.SingleOrDefault(o => o.Id == key);
 
                 JsonConvert.PopulateObject(values, existingRecord);
 

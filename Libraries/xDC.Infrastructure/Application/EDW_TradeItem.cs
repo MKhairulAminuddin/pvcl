@@ -12,20 +12,11 @@ namespace xDC.Infrastructure.Application
     using System;
     using System.Collections.Generic;
     
-    public partial class IISD_TradeSettlement
+    public partial class EDW_TradeItem
     {
-        public int Id { get; set; }
-        public int FormId { get; set; }
         public string InstrumentType { get; set; }
         public string InstrumentCode { get; set; }
         public string StockCode { get; set; }
-        public Nullable<decimal> Maturity { get; set; }
-        public Nullable<decimal> Sales { get; set; }
-        public Nullable<decimal> Purchase { get; set; }
-        public Nullable<decimal> FirstLeg { get; set; }
-        public Nullable<decimal> SecondLeg { get; set; }
-        public Nullable<decimal> AmountPlus { get; set; }
-        public Nullable<decimal> AmountMinus { get; set; }
         public string CreatedBy { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public string UpdatedBy { get; set; }
