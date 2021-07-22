@@ -102,7 +102,14 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        #region Inflow Fund Form
 
+        /*
+         * Function to cater : 
+         * 1) new form submission
+         * 2) Resubmission from rejected form
+         *
+         */
         [HttpPost]
         [Route("NewInflowFundsForm")]
         [Authorize(Roles = "AMSD")]
@@ -112,46 +119,45 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var newRecord = new Form_Header();
-
-                    if (inputs.Id != 0)
+                    var isFormResubmission = inputs.Id != 0;
+                    
+                    if (isFormResubmission)
                     {
-                        // form resubmission
-                        var isExistingDraft = db.Form_Header.FirstOrDefault(x => x.Id == inputs.Id);
+                        var existingForm = db.Form_Header.FirstOrDefault(x => x.Id == inputs.Id);
 
-                        isExistingDraft.PreparedBy = User.Identity.Name;
-                        isExistingDraft.PreparedDate = DateTime.Now;
-                        isExistingDraft.FormStatus = Common.FormStatusMapping(2);
-                        isExistingDraft.ApprovedBy = inputs.Approver;
-                        isExistingDraft.ApprovedDate = null;
-                        isExistingDraft.AdminEditted = false;
-                        isExistingDraft.AdminEdittedBy = null;
-                        isExistingDraft.AdminEdittedDate = null;
+                        if (existingForm == null)
+                            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Form not found!");
 
-                        Validate(newRecord);
-
-                        if (!ModelState.IsValid)
-                            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+                        existingForm.PreparedBy = User.Identity.Name;
+                        existingForm.PreparedDate = DateTime.Now;
+                        existingForm.FormStatus = Common.FormStatusMapping(2);
+                        existingForm.ApprovedBy = inputs.Approver;
+                        existingForm.ApprovedDate = null;
+                        existingForm.AdminEditted = false;
+                        existingForm.AdminEdittedBy = null;
+                        existingForm.AdminEdittedDate = null;
                         
                         db.SaveChanges();
 
-                        new NotificationService().PushSubmitForApprovalNotification(isExistingDraft.Id);
-                        new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(isExistingDraft.Id);
 
-                        new WorkflowService().SubmitForApprovalWorkflow(isExistingDraft.Id);
+                        new NotificationService().PushSubmitForApprovalNotification(existingForm.Id);
+                        new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(existingForm.Id);
+                        new WorkflowService().SubmitForApprovalWorkflow(existingForm.Id);
 
-                        return Request.CreateResponse(HttpStatusCode.Created, isExistingDraft.Id);
+                        return Request.CreateResponse(HttpStatusCode.Created, existingForm.Id);
                     }
                     else
                     {
+                        var newRecord = new Form_Header
+                        {
+                            FormType = Common.FormTypeMapping(1),
+                            PreparedBy = User.Identity.Name,
+                            PreparedDate = DateTime.Now,
+                            FormStatus = Common.FormStatusMapping(2),
+                            ApprovedBy = inputs.Approver,
+                            Currency = Common.FormCurrencyMapping(1)
+                        };
 
-                        newRecord.FormType = Common.FormTypeMapping(1);
-                        newRecord.PreparedBy = User.Identity.Name;
-                        newRecord.PreparedDate = DateTime.Now;
-                        newRecord.FormStatus = Common.FormStatusMapping(2);
-                        newRecord.ApprovedBy = inputs.Approver;
-                        newRecord.Currency = Common.FormCurrencyMapping(1);
-                        
                         Validate(newRecord);
 
                         if (!ModelState.IsValid)
@@ -185,7 +191,6 @@ namespace xDC_Web.Controllers.Api
 
                         new NotificationService().PushSubmitForApprovalNotification(newRecord.Id);
                         new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(newRecord.Id);
-
                         new WorkflowService().SubmitForApprovalWorkflow(newRecord.Id);
 
                         return Request.CreateResponse(HttpStatusCode.Created, newRecord.Id);
@@ -196,9 +201,12 @@ namespace xDC_Web.Controllers.Api
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
-            
         }
 
+        /*
+         * To save current form as Draft. Only applicable for form that is New or Rejected (for resubmission)
+         *
+         */
         [HttpPost]
         [Route("NewInflowFundsFormDraft")]
         [Authorize(Roles = "AMSD")]
@@ -227,7 +235,7 @@ namespace xDC_Web.Controllers.Api
 
                         if (!ModelState.IsValid)
                             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
-                        
+
                         db.SaveChanges();
                     }
                     else
@@ -272,7 +280,7 @@ namespace xDC_Web.Controllers.Api
                         db.SaveChanges();
                     }
                     return Request.CreateResponse(HttpStatusCode.Created, newRecord.Id);
-                    
+
                 }
             }
             catch (Exception ex)
@@ -282,6 +290,10 @@ namespace xDC_Web.Controllers.Api
 
         }
 
+        /*
+         * To delete draft form
+         *
+         */
         [HttpDelete]
         [Authorize(Roles = "Administrator, AMSD")]
         [Route("DeleteInflowFundDraftForm")]
@@ -314,7 +326,7 @@ namespace xDC_Web.Controllers.Api
                 Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
-            
+
         }
 
 
@@ -330,7 +342,7 @@ namespace xDC_Web.Controllers.Api
                     var formId = Convert.ToInt32(inputs.FormId);
                     var form = db.Form_Header.FirstOrDefault(x => x.Id == formId);
 
-                    if (form!=null)
+                    if (form != null)
                     {
                         if (form.ApprovedBy == User.Identity.Name)
                         {
@@ -338,30 +350,23 @@ namespace xDC_Web.Controllers.Api
                             form.FormStatus = (inputs.ApprovalStatus)
                                 ? Common.FormStatusMapping(3)
                                 : Common.FormStatusMapping(4);
-
-                            // placeholder to keep approval note
-
+                            
                             db.SaveChanges();
 
                             new NotificationService().PushApprovalStatusNotification(formId);
-                            if (inputs.ApprovalStatus)
-                            {
-                                new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(formId);
-                            }
-
+                            new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(formId);
                             new WorkflowService().ApprovalFeedbackWorkflow(formId, inputs.ApprovalStatus, inputs.ApprovalNote);
 
                             return Request.CreateResponse(HttpStatusCode.Accepted, formId);
                         }
                         else
                         {
-                            return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid Approver");
+                            return Request.CreateResponse(HttpStatusCode.BadRequest, "Unauthorized Approver!");
                         }
-                        
                     }
                     else
                     {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid Form");
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not Found!");
                     }
                 }
             }
@@ -372,11 +377,9 @@ namespace xDC_Web.Controllers.Api
 
         }
 
+        #endregion
 
-
-
-
-
+        #region Inflow Funds Grid
 
         [HttpGet]
         [Route("GetInflowFunds")]
@@ -409,7 +412,7 @@ namespace xDC_Web.Controllers.Api
             }
 
         }
-        
+
         [HttpPut]
         [Authorize(Roles = "Power User, AMSD")]
         public HttpResponseMessage UpdateInflowFund(FormDataCollection form)
@@ -438,7 +441,7 @@ namespace xDC_Web.Controllers.Api
                         formHeader.AdminEdittedBy = User.Identity.Name;
                         formHeader.AdminEdittedDate = DateTime.Now;
                     }
-                    
+
                     Validate(existingRecord);
 
                     if (!ModelState.IsValid)
@@ -465,7 +468,7 @@ namespace xDC_Web.Controllers.Api
 
                 var newRecord = new Amsd_InflowFunds();
                 JsonConvert.PopulateObject(values, newRecord);
-                
+
                 newRecord.CreatedBy = User.Identity.Name;
                 newRecord.CreatedDate = DateTime.Now;
 
@@ -514,6 +517,11 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
         }
+
+        #endregion
+
+
+
     }
 
 }

@@ -37,25 +37,38 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+                    var isNotificationEnabledKey = Common.ApplicationConfigKeyMapping(2);
+                    var isNotificationEnabled = db.Config_Application.FirstOrDefault(x => x.Key == isNotificationEnabledKey);
+                    var isNotificationEnabledParsed = isNotificationEnabled != null && bool.Parse(isNotificationEnabled.Value);
 
-                    var notificationObj = new App_Notification()
+                    if (isNotificationEnabledParsed)
                     {
-                        Title = "Pending your approval",
-                        ShortMessage = string.Format("Submitted form " + formHeader.FormType + " by " + formHeader.PreparedBy +
-                                                     "form is pending your approval. <a href='../amsd/InflowFundsFormStatus?id=" +
-                                                     formId + "'>Click here to open it</a>"),
-                        Message = string.Format("Submitted form " + formHeader.FormType + " by " + formHeader.PreparedBy +
-                                                "form is pending your approval. <a href='../amsd/InflowFundsFormStatus?id=" +
-                                                formId + "'>Click here to open it</a>"),
-                        NotificationIconClass = "fa fa-exclamation",
-                        NotificationType = "bg-aqua",
-                        CreatedOn = DateTime.Now,
-                        UserId = formHeader.ApprovedBy
-                    };
+                        var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == formId);
 
-                    PushNotification(notificationObj);
-                    new MailService().SendSubmitForApprovalEmail(formId);
+                        var notificationObj = new App_Notification()
+                        {
+                            Title = "Pending your approval",
+                            ShortMessage = string.Format("Submitted form " + formHeader.FormType + " by " + formHeader.PreparedBy +
+                                                         "form is pending your approval. <a href='../amsd/InflowFundsFormStatus?id=" +
+                                                         formId + "'>Click here to open it</a>"),
+                            Message = string.Format("Submitted form " + formHeader.FormType + " by " + formHeader.PreparedBy +
+                                                    "form is pending your approval. <a href='../amsd/InflowFundsFormStatus?id=" +
+                                                    formId + "'>Click here to open it</a>"),
+                            NotificationIconClass = "fa fa-exclamation",
+                            NotificationType = "bg-aqua",
+                            CreatedOn = DateTime.Now,
+                            UserId = formHeader.ApprovedBy
+                        };
+
+                        PushNotification(notificationObj);
+                        new MailService().SendSubmitForApprovalEmail(formId);
+                    }
+                    else
+                    {
+                        // notification disabled
+                        Logger.LogInfo("PushSubmitForApprovalNotification is Disabled!");
+                    }
+                    
                 }
             }
             catch (Exception ex)
@@ -74,25 +87,37 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+                    var isNotificationEnabledKey = Common.ApplicationConfigKeyMapping(2);
+                    var isNotificationEnabled = db.Config_Application.FirstOrDefault(x => x.Key == isNotificationEnabledKey);
+                    var isNotificationEnabledParsed = isNotificationEnabled != null && bool.Parse(isNotificationEnabled.Value);
 
-                    var notificationObj = new App_Notification()
+                    if (isNotificationEnabledParsed)
                     {
-                        Title = "Form #" + formId + " " + formHeader.FormStatus ,
-                        ShortMessage = string.Format("Submitted form #" + formId +
-                                                     "has been "+ formHeader.FormStatus + ". <a href='../amsd/InflowFundsFormStatus?id=" +
-                                                     formId + "'>Click here to open the form</a>"),
-                        Message = string.Format("Submitted form #" + formId +
-                                                "has been " + formHeader.FormStatus + ". <a href='../amsd/InflowFundsFormStatus?id=" +
-                                                formId + "'>Click here to open the form</a>"),
-                        NotificationIconClass = (formHeader.FormStatus == "Approved")? "fa fa-check-circle" : "fa fa-times-circle",
-                        NotificationType = (formHeader.FormStatus == "Approved") ? "bg-green" : "bg-red",
-                        CreatedOn = DateTime.Now,
-                        UserId = formHeader.PreparedBy
-                    };
+                        var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == formId);
 
-                    PushNotification(notificationObj);
-                    new MailService().SendApprovalStatusEmail(formId);
+                        var notificationObj = new App_Notification()
+                        {
+                            Title = "Form #" + formId + " " + formHeader.FormStatus,
+                            ShortMessage = string.Format("Submitted form #" + formId +
+                                                         "has been " + formHeader.FormStatus + ". <a href='../amsd/InflowFundsFormStatus?id=" +
+                                                         formId + "'>Click here to open the form</a>"),
+                            Message = string.Format("Submitted form #" + formId +
+                                                    "has been " + formHeader.FormStatus + ". <a href='../amsd/InflowFundsFormStatus?id=" +
+                                                    formId + "'>Click here to open the form</a>"),
+                            NotificationIconClass = (formHeader.FormStatus == "Approved") ? "fa fa-check-circle" : "fa fa-times-circle",
+                            NotificationType = (formHeader.FormStatus == "Approved") ? "bg-green" : "bg-red",
+                            CreatedOn = DateTime.Now,
+                            UserId = formHeader.PreparedBy
+                        };
+
+                        PushNotification(notificationObj);
+                        new MailService().SendApprovalStatusEmail(formId);
+                    }
+                    else
+                    {
+                        // notification disabled
+                        Logger.LogInfo("PushApprovalStatusNotification is Disabled!");
+                    }
                 }
             }
             catch (Exception ex)
@@ -101,67 +126,82 @@ namespace xDC.Services
             }
         }
 
+        /// <summary>
+        /// Send notification to a Power User if any form is submitted or approved beyond the cut off time.
+        /// </summary>
+        /// <param name="formId">Id of the related form</param>
         public void PushInflowFundAfterCutOffSubmissionNotification(int formId)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var cutOffTimeConfigKey = Common.ApplicationConfigKeyMapping(1);
-                    var cutOffTime = db.Config_Application.FirstOrDefault(x => x.Key == cutOffTimeConfigKey);
+                    var isNotificationEnabledKey = Common.ApplicationConfigKeyMapping(2);
+                    var isNotificationEnabled = db.Config_Application.FirstOrDefault(x => x.Key == isNotificationEnabledKey);
+                    var isNotificationEnabledParsed = isNotificationEnabled != null && bool.Parse(isNotificationEnabled.Value);
 
-                    if (cutOffTime != null)
+                    if (isNotificationEnabledParsed)
                     {
-                        var cutOffTimeParsed = TimeSpan.Parse(cutOffTime.Value);
-                        var isViolateCutOffTime = DateTime.Now.TimeOfDay > cutOffTimeParsed;
+                        var cutOffTimeConfigKey = Common.ApplicationConfigKeyMapping(1);
+                        var cutOffTime = db.Config_Application.FirstOrDefault(x => x.Key == cutOffTimeConfigKey);
 
-                        if (isViolateCutOffTime)
+                        if (cutOffTime != null)
                         {
-                            var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+                            var cutOffTimeParsed = TimeSpan.Parse(cutOffTime.Value);
+                            var isViolateCutOffTime = DateTime.Now.TimeOfDay > cutOffTimeParsed;
 
-                            var shortMessage =
-                                string.Format(
-                                    "{0} Form submitted/approved after Cut-off time <a href='{1}{2}'>Click here to open it</a>",
-                                    formHeader.FormType, Config.UrlAmsdInflowFundsStatus, formId);
-
-                            var longMessage =
-                                string.Format(
-                                    "{0} Form submitted/approved after Cut-off time <a href='{1}{2}'>Click here to open it</a>",
-                                    formHeader.FormType, Config.UrlAmsdInflowFundsStatus, formId);
-                            
-                            var adminList = db.AspNetRoles.FirstOrDefault(x => x.Name == "Power User");
-
-                            if (adminList != null)
+                            if (isViolateCutOffTime)
                             {
+                                var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == formId);
 
-                                foreach (var admin in adminList.AspNetUsers)
+                                var shortMessage =
+                                    string.Format(
+                                        "{0} Form submitted/approved after Cut-off time <a href='{1}{2}'>Click here to open it</a>",
+                                        formHeader.FormType, Config.UrlAmsdInflowFundsStatus, formId);
+
+                                var longMessage =
+                                    string.Format(
+                                        "{0} Form submitted/approved after Cut-off time <a href='{1}{2}'>Click here to open it</a>",
+                                        formHeader.FormType, Config.UrlAmsdInflowFundsStatus, formId);
+
+                                var adminList = db.AspNetRoles.FirstOrDefault(x => x.Name == "Power User");
+
+                                if (adminList != null)
                                 {
-                                    var notificationObj = new App_Notification()
-                                    {
-                                        Title = "Inflow Funds Submitted after cut off Time",
-                                        ShortMessage = shortMessage,
-                                        Message = longMessage,
-                                        NotificationIconClass = "fa fa-exclamation",
-                                        NotificationType = "bg-aqua",
-                                        CreatedOn = DateTime.Now,
-                                        UserId = admin.UserName
-                                    };
 
-                                    PushNotification(notificationObj);
+                                    foreach (var admin in adminList.AspNetUsers)
+                                    {
+                                        var notificationObj = new App_Notification()
+                                        {
+                                            Title = "Inflow Funds Submitted after cut off Time",
+                                            ShortMessage = shortMessage,
+                                            Message = longMessage,
+                                            NotificationIconClass = "fa fa-exclamation",
+                                            NotificationType = "bg-aqua",
+                                            CreatedOn = DateTime.Now,
+                                            UserId = admin.UserName
+                                        };
+
+                                        PushNotification(notificationObj);
+                                    }
+
+                                    new MailService().SendCutOffTimeViolationEmail(formId, adminList.AspNetUsers.ToList(), cutOffTimeParsed);
+                                }
+                                else
+                                {
+                                    Logger.LogError("PushInflowFundAfterCutOffSubmissionNotification no admin email");
                                 }
 
-                                new MailService().SendCutOffTimeViolationEmail(formId, adminList.AspNetUsers.ToList(), cutOffTimeParsed);
                             }
-                            else
-                            {
-                                Logger.LogError("PushInflowFundAfterCutOffSubmissionNotification no admin email");
-                            }
-                            
+                        }
+                        else
+                        {
+                            Logger.LogError("PushInflowFundAfterCutOffSubmissionNotification no cut off time setup");
                         }
                     }
                     else
                     {
-                        Logger.LogError("PushInflowFundAfterCutOffSubmissionNotification no cut off time setup");
+                        Logger.LogInfo("PushInflowFundAfterCutOffSubmissionNotification is disabled");
                     }
                 }
             }
