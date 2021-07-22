@@ -304,9 +304,11 @@ namespace xDC_Web.Controllers.Api
 
         }
 
+        #region Trade Settlement Grid
+
         [HttpGet]
         [Route("GetTradeSettlement")]
-        public HttpResponseMessage GetInflowFunds(string id, string tradeType,  DataSourceLoadOptions loadOptions)
+        public HttpResponseMessage GetInflowFunds(string id, string tradeType, DataSourceLoadOptions loadOptions)
         {
             try
             {
@@ -403,5 +405,7 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.OK);
             }
         }
+
+        #endregion
     }
 }

@@ -5,15 +5,15 @@ VisualStudioVersion = 16.0.31229.75
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{7122A0F2-D963-4FF2-A899-44463EA526B5}"
 	ProjectSection(SolutionItems) = preProject
-		App_Notification.sql = App_Notification.sql
+		Database\App_Notification.sql = Database\App_Notification.sql
 		Database\AspNetActiveDirectoryUsers.sql = Database\AspNetActiveDirectoryUsers.sql
 		Database\AspNetAuth.sql = Database\AspNetAuth.sql
-		Config_Application.sql = Config_Application.sql
-		Config_Approver.sql = Config_Approver.sql
-		Config_Dropdown.sql = Config_Dropdown.sql
-		Config_Key.sql = Config_Key.sql
-		Form.sql = Form.sql
-		TradeSettlement.sql = TradeSettlement.sql
+		Database\Config_Application.sql = Database\Config_Application.sql
+		Database\Config_Approver.sql = Database\Config_Approver.sql
+		Database\Config_Dropdown.sql = Database\Config_Dropdown.sql
+		Database\Config_Key.sql = Database\Config_Key.sql
+		Database\Form.sql = Database\Form.sql
+		Database\TradeSettlement.sql = Database\TradeSettlement.sql
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{288D30C0-C4F9-4D78-BD96-15D52D9FEB14}"
