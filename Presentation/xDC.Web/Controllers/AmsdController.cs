@@ -64,7 +64,7 @@ namespace xDC_Web.Controllers
 
                     if (getForm != null)
                     {
-                        if (!User.IsInRole(Config.AclAdministrator) &&
+                        if (!User.IsInRole(Config.AclPowerUser) &&
                             (getForm.FormStatus == Common.FormStatusMapping(2) || getForm.FormStatus == Common.FormStatusMapping(3)))
                         {
                             TempData["ErrorMessage"] = "Current form status prohibited you from editing it.";
