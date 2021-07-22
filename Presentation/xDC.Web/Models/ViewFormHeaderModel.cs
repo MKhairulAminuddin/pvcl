@@ -23,5 +23,8 @@ namespace xDC_Web.Models
 
         public bool IsCanAdminEdit { get; set; }
         public bool IsResubmitEnabled { get; set; }
+
+        public bool IsFormPendingMyApproval { get; set; }
+        public bool IsMyFormRejected { get; set; }
     }
 }

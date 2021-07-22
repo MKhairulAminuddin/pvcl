@@ -228,7 +228,17 @@
                 allowUpdating: false,
                 allowDeleting: false,
                 allowAdding: false
-            }
+            },
+            onRowPrepared: function (e) {
+                if (e.rowType == "data") {
+                    if (e.data.isFormPendingMyApproval) {
+                        e.rowElement.css("background-color", "#FFEBEE");
+                    } 
+                    if (e.data.isMyFormRejected) {
+                        e.rowElement.css("background-color", "#FFEBEE");
+                    }
+                }
+            },
         }).dxDataGrid("instance");
 
         $amsdGrid.option(dxGridUtils.viewOnlyGridConfig);
