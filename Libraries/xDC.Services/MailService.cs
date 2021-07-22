@@ -23,7 +23,7 @@ namespace xDC.Services
 
                     var message = new MimeMessage()
                     {
-                        Sender = new MailboxAddress(Encoding.ASCII, Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                        Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
                         Subject = "[Kashflow] Test Email",
                         To =
                         {
@@ -66,7 +66,7 @@ namespace xDC.Services
 
                         var message = new MimeMessage()
                         {
-                            Sender = new MailboxAddress(Encoding.ASCII, Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                            Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
                             Subject = "[Kashflow] Inflow Funds Submission Require Approval",
                             To =
                             {
@@ -114,7 +114,7 @@ namespace xDC.Services
 
                         var message = new MimeMessage()
                         {
-                            Sender = new MailboxAddress(Encoding.ASCII, Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                            Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
                             Subject = "[Kashflow] Inflow Funds Approval Status",
                             To =
                             {
@@ -159,7 +159,7 @@ namespace xDC.Services
                     {
                         var message = new MimeMessage()
                         {
-                            Sender = new MailboxAddress(Encoding.ASCII, Config.SmtpSenderAccountName,
+                            Sender = new MailboxAddress(Config.SmtpSenderAccountName,
                                 Config.SmtpSenderAccount),
                             Subject = "[Kashflow] Inflow Funds Form Violate Cut Off Time"
                         };
