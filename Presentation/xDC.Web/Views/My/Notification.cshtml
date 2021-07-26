@@ -35,31 +35,35 @@
 @section scripts
 {
     <script>
-
         $(function () {
             DevExpress.setTemplateEngine("underscore");
-            var $notificationList, $notificationListTemplate, $notificationBell, $notificationDropdown;
-            $notificationList = $("#notificationList");
-            $notificationListTemplate = $("#notificationListTemplate");
 
-            $notificationBell = $('#notifyBellCount');
-            $notificationDropdown = $("#notificationDropdown");
+            var $notificationList = $("#notificationList");
+            var $notificationListTemplate = $("#notificationListTemplate");
+            var $notificationBell = $('#notifyBellCount');
+            var $notificationDropdown = $("#notificationDropdown");
 
             $notificationList.dxList({
                 dataSource: new DevExpress.data.AspNet.createStore({
                     key: "id",
-                    loadUrl: "../api/common/GetMyNotification",
-                    deleteUrl: "../api/common/DeleteMyNotification"
+                    loadUrl: window.location.origin + "/api/common/GetMyNotification",
+                    deleteUrl: window.location.origin + "/api/common/DeleteMyNotification"
                 }),
                 itemTemplate: $notificationListTemplate,
                 allowItemDeleting: true,
                 itemDeleteMode: "static",
-                noDataText: "No notification for you &#128123;",
+                noDataText: "No notification...",
                 onItemDeleted: function (e) {
-                    if ($notificationBell.text() != "") {
+                    if ($notificationBell.text() == "" || $notificationBell.text() == "0" || $notificationBell.text() == "1") {
+                        $notificationBell.removeClass("label label-danger").text("");
+                    }
+                    else {
                         var notifyCount = parseInt($notificationBell.text());
                         $notificationBell.text(notifyCount - 1);
+                    }
 
+                    // sync with notification page
+                    if ($notificationDropdown.length) {
                         $notificationDropdown.dxList("instance").reload();
                     }
                 }

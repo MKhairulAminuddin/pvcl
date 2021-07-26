@@ -50,24 +50,32 @@
                                         <span id="notifyBellCount"></span>
                                     </a>
                                     <ul class="dropdown-menu dropdown-menu-right">
+                                        <li class="header text-center">Notifications</li>
                                         <li>
                                             <ul class="menu" id="notificationDropdown">
                                                 <script type="text/html" id="notificationDropdownItemTemplate">
-                                                    <li style="margin: 6px 0">
-                                                        <a href="<%= notificationUrl %>" style="padding: 0">
-                                                            <span style="display: block; margin-bottom: 2px; font-size: 15px;">
-                                                                <i class="<%= notificationIconClass %>" style="font-size: 10px"></i> <%= title %>
-                                                            </span>
+                                                <li style="margin: 6px 0">
+                                                    <a href="<%= notificationUrl %>" style="padding: 0">
+                                                        <span style="display: block; margin-bottom: 2px; font-size: 15px;">
+                                                            <i class="<%= notificationIconClass %>" style="font-size: 10px"></i> <%= title %>
+                                                        </span>
 
-                                                            <span style="display: block; font-size: smaller; color: #7F8C8D;margin-left: 18px">
-                                                                <%= moment(createdOn).format('DD/MM/YYYY hh:mm A') %>
-                                                            </span>
-                                                        </a>
-                                                    </li>
+                                                        <span style="display: block; font-size: smaller; color: #7F8C8D; margin-left: 18px">
+                                                            <%= moment(createdOn).format('DD/MM/YYYY hh:mm A') %>
+                                                        </span>
+                                                    </a>
+                                                </li>
                                                 </script>
                                             </ul>
                                         </li>
-                                        <li class="footer"><a href="@Url.Action("MyNotification", "User")">View all</a></li>
+                                        <li class="footer">
+                                            <div class="footer-item">
+                                                <a href="@Url.Action("Notification", "My")">See all</a>
+                                            </div>
+                                            <div class="footer-item" style="float: right">
+                                                <a id="dismissNotificationBtn">Dismiss</a>
+                                            </div>
+                                        </li>
                                     </ul>
                                 </li>
 
@@ -186,11 +194,11 @@
         
         $(function () {
             DevExpress.setTemplateEngine("underscore");
-
-            var $notificationBell, $notificationDropdown, $notificationDropdownItemTemplate;
-            $notificationBell = $('#notifyBellCount');
-            $notificationDropdown = $("#notificationDropdown");
-            $notificationDropdownItemTemplate = $("#notificationDropdownItemTemplate");
+            
+            var $notificationBell = $('#notifyBellCount');
+            var $notificationDropdown = $("#notificationDropdown");
+            var $notificationDropdownItemTemplate = $("#notificationDropdownItemTemplate");
+            var $dismissNotificationBtn = $("#dismissNotificationBtn");
             
             $notificationDropdown.dxList({
                 dataSource: new DevExpress.data.AspNet.createStore({
@@ -201,15 +209,17 @@
                 itemTemplate: $notificationDropdownItemTemplate,
                 allowItemDeleting: true,
                 itemDeleteMode: "static",
-                noDataText: "No notification &#128123;",
+                noDataText: "No notification...",
                 onItemDeleted: function (e) {
-                    if ($notificationBell.text() != "") {
-                        var notifyCount = parseInt($notificationBell.text());
-                        $notificationBell.text(notifyCount - 1);
-                    } else {
+                    if ($notificationBell.text() == "" || $notificationBell.text() == "0" || $notificationBell.text() == "1") {
                         $notificationBell.removeClass("label label-danger").text("");
                     }
+                    else {
+                        var notifyCount = parseInt($notificationBell.text());
+                        $notificationBell.text(notifyCount - 1);
+                    }
 
+                    // sync with notification page
                     if ($('#notificationList').length) {
                         $("#notificationList").dxList("instance").reload();
                     }
@@ -219,9 +229,25 @@
                 }
             }).dxList("instance");
 
+            $dismissNotificationBtn.on('click', function (e) {
+                if ($notificationDropdown.dxList("instance").getDataSource().items().length > 0) {
+                    $.ajax({
+                            dataType: 'json',
+                            url: window.location.origin + '/api/common/ClearMyNotification',
+                            method: 'post'
+                        }).done(function(data) {
+                            $notificationBell.removeClass("label label-danger").text("");
 
-
-            
+                            // sync with notification page
+                            if ($('#notificationList').length) {
+                                $("#notificationList").dxList("instance").reload();
+                            }
+                        })
+                        .fail(function(jqXHR, textStatus, errorThrown) {
+                            alert(errorThrown);
+                        });
+                }
+            });
         });
 
     </script>

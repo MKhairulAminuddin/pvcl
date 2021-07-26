@@ -241,6 +241,28 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [HttpPost]
+        [Route("ClearMyNotification")]
+        public HttpResponseMessage ClearMyNotification()
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var foundRecord = db.App_Notification.Where(x => x.UserId == User.Identity.Name);
+
+                    db.App_Notification.RemoveRange(foundRecord);
+                    db.SaveChanges();
+                    return Request.CreateResponse(HttpStatusCode.Accepted, "Notification Cleared!");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
 
 
         #endregion

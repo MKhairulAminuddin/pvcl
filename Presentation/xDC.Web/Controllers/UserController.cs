@@ -7,9 +7,9 @@ using System.Web.Mvc;
 namespace xDC_Web.Controllers
 {
     [Authorize]
-    public class UserController : Controller
+    public class MyController : Controller
     {
-        public ActionResult MyNotification()
+        public ActionResult Notification()
         {
             return View();
         }
