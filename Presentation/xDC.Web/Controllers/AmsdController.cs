@@ -28,6 +28,7 @@ namespace xDC_Web.Controllers
                     var isAmsdUser = User.IsInRole(Config.AclAmsd) || User.IsInRole(Config.AclAdministrator);
 
                     model.isAllowedToCreateForm = (!isApprover && isAmsdUser);
+
                     return View(model);
                 }
             }
@@ -43,15 +44,34 @@ namespace xDC_Web.Controllers
         [Route("InflowFund/New")]
         public ActionResult InflowFund_New()
         {
-            var model = new ViewInflowFundStatusForm()
+            try
             {
-                PreparedBy = User.Identity.Name,
-                PreparedDate = DateTime.Now,
-                FormStatus = Common.FormStatusMapping(1),
-                IsDraftEnabled = true
-            };
+                using (var db = new kashflowDBEntities())
+                {
+                    // only AMSD user can create new form
+                    var isApprover = db.Config_Approver.Any(x => x.Username == User.Identity.Name);
+                    if (!User.IsInRole(Config.AclAmsd) && !isApprover)
+                    {
+                        TempData["ErrorMessage"] = "You are not authorized to create new Inflow Fund form...";
+                        return View("Error");
+                    }
 
-            return View("InflowFund/New",model);
+                    var model = new ViewInflowFundStatusForm()
+                    {
+                        PreparedBy = User.Identity.Name,
+                        PreparedDate = DateTime.Now,
+                        FormStatus = Common.FormStatusMapping(1),
+                        IsDraftEnabled = true
+                    };
+
+                    return View("InflowFund/New", model);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return View("Error");
+            }
         }
 
         [Route("InflowFund/Edit")]
@@ -69,7 +89,7 @@ namespace xDC_Web.Controllers
                         if (!User.IsInRole(Config.AclPowerUser) &&
                             (getForm.FormStatus == Common.FormStatusMapping(2) || getForm.FormStatus == Common.FormStatusMapping(3)))
                         {
-                            TempData["ErrorMessage"] = "Current form status prohibited you from editing it.";
+                            TempData["ErrorMessage"] = "Hey! You cannot amend form that in Pending Approval or Approved status!";
                             return View("Error");
                         }
 

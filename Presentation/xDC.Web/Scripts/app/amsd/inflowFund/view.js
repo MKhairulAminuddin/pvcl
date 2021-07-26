@@ -189,7 +189,9 @@
         
         $("#approveFormBtn").on({
             "click": function (e) {
-                
+                $loadPanel.option("position", { of: "#approvalNoteModalContainer" });
+                $loadPanel.show();
+
                 var data = {
                     approvalNote: $("#approvalNoteTextBox").dxTextArea("instance").option('value'),
                     approvalStatus: true,
@@ -200,12 +202,16 @@
                     data: data,
                     dataType: 'json',
                     url: window.location.origin + '/api/amsd/InflowFundsFormApproval',
-                    method: 'post'
-                }).done(function (data) {
-                    window.location.href = window.location.origin + "/amsd/inflowfund/view?id=" + data;
-
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                    method: 'post',
+                    success: function (data) {
+                        window.location.href = window.location.origin + "/amsd/inflowfund/view?id=" + data;
+                    },
+                    fail: function (jqXHR, textStatus, errorThrown) {
+                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                    },
+                    complete: function (data) {
+                        $loadPanel.hide();
+                    }
                 });
 
                 e.preventDefault();
@@ -214,6 +220,8 @@
 
         $("#rejectFormBtn").on({
             "click": function (e) {
+                $loadPanel.option("position", { of: "#rejectionNoteModalContainer" });
+                $loadPanel.show();
 
                 var data = {
                     approvalNote: $("#rejectionNoteTextBox").dxTextArea("instance").option('value'),
@@ -225,12 +233,16 @@
                     data: data,
                     dataType: 'json',
                     url: window.location.origin + '/api/amsd/InflowFundsFormApproval',
-                    method: 'post'
-                }).done(function (data) {
-                    window.location.href = window.location.origin + "/amsd/InflowFund/View?id=" + data;
-
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                    method: 'post',
+                    success: function (data) {
+                        window.location.href = window.location.origin + "/amsd/inflowfund/view?id=" + data;
+                    },
+                    fail: function (jqXHR, textStatus, errorThrown) {
+                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                    },
+                    complete: function (data) {
+                        $loadPanel.hide();
+                    }
                 });
 
                 e.preventDefault();
@@ -239,7 +251,6 @@
 
         $loadPanel = $("#loadpanel").dxLoadPanel({
             shadingColor: "rgba(0,0,0,0.4)",
-            position: { of: "#formContainer" },
             visible: false,
             showIndicator: true,
             showPane: true,

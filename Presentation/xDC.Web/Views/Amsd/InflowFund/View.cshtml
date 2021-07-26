@@ -231,7 +231,7 @@
             
             @if (Model.IsAdminEdited)
             {
-                <div class="box box-solid">
+                <div class="box box-solid" style="background: #FFEBEE">
                     <div class="box-body">
                         <div class="dx-fieldset">
                             <div class="dx-field">
@@ -261,7 +261,7 @@
 
 <div id="approvalNoteModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content" id="approvalNoteModalContainer">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
@@ -302,7 +302,7 @@
 
 <div id="rejectionNoteModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content" id="rejectionNoteModalContainer">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
