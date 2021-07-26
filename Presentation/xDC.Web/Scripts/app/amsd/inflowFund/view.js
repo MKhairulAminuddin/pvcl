@@ -5,6 +5,7 @@
 
         $("#approveBtn").on({
             "click": function (e) {
+                cutOffTimeChecker();
                 $('#approvalNoteModal').modal('show');
 
                 e.preventDefault();
@@ -13,6 +14,7 @@
 
         $("#rejectBtn").on({
             "click": function (e) {
+                cutOffTimeChecker();
                 $('#rejectionNoteModal').modal('show');
 
                 e.preventDefault();
@@ -257,6 +259,27 @@
             shading: true,
             closeOnOutsideClick: false
         }).dxLoadPanel("instance");
+
+        function cutOffTimeChecker() {
+            $.ajax({
+                dataType: 'json',
+                url: window.location.origin + '/api/amsd/IsViolatedCutOffTime',
+                method: 'get',
+                success: function (data) {
+                    if (data) {
+                        $(".cutOffTimeNotify").text("Cut Off Time Violated").addClass("label label-danger");
+                    } else {
+                        $(".cutOffTimeNotify").text("").removeClass("label label-danger");
+                    }
+                },
+                fail: function (jqXHR, textStatus, errorThrown) {
+
+                },
+                complete: function (data) {
+
+                }
+            });
+        }
 
     });
 }(window.jQuery, window, document));

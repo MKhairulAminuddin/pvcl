@@ -104,6 +104,44 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [HttpGet]
+        [Route("IsViolatedCutOffTime")]
+        public HttpResponseMessage IsViolatedCutOffTime()
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var configKey = Common.ApplicationConfigKeyMapping(1);
+                    var cutOffTime = db.Config_Application.FirstOrDefault(x => x.Key == configKey);
+
+                    if (cutOffTime != null)
+                    {
+                        var cutOffTimeParsed = TimeSpan.Parse(cutOffTime.Value);
+                        var isViolateCutOffTime = DateTime.Now.TimeOfDay > cutOffTimeParsed;
+
+                        if (isViolateCutOffTime)
+                        {
+                            return Request.CreateResponse(HttpStatusCode.OK, isViolateCutOffTime);
+                        }
+                        else
+                        {
+                            return Request.CreateResponse(HttpStatusCode.OK, isViolateCutOffTime);
+                        }
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Hmm.. I don't know the cut off time tho...");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex);
+            }
+        }
+
         #region Inflow Fund Form
 
         /*

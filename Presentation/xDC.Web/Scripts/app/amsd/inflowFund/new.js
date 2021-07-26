@@ -40,6 +40,7 @@
                     if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
                         $("#error_container").bs_warning("Please key in at least one item.");
                     } else {
+                        cutOffTimeChecker();
                         $('#selectApproverModal').modal('show');
                     }
 
@@ -295,6 +296,27 @@
             shading: true,
             closeOnOutsideClick: false
         }).dxLoadPanel("instance");
+
+        function cutOffTimeChecker() {
+            $.ajax({
+                dataType: 'json',
+                url: window.location.origin + '/api/amsd/IsViolatedCutOffTime',
+                method: 'get',
+                success: function (data) {
+                    if (data) {
+                        $("#cutOffTimeNotify").text("Cut Off Time Violated").addClass("label label-danger");
+                    } else {
+                        $("#cutOffTimeNotify").text("").removeClass("label label-danger");
+                    }
+                },
+                fail: function (jqXHR, textStatus, errorThrown) {
+                    
+                },
+                complete: function (data) {
+
+                }
+            });
+        }
         
     });
 }(window.jQuery, window, document));
