@@ -409,7 +409,7 @@ namespace xDC_Web.Controllers.Api
 
         #endregion
 
-
+/*
         [HttpGet]
         [Route("TradeItemDW")]
         public HttpResponseMessage TradeItemDW(DataSourceLoadOptions loadOptions)
@@ -427,6 +427,6 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
 
-        }
+        }*/
     }
 }

@@ -10,7 +10,7 @@
 
             var data = {
                 "inflowFundEnableNotification": $("#inFundEnableNotiCb").dxCheckBox("instance").option('value'),
-                "inflowFundEnableAdminModificationNotification": $("#inFundEnableAdminEditNotiCb").dxCheckBox("instance").option('value'),
+                "inflowFundEnableAdminModificationNotification": true,
                 "inflowFundCutOffTime": new Date(moment($("#inFundCutOffTimeDb").dxDateBox("instance").option('value'))).toISOString()
             };
 

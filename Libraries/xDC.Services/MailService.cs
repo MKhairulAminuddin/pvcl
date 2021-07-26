@@ -74,7 +74,7 @@ namespace xDC.Services
                             }
                         };
                         
-                        var approvalPageUrl = string.Format("{0}amsd/InflowFundsFormStatus?id={1}", Config.EmailApplicationUrl, formId);
+                        var approvalPageUrl = string.Format("{0}amsd/InflowFund/View?id={1}", Config.EmailApplicationUrl, formId);
                         var bodyBuilder = new StringBuilder();
                         bodyBuilder.Append(string.Format("<p>Hi {0}, </p>", approverName.DisplayName));
                         bodyBuilder.AppendLine(string.Format("<p>An item is pending for your approval. </p> "));
@@ -122,7 +122,7 @@ namespace xDC.Services
                             }
                         };
 
-                        var approvalPageUrl = string.Format("{0}amsd/InflowFundsFormStatus?id={1}", Config.EmailApplicationUrl, formId);
+                        var approvalPageUrl = string.Format("{0}amsd/InflowFund/View?id={1}", Config.EmailApplicationUrl, formId);
                         var bodyBuilder = new StringBuilder();
                         bodyBuilder.Append(string.Format("<p>Hi {0}, </p>", preparerName.DisplayName));
                         bodyBuilder.AppendLine(string.Format("<p>Your form  <a href='" + approvalPageUrl + "'>#" + getForm.Id +"</a> have been " + getForm.FormStatus));
@@ -164,7 +164,7 @@ namespace xDC.Services
                             Subject = "[Kashflow] Inflow Funds Form Violate Cut Off Time"
                         };
                         
-                        var approvalPageUrl = string.Format("{0}amsd/InflowFundsFormStatus?id={1}", Config.EmailApplicationUrl, formId);
+                        var approvalPageUrl = string.Format("{0}amsd/InflowFund/View?id={1}", Config.EmailApplicationUrl, formId);
                         var bodyBuilder = new StringBuilder();
                         bodyBuilder.Append($"<p>Hello there, </p>");
                         bodyBuilder.AppendLine(

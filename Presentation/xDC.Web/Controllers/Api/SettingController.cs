@@ -100,7 +100,7 @@ namespace xDC_Web.Controllers.Api
                     JsonConvert.PopulateObject(values, newRecord);
 
                     newRecord.CreatedBy = User.Identity.Name;
-
+                    newRecord.CreatedDate = DateTime.Now;
 
                     Validate(newRecord);
 
@@ -222,7 +222,7 @@ namespace xDC_Web.Controllers.Api
                     JsonConvert.PopulateObject(values, newRecord);
 
                     newRecord.CreatedBy = User.Identity.Name;
-
+                    newRecord.CreatedDate = DateTime.Now;
 
                     Validate(newRecord);
 
