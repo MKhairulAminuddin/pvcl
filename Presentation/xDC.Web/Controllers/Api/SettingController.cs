@@ -355,22 +355,30 @@ namespace xDC_Web.Controllers.Api
 
                     var newRecord = new Config_Approver();
                     JsonConvert.PopulateObject(values, newRecord);
-
-                    newRecord.CreatedBy = User.Identity.Name;
-
+                    
                     Validate(newRecord);
                     if (!ModelState.IsValid)
                         return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
-
+                    
                     var userDetailsInAd =
                         db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == newRecord.Username);
 
                     if (userDetailsInAd != null)
                     {
+                        // check if already existed
+                        var existingRecord = db.Config_Approver.FirstOrDefault(o => o.Username == newRecord.Username);
+                        if (existingRecord != null)
+                        {
+                            return Request.CreateResponse(HttpStatusCode.InternalServerError, "Approver already exist! " + userDetailsInAd.DisplayName);
+                        }
+
+
                         newRecord.DisplayName = userDetailsInAd.DisplayName;
                         newRecord.Email = userDetailsInAd.Email;
                         newRecord.Title = userDetailsInAd.Title;
                         newRecord.Department = userDetailsInAd.Department;
+                        newRecord.CreatedDate = DateTime.Now;
+                        newRecord.CreatedBy = User.Identity.Name;
 
                         db.Config_Approver.Add(newRecord);
                         db.SaveChanges();

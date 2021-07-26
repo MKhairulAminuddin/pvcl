@@ -1,7 +1,7 @@
 ﻿$(function () {
     var aduserStores = DevExpress.data.AspNet.createStore({
         key: "username",
-        loadUrl: "../api/common/GetActiveDirectoryUsers"
+        loadUrl: "../api/common/GetActiveDirectoryUsersRegisteredIntoSystem"
     });
 
     var formTypes = [

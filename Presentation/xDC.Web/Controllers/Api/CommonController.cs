@@ -40,6 +40,43 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [HttpGet]
+        [Route("GetActiveDirectoryUsersRegisteredIntoSystem")]
+        public HttpResponseMessage GetActiveDirectoryUsersRegisteredIntoSystem(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.AspNetActiveDirectoryUsers.Where(x => x.Title != null).ToList();
+
+                    var amsdRoleName = Config.AclAmsd;
+                    var systemUser = db.AspNetUsers.Where(x => x.AspNetRoles.Select(y => y.Name).Contains(amsdRoleName)).ToList();
+                    var issdRoleName = Config.AclIisd;
+                    var issdUsers = db.AspNetUsers.Where(x => x.AspNetRoles.Select(y => y.Name).Contains(issdRoleName)).ToList();
+                    systemUser.AddRange(issdUsers);
+                    
+                    var finalResult = new List<AspNetActiveDirectoryUsers>();
+
+                    foreach (var user in systemUser)
+                    {
+                        var findAd = result.FirstOrDefault(x => x.Username == user.UserName);
+                        if (findAd != null)
+                        {
+                            finalResult.Add(findAd);
+                        }
+                    }
+
+
+                    return Request.CreateResponse(DataSourceLoader.Load(finalResult, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
         [Route("api/common/GetActiveDirectoryUsersByDepartment/{department}")]
         public HttpResponseMessage GetActiveDirectoryUsersByDepartment(string department, DataSourceLoadOptions loadOptions)
         {
