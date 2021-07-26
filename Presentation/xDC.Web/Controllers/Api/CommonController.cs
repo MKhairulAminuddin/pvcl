@@ -16,12 +16,13 @@ using xDC.Utils;
 namespace xDC_Web.Controllers.Api
 {
     [Authorize]
-    [Route("api/common/{action}", Name = "common")]
+    [RoutePrefix("api/common")]
     public class CommonController : ApiController
     {
         #region Active Directory
 
         [HttpGet]
+        [Route("GetActiveDirectoryUsers")]
         public HttpResponseMessage GetActiveDirectoryUsers(DataSourceLoadOptions loadOptions)
         {
             try
@@ -62,6 +63,7 @@ namespace xDC_Web.Controllers.Api
         #region User Roles
 
         [HttpGet]
+        [Route("GetRoles")]
         public HttpResponseMessage GetRoles(DataSourceLoadOptions loadOptions)
         {
             try
@@ -86,6 +88,7 @@ namespace xDC_Web.Controllers.Api
         #region Dropdown List
 
         [HttpGet]
+        [Route("GetInflowFundsFundType")]
         public HttpResponseMessage GetInflowFundsFundType(DataSourceLoadOptions loadOptions)
         {
             try
@@ -105,6 +108,7 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpGet]
+        [Route("GetInflowFundsBank")]
         public HttpResponseMessage GetInflowFundsBank(DataSourceLoadOptions loadOptions)
         {
             try
@@ -124,6 +128,7 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpGet]
+        [Route("GetConfigDropdownKey")]
         public HttpResponseMessage GetConfigDropdownKey(DataSourceLoadOptions loadOptions)
         {
             try
@@ -146,6 +151,7 @@ namespace xDC_Web.Controllers.Api
         #region Approver List
 
         [HttpGet]
+        [Route("GetApproverAmsdInflowFunds")]
         public HttpResponseMessage GetApproverAmsdInflowFunds(DataSourceLoadOptions loadOptions)
         {
             try
@@ -165,6 +171,7 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpGet]
+        [Route("GetTradeSettlementApprover")]
         public HttpResponseMessage GetTradeSettlementApprover(DataSourceLoadOptions loadOptions)
         {
             try
@@ -190,6 +197,7 @@ namespace xDC_Web.Controllers.Api
         #region My Notification
 
         [HttpGet]
+        [Route("GetMyNotification")]
         public HttpResponseMessage GetMyNotification(DataSourceLoadOptions loadOptions)
         {
             try
@@ -211,6 +219,7 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpDelete]
+        [Route("DeleteMyNotification")]
         public HttpResponseMessage DeleteMyNotification(FormDataCollection form)
         {
             try
@@ -239,6 +248,7 @@ namespace xDC_Web.Controllers.Api
         #region Workflow Information
 
         [HttpGet]
+        [Route("GetWorkflow")]
         public HttpResponseMessage GetWorkflow(string id, DataSourceLoadOptions loadOptions)
         {
             try

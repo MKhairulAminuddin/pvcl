@@ -100,7 +100,7 @@
         $inflowFundsGrid = $("#inflowFundsGrid1").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/amsd/GetInflowFunds?id=" + getUrlParameter('id')
+                loadUrl: window.location.origin + "/api/amsd/GetInflowFunds?id=" + getUrlParameter('id')
             }),
             columns: [
                 {
@@ -145,7 +145,7 @@
         $workflowGrid = $("#workflowGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/common/GetWorkflow?id=" + getUrlParameter('id')
+                loadUrl: window.location.origin + "/api/common/GetWorkflow?id=" + getUrlParameter('id')
             }),
             columns: [
                 {
@@ -199,10 +199,10 @@
                 $.ajax({
                     data: data,
                     dataType: 'json',
-                    url: '../api/amsd/InflowFundsFormApproval',
+                    url: window.location.origin + '/api/amsd/InflowFundsFormApproval',
                     method: 'post'
                 }).done(function (data) {
-                    window.location.href = "../amsd/InflowFundsFormStatus?id=" + data;
+                    window.location.href = window.location.origin + "/amsd/inflowfund/view?id=" + data;
 
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                     $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
@@ -224,10 +224,10 @@
                 $.ajax({
                     data: data,
                     dataType: 'json',
-                    url: '../api/amsd/InflowFundsFormApproval',
+                    url: window.location.origin + '/api/amsd/InflowFundsFormApproval',
                     method: 'post'
                 }).done(function (data) {
-                    window.location.href = "../amsd/InflowFundsFormStatus?id=" + data;
+                    window.location.href = window.location.origin + "/amsd/InflowFund/View?id=" + data;
 
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                     $("#error_container").bs_alert(textStatus + ': ' + errorThrown);

@@ -13,6 +13,7 @@ using xDC_Web.ViewModels;
 namespace xDC_Web.Controllers
 {
     [Authorize(Roles = "Administrator, Power User, AMSD")]
+    [RoutePrefix("amsd")]
     public class AmsdController : BaseController
     {
         public ActionResult Index()
@@ -39,8 +40,8 @@ namespace xDC_Web.Controllers
 
 
         #region Inflow Fund Form Page
-        
-        public ActionResult NewInflowFundsForm()
+        [Route("InflowFund/New")]
+        public ActionResult InflowFund_New()
         {
             var model = new ViewInflowFundStatusForm()
             {
@@ -50,9 +51,10 @@ namespace xDC_Web.Controllers
                 IsDraftEnabled = true
             };
 
-            return View(model);
+            return View("InflowFund/New",model);
         }
-        
+
+        [Route("InflowFund/Edit")]
         public ActionResult EditInflowFundsForm(string id)
         {
             try
@@ -70,6 +72,11 @@ namespace xDC_Web.Controllers
                             TempData["ErrorMessage"] = "Current form status prohibited you from editing it.";
                             return View("Error");
                         }
+
+                        var getFormWorkflow = db.Form_Workflow
+                            .Where(x => (x.WorkflowStatus == "Approved" || x.WorkflowStatus == "Rejected") &&
+                                        x.FormId == getForm.Id).OrderByDescending(x => x.EndDate)
+                            .FirstOrDefault();
 
                         var formObj = new ViewInflowFundStatusForm()
                         {
@@ -90,10 +97,12 @@ namespace xDC_Web.Controllers
                             AdminEditedDate = getForm.AdminEdittedDate,
 
                             ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
-                            AdminEditPermission = User.IsInRole(Config.AclPowerUser)
+                            AdminEditPermission = User.IsInRole(Config.AclPowerUser),
+
+                            ApprovalOrRejectionNotes = getFormWorkflow?.WorkflowNotes
 
                         };
-                        return View("NewInflowFundsForm", formObj);
+                        return View("InflowFund/New", formObj);
                     }
                     else
                     {
@@ -110,6 +119,7 @@ namespace xDC_Web.Controllers
             }
         }
 
+        [Route("InflowFund/View")]
         public ActionResult InflowFundsFormStatus(string id)
         {
             try
@@ -148,7 +158,7 @@ namespace xDC_Web.Controllers
                             ApprovalOrRejectionNotes = getFormWorkflow?.WorkflowNotes
                         };
 
-                        return View(formObj);
+                        return View("InflowFund/View", formObj);
                     }
                     else
                     {

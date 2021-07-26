@@ -11,13 +11,13 @@
             onClick: function(e) {
                 $.ajax({
                     dataType: 'json',
-                    url: '../api/amsd/IsTodayInflowFormExisted',
+                    url: window.location.origin + '/api/amsd/IsTodayInflowFormExisted',
                     method: 'get'
                 }).done(function (data) {
                     if (data) {
                         $("#error_container").bs_warning("Today's form already existed.");
                     } else {
-                        window.location = "../amsd/NewInflowFundsForm";
+                        window.location = window.location.origin + "/amsd/inflowfund/new";
                     }
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                     $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
@@ -28,7 +28,7 @@
         $amsdGrid = $("#amsdGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/amsd/GetAmsdForms"
+                loadUrl: window.location.origin + "/api/amsd/GetAmsdForms"
             }),
             columns: [
                 {
@@ -79,7 +79,7 @@
                                 return (e.row.data.formStatus == "Draft" && e.row.data.isFormOwner);
                             },
                             onClick: function (e) {
-                                window.location.href = "/amsd/EditInflowFundsForm?id=" + e.row.data.id;
+                                window.location.href = "/amsd/inflowfund/edit?id=" + e.row.data.id;
                                 e.event.preventDefault();
                             }
                         },
@@ -100,7 +100,7 @@
 
                                     $.ajax({
                                         type: "delete",
-                                        url: '../api/amsd/DeleteInflowFundDraftForm',
+                                        url: window.location.origin + '/api/amsd/DeleteInflowFundDraftForm',
                                         data: data,
                                         success: function (data) {
                                             $("#error_container").bs_success("Draft deleted");
@@ -122,7 +122,7 @@
                                 return (e.row.data.isResubmitEnabled);
                             },
                             onClick: function (e) {
-                                window.location.href = "/amsd/EditInflowFundsForm?id=" + e.row.data.id;
+                                window.location.href = "/amsd/inflowfund/edit?id=" + e.row.data.id;
                                 e.event.preventDefault();
                             }
                         },
@@ -134,7 +134,7 @@
                                 return (e.row.data.isCanAdminEdit);
                             },
                             onClick: function (e) {
-                                window.location.href = "/amsd/EditInflowFundsForm?id=" + e.row.data.id;
+                                window.location.href = "/amsd/inflowfund/edit?id=" + e.row.data.id;
                                 e.event.preventDefault();
                             }
                         },
@@ -146,7 +146,7 @@
                                 return (e.row.data.formStatus != "Draft");
                             },
                             onClick: function (e) {
-                                window.location.href = "/amsd/InflowFundsFormStatus?id=" + e.row.data.id;
+                                window.location.href = "/amsd/InflowFund/View?id=" + e.row.data.id;
                                 e.event.preventDefault();
                             }
                         },

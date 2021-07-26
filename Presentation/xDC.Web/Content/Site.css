@@ -181,15 +181,22 @@ a.hide-long-text {
     font-weight: bold;
 }
 
+.approved {
+    background: #2ECC71 !important;
+    color: white !important;
+    border: none !important;
+}
+
 .stepper-item.completed .step-counter {
-    background-color: #4CAF50;
-    color: #fff;
+    background-color: #fff;
+    color: #23527c;
+    border: 2px solid #5B8EFB;
 }
 
 .stepper-item.completed::after {
     position: absolute;
     content: "";
-    border-bottom: 2px solid #4CAF50;
+    border-bottom: 2px solid #5B8EFB;
     width: 100%;
     top: 20px;
     left: 50%;

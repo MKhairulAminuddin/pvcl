@@ -279,9 +279,8 @@
     <Content Include="Scripts\app.js" />
     <Content Include="Scripts\app\admin\userManagement.js" />
     <Content Include="Scripts\app\admin\utility.js" />
-    <Content Include="Scripts\app\amsd\inflowFundsFormStatus.js" />
-    <Content Include="Scripts\app\amsd\viewInflowFundsForm.js" />
-    <Content Include="Scripts\app\amsd\newInflowFundsForm.js" />
+    <Content Include="Scripts\app\amsd\inflowFund\view.js" />
+    <Content Include="Scripts\app\amsd\inflowFund\new.js" />
     <Content Include="Scripts\app\amsd\index.js" />
     <Content Include="Scripts\app.dxGrid.utils.js" />
     <Content Include="Scripts\app\iisd\index.js" />
@@ -502,7 +501,6 @@
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\Shared\_LayoutEmpty.cshtml" />
     <Content Include="Views\Amsd\Index.cshtml" />
-    <Content Include="Views\Amsd\NewInflowFundsForm.cshtml" />
     <Content Include="Views\Setting\DropdownConfig.cshtml" />
     <Content Include="Views\Setting\NotificationConfig.cshtml" />
     <Content Include="Views\Setting\Workflow.cshtml" />
@@ -510,10 +508,8 @@
     <Content Include="Views\Admin\SystemInformation.cshtml" />
     <Content Include="Views\Admin\SystemLogs.cshtml" />
     <Content Include="Views\Admin\UserManagement.cshtml" />
-    <Content Include="Views\Amsd\_viewInflowFundsForm.cshtml" />
     <Content Include="Views\Iisd\Index.cshtml" />
     <Content Include="Views\Iisd\NewTradeSettlement.cshtml" />
-    <Content Include="Views\Amsd\InflowFundsFormStatus.cshtml" />
     <Content Include="Views\Admin\ApplicationConfig.cshtml" />
     <Content Include="Views\Setting\ApproverManagement.cshtml" />
     <Content Include="Views\User\MyNotification.cshtml" />
@@ -521,6 +517,8 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Admin\Utility.cshtml" />
     <Content Include="Views\Base\Unauthorized.cshtml" />
+    <Content Include="Views\Amsd\InflowFund\New.cshtml" />
+    <Content Include="Views\Amsd\InflowFund\View.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

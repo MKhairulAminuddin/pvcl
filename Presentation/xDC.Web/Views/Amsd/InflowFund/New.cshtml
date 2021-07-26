@@ -1,7 +1,18 @@
 ﻿@model xDC_Web.Models.ViewInflowFundStatusForm
 
 @{
-    ViewBag.Title = "New Inflow Funds";
+    if (Model.AdminEditPermission)
+    {
+        ViewBag.Title = "Inflow Fund Form (Admin Edit Mode)";
+    }
+    else if(Model.FormStatus == "Draft")
+    {
+        ViewBag.Title = "Inflow Fund Form (Edit Draft)";
+    }
+    else
+    {
+        ViewBag.Title = "New Inflow Fund Form";
+    }
 }
 
 
@@ -55,6 +66,17 @@
                                             )
                                     </div>
                                 }
+                            }
+                            @if (Model.AdminEditPermission)
+                            {
+                                <div style="display: inline-block">
+                                    @(Html.DevExtreme().Button()
+                                        .ID("adminEditSaveChangesBtn")
+                                        .Text("Save Changes")
+                                        .Type(ButtonType.Default)
+                                        .StylingMode(ButtonStylingMode.Contained)
+                                        )
+                                </div>
                             }
                         </div>
                     </div>
@@ -116,9 +138,25 @@
                                                     .ReadOnly(true))
                                             </div>
                                         </div>
+                                        <div class="dx-field">
+                                            <div class="dx-field-label">Approval/Rejection Notes</div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().TextAreaFor(m => m.ApprovalOrRejectionNotes)
+                                                    .StylingMode(EditorStylingMode.Underlined)
+                                                    .ReadOnly(true))
+                                            </div>
+                                        </div>
                                     }
-                                    @if (Model.IsAdminEdited)
-                                    {
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        
+                        @if (Model.IsAdminEdited)
+                        {
+                            <div class="box box-solid" style="background: #FFEBEE">
+                                <div class="box-body">
+                                    <div class="dx-fieldset">
                                         <div class="dx-field">
                                             <div class="dx-field-label text-red">Admin Edited By</div>
                                             <div class="dx-field-value">
@@ -136,12 +174,11 @@
                                                     .ReadOnly(true))
                                             </div>
                                         </div>
-                                    }
-
-
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        }
+
                     </div>
                 </div>
             </form>
@@ -185,5 +222,5 @@
 
 @section scripts
 {
-    <script src="~/Scripts/app/amsd/newInflowFundsForm.js"></script>
+    <script src="~/Scripts/app/amsd/inflowFund/new.js"></script>
 }

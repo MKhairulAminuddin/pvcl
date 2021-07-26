@@ -1,9 +1,0 @@
-﻿@model xDC_Web.Models.MailMerge.AmsdInflowFundFormPreviewModel
-@using System.Web.UI.WebControls
-@using DevExpress.Spreadsheet
-@using DevExpress.Web
-@using DevExpress.Web.Mvc.UI
-
-<iframe id="previewFrame0" src='@string.Format("{0}?id={1}", Model.PreviewModel.PreviewDocumentAction, Model.Id)' 
-        style="width: 100%;height: 600px; box-sizing: border-box; border: none; background-color: white"></iframe>
-    

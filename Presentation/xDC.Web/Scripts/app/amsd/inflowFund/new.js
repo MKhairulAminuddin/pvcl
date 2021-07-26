@@ -3,17 +3,17 @@
     $(function () {
         var fundTypeStore = DevExpress.data.AspNet.createStore({
             key: "id",
-            loadUrl: "../api/common/GetInflowFundsFundType"
+            loadUrl: window.location.origin + "/api/common/GetInflowFundsFundType"
         });
 
         var bankStore = DevExpress.data.AspNet.createStore({
             key: "id",
-            loadUrl: "../api/common/GetInflowFundsBank"
+            loadUrl: window.location.origin + "/api/common/GetInflowFundsBank"
         });
 
         var approverStore = DevExpress.data.AspNet.createStore({
             key: "id",
-            loadUrl: "../api/common/GetApproverAmsdInflowFunds"
+            loadUrl: window.location.origin + "/api/common/GetApproverAmsdInflowFunds"
         });
         
 
@@ -35,55 +35,72 @@
         
         $("#submitForApprovalBtn").on({
             "click": function (e) {
-                if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
-                    $("#error_container").bs_warning("Please key in at least one item.");
-                } else {
-                    $('#selectApproverModal').modal('show');
-                }
+                $inflowFundsGrid.saveEditData().then(function () {
+                    
+                    if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
+                        $("#error_container").bs_warning("Please key in at least one item.");
+                    } else {
+                        $('#selectApproverModal').modal('show');
+                    }
+
+                });
                 
                 e.preventDefault();
             }
         });
 
+        $("#adminEditSaveChangesBtn").on({
+            "click": function (e) {
+                $inflowFundsGrid.saveEditData().then(function () {
+
+                    if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
+                        $("#error_container").bs_warning("Please key in at least one item.");
+                    } else {
+                        $("#error_container").bs_success("Changes saved!");
+                    }
+
+                });
+
+                e.preventDefault();
+            }
+        });
+        
+
         $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
-                    $("#error_container").bs_warning("Please key in at least one item.");
-                }
-                else {
-                    $loadPanel.option("position", { of: "#selectApproverModalContainer" });
-                    $loadPanel.show();
+                $loadPanel.option("position", { of: "#selectApproverModalContainer" });
+                $loadPanel.show();
 
-                    if (getUrlParameter('id') != false) {
-                        data = {
-                            id: getUrlParameter('id'),
-                            amsdInflowFunds: $inflowFundsGrid.getDataSource().items(),
-                            approver: $approverDropdown.option('value')
-                        };
-                    } else {
-                        var data = {
-                            amsdInflowFunds: $inflowFundsGrid.getDataSource().items(),
-                            approver: $approverDropdown.option('value')
-                        };
+                var data;
+
+                if (getUrlParameter('id') != false) {
+                    data = {
+                        id: getUrlParameter('id'),
+                        amsdInflowFunds: $inflowFundsGrid.getDataSource().items(),
+                        approver: $approverDropdown.option('value')
+                    };
+                } else {
+                    data = {
+                        amsdInflowFunds: $inflowFundsGrid.getDataSource().items(),
+                        approver: $approverDropdown.option('value')
+                    };
+                }
+                
+                $.ajax({
+                    data: data,
+                    dataType: 'json',
+                    url: window.location.origin + '/api/amsd/NewInflowFundsForm',
+                    method: 'post',
+                    success: function (data) {
+                        window.location.href = window.location.origin + "/amsd/inflowfund/view?id=" + data;
+                    },
+                    fail: function (jqXHR, textStatus, errorThrown) {
+                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                    },
+                    complete: function (data) {
+                        $loadPanel.hide();
                     }
-                    
-
-                    $.ajax({
-                        data: data,
-                        dataType: 'json',
-                        url: '../api/amsd/NewInflowFundsForm',
-                        method: 'post',
-                        success: function (data) {
-                            window.location.href = "../amsd/InflowFundsFormStatus?id=" + data;
-                        },
-                        fail: function (jqXHR, textStatus, errorThrown) {
-                            $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
-                        },
-                        complete: function (data) {
-                            $loadPanel.hide();
-                        }
-                    });
-                }
+                });
 
                 e.preventDefault();
             }
@@ -91,42 +108,46 @@
         
         $("#saveAsDraftBtn").on({
             "click": function (e) {
-                if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
-                    $("#error_container").bs_warning("Please key in at least one item.");
-                }
-                else {
-                    $loadPanel.option("position", { of: "#formContainer" });
-                    $loadPanel.show();
+                $inflowFundsGrid.saveEditData().then(function () {
 
-                    var data;
-                    if (getUrlParameter('id') != false) {
-                        data = {
-                            id: getUrlParameter('id'),
-                            amsdInflowFunds: $inflowFundsGrid.getDataSource().items()
-                        };
-                    } else {
-                        data = {
-                            amsdInflowFunds: $inflowFundsGrid.getDataSource().items()
-                        };
+                    if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
+                        $("#error_container").bs_warning("Please key in at least one item.");
+                    }
+                    else {
+                        $loadPanel.option("position", { of: "#formContainer" });
+                        $loadPanel.show();
+
+                        var data;
+                        if (getUrlParameter('id') != false) {
+                            data = {
+                                id: getUrlParameter('id'),
+                                amsdInflowFunds: $inflowFundsGrid.getDataSource().items()
+                            };
+                        } else {
+                            data = {
+                                amsdInflowFunds: $inflowFundsGrid.getDataSource().items()
+                            };
+                        }
+
+                        $.ajax({
+                            data: data,
+                            dataType: 'json',
+                            url: window.location.origin + '/api/amsd/NewInflowFundsFormDraft',
+                            method: 'post',
+                            success: function (data) {
+                                window.location.href = window.location.origin + "/amsd";
+                            },
+                            fail: function (jqXHR, textStatus, errorThrown) {
+                                $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                            },
+                            complete: function (data) {
+                                $loadPanel.hide();
+                            }
+                        });
                     }
 
-                    $.ajax({
-                        data: data,
-                        dataType: 'json',
-                        url: '../api/amsd/NewInflowFundsFormDraft',
-                        method: 'post',
-                        success: function(data) {
-                            window.location.href = "../amsd";
-                        },
-                        fail: function(jqXHR, textStatus, errorThrown) {
-                            $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
-                        },
-                        complete: function(data) {
-                            $loadPanel.hide();
-                        }
-                    });
-                }
-
+                });
+                
                 e.preventDefault();
             }
         });
@@ -135,10 +156,10 @@
             $inflowFundsGrid = $("#inflowFundsGrid1").dxDataGrid({
                 dataSource: DevExpress.data.AspNet.createStore({
                     key: "id",
-                    loadUrl: "../api/amsd/GetInflowFunds?id=" + getUrlParameter('id'),
-                    insertUrl: "../api/amsd/insertInflowFund",
-                    updateUrl: "../api/amsd/updateInflowFund",
-                    deleteUrl: "../api/amsd/deleteInflowFund"
+                    loadUrl: window.location.origin + "/api/amsd/GetInflowFunds?id=" + getUrlParameter('id'),
+                    insertUrl: window.location.origin + "/api/amsd/insertInflowFund",
+                    updateUrl: window.location.origin + "/api/amsd/updateInflowFund",
+                    deleteUrl: window.location.origin + "/api/amsd/deleteInflowFund"
                 }),
                 columns: [
                     {
