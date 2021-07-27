@@ -13,7 +13,7 @@ using xDC_Web.ViewModels;
 namespace xDC_Web.Controllers
 {
     [Authorize(Roles = "Administrator, Power User, IISD")]
-    public class IisdController : BaseController
+    public class IssdController : BaseController
     {
         public ActionResult Index()
         {
@@ -22,7 +22,7 @@ namespace xDC_Web.Controllers
                 var isApprover = db.Config_Approver.Any(x => x.Username == User.Identity.Name);
                 var isIisdUser = User.IsInRole(Config.AclIisd);
 
-                var model = new IisdLandingPageViewModel()
+                var model = new ISSDLandingPageViewModel()
                 {
                     IsAllowedToCreateForm = (!isApprover && isIisdUser)
                 };

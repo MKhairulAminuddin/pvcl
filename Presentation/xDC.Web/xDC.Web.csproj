@@ -508,12 +508,12 @@
     <Content Include="Views\Admin\SystemInformation.cshtml" />
     <Content Include="Views\Admin\SystemLogs.cshtml" />
     <Content Include="Views\Admin\UserManagement.cshtml" />
-    <Content Include="Views\Iisd\Index.cshtml" />
-    <Content Include="Views\Iisd\NewTradeSettlement.cshtml" />
+    <Content Include="Views\Issd\Index.cshtml" />
+    <Content Include="Views\Issd\NewTradeSettlement.cshtml" />
     <Content Include="Views\Admin\ApplicationConfig.cshtml" />
     <Content Include="Views\Setting\ApproverManagement.cshtml" />
     <Content Include="Views\My\Notification.cshtml" />
-    <Content Include="Views\Iisd\TradeSettlementFormStatus.cshtml" />
+    <Content Include="Views\Issd\TradeSettlementFormStatus.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Admin\Utility.cshtml" />
     <Content Include="Views\Base\Unauthorized.cshtml" />
@@ -542,7 +542,7 @@
     <Compile Include="Controllers\Api\SettingController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\IisdController.cs" />
+    <Compile Include="Controllers\IssdController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\SettingController.cs" />
     <Compile Include="Controllers\UserController.cs" />
