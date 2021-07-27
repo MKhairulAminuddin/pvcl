@@ -12,7 +12,7 @@ namespace xDC.Infrastructure.Application
     using System;
     using System.Collections.Generic;
     
-    public partial class Amsd_InflowFunds
+    public partial class AMSD_InflowFund
     {
         public int Id { get; set; }
         public int FormId { get; set; }

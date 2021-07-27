@@ -50,7 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Application\Amsd_InflowFunds.cs">
+    <Compile Include="Application\AMSD_InflowFund.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
     <Compile Include="Application\App_Notification.cs">
@@ -86,7 +86,7 @@
     <Compile Include="Application\Form_Workflow.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Application\IISD_TradeSettlement.cs">
+    <Compile Include="Application\ISSD_TradeSettlement.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
     <Compile Include="Application\kashflowDb.Context.cs">

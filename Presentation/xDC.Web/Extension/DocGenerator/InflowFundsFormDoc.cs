@@ -24,7 +24,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     if (getForm != null)
                     {
-                        var getInflowFunds = db.Amsd_InflowFunds.Where(x => x.FormId == formId).ToList();
+                        var getInflowFunds = db.AMSD_InflowFund.Where(x => x.FormId == formId).ToList();
 
                         getForm.Id = getForm.Id;
                         getForm.PreparedBy = getForm.PreparedBy;
@@ -69,7 +69,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private IWorkbook GenerateDocument(IWorkbook workbook, Form_Header formHeader, Form_Workflow formWorkflow, List<Amsd_InflowFunds> inflowFunds)
+        private IWorkbook GenerateDocument(IWorkbook workbook, Form_Header formHeader, Form_Workflow formWorkflow, List<AMSD_InflowFund> inflowFunds)
         {
             workbook.BeginUpdate();
             try

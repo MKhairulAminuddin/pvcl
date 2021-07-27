@@ -206,11 +206,11 @@ namespace xDC_Web.Controllers.Api
                         db.Form_Header.Add(newRecord);
                         db.SaveChanges();
 
-                        var newRecordInflowFunds = new List<Amsd_InflowFunds>();
+                        var newRecordInflowFunds = new List<AMSD_InflowFund>();
 
                         foreach (var item in inputs.AmsdInflowFunds)
                         {
-                            newRecordInflowFunds.Add(new Amsd_InflowFunds()
+                            newRecordInflowFunds.Add(new AMSD_InflowFund()
                             {
                                 FormId = newRecord.Id,
                                 FundType = item.FundType,
@@ -226,7 +226,7 @@ namespace xDC_Web.Controllers.Api
                         if (!ModelState.IsValid)
                             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
 
-                        db.Amsd_InflowFunds.AddRange(newRecordInflowFunds);
+                        db.AMSD_InflowFund.AddRange(newRecordInflowFunds);
                         db.SaveChanges();
 
                         new NotificationService().PushSubmitForApprovalNotification(newRecord.Id);
@@ -296,11 +296,11 @@ namespace xDC_Web.Controllers.Api
                         db.Form_Header.Add(newRecord);
                         db.SaveChanges();
 
-                        var newRecordInflowFunds = new List<Amsd_InflowFunds>();
+                        var newRecordInflowFunds = new List<AMSD_InflowFund>();
 
                         foreach (var item in inputs.AmsdInflowFunds)
                         {
-                            newRecordInflowFunds.Add(new Amsd_InflowFunds()
+                            newRecordInflowFunds.Add(new AMSD_InflowFund()
                             {
                                 FormId = newRecord.Id,
                                 FundType = item.FundType,
@@ -316,7 +316,7 @@ namespace xDC_Web.Controllers.Api
                         if (!ModelState.IsValid)
                             return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
 
-                        db.Amsd_InflowFunds.AddRange(newRecordInflowFunds);
+                        db.AMSD_InflowFund.AddRange(newRecordInflowFunds);
                         db.SaveChanges();
                     }
                     return Request.CreateResponse(HttpStatusCode.Created, newRecord.Id);
@@ -346,7 +346,7 @@ namespace xDC_Web.Controllers.Api
                     var key = Convert.ToInt32(form.Get("id"));
 
                     var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == key);
-                    var inflowFunds = db.Amsd_InflowFunds.Where(x => x.FormId == formHeader.Id);
+                    var inflowFunds = db.AMSD_InflowFund.Where(x => x.FormId == formHeader.Id);
 
                     //only authorized person to delete
                     if (formHeader.PreparedBy != User.Identity.Name)
@@ -355,7 +355,7 @@ namespace xDC_Web.Controllers.Api
                     }
 
                     db.Form_Header.Remove(formHeader);
-                    db.Amsd_InflowFunds.RemoveRange(inflowFunds);
+                    db.AMSD_InflowFund.RemoveRange(inflowFunds);
                     db.SaveChanges();
 
                     return Request.CreateResponse(HttpStatusCode.OK);
@@ -429,12 +429,12 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = new List<Amsd_InflowFunds>();
+                    var result = new List<AMSD_InflowFund>();
 
                     if (!string.IsNullOrEmpty(id))
                     {
                         var formId = Convert.ToInt32(id);
-                        result = db.Amsd_InflowFunds
+                        result = db.AMSD_InflowFund
                             .Where(x => x.FormId == formId).ToList();
                         return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                     }
@@ -463,7 +463,7 @@ namespace xDC_Web.Controllers.Api
                 {
                     var key = Convert.ToInt32(form.Get("key"));
                     var values = form.Get("values");
-                    var existingRecord = db.Amsd_InflowFunds.SingleOrDefault(o => o.Id == key);
+                    var existingRecord = db.AMSD_InflowFund.SingleOrDefault(o => o.Id == key);
 
                     JsonConvert.PopulateObject(values, existingRecord);
 
@@ -506,7 +506,7 @@ namespace xDC_Web.Controllers.Api
             {
                 var values = form.Get("values");
 
-                var newRecord = new Amsd_InflowFunds();
+                var newRecord = new AMSD_InflowFund();
                 JsonConvert.PopulateObject(values, newRecord);
 
                 newRecord.CreatedBy = User.Identity.Name;
@@ -526,7 +526,7 @@ namespace xDC_Web.Controllers.Api
                 if (!ModelState.IsValid)
                     return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
 
-                db.Amsd_InflowFunds.Add(newRecord);
+                db.AMSD_InflowFund.Add(newRecord);
                 db.SaveChanges();
 
                 return Request.CreateResponse(HttpStatusCode.Created, newRecord);
@@ -540,7 +540,7 @@ namespace xDC_Web.Controllers.Api
             using (var db = new kashflowDBEntities())
             {
                 var key = Convert.ToInt32(form.Get("key"));
-                var foundRecord = db.Amsd_InflowFunds.First(x => x.Id == key);
+                var foundRecord = db.AMSD_InflowFund.First(x => x.Id == key);
 
                 var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == foundRecord.FormId);
                 var isAdminEdit = User.IsInRole(Config.AclPowerUser);
@@ -551,7 +551,7 @@ namespace xDC_Web.Controllers.Api
                     formHeader.AdminEdittedDate = DateTime.Now;
                 }
 
-                db.Amsd_InflowFunds.Remove(foundRecord);
+                db.AMSD_InflowFund.Remove(foundRecord);
                 db.SaveChanges();
 
                 return Request.CreateResponse(HttpStatusCode.OK);

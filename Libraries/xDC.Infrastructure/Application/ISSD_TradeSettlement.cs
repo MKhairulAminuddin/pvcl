@@ -12,7 +12,7 @@ namespace xDC.Infrastructure.Application
     using System;
     using System.Collections.Generic;
     
-    public partial class IISD_TradeSettlement
+    public partial class ISSD_TradeSettlement
     {
         public int Id { get; set; }
         public int FormId { get; set; }

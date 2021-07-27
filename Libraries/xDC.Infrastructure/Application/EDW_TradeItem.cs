@@ -15,8 +15,14 @@ namespace xDC.Infrastructure.Application
     public partial class EDW_TradeItem
     {
         public string InstrumentType { get; set; }
-        public string InstrumentCode { get; set; }
+        public string InstrumentName { get; set; }
         public string StockCode { get; set; }
+        public string ISIN { get; set; }
+        public string Type { get; set; }
+        public Nullable<double> Amount { get; set; }
+        public Nullable<System.DateTime> TradeDate { get; set; }
+        public Nullable<System.DateTime> SettlementDate { get; set; }
+        public string Currency { get; set; }
         public string CreatedBy { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public string UpdatedBy { get; set; }

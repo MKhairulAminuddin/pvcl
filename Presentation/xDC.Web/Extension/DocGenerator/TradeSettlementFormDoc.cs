@@ -24,7 +24,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     if (getForm != null)
                     {
-                        var getTrades = db.IISD_TradeSettlement.Where(x => x.FormId == formId).ToList();
+                        var getTrades = db.ISSD_TradeSettlement.Where(x => x.FormId == formId).ToList();
 
                         getForm.Id = getForm.Id;
                         getForm.PreparedBy = getForm.PreparedBy;
@@ -69,7 +69,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private IWorkbook GenerateDocument(IWorkbook workbook, Form_Header formHeader, Form_Workflow formWorkflow, List<IISD_TradeSettlement> trades)
+        private IWorkbook GenerateDocument(IWorkbook workbook, Form_Header formHeader, Form_Workflow formWorkflow, List<ISSD_TradeSettlement> trades)
         {
             workbook.BeginUpdate();
             try
