@@ -283,10 +283,10 @@
     <Content Include="Scripts\app\amsd\inflowFund\new.js" />
     <Content Include="Scripts\app\amsd\index.js" />
     <Content Include="Scripts\app.dxGrid.utils.js" />
-    <Content Include="Scripts\app\iisd\index.js" />
-    <Content Include="Scripts\app\iisd\newTradeSettlement.js" />
+    <Content Include="Scripts\app\issd\index.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\new.js" />
     <Content Include="Scripts\app\admin\applicationConfig.js" />
-    <Content Include="Scripts\app\iisd\tradeSettlementFormStatus.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\view.js" />
     <Content Include="Scripts\app\setting\approverManagement.js" />
     <Content Include="Scripts\app\setting\dropdownConfig.js" />
     <Content Include="Scripts\app\setting\notificationConfig.js" />
@@ -509,11 +509,10 @@
     <Content Include="Views\Admin\SystemLogs.cshtml" />
     <Content Include="Views\Admin\UserManagement.cshtml" />
     <Content Include="Views\Issd\Index.cshtml" />
-    <Content Include="Views\Issd\NewTradeSettlement.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\New.cshtml" />
     <Content Include="Views\Admin\ApplicationConfig.cshtml" />
     <Content Include="Views\Setting\ApproverManagement.cshtml" />
     <Content Include="Views\My\Notification.cshtml" />
-    <Content Include="Views\Issd\TradeSettlementFormStatus.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Admin\Utility.cshtml" />
     <Content Include="Views\Base\Unauthorized.cshtml" />

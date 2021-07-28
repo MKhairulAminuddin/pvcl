@@ -410,10 +410,10 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
         }
-
+        
         [HttpGet]
-        [Route("GetTradeSettlement")]
-        public HttpResponseMessage GetTradeSettlement(string id, string tradeType, DataSourceLoadOptions loadOptions)
+        [Route("TradeSettlement/TradeItem/{formId}/{tradeType}")]
+        public HttpResponseMessage GetTradeItem(string formId, string tradeType, DataSourceLoadOptions loadOptions)
         {
             try
             {
@@ -421,12 +421,12 @@ namespace xDC_Web.Controllers.Api
                 {
                     var result = new List<ISSD_TradeSettlement>();
 
-                    if (!string.IsNullOrEmpty(id))
+                    if (!string.IsNullOrEmpty(formId))
                     {
-                        var formId = Convert.ToInt32(id);
+                        var formIdParsed = Convert.ToInt32(formId);
                         var instrumentType = Common.TradeSettlementUrlParamMapping(tradeType);
                         result = db.ISSD_TradeSettlement
-                            .Where(x => x.FormId == formId && x.InstrumentType == instrumentType).ToList();
+                            .Where(x => x.FormId == formIdParsed && x.InstrumentType == instrumentType).ToList();
                         return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                     }
                     else
@@ -440,8 +440,9 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
         }
-
+        
         [HttpPut]
+        [Route("TradeSettlement/TradeItem/")]
         public HttpResponseMessage UpdateTradeSettlement(FormDataCollection form)
         {
             using (var db = new kashflowDBEntities())
@@ -471,6 +472,7 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpPost]
+        [Route("TradeSettlement/TradeItem/")]
         public HttpResponseMessage InsertTradeSettlement(FormDataCollection form)
         {
             using (var db = new kashflowDBEntities())
@@ -496,6 +498,7 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpDelete]
+        [Route("TradeSettlement/TradeItem/")]
         public HttpResponseMessage DeleteTradeSettlement(FormDataCollection form)
         {
             using (var db = new kashflowDBEntities())

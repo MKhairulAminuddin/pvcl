@@ -129,6 +129,14 @@ namespace xDC.Utils
             return String.Empty;
         }
 
+        /// <summary>
+        /// Get Trade Settlement Item Category
+        /// </summary>
+        /// <param name="value">
+        /// 1 EQUITY, 2 BOND, 3 COMMERCIAL PAPER, 4 NOTES AND PAPERS, 5 REPO, 6 COUPON, 7 FEES, 8 PAYMENT/RECEIVED (MTM), 9 FX SETTLEMENT,
+        /// 10 CONTRIBUTION CREDITED, 11 ALTID DISTRIBUTION AND DRAWDOWN, 12 OTHERS
+        /// </param>
+        /// <returns>string</returns>
         public static string TradeSettlementMapping(int value)
         {
             switch (value)
@@ -166,29 +174,29 @@ namespace xDC.Utils
             switch (value)
             {
                 case "equity":
-                    return "Equity";
+                    return "EQUITY";
                 case "bond":
-                    return "Bond";
+                    return "BOND";
                 case "cp":
-                    return "CP";
+                    return "COMMERCIAL PAPER";
                 case "notesPaper":
-                    return "Notes & Papers";
+                    return "NOTES AND PAPERS";
                 case "repo":
                     return "REPO";
                 case "coupon":
-                    return "Coupon Received";
+                    return "COUPON";
                 case "fees":
-                    return "Fees";
+                    return "FEES";
                 case "mtm":
-                    return "Payment/ Received (MTM)";
+                    return "PAYMENT/RECEIVED (MTM)";
                 case "fxSettlement":
-                    return "FX Settlement";
+                    return "FX SETTLEMENT";
                 case "contributionCredited":
-                    return "Contribution Credited";
+                    return "CONTRIBUTION CREDITED";
                 case "altid":
-                    return "ALTID Distribution & Drawdown";
+                    return "ALTID DISTRIBUTION AND DRAWDOWN";
                 case "others":
-                    return "Others";
+                    return "OTHERS";
             }
             return String.Empty;
         }

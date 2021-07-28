@@ -48,7 +48,7 @@ namespace xDC_Web.Controllers
                 IsDraftEnabled = true
             };
 
-            return View(model);
+            return View("TradeSettlement/New", model);
         }
 
         [Route("TradeSettlement/View")]
@@ -146,7 +146,7 @@ namespace xDC_Web.Controllers
 
                         };
 
-                        return View("NewTradeSettlement", formObj);
+                        return View("TradeSettlement/New", formObj);
                     }
                     else
                     {
@@ -169,7 +169,8 @@ namespace xDC_Web.Controllers
         #region Print Form
 
         [HttpPost]
-        public ActionResult PrintTradeSettlement(string id, bool isExportAsExcel)
+        [Route("Print")]
+        public ActionResult Print(string id, bool isExportAsExcel)
         {
             try
             {
@@ -193,7 +194,8 @@ namespace xDC_Web.Controllers
             }
         }
 
-        public ActionResult GetPrintTradeSettlement(string id)
+        [Route("ViewPrinted")]
+        public ActionResult ViewPrinted(string id)
         {
             try
             {

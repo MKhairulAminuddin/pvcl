@@ -8,7 +8,7 @@
 
         $("#approveBtn").on({
             "click": function (e) {
-                $('#approvalNoteModal').modal('show');
+                $("#approvalNoteModal").modal("show");
 
                 e.preventDefault();
             }
@@ -16,7 +16,7 @@
 
         $("#rejectBtn").on({
             "click": function (e) {
-                $('#rejectionNoteModal').modal('show');
+                $("#rejectionNoteModal").modal("show");
 
                 e.preventDefault();
             }
@@ -41,15 +41,15 @@
 
                     $.ajax({
                         type: "POST",
-                        url: window.location.origin + '/issd/PrintTradeSettlement',
+                        url: window.location.origin + "/issd/Print",
                         data: data,
                         dataType: "text",
                         success: function(data) {
-                            var url = window.location.origin + '/issd/GetPrintTradeSettlement?id=' + data;
+                            var url = window.location.origin + "/issd/ViewPrinted?id=" + data;
                             window.location = url;
                         },
                         fail: function(jqXHR, textStatus, errorThrown) {
-                            $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                            $("#error_container").bs_alert(textStatus + ": " + errorThrown);
                         },
                         complete: function(data) {
                             //$loadPanel.hide();
@@ -66,15 +66,15 @@
 
                     $.ajax({
                         type: "POST",
-                        url: window.location.origin + '/issd/PrintTradeSettlement',
+                        url: window.location.origin + "/issd/Print",
                         data: data,
                         dataType: "text",
                         success: function (data) {
-                            var url = window.location.origin + '/issd/GetPrintTradeSettlement?id=' + data;
+                            var url = window.location.origin + "/issd/ViewPrinted?id=" + data;
                             window.location = url;
                         },
                         fail: function (jqXHR, textStatus, errorThrown) {
-                            $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                            $("#error_container").bs_alert(textStatus + ": " + errorThrown);
                         },
                         complete: function (data) {
                             //$loadPanel.hide();
@@ -109,11 +109,16 @@
 
         // #region DataGrid
 
-        $equityGrid = $("#equityGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
+        function gridDataSource(tradeType) {
+            return DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=equity"
-            }),
+                loadUrl: window.location.origin +
+                    "/api/issd/TradeSettlement/TradeItem/" + getUrlParameter("id") + "/" + tradeType
+            });
+        }
+
+        $equityGrid = $("#equityGrid").dxDataGrid({
+            dataSource: gridDataSource("equity"),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -188,13 +193,10 @@
             }
         }).dxDataGrid("instance");
 
-        $equityGrid.option(dxGridUtils.editingGridConfig);
+        $equityGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         $bondGrid = $("#bondGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=bond"
-            }),
+            dataSource: gridDataSource("bond"),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -269,13 +271,10 @@
             }
         }).dxDataGrid("instance");
 
-        $bondGrid.option(dxGridUtils.editingGridConfig);
+        $bondGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         $cpGrid = $("#cpGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=cp"
-            }),
+            dataSource: gridDataSource("cp"),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -350,13 +349,10 @@
             }
         }).dxDataGrid("instance");
 
-        $cpGrid.option(dxGridUtils.editingGridConfig);
+        $cpGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         $notesPaperGrid = $("#notesPaperGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=notesPaper"
-            }),
+            dataSource: gridDataSource("notesPaper"),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -431,13 +427,10 @@
             }
         }).dxDataGrid("instance");
 
-        $notesPaperGrid.option(dxGridUtils.editingGridConfig);
+        $notesPaperGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         $repoGrid = $("#repoGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=repo"
-            }),
+            dataSource: gridDataSource("repo"),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -494,13 +487,10 @@
             }
         }).dxDataGrid("instance");
 
-        $repoGrid.option(dxGridUtils.editingGridConfig);
+        $repoGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         $couponGrid = $("#couponGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=coupon"
-            }),
+            dataSource: gridDataSource("coupon"),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -539,13 +529,10 @@
             }
         }).dxDataGrid("instance");
 
-        $couponGrid.option(dxGridUtils.editingGridConfig);
+        $couponGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         $feesGrid = $("#feesGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=fees"
-            }),
+            dataSource: gridDataSource("fees"),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -580,13 +567,10 @@
             }
         }).dxDataGrid("instance");
 
-        $feesGrid.option(dxGridUtils.editingGridConfig);
+        $feesGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         $mtmGrid = $("#mtmGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=mtm"
-            }),
+            dataSource: gridDataSource("mtm"),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -639,13 +623,10 @@
             }
         }).dxDataGrid("instance");
 
-        $mtmGrid.option(dxGridUtils.editingGridConfig);
+        $mtmGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         $fxSettlementGrid = $("#fxSettlementGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=fxSettlement"
-            }),
+            dataSource: gridDataSource("fxSettlement"),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -698,13 +679,10 @@
             }
         }).dxDataGrid("instance");
 
-        $fxSettlementGrid.option(dxGridUtils.editingGridConfig);
+        $fxSettlementGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         $contributionCreditedGrid = $("#contributionCreditedGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=contributionCredited"
-            }),
+            dataSource: gridDataSource("contributionCredited"),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -739,13 +717,10 @@
             }
         }).dxDataGrid("instance");
 
-        $contributionCreditedGrid.option(dxGridUtils.editingGridConfig);
+        $contributionCreditedGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         $altidGrid = $("#altidGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=altid"
-            }),
+            dataSource: gridDataSource("altid"),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -798,13 +773,10 @@
             }
         }).dxDataGrid("instance");
 
-        $altidGrid.option(dxGridUtils.editingGridConfig);
+        $altidGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         $othersGrid = $("#othersGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=others"
-            }),
+            dataSource: gridDataSource("others"),
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -857,7 +829,7 @@
             }
         }).dxDataGrid("instance");
 
-        $othersGrid.option(dxGridUtils.editingGridConfig);
+        $othersGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         // #endregion DataGrid
 
@@ -865,21 +837,21 @@
             "click": function (e) {
 
                 var data = {
-                    approvalNote: $("#approvalNoteTextBox").dxTextArea("instance").option('value'),
+                    approvalNote: $("#approvalNoteTextBox").dxTextArea("instance").option("value"),
                     approvalStatus: true,
-                    formId: getUrlParameter('id')
+                    formId: getUrlParameter("id")
                 };
 
                 $.ajax({
                     data: data,
-                    dataType: 'json',
-                    url: '../api/amsd/InflowFundsFormApproval',
-                    method: 'post'
+                    dataType: "json",
+                    url: window.location.origin + "/api/issd/TradeSettlement/Approval",
+                    method: "post"
                 }).done(function (data) {
-                    window.location.href = "../amsd/InflowFundsFormStatus?id=" + data;
+                    window.location.href = window.location.origin + "/issd/TradeSettlement/View?id=" + data;
 
                 }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                    $("#error_container").bs_alert(textStatus + ": " + errorThrown);
                 });
 
                 e.preventDefault();
@@ -890,21 +862,21 @@
             "click": function (e) {
 
                 var data = {
-                    approvalNote: $("#rejectionNoteTextBox").dxTextArea("instance").option('value'),
+                    approvalNote: $("#rejectionNoteTextBox").dxTextArea("instance").option("value"),
                     approvalStatus: false,
-                    formId: getUrlParameter('id')
+                    formId: getUrlParameter("id")
                 };
 
                 $.ajax({
                     data: data,
-                    dataType: 'json',
-                    url: '../api/amsd/InflowFundsFormApproval',
-                    method: 'post'
+                    dataType: "json",
+                    url: window.location.origin + "/api/issd/TradeSettlement/Approval",
+                    method: "post"
                 }).done(function (data) {
-                    window.location.href = "../amsd/InflowFundsFormStatus?id=" + data;
+                    window.location.href = window.location.origin + "/issd/TradeSettlement/View?id=" + data;
 
                 }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                    $("#error_container").bs_alert(textStatus + ": " + errorThrown);
                 });
 
                 e.preventDefault();
