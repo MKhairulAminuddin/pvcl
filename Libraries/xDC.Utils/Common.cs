@@ -134,29 +134,29 @@ namespace xDC.Utils
             switch (value)
             {
                 case 1:
-                    return "Equity";
+                    return "EQUITY";
                 case 2:
-                    return "Bond";
+                    return "BOND";
                 case 3:
-                    return "CP";
+                    return "COMMERCIAL PAPER";
                 case 4:
-                    return "Notes & Papers";
+                    return "NOTES AND PAPERS";
                 case 5:
                     return "REPO";
                 case 6:
-                    return "Coupon Received";
+                    return "COUPON";
                 case 7:
-                    return "Fees";
+                    return "FEES";
                 case 8:
-                    return "Payment/ Received (MTM)";
+                    return "PAYMENT/RECEIVED (MTM)";
                 case 9:
-                    return "FX Settlement";
+                    return "FX SETTLEMENT";
                 case 10:
-                    return "Contribution Credited";
+                    return "CONTRIBUTION CREDITED";
                 case 11:
-                    return "ALTID Distribution & Drawdown";
+                    return "ALTID DISTRIBUTION AND DRAWDOWN";
                 case 12:
-                    return "Others";
+                    return "OTHERS";
             }
             return String.Empty;
         }
@@ -279,6 +279,14 @@ namespace xDC.Utils
             tempFolder = Path.Combine(tempFolder, filenameWithPath);
 
             return tempFolder;
+        }
+
+        public static DateTime? ConvertEpochToDateTime(long unixTime, int addDays = 0)
+        {
+            
+            var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddDays(addDays);
+            var result = epoch.ToLocalTime().AddSeconds(unixTime);
+            return result;
         }
     }
 }

@@ -7,9 +7,17 @@ namespace xDC_Web.Models
     {
         public int Id { get; set; }
         public string FormType { get; set; }
-        public DateTime? FormDate { get; set; }
+        public long SettlementDateEpoch { get; set; }
         public string Approver { get; set; }
         public string Currency { get; set; }
+
+        public decimal RentasOpeningBalance { get; set; }
+        public decimal MmaOpeningBalance { get; set; }
+
+        public decimal RentasClosingBalance { get; set; }
+        public decimal MmaClosingBalance { get; set; }
+
+
         public List<Trades> Equity { get; set; }
         public List<Trades> Bond { get; set; }
         public List<Trades> Cp { get; set; }

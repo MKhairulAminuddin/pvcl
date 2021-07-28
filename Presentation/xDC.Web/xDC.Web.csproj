@@ -519,6 +519,7 @@
     <Content Include="Views\Base\Unauthorized.cshtml" />
     <Content Include="Views\Amsd\InflowFund\New.cshtml" />
     <Content Include="Views\Amsd\InflowFund\View.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\View.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -538,7 +539,7 @@
     <Compile Include="Controllers\Api\AdminController.cs" />
     <Compile Include="Controllers\Api\AmsdController.cs" />
     <Compile Include="Controllers\Api\CommonController.cs" />
-    <Compile Include="Controllers\Api\IisdController.cs" />
+    <Compile Include="Controllers\Api\IssdController.cs" />
     <Compile Include="Controllers\Api\SettingController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />

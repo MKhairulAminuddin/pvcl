@@ -2,12 +2,12 @@
 
     $(function () {
 
-        var $iisdGrid;
+        var $issdGrid;
         
-        $iisdGrid = $("#iisdGrid").dxDataGrid({
+        $issdGrid = $("#issdGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/Iisd/GetIisdForms"
+                loadUrl: window.location.origin + "/api/Issd/GetIssdForm"
             }),
             columns: [
                 {
@@ -55,7 +55,7 @@
                                 return (e.row.data.formStatus == "Draft" && e.row.data.isFormOwner);
                             },
                             onClick: function (e) {
-                                window.location.href = "/amsd/EditInflowFundsForm?id=" + e.row.data.id;
+                                window.location.href = "/issd/TradeSettlement/Edit?id=" + e.row.data.id;
                                 e.event.preventDefault();
                             }
                         },
@@ -67,7 +67,7 @@
                                 return (e.row.data.formStatus != "Draft");
                             },
                             onClick: function (e) {
-                                window.location.href = "/amsd/InflowFundsFormStatus?id=" + e.row.data.id;
+                                window.location.href = "/issd/TradeSettlement/View?id=" + e.row.data.id;
                                 e.event.preventDefault();
                             }
                         },
@@ -85,11 +85,11 @@
 
                                 $.ajax({
                                     type: "POST",
-                                    url: '/amsd/PrintInflowFund',
+                                    url: '/issd/printForm',
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
-                                        var url = '/amsd/GetPrintInflowFund?id=' + data;
+                                        var url = '/issd/viewPrintedForm?id=' + data;
                                         window.location = url;
                                     }
                                 });
@@ -107,7 +107,7 @@
             }
         }).dxDataGrid("instance");
 
-        $iisdGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $issdGrid.option(dxGridUtils.viewOnlyGridConfig);
 
 
     });

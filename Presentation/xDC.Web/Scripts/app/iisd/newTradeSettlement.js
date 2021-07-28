@@ -3,11 +3,8 @@
     $(function () {
         var approverStore = DevExpress.data.AspNet.createStore({
             key: "id",
-            loadUrl: "../api/common/GetTradeSettlementApprover"
+            loadUrl: window.location.origin + "/api/common/GetTradeSettlementApprover"
         });
-
-        var instrumentCodeEquityData = ["Stock AA", "Stock BB"];
-        var stockCodeData = ["GT170006", "MX070003", "MO170004", "GJ180003", "MZ160002", "MO140001"];
 
         var $tabpanel, $equityGrid, $bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid, $feesGrid,
             $mtmGrid, $fxSettlementGrid, $contributionCreditedGrid, $altidGrid, $othersGrid,
@@ -29,26 +26,27 @@
             }
         }).dxSelectBox("instance");
 
-        $tradeSettlementForm = $("#tradeSettlementForm").on("submit", function (e) {
-            if (
-                jQuery.isEmptyObject($equityGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($bondGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($cpGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($notesPaperGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($repoGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($feesGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($mtmGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($fxSettlementGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($contributionCreditedGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($altidGrid.getDataSource().items()) &&
-                    jQuery.isEmptyObject($othersGrid.getDataSource().items())
-            ) {
-                $("#error_container").bs_warning("Please key in at least one item.");
-            } else {
-                $('#selectApproverModal').modal('show');
-            }
-            e.preventDefault();
-        });
+        $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
+            function(e) {
+                e.preventDefault();
+
+                $couponGrid.saveEditData();
+                $feesGrid.saveEditData();
+                $mtmGrid.saveEditData();
+                $fxSettlementGrid.saveEditData();
+                $contributionCreditedGrid.saveEditData();
+                $altidGrid.saveEditData();
+                $othersGrid.saveEditData();
+                
+                if (moment().subtract(1, "days").isAfter($settlementDateBox.option("value")))
+                {
+                    alert("T-n only available for viewing..");
+                }
+                else
+                {
+                    $("#selectApproverModal").modal("show");
+                }
+            });
 
         $("#submitForApprovalModalBtn").on({
             "click": function (e) {
@@ -57,7 +55,8 @@
 
                 var data = {
                     currency: $currencySelectBox.option("value"),
-                    //formDate: $settlementDateBox.option("value"),
+                    settlementDateEpoch: moment($settlementDateBox.option("value")).unix(),
+
                     equity: $equityGrid.getDataSource().items(),
                     bond: $bondGrid.getDataSource().items(),
                     cp: $cpGrid.getDataSource().items(),
@@ -71,19 +70,25 @@
                     altid: $altidGrid.getDataSource().items(),
                     others: $othersGrid.getDataSource().items(),
 
-                    approver: $approverDropdown.option('value')
+                    rentasOpeningBalance: $obRentasTb.option("value"),
+                    mmaOpeningBalance: $cbMmaTb.option("value"),
+
+                    rentasClosingBalance: $cbRentasTb.option("value"),
+                    mmaClosingBalance: $obMmaTb.option("value"),
+
+                    approver: $approverDropdown.option("value")
                 };
 
                 $.ajax({
                     data: data,
-                    dataType: 'json',
-                    url: '../api/iisd/NewTradeSettlementForm',
-                    method: 'post',
+                    dataType: "json",
+                    url: window.location.origin + "/api/iisd/TradeSettlement/New",
+                    method: "post",
                     success: function(data) {
-                        window.location.href = "/iisd/TradeSettlementFormStatus?id=" + data;
+                        window.location.href = "/iisd/TradeSettlement/view?id=" + data;
                     },
                     fail: function(jqXHR, textStatus, errorThrown) {
-                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                        $("#error_container").bs_alert(textStatus + ": " + errorThrown);
                     },
                     complete: function(data) {
                         $loadPanel.hide();
@@ -97,7 +102,11 @@
         $settlementDateBox = $("#settlementDateBox").dxDateBox({
             type: "date",
             displayFormat: "dd/MM/yyyy",
-            value: new Date()
+            value: new Date(),
+            //min: moment().subtract(1, 'days'),
+            onValueChanged: function (data) {
+                populateDwData(data.value, $currencySelectBox.option("value"));
+            }
         }).dxValidator({
             validationRules: [
                 {
@@ -110,7 +119,10 @@
         $currencySelectBox =
             $("#currencySelectBox").dxSelectBox({
                 items: ["MYR", "USD"],
-                placeHolder: "Currency.."
+                placeHolder: "Currency..",
+                onValueChanged: function (data) {
+                    populateDwData($settlementDateBox.option("value"), data.value);
+                }
             })
             .dxValidator({
                 validationRules: [
@@ -123,19 +135,19 @@
             .dxSelectBox("instance");
 
         $obRentasTb = $("#obRentasTb").dxNumberBox({
-            disabled: true
+            readOnly: true
         }).dxNumberBox("instance");
 
         $obMmaTb = $("#obMmaTb").dxNumberBox({
-            disabled: true
+            readOnly: true,
         }).dxNumberBox("instance");
 
         $cbRentasTb = $("#cbRentasTb").dxNumberBox({
-            disabled: true
+            readOnly: true,
         }).dxNumberBox("instance");
 
         $cbMmaTb = $("#cbMmaTb").dxNumberBox({
-            disabled: true
+            readOnly: true,
         }).dxNumberBox("instance");
 
         $tabpanel = $("#tabpanel-container").dxTabPanel({
@@ -156,6 +168,128 @@
             deferRendering: false
         });
 
+        //#region Data Source
+
+        function ds(instrumentType, settlementDate, currency) {
+            return $.ajax({
+                url: window.location.origin + "/api/issd/GetTradeSettlementFromEdw/" + instrumentType + "/" + moment(settlementDate).unix() + "/" + currency,
+                type: "get"
+            });
+        }
+
+        function dsOpeningBalance(instrumentType, settlementDate, currency) {
+            return $.ajax({
+                url: window.location.origin + "/api/issd/GetOpeningBalance/" + instrumentType + "/" + moment(settlementDate).unix() + "/" + currency,
+                type: "get"
+            });
+        }
+
+        function populateDwData(settlementDate, currency) {
+            if (settlementDate && currency) {
+                $.when(
+                        ds("EQUITY", settlementDate, currency),
+                        ds("BOND", settlementDate, currency),
+                        ds("COMMERCIAL PAPER", settlementDate, currency),
+                        ds("NOTES AND PAPERS", settlementDate, currency),
+                        ds("REPO", settlementDate, currency),
+                        ds("COUPON", settlementDate, currency),
+                        dsOpeningBalance("RENTAS", settlementDate, currency),
+                        dsOpeningBalance("MMA", settlementDate, currency)
+                    )
+                    .done(function (data1, data2, data3, data4, data5, data6, data7, data8) {
+                        $equityGrid.option("dataSource", data1[0].data);
+                        $equityGrid.repaint();
+
+                        $bondGrid.option("dataSource", data2[0].data);
+                        $bondGrid.repaint();
+
+                        $cpGrid.option("dataSource", data3[0].data);
+                        $cpGrid.repaint();
+
+                        $notesPaperGrid.option("dataSource", data4[0].data);
+                        $notesPaperGrid.repaint();
+
+                        $repoGrid.option("dataSource", data5[0].data);
+                        $repoGrid.repaint();
+
+                        $couponGrid.option("dataSource", data6[0].data);
+                        $couponGrid.repaint();
+                        
+                        $obRentasTb.option("value", data7[0]);
+                        $obMmaTb.option("value", data8[0]);
+
+                        setTimeout(updateClosingBalance, 1000);
+                    })
+                    .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+                        DevExpress.ui.notify({
+                            message: "Data Updated",
+                            type: "info",
+                            position: {
+                                my: "right",
+                                at:"bottom",
+                                of: "#toast-container"
+                            },
+                            displayTime: 800,
+                            width: "300px"
+                        });
+                    })
+                    .then(function() {
+                        
+                    });
+            } else {
+                dxGridUtils.clearGrid($equityGrid);
+                dxGridUtils.clearGrid($bondGrid);
+                dxGridUtils.clearGrid($cpGrid);
+                dxGridUtils.clearGrid($notesPaperGrid);
+                dxGridUtils.clearGrid($repoGrid);
+                dxGridUtils.clearGrid($couponGrid);
+            }
+        }
+
+        function updateClosingBalance() {
+            var totalRentasClosing = $obRentasTb.option("value")
+
+                + $equityGrid.getTotalSummaryValue("sales")
+                + $bondGrid.getTotalSummaryValue("sales")
+                + $cpGrid.getTotalSummaryValue("sales")
+                + $notesPaperGrid.getTotalSummaryValue("sales")
+                + $repoGrid.getTotalSummaryValue("firstLeg")
+                + $couponGrid.getTotalSummaryValue("amountPlus")
+                + $feesGrid.getTotalSummaryValue("amountPlus")
+                + $mtmGrid.getTotalSummaryValue("amountPlus")
+                + $fxSettlementGrid.getTotalSummaryValue("amountPlus")
+                + $contributionCreditedGrid.getTotalSummaryValue("amountPlus")
+                + $altidGrid.getTotalSummaryValue("amountPlus")
+                + $othersGrid.getTotalSummaryValue("amountPlus")
+
+                - $equityGrid.getTotalSummaryValue("purchase")
+                - $bondGrid.getTotalSummaryValue("purchase")
+                - $cpGrid.getTotalSummaryValue("purchase")
+                - $notesPaperGrid.getTotalSummaryValue("purchase")
+                - $repoGrid.getTotalSummaryValue("secondLeg")
+                - $mtmGrid.getTotalSummaryValue("amountMinus")
+                - $fxSettlementGrid.getTotalSummaryValue("amountMinus")
+                - $altidGrid.getTotalSummaryValue("amountMinus")
+                - $othersGrid.getTotalSummaryValue("amountMinus")
+                ;
+            
+            $cbRentasTb.option("value", totalRentasClosing.toFixed(2));
+
+            DevExpress.ui.notify({
+                message: "Closing Balance Updated",
+                type: "info",
+                position: {
+                    my: "right",
+                    at: "bottom",
+                    of: "#toast-container"
+                },
+                displayTime: 800,
+                width: "300px"
+            });
+        }
+
+        //#endregion
+
         // #region Data Grid
 
         $equityGrid = $("#equityGrid").dxDataGrid({
@@ -163,17 +297,11 @@
             columns: [
                 {
                     dataField: "instrumentCode",
-                    caption: "Equity",
-                    lookup: {
-                        dataSource: instrumentCodeEquityData
-                    }
+                    caption: "Equity"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    lookup: {
-                        dataSource: stockCodeData
-                    }
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "maturity",
@@ -240,24 +368,18 @@
             }
         }).dxDataGrid("instance");
 
-        $equityGrid.option(dxGridUtils.editingGridConfig);
+        $equityGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         $bondGrid = $("#bondGrid").dxDataGrid({
             dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
-                    caption: "Bond",
-                    lookup: {
-                        dataSource: instrumentCodeEquityData
-                    }
+                    caption: "Bond"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    lookup: {
-                        dataSource: stockCodeData
-                    }
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "maturity",
@@ -324,24 +446,18 @@
             }
         }).dxDataGrid("instance");
 
-        $bondGrid.option(dxGridUtils.editingGridConfig);
+        $bondGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         $cpGrid = $("#cpGrid").dxDataGrid({
             dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
-                    caption: "CP",
-                    lookup: {
-                        dataSource: instrumentCodeEquityData
-                    }
+                    caption: "CP"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    lookup: {
-                        dataSource: stockCodeData
-                    }
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "maturity",
@@ -408,24 +524,18 @@
             }
         }).dxDataGrid("instance");
 
-        $cpGrid.option(dxGridUtils.editingGridConfig);
+        $cpGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         $notesPaperGrid = $("#notesPaperGrid").dxDataGrid({
             dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
-                    caption: "Notes & Papers",
-                    lookup: {
-                        dataSource: instrumentCodeEquityData
-                    }
+                    caption: "Notes & Papers"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    lookup: {
-                        dataSource: stockCodeData
-                    }
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "maturity",
@@ -492,24 +602,18 @@
             }
         }).dxDataGrid("instance");
 
-        $notesPaperGrid.option(dxGridUtils.editingGridConfig);
+        $notesPaperGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         $repoGrid = $("#repoGrid").dxDataGrid({
             dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
-                    caption: "REPO",
-                    lookup: {
-                        dataSource: instrumentCodeEquityData
-                    }
+                    caption: "REPO"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    lookup: {
-                        dataSource: stockCodeData
-                    }
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "firstLeg",
@@ -558,24 +662,18 @@
             }
         }).dxDataGrid("instance");
 
-        $repoGrid.option(dxGridUtils.editingGridConfig);
+        $repoGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         $couponGrid = $("#couponGrid").dxDataGrid({
             dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
-                    caption: "Coupon Received",
-                    lookup: {
-                        dataSource: instrumentCodeEquityData
-                    }
+                    caption: "Coupon Received"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    lookup: {
-                        dataSource: stockCodeData
-                    }
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "amountPlus",
@@ -603,6 +701,9 @@
                         }
                     }
                 ]
+            },
+            onSaved: function () {
+                updateClosingBalance();
             }
         }).dxDataGrid("instance");
 
@@ -641,6 +742,9 @@
                         }
                     }
                 ]
+            },
+            onSaved: function () {
+                updateClosingBalance();
             }
         }).dxDataGrid("instance");
 
@@ -697,6 +801,9 @@
                         }
                     }
                 ]
+            },
+            onSaved: function () {
+                updateClosingBalance();
             }
         }).dxDataGrid("instance");
 
@@ -753,6 +860,9 @@
                         }
                     }
                 ]
+            },
+            onSaved: function () {
+                updateClosingBalance();
             }
         }).dxDataGrid("instance");
 
@@ -791,6 +901,9 @@
                         }
                     }
                 ]
+            },
+            onSaved: function () {
+                updateClosingBalance();
             }
         }).dxDataGrid("instance");
 
@@ -847,6 +960,9 @@
                         }
                     }
                 ]
+            },
+            onSaved: function () {
+                updateClosingBalance();
             }
         }).dxDataGrid("instance");
 
@@ -903,6 +1019,9 @@
                         }
                     }
                 ]
+            },
+            onSaved: function () {
+                updateClosingBalance();
             }
         }).dxDataGrid("instance");
 

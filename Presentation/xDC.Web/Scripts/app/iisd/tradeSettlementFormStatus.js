@@ -1,9 +1,6 @@
 ﻿(function ($, window, document) {
 
     $(function () {
-        var instrumentCodeEquityData = ["Stock AA", "Stock BB"];
-        var stockCodeData = ["GT170006", "MX070003", "MO170004", "GJ180003", "MZ160002", "MO140001"];
-        
         var $tabpanel, $equityGrid, $bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid, $feesGrid,
             $mtmGrid, $fxSettlementGrid, $contributionCreditedGrid, $altidGrid, $othersGrid,
             $tradeSettlementForm, $currencySelectBox, $obRentasTb, $obMmaTb, $cbRentasTb, $cbMmaTb,
@@ -44,11 +41,11 @@
 
                     $.ajax({
                         type: "POST",
-                        url: '/iisd/PrintTradeSettlement',
+                        url: window.location.origin + '/issd/PrintTradeSettlement',
                         data: data,
                         dataType: "text",
                         success: function(data) {
-                            var url = '/iisd/GetPrintTradeSettlement?id=' + data;
+                            var url = window.location.origin + '/issd/GetPrintTradeSettlement?id=' + data;
                             window.location = url;
                         },
                         fail: function(jqXHR, textStatus, errorThrown) {
@@ -69,11 +66,11 @@
 
                     $.ajax({
                         type: "POST",
-                        url: '/iisd/PrintTradeSettlement',
+                        url: window.location.origin + '/issd/PrintTradeSettlement',
                         data: data,
                         dataType: "text",
                         success: function (data) {
-                            var url = '/iisd/GetPrintTradeSettlement?id=' + data;
+                            var url = window.location.origin + '/issd/GetPrintTradeSettlement?id=' + data;
                             window.location = url;
                         },
                         fail: function (jqXHR, textStatus, errorThrown) {
@@ -115,22 +112,16 @@
         $equityGrid = $("#equityGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=equity"
+                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=equity"
             }),
             columns: [
                 {
                     dataField: "instrumentCode",
-                    caption: "Equity",
-                    lookup: {
-                        dataSource: instrumentCodeEquityData
-                    }
+                    caption: "Equity"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    lookup: {
-                        dataSource: stockCodeData
-                    }
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "maturity",
@@ -202,22 +193,16 @@
         $bondGrid = $("#bondGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=bond"
+                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=bond"
             }),
             columns: [
                 {
                     dataField: "instrumentCode",
-                    caption: "Bond",
-                    lookup: {
-                        dataSource: instrumentCodeEquityData
-                    }
+                    caption: "Bond"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    lookup: {
-                        dataSource: stockCodeData
-                    }
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "maturity",
@@ -289,22 +274,16 @@
         $cpGrid = $("#cpGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=cp"
+                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=cp"
             }),
             columns: [
                 {
                     dataField: "instrumentCode",
-                    caption: "CP",
-                    lookup: {
-                        dataSource: instrumentCodeEquityData
-                    }
+                    caption: "CP"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    lookup: {
-                        dataSource: stockCodeData
-                    }
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "maturity",
@@ -376,22 +355,16 @@
         $notesPaperGrid = $("#notesPaperGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=notesPaper"
+                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=notesPaper"
             }),
             columns: [
                 {
                     dataField: "instrumentCode",
                     caption: "Notes & Papers",
-                    lookup: {
-                        dataSource: instrumentCodeEquityData
-                    }
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    lookup: {
-                        dataSource: stockCodeData
-                    }
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "maturity",
@@ -463,22 +436,16 @@
         $repoGrid = $("#repoGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=repo"
+                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=repo"
             }),
             columns: [
                 {
                     dataField: "instrumentCode",
-                    caption: "REPO",
-                    lookup: {
-                        dataSource: instrumentCodeEquityData
-                    }
+                    caption: "REPO"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    lookup: {
-                        dataSource: stockCodeData
-                    }
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "firstLeg",
@@ -532,22 +499,16 @@
         $couponGrid = $("#couponGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=coupon"
+                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=coupon"
             }),
             columns: [
                 {
                     dataField: "instrumentCode",
-                    caption: "Coupon Received",
-                    lookup: {
-                        dataSource: instrumentCodeEquityData
-                    }
+                    caption: "Coupon Received"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    lookup: {
-                        dataSource: stockCodeData
-                    }
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "amountPlus",
@@ -583,7 +544,7 @@
         $feesGrid = $("#feesGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=fees"
+                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=fees"
             }),
             columns: [
                 {
@@ -624,7 +585,7 @@
         $mtmGrid = $("#mtmGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=mtm"
+                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=mtm"
             }),
             columns: [
                 {
@@ -683,7 +644,7 @@
         $fxSettlementGrid = $("#fxSettlementGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=fxSettlement"
+                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=fxSettlement"
             }),
             columns: [
                 {
@@ -742,7 +703,7 @@
         $contributionCreditedGrid = $("#contributionCreditedGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=contributionCredited"
+                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=contributionCredited"
             }),
             columns: [
                 {
@@ -783,7 +744,7 @@
         $altidGrid = $("#altidGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=altid"
+                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=altid"
             }),
             columns: [
                 {
@@ -842,7 +803,7 @@
         $othersGrid = $("#othersGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/iisd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=others"
+                loadUrl: window.location.origin + "/api/issd/GetTradeSettlement?id=" + getUrlParameter('id') + "&tradeType=others"
             }),
             columns: [
                 {

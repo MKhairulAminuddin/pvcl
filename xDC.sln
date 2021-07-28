@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{71
 		Database\Config_Approver.sql = Database\Config_Approver.sql
 		Database\Config_Dropdown.sql = Database\Config_Dropdown.sql
 		Database\Config_Key.sql = Database\Config_Key.sql
+		Database\EDW_BankBalance.sql = Database\EDW_BankBalance.sql
 		Database\EDW_TradeItem.sql = Database\EDW_TradeItem.sql
 		Database\Form_Header.sql = Database\Form_Header.sql
 		Database\Form_Workflow.sql = Database\Form_Workflow.sql

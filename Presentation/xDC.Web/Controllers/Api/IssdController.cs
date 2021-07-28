@@ -16,11 +16,12 @@ using xDC_Web.Models;
 namespace xDC_Web.Controllers.Api
 {
     [Authorize(Roles = "Administrator, Power User, IISD")]
-    [RoutePrefix("api/iisd")]
-    public class IisdController : ApiController
+    [RoutePrefix("api/issd")]
+    public class IssdController : ApiController
     {
         [HttpGet]
-        public HttpResponseMessage GetIisdForms(DataSourceLoadOptions loadOptions)
+        [Route("GetIssdForm")]
+        public HttpResponseMessage GetIssdForm(DataSourceLoadOptions loadOptions)
         {
             try
             {
@@ -44,10 +45,11 @@ namespace xDC_Web.Controllers.Api
 
         }
 
+        #region Trade Settlement Form
 
         [HttpPost]
-        [Route("NewTradeSettlementForm")]
-        public HttpResponseMessage NewTradeSettlementForm([FromBody] TradeSettlementModel inputs)
+        [Route("TradeSettlement/New")]
+        public HttpResponseMessage NewTradeSettlement([FromBody] TradeSettlementModel inputs)
         {
             try
             {
@@ -59,21 +61,16 @@ namespace xDC_Web.Controllers.Api
                         PreparedBy = User.Identity.Name,
                         PreparedDate = DateTime.Now,
                         FormStatus = Common.FormStatusMapping(2),
-                        FormDate = DateTime.Now,//inputs.FormDate,
+                        FormDate = Common.ConvertEpochToDateTime(inputs.SettlementDateEpoch),
                         Currency = inputs.Currency,
                         ApprovedBy = inputs.Approver
                     };
-
-                    /*Validate(newFormHeader);
-
-                    if (!ModelState.IsValid)
-                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);*/
-
+                    
                     db.Form_Header.Add(newFormHeader);
                     db.SaveChanges();
 
 
-                    var newTrades = new List<ISSD_TradeSettlement> ();
+                    var newTrades = new List<ISSD_TradeSettlement>();
 
                     if (inputs.Equity != null)
                     {
@@ -286,11 +283,11 @@ namespace xDC_Web.Controllers.Api
                             });
                         }
                     }
-                    
-                    Validate(newTrades);
+
+                    /*Validate(newTrades);
 
                     if (!ModelState.IsValid)
-                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);*/
 
                     db.ISSD_TradeSettlement.AddRange(newTrades);
                     db.SaveChanges();
@@ -305,11 +302,118 @@ namespace xDC_Web.Controllers.Api
 
         }
 
+
+
+        #endregion
+
+        #region Bank Balance
+
+        [HttpGet]
+        [Route("GetOpeningBalance/{type}/{settlementDateEpoch}/{currency}")]
+        public HttpResponseMessage GetOpeningBalance(string type, long settlementDateEpoch, string currency)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+
+                    var amount = 0.0;
+
+                    if (settlementDate != null)
+                    {
+                        type = type.ToUpper();
+                        settlementDate = settlementDate.Value.Date;
+
+                        var result = db.EDW_BankBalance.AsNoTracking().Where(x =>
+                                x.InstrumentType == type && x.SettlementDate == settlementDate &&
+                                x.Currency == currency)
+                            .GroupBy(x => x.Currency)
+                            .Select(x => new
+                            {
+                                amount = x.Sum(y => y.Amount)
+                            }).FirstOrDefault();
+
+                        if (result!=null)
+                        {
+                            amount = (double) result.amount;
+                        }
+                        
+
+                        return Request.CreateResponse(HttpStatusCode.OK, amount);
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Failed convert to actual date");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        #endregion
+
+
         #region Trade Settlement Grid
 
         [HttpGet]
+        [Route("GetTradeSettlementFromEdw/{type}/{settlementDateEpoch}/{currency}")]
+        public HttpResponseMessage GetTradeSettlementFromEdw(string type, long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+
+                    if (settlementDate != null)
+                    {
+                        type = type.ToUpper();
+                        settlementDate = settlementDate.Value.Date;
+
+                        var result = db.EDW_TradeItem.AsNoTracking().Where(x =>
+                                x.InstrumentType == type && x.SettlementDate == settlementDate &&
+                                x.Currency == currency)
+                            .ToList();
+
+                        var finalResult = new List<ISSD_TradeSettlement>();
+                        foreach (var item in result)
+                        {
+                            var tradeItem = new ISSD_TradeSettlement
+                            {
+                                InstrumentType = item.InstrumentType,
+                                InstrumentCode = item.InstrumentName,
+                                StockCode = item.StockCode,
+                                Maturity = (decimal?)((item.Type == "M" && item.InstrumentType != Common.TradeSettlementMapping(5)) ? item.Amount : 0),
+                                Sales = (decimal?)((item.Type == "S" && item.InstrumentType != Common.TradeSettlementMapping(5)) ? item.Amount : 0),
+                                Purchase = (decimal?)((item.Type == "P" && item.InstrumentType != Common.TradeSettlementMapping(5)) ? item.Amount : 0),
+                                SecondLeg = (decimal?)((item.InstrumentType == Common.TradeSettlementMapping(5)) ? item.Amount : 0),
+                                AmountPlus = (decimal?)((item.InstrumentType == Common.TradeSettlementMapping(6)) ? item.Amount : 0),
+                            };
+
+                            finalResult.Add(tradeItem);
+                        }
+
+                        return Request.CreateResponse(DataSourceLoader.Load(finalResult, loadOptions));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Failed convert to actual date");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [HttpGet]
         [Route("GetTradeSettlement")]
-        public HttpResponseMessage GetInflowFunds(string id, string tradeType, DataSourceLoadOptions loadOptions)
+        public HttpResponseMessage GetTradeSettlement(string id, string tradeType, DataSourceLoadOptions loadOptions)
         {
             try
             {
@@ -335,7 +439,6 @@ namespace xDC_Web.Controllers.Api
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
-
         }
 
         [HttpPut]
@@ -409,17 +512,30 @@ namespace xDC_Web.Controllers.Api
 
         #endregion
 
-/*
+
         [HttpGet]
-        [Route("TradeItemDW")]
-        public HttpResponseMessage TradeItemDW(DataSourceLoadOptions loadOptions)
+        [Route("TradeItemDW/{type}/{settlementDateEpoch}")]
+        public HttpResponseMessage TradeItemDW(string type, long settlementDateEpoch, DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.EDW_TradeItem.ToList();
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+
+                    if (settlementDate != null)
+                    {
+                        type = type.ToUpper();
+                        settlementDate = settlementDate.Value.Date;
+
+                        var result = db.EDW_TradeItem.AsNoTracking().Where(x => x.InstrumentType == type && x.SettlementDate == settlementDate).ToList();
+                        
+                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Failed convert to actual date");
+                    }
                 }
             }
             catch (Exception ex)
@@ -427,6 +543,6 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
 
-        }*/
+        }
     }
 }

@@ -13,6 +13,7 @@ using xDC_Web.ViewModels;
 namespace xDC_Web.Controllers
 {
     [Authorize(Roles = "Administrator, Power User, IISD")]
+    [RoutePrefix("issd")]
     public class IssdController : BaseController
     {
         public ActionResult Index()
@@ -33,7 +34,10 @@ namespace xDC_Web.Controllers
             
         }
 
+        #region Trade Settlement Form
+
         [Authorize(Roles = "IISD")]
+        [Route("TradeSettlement/New")]
         public ActionResult NewTradeSettlement()
         {
             var model = new TradeSettlementFormViewModel()
@@ -47,7 +51,8 @@ namespace xDC_Web.Controllers
             return View(model);
         }
 
-        public ActionResult TradeSettlementFormStatus(string id)
+        [Route("TradeSettlement/View")]
+        public ActionResult ViewTradeSettlement(string id)
         {
             try
             {
@@ -82,7 +87,8 @@ namespace xDC_Web.Controllers
                             ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
                             AdminEditPermission = User.IsInRole(Config.AclPowerUser)
                         };
-                        return View(formObj);
+
+                        return View("TradeSettlement/View", formObj);
                     }
                     else
                     {
@@ -156,6 +162,9 @@ namespace xDC_Web.Controllers
                 return View("Error");
             }
         }
+
+        #endregion
+        
 
         #region Print Form
 
