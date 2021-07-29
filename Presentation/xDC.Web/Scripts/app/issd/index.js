@@ -73,7 +73,7 @@
                                 return (e.row.data.isDraft && e.row.data.isMeCanEditDraft);
                             },
                             onClick: function (e) {
-                                window.location.href = "/issd/TradeSettlement/Edit?id=" + e.row.data.id;
+                                window.location.href = "/issd/TradeSettlement/Edit/" + e.row.data.id;
                                 e.event.preventDefault();
                             }
                         },
@@ -116,7 +116,7 @@
                                 return (e.row.data.isResubmitEnabled);
                             },
                             onClick: function (e) {
-                                window.location.href = "/amsd/inflowfund/edit?id=" + e.row.data.id;
+                                window.location.href = "/issd/TradeSettlement/Edit/" + e.row.data.id;
                                 e.event.preventDefault();
                             }
                         },
@@ -128,7 +128,7 @@
                                 return (e.row.data.isCanAdminEdit);
                             },
                             onClick: function (e) {
-                                window.location.href = "/amsd/inflowfund/edit?id=" + e.row.data.id;
+                                window.location.href = "/issd/TradeSettlement/Edit" + e.row.data.id;
                                 e.event.preventDefault();
                             }
                         },
@@ -137,7 +137,7 @@
                             icon: "fa fa-eye",
                             cssClass: "dx-datagrid-command-btn",
                             onClick: function (e) {
-                                window.location.href = "/issd/TradeSettlement/View?id=" + e.row.data.id;
+                                window.location.href = "/issd/TradeSettlement/View/" + e.row.data.id;
                                 e.event.preventDefault();
                             }
                         },

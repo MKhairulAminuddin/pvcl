@@ -51,7 +51,7 @@ namespace xDC_Web.Controllers
             return View("TradeSettlement/New", model);
         }
 
-        [Route("TradeSettlement/View")]
+        [Route("TradeSettlement/View/{id}")]
         public ActionResult ViewTradeSettlement(string id)
         {
             try

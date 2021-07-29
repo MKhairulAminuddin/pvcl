@@ -113,7 +113,7 @@
             return DevExpress.data.AspNet.createStore({
                 key: "id",
                 loadUrl: window.location.origin +
-                    "/api/issd/TradeSettlement/TradeItem/" + getUrlParameter("id") + "/" + tradeType
+                    "/api/issd/TradeSettlement/TradeItem/" + window.location.pathname.split("/").pop() + "/" + tradeType
             });
         }
 

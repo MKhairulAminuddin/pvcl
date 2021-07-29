@@ -76,7 +76,7 @@
                                 url: window.location.origin + "/api/issd/TradeSettlement/New",
                                 method: "post",
                                 success: function(data) {
-                                    window.location.href = "/issd/TradeSettlement/View?id=" + data;
+                                    window.location.href = "/issd/TradeSettlement/View/" + data;
                                 },
                                 fail: function(jqXHR, textStatus, errorThrown) {
                                     $("#error_container").bs_alert(textStatus + ": " + errorThrown);
@@ -133,7 +133,7 @@
                     url: window.location.origin + "/api/issd/TradeSettlement/New",
                     method: "post",
                     success: function(data) {
-                        window.location.href = "/issd/TradeSettlement/view?id=" + data;
+                        window.location.href = "/issd/TradeSettlement/View/" + data;
                     },
                     fail: function(jqXHR, textStatus, errorThrown) {
                         $("#error_container").bs_alert(textStatus + ": " + errorThrown);
