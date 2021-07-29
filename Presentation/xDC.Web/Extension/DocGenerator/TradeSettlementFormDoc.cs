@@ -450,7 +450,7 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["A" + tradeItemStartRow].Value = "Contribution credited";
                     sheet["B" + tradeItemStartRow].Value = "Amount (+)";
                     
-                    foreach (var item in fx)
+                    foreach (var item in contribution)
                     {
                         ++tradeItemStartRow;
                         sheet["A" + tradeItemStartRow].Value = item.InstrumentType;

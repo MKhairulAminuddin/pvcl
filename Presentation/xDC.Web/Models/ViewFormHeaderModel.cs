@@ -10,6 +10,7 @@ namespace xDC_Web.Models
         public int Id { get; set; }
         public string FormType { get; set; }
         public string FormStatus { get; set; }
+        public Nullable<System.DateTime> FormDate { get; set; }
         public string Currency { get; set; }
         public string PreparedBy { get; set; }
         public Nullable<System.DateTime> PreparedDate { get; set; }
@@ -19,8 +20,13 @@ namespace xDC_Web.Models
         public string AdminEdittedBy { get; set; }
         public Nullable<System.DateTime> AdminEdittedDate { get; set; }
 
-        public bool IsFormOwner { get; set; }
 
+
+
+        public bool IsFormOwner { get; set; }
+        public bool IsDraft { get; set; }
+
+        public bool IsMeCanEditDraft { get; set; }
         public bool IsCanAdminEdit { get; set; }
         public bool IsResubmitEnabled { get; set; }
 

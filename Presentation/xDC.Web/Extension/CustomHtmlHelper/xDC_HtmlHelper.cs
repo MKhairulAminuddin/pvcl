@@ -29,9 +29,9 @@ namespace xDC_Web.Extension.CustomHtmlHelper
             {
                 role = Config.AclFid;
             }
-            else if (HttpContext.Current.User.IsInRole(Config.AclIisd))
+            else if (HttpContext.Current.User.IsInRole(Config.AclIssd))
             {
-                role = Config.AclIisd;
+                role = Config.AclIssd;
             }
             else 
             {

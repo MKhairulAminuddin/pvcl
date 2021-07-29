@@ -52,7 +52,7 @@ namespace xDC_Web.Controllers.Api
 
                     var amsdRoleName = Config.AclAmsd;
                     var systemUser = db.AspNetUsers.Where(x => x.AspNetRoles.Select(y => y.Name).Contains(amsdRoleName)).ToList();
-                    var issdRoleName = Config.AclIisd;
+                    var issdRoleName = Config.AclIssd;
                     var issdUsers = db.AspNetUsers.Where(x => x.AspNetRoles.Select(y => y.Name).Contains(issdRoleName)).ToList();
                     systemUser.AddRange(issdUsers);
                     

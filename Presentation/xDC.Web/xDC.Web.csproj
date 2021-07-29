@@ -284,6 +284,7 @@
     <Content Include="Scripts\app\amsd\index.js" />
     <Content Include="Scripts\app.dxGrid.utils.js" />
     <Content Include="Scripts\app\issd\index.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\edit.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\new.js" />
     <Content Include="Scripts\app\admin\applicationConfig.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\view.js" />
@@ -519,6 +520,7 @@
     <Content Include="Views\Amsd\InflowFund\New.cshtml" />
     <Content Include="Views\Amsd\InflowFund\View.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\View.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\Edit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

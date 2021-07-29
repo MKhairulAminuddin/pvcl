@@ -9,7 +9,7 @@
         var $tabpanel, $equityGrid, $bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid, $feesGrid,
             $mtmGrid, $fxSettlementGrid, $contributionCreditedGrid, $altidGrid, $othersGrid,
             $tradeSettlementForm, $currencySelectBox, $obRentasTb, $obMmaTb, $cbRentasTb, $cbMmaTb,
-            $approverDropdown, $settlementDateBox, $loadPanel;
+            $approverDropdown, $settlementDateBox, $loadPanel, isSaveAsDraft;
         
 
         $approverDropdown = $("#approverDropdown").dxSelectBox({
@@ -27,25 +27,73 @@
         }).dxSelectBox("instance");
 
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
-            function(e) {
+            function (e) {
                 e.preventDefault();
 
-                $couponGrid.saveEditData();
-                $feesGrid.saveEditData();
-                $mtmGrid.saveEditData();
-                $fxSettlementGrid.saveEditData();
-                $contributionCreditedGrid.saveEditData();
-                $altidGrid.saveEditData();
-                $othersGrid.saveEditData();
+                saveAllGridEditData();
+
+                console.log(isSaveAsDraft);
                 
                 if (moment().subtract(1, "days").isAfter($settlementDateBox.option("value")))
                 {
                     alert("T-n only available for viewing..");
                 }
-                else
-                {
-                    $("#selectApproverModal").modal("show");
+                else {
+                    if (isSaveAsDraft) {
+                        if (moment().subtract(1, "days").isAfter($settlementDateBox.option("value"))) {
+                            alert("T-n only available for viewing..");
+                        } else {
+                            $loadPanel.option("position", { of: "#tradeSettlementForm" });
+                            $loadPanel.show();
+
+                            var data = {
+                                currency: $currencySelectBox.option("value"),
+                                settlementDateEpoch: moment($settlementDateBox.option("value")).unix(),
+                                isSaveAsDraft: true,
+
+                                equity: $equityGrid.getDataSource().items(),
+                                bond: $bondGrid.getDataSource().items(),
+                                cp: $cpGrid.getDataSource().items(),
+                                notesPaper: $notesPaperGrid.getDataSource().items(),
+                                repo: $repoGrid.getDataSource().items(),
+                                coupon: $couponGrid.getDataSource().items(),
+                                fees: $feesGrid.getDataSource().items(),
+                                mtm: $mtmGrid.getDataSource().items(),
+                                fxSettlement: $fxSettlementGrid.getDataSource().items(),
+                                contributionCredited: $contributionCreditedGrid.getDataSource().items(),
+                                altid: $altidGrid.getDataSource().items(),
+                                others: $othersGrid.getDataSource().items(),
+
+                                rentasOpeningBalance: $obRentasTb.option("value"),
+                                mmaOpeningBalance: $cbMmaTb.option("value"),
+                                rentasClosingBalance: $cbRentasTb.option("value"),
+                                mmaClosingBalance: $obMmaTb.option("value")
+                            };
+
+                            $.ajax({
+                                data: data,
+                                dataType: "json",
+                                url: window.location.origin + "/api/issd/TradeSettlement/New",
+                                method: "post",
+                                success: function(data) {
+                                    window.location.href = "/issd/TradeSettlement/View?id=" + data;
+                                },
+                                fail: function(jqXHR, textStatus, errorThrown) {
+                                    $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                                },
+                                complete: function(data) {
+                                    $loadPanel.hide();
+                                }
+                            });
+                        }
+                    }
+                    else
+                    {
+                        $('#selectApproverModal').modal('show');
+                    }
                 }
+
+                
             });
 
         $("#submitForApprovalModalBtn").on({
@@ -82,10 +130,10 @@
                 $.ajax({
                     data: data,
                     dataType: "json",
-                    url: window.location.origin + "/api/iisd/TradeSettlement/New",
+                    url: window.location.origin + "/api/issd/TradeSettlement/New",
                     method: "post",
                     success: function(data) {
-                        window.location.href = "/iisd/TradeSettlement/view?id=" + data;
+                        window.location.href = "/issd/TradeSettlement/view?id=" + data;
                     },
                     fail: function(jqXHR, textStatus, errorThrown) {
                         $("#error_container").bs_alert(textStatus + ": " + errorThrown);
@@ -99,6 +147,18 @@
             }
         });
 
+        $("#saveAsDraftBtn").on({
+            "click": function (e) {
+                isSaveAsDraft = true;
+            }
+        });
+
+        $("#submitForApprovalBtn").on({
+            "click": function(e) {
+                isSaveAsDraft = false;
+            }
+        });
+        
         $settlementDateBox = $("#settlementDateBox").dxDateBox({
             type: "date",
             displayFormat: "dd/MM/yyyy",
@@ -218,7 +278,7 @@
                         $obRentasTb.option("value", data7[0]);
                         $obMmaTb.option("value", data8[0]);
 
-                        setTimeout(updateClosingBalance, 1000);
+                        setTimeout(calculateClosingBalance, 1000);
                     })
                     .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
                         DevExpress.ui.notify({
@@ -246,7 +306,7 @@
             }
         }
 
-        function updateClosingBalance() {
+        function calculateClosingBalance() {
             var totalRentasClosing = $obRentasTb.option("value")
 
                 + $equityGrid.getTotalSummaryValue("sales")
@@ -276,7 +336,7 @@
             $cbRentasTb.option("value", totalRentasClosing.toFixed(2));
 
             DevExpress.ui.notify({
-                message: "Closing Balance Updated",
+                message: "Form Updated",
                 type: "info",
                 position: {
                     my: "right",
@@ -286,6 +346,16 @@
                 displayTime: 800,
                 width: "300px"
             });
+        }
+
+        function saveAllGridEditData() {
+            $couponGrid.saveEditData();
+            $feesGrid.saveEditData();
+            $mtmGrid.saveEditData();
+            $fxSettlementGrid.saveEditData();
+            $contributionCreditedGrid.saveEditData();
+            $altidGrid.saveEditData();
+            $othersGrid.saveEditData();
         }
 
         //#endregion
@@ -703,7 +773,7 @@
                 ]
             },
             onSaved: function () {
-                updateClosingBalance();
+                calculateClosingBalance();
             }
         }).dxDataGrid("instance");
 
@@ -744,7 +814,7 @@
                 ]
             },
             onSaved: function () {
-                updateClosingBalance();
+                calculateClosingBalance();
             }
         }).dxDataGrid("instance");
 
@@ -803,7 +873,7 @@
                 ]
             },
             onSaved: function () {
-                updateClosingBalance();
+                calculateClosingBalance();
             }
         }).dxDataGrid("instance");
 
@@ -862,7 +932,7 @@
                 ]
             },
             onSaved: function () {
-                updateClosingBalance();
+                calculateClosingBalance();
             }
         }).dxDataGrid("instance");
 
@@ -903,7 +973,7 @@
                 ]
             },
             onSaved: function () {
-                updateClosingBalance();
+                calculateClosingBalance();
             }
         }).dxDataGrid("instance");
 
@@ -962,7 +1032,7 @@
                 ]
             },
             onSaved: function () {
-                updateClosingBalance();
+                calculateClosingBalance();
             }
         }).dxDataGrid("instance");
 
@@ -1021,7 +1091,7 @@
                 ]
             },
             onSaved: function () {
-                updateClosingBalance();
+                calculateClosingBalance();
             }
         }).dxDataGrid("instance");
 

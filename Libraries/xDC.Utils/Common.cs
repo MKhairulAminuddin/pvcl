@@ -201,6 +201,13 @@ namespace xDC.Utils
             return String.Empty;
         }
 
+        /// <summary>
+        /// Get form type
+        /// </summary>
+        /// <param name="value">
+        /// 1 Inflow Funds 2 Trade Settlement
+        /// </param>
+        /// <returns></returns>
         public static string FormTypeMapping(int value)
         {
             switch (value)

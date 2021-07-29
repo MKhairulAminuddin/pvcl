@@ -10,12 +10,13 @@ using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
 using Newtonsoft.Json;
 using xDC.Infrastructure.Application;
+using xDC.Logging;
 using xDC.Utils;
 using xDC_Web.Models;
 
 namespace xDC_Web.Controllers.Api
 {
-    [Authorize(Roles = "Administrator, Power User, IISD")]
+    [Authorize(Roles = "Administrator, Power User, ISSD")]
     [RoutePrefix("api/issd")]
     public class IssdController : ApiController
     {
@@ -27,15 +28,50 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new xDC.Infrastructure.Application.kashflowDBEntities())
                 {
-                    var iisdFormTypes = new List<string>()
+                    var issdFormTypes = new List<string>()
                     {
                         Common.FormTypeMapping(2)
                     };
 
                     var result = db.Form_Header
-                        .Where(x => iisdFormTypes.Contains(x.FormType)).ToList();
+                        .Where(x => issdFormTypes.Contains(x.FormType)).ToList();
 
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    var getApprover = db.Config_Approver.Where(x => x.Username == User.Identity.Name);
+                    var isMeApprover = getApprover.Any();
+
+                    var resultVM = new List<ViewFormHeaderModel>();
+
+                    foreach (var item in result)
+                    {
+                        resultVM.Add(new ViewFormHeaderModel
+                        {
+                            Id = item.Id,
+                            FormType = item.FormType,
+                            FormDate = item.FormDate,
+                            FormStatus = item.FormStatus,
+                            Currency = item.Currency,
+                            PreparedBy = item.PreparedBy,
+                            PreparedDate = item.PreparedDate,
+                            ApprovedBy = item.ApprovedBy,
+                            ApprovedDate = item.ApprovedDate,
+                            AdminEditted = item.AdminEditted,
+                            AdminEdittedBy = item.AdminEdittedBy,
+                            AdminEdittedDate = item.AdminEdittedDate,
+
+                            IsDraft = (item.FormStatus == Common.FormStatusMapping(0)),
+
+                            IsMeCanEditDraft = (User.IsInRole(Config.AclIssd) && !isMeApprover),
+
+
+                            IsMyFormRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatusMapping(4)),
+                            IsFormPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatusMapping(2)),
+                            IsFormOwner = (User.Identity.Name == item.PreparedBy),
+                            IsCanAdminEdit = (User.IsInRole(Config.AclPowerUser)),
+                            IsResubmitEnabled = (item.FormStatus == "Rejected" && User.IsInRole(Config.AclAmsd) && User.Identity.Name != item.ApprovedBy)
+                        });
+                    }
+
+                    return Request.CreateResponse(DataSourceLoader.Load(resultVM, loadOptions));
                 }
             }
             catch (Exception ex)
@@ -60,12 +96,261 @@ namespace xDC_Web.Controllers.Api
                         FormType = Common.FormTypeMapping(2),
                         PreparedBy = User.Identity.Name,
                         PreparedDate = DateTime.Now,
+                        FormStatus = (inputs.IsSaveAsDraft) ? Common.FormStatusMapping(0) : Common.FormStatusMapping(2),
+                        FormDate = Common.ConvertEpochToDateTime(inputs.SettlementDateEpoch),
+                        Currency = inputs.Currency,
+                        ApprovedBy = (inputs.IsSaveAsDraft) ? null : inputs.Approver
+                    };
+                    
+                    db.Form_Header.Add(newFormHeader);
+                    db.SaveChanges();
+                    
+                    var newTrades = new List<ISSD_TradeSettlement>();
+
+                    if (inputs.Equity.Any())
+                    {
+                        foreach (var item in inputs.Equity)
+                        {
+                            newTrades.Add(new ISSD_TradeSettlement()
+                            {
+                                FormId = newFormHeader.Id,
+                                InstrumentType = Common.TradeSettlementMapping(1),
+                                InstrumentCode = item.InstrumentCode,
+                                StockCode = item.StockCode,
+                                Maturity = item.Maturity,
+                                Sales = item.Sales,
+                                Purchase = item.Purchase,
+                                CreatedBy = User.Identity.Name,
+                                CreatedDate = DateTime.Now
+                            });
+                        }
+                    }
+
+                    if (inputs.Bond.Any())
+                    {
+                        foreach (var item in inputs.Bond)
+                        {
+                            newTrades.Add(new ISSD_TradeSettlement()
+                            {
+                                FormId = newFormHeader.Id,
+                                InstrumentType = Common.TradeSettlementMapping(2),
+                                InstrumentCode = item.InstrumentCode,
+                                StockCode = item.StockCode,
+                                Maturity = item.Maturity,
+                                Sales = item.Sales,
+                                Purchase = item.Purchase,
+                                CreatedBy = User.Identity.Name,
+                                CreatedDate = DateTime.Now
+                            });
+                        }
+                    }
+
+                    if (inputs.Cp.Any())
+                    {
+                        foreach (var item in inputs.Cp)
+                        {
+                            newTrades.Add(new ISSD_TradeSettlement()
+                            {
+                                FormId = newFormHeader.Id,
+                                InstrumentType = Common.TradeSettlementMapping(3),
+                                InstrumentCode = item.InstrumentCode,
+                                StockCode = item.StockCode,
+                                Maturity = item.Maturity,
+                                Sales = item.Sales,
+                                Purchase = item.Purchase,
+                                CreatedBy = User.Identity.Name,
+                                CreatedDate = DateTime.Now
+                            });
+                        }
+                    }
+
+                    if (inputs.NotesPaper.Any())
+                    {
+                        foreach (var item in inputs.NotesPaper)
+                        {
+                            newTrades.Add(new ISSD_TradeSettlement()
+                            {
+                                FormId = newFormHeader.Id,
+                                InstrumentType = Common.TradeSettlementMapping(4),
+                                InstrumentCode = item.InstrumentCode,
+                                StockCode = item.StockCode,
+                                Maturity = item.Maturity,
+                                Sales = item.Sales,
+                                Purchase = item.Purchase,
+                                CreatedBy = User.Identity.Name,
+                                CreatedDate = DateTime.Now
+                            });
+                        }
+                    }
+
+                    if (inputs.Repo.Any())
+                    {
+                        foreach (var item in inputs.Repo)
+                        {
+                            newTrades.Add(new ISSD_TradeSettlement()
+                            {
+                                FormId = newFormHeader.Id,
+                                InstrumentType = Common.TradeSettlementMapping(5),
+                                InstrumentCode = item.InstrumentCode,
+                                StockCode = item.StockCode,
+                                FirstLeg = item.FirstLeg,
+                                SecondLeg = item.SecondLeg,
+                                CreatedBy = User.Identity.Name,
+                                CreatedDate = DateTime.Now
+                            });
+                        }
+                    }
+
+                    if (inputs.Coupon.Any())
+                    {
+                        foreach (var item in inputs.Coupon)
+                        {
+                            newTrades.Add(new ISSD_TradeSettlement()
+                            {
+                                FormId = newFormHeader.Id,
+                                InstrumentType = Common.TradeSettlementMapping(6),
+                                InstrumentCode = item.InstrumentCode,
+                                StockCode = item.StockCode,
+                                AmountPlus = item.AmountPlus,
+                                CreatedBy = User.Identity.Name,
+                                CreatedDate = DateTime.Now
+                            });
+                        }
+                    }
+
+                    if (inputs.Fees.Any())
+                    {
+                        foreach (var item in inputs.Fees)
+                        {
+                            newTrades.Add(new ISSD_TradeSettlement()
+                            {
+                                FormId = newFormHeader.Id,
+                                InstrumentType = Common.TradeSettlementMapping(7),
+                                InstrumentCode = item.InstrumentCode,
+                                AmountPlus = item.AmountPlus,
+                                CreatedBy = User.Identity.Name,
+                                CreatedDate = DateTime.Now
+                            });
+                        }
+                    }
+
+                    if (inputs.Mtm.Any())
+                    {
+                        foreach (var item in inputs.Mtm)
+                        {
+                            newTrades.Add(new ISSD_TradeSettlement()
+                            {
+                                FormId = newFormHeader.Id,
+                                InstrumentType = Common.TradeSettlementMapping(8),
+                                InstrumentCode = item.InstrumentCode,
+                                StockCode = item.StockCode,
+                                AmountPlus = item.AmountPlus,
+                                AmountMinus = item.AmountMinus,
+                                CreatedBy = User.Identity.Name,
+                                CreatedDate = DateTime.Now
+                            });
+                        }
+                    }
+
+                    if (inputs.FxSettlement.Any())
+                    {
+                        foreach (var item in inputs.FxSettlement)
+                        {
+                            newTrades.Add(new ISSD_TradeSettlement()
+                            {
+                                FormId = newFormHeader.Id,
+                                InstrumentType = Common.TradeSettlementMapping(9),
+                                InstrumentCode = item.InstrumentCode,
+                                AmountPlus = item.AmountPlus,
+                                AmountMinus = item.AmountMinus,
+                                CreatedBy = User.Identity.Name,
+                                CreatedDate = DateTime.Now
+                            });
+                        }
+                    }
+
+                    if (inputs.ContributionCredited.Any())
+                    {
+                        foreach (var item in inputs.ContributionCredited)
+                        {
+                            newTrades.Add(new ISSD_TradeSettlement()
+                            {
+                                FormId = newFormHeader.Id,
+                                InstrumentType = Common.TradeSettlementMapping(10),
+                                InstrumentCode = item.InstrumentCode,
+                                AmountPlus = item.AmountPlus,
+                                CreatedBy = User.Identity.Name,
+                                CreatedDate = DateTime.Now
+                            });
+                        }
+                    }
+
+                    if (inputs.Altid.Any())
+                    {
+                        foreach (var item in inputs.Altid)
+                        {
+                            newTrades.Add(new ISSD_TradeSettlement()
+                            {
+                                FormId = newFormHeader.Id,
+                                InstrumentType = Common.TradeSettlementMapping(11),
+                                InstrumentCode = item.InstrumentCode,
+                                AmountPlus = item.AmountPlus,
+                                AmountMinus = item.AmountMinus,
+                                CreatedBy = User.Identity.Name,
+                                CreatedDate = DateTime.Now
+                            });
+                        }
+                    }
+
+                    if (inputs.Others.Any())
+                    {
+                        foreach (var item in inputs.Others)
+                        {
+                            newTrades.Add(new ISSD_TradeSettlement()
+                            {
+                                FormId = newFormHeader.Id,
+                                InstrumentType = Common.TradeSettlementMapping(12),
+                                InstrumentCode = item.InstrumentCode,
+                                AmountPlus = item.AmountPlus,
+                                AmountMinus = item.AmountMinus,
+                                CreatedBy = User.Identity.Name,
+                                CreatedDate = DateTime.Now
+                            });
+                        }
+                    }
+                    
+                    db.ISSD_TradeSettlement.AddRange(newTrades);
+                    db.SaveChanges();
+
+                    return Request.CreateResponse(HttpStatusCode.Created, newFormHeader.Id);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+
+        }
+
+        [HttpPost]
+        [Route("TradeSettlement/Edit")]
+        public HttpResponseMessage EditTradeSettlement([FromBody] TradeSettlementModel inputs)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var newFormHeader = new Form_Header()
+                    {
+                        FormType = Common.FormTypeMapping(2),
+                        PreparedBy = User.Identity.Name,
+                        PreparedDate = DateTime.Now,
                         FormStatus = Common.FormStatusMapping(2),
                         FormDate = Common.ConvertEpochToDateTime(inputs.SettlementDateEpoch),
                         Currency = inputs.Currency,
                         ApprovedBy = inputs.Approver
                     };
-                    
+
                     db.Form_Header.Add(newFormHeader);
                     db.SaveChanges();
 
@@ -302,7 +587,38 @@ namespace xDC_Web.Controllers.Api
 
         }
 
+        /*
+         * To delete draft form
+         *
+         */
+        [HttpDelete]
+        [Authorize(Roles = "Administrator, ISSD")]
+        [Route("TradeSettlement/")]
+        public HttpResponseMessage DeleteTradeSettlement(FormDataCollection form)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var key = Convert.ToInt32(form.Get("id"));
 
+                    var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == key);
+                    var inflowFunds = db.ISSD_TradeSettlement.Where(x => x.FormId == formHeader.Id);
+                    
+                    db.Form_Header.Remove(formHeader);
+                    db.ISSD_TradeSettlement.RemoveRange(inflowFunds);
+                    db.SaveChanges();
+
+                    return Request.CreateResponse(HttpStatusCode.OK);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+
+        }
 
         #endregion
 
@@ -443,7 +759,7 @@ namespace xDC_Web.Controllers.Api
         
         [HttpPut]
         [Route("TradeSettlement/TradeItem/")]
-        public HttpResponseMessage UpdateTradeSettlement(FormDataCollection form)
+        public HttpResponseMessage UpdateTradeItem(FormDataCollection form)
         {
             using (var db = new kashflowDBEntities())
             {
@@ -473,7 +789,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Route("TradeSettlement/TradeItem/")]
-        public HttpResponseMessage InsertTradeSettlement(FormDataCollection form)
+        public HttpResponseMessage InsertTradeItem(FormDataCollection form)
         {
             using (var db = new kashflowDBEntities())
             {
@@ -499,7 +815,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpDelete]
         [Route("TradeSettlement/TradeItem/")]
-        public HttpResponseMessage DeleteTradeSettlement(FormDataCollection form)
+        public HttpResponseMessage DeleteTradeItem(FormDataCollection form)
         {
             using (var db = new kashflowDBEntities())
             {

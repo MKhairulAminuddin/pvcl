@@ -12,7 +12,7 @@ using xDC_Web.ViewModels;
 
 namespace xDC_Web.Controllers
 {
-    [Authorize(Roles = "Administrator, Power User, IISD")]
+    [Authorize(Roles = "Administrator, Power User, ISSD")]
     [RoutePrefix("issd")]
     public class IssdController : BaseController
     {
@@ -21,7 +21,7 @@ namespace xDC_Web.Controllers
             using (var db = new kashflowDBEntities())
             {
                 var isApprover = db.Config_Approver.Any(x => x.Username == User.Identity.Name);
-                var isIisdUser = User.IsInRole(Config.AclIisd);
+                var isIisdUser = User.IsInRole(Config.AclIssd);
 
                 var model = new ISSDLandingPageViewModel()
                 {
@@ -45,7 +45,7 @@ namespace xDC_Web.Controllers
                 PreparedBy = User.Identity.Name,
                 PreparedDate = DateTime.Now,
                 FormStatus = Common.FormStatusMapping(1),
-                IsDraftEnabled = true
+                EnableDraftButton = true
             };
 
             return View("TradeSettlement/New", model);
@@ -77,7 +77,7 @@ namespace xDC_Web.Controllers
                             ApprovedBy = getForm.ApprovedBy,
                             ApprovedDate = getForm.ApprovedDate,
 
-                            IsDraftEnabled = (getForm.FormStatus == Common.FormStatusMapping(0) ||
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatusMapping(0) ||
                                               getForm.FormStatus == Common.FormStatusMapping(1)),
 
                             IsAdminEdited = getForm.AdminEditted,
@@ -105,48 +105,39 @@ namespace xDC_Web.Controllers
             }
         }
 
-        public ActionResult EditTradeSettlementForm(string id)
+        [Route("TradeSettlement/Edit/{formId}")]
+        public ActionResult EditTradeSettlement(string formId)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var formId = Convert.ToInt32(id);
-                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+                    var formIdParsed = Convert.ToInt32(formId);
+                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formIdParsed);
 
                     if (getForm != null)
                     {
-                        if (!User.IsInRole(Config.AclPowerUser) &&
-                            (getForm.FormStatus == Common.FormStatusMapping(2) || getForm.FormStatus == Common.FormStatusMapping(3)))
-                        {
-                            TempData["ErrorMessage"] = "Current form status prohibited you from editing it.";
-                            return View("Error");
-                        }
-
                         var formObj = new TradeSettlementFormViewModel()
                         {
                             Id = getForm.Id,
-                            PreparedBy = getForm.PreparedBy,
-                            PreparedDate = getForm.PreparedDate,
                             FormStatus = getForm.FormStatus,
 
-                            IsApproved = (getForm.FormStatus == Common.FormStatusMapping(3)),
+                            PreparedBy = getForm.PreparedBy,
+                            PreparedDate = getForm.PreparedDate,
                             ApprovedBy = getForm.ApprovedBy,
                             ApprovedDate = getForm.ApprovedDate,
-
-                            IsDraftEnabled = (getForm.FormStatus == Common.FormStatusMapping(0) ||
-                                              getForm.FormStatus == Common.FormStatusMapping(1)),
 
                             IsAdminEdited = getForm.AdminEditted,
                             AdminEditedBy = getForm.AdminEdittedBy,
                             AdminEditedDate = getForm.AdminEdittedDate,
+                            
 
-                            ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
-                            AdminEditPermission = User.IsInRole(Config.AclPowerUser)
-
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatusMapping(0)),
+                            EnableSaveAdminChanges = (User.IsInRole(Config.AclPowerUser)),
+                            
                         };
 
-                        return View("TradeSettlement/New", formObj);
+                        return View("TradeSettlement/Edit", formObj);
                     }
                     else
                     {
@@ -194,7 +185,7 @@ namespace xDC_Web.Controllers
             }
         }
 
-        [Route("ViewPrinted")]
+        [Route("ViewPrinted/{id}")]
         public ActionResult ViewPrinted(string id)
         {
             try

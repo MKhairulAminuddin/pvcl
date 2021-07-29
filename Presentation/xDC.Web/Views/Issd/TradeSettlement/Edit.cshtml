@@ -1,6 +1,6 @@
 ﻿@model xDC_Web.ViewModels.TradeSettlementFormViewModel
 @{
-    ViewBag.Title = "New Trade Settlement";
+    ViewBag.Title = "Trade Settlement (Editing)";
 }
 
 
@@ -32,24 +32,46 @@
                                     .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Issd")"; } </text>)
                                     )
                             </div>
-                            <div style="display: inline-block">
-                                @(Html.DevExtreme().Button()
-                                    .ID("submitForApprovalBtn")
-                                    .Text("Submit for Approval")
-                                    .UseSubmitBehavior(true)
-                                    .Type(ButtonType.Default)
-                                    .StylingMode(ButtonStylingMode.Contained)
-                                    )
-                            </div>
-                            <div style="display: inline-block">
-                                @(Html.DevExtreme().Button()
-                                    .ID("saveAsDraftBtn")
-                                    .Text("Save as Draft")
-                                    .UseSubmitBehavior(true)
-                                    .Type(ButtonType.Normal)
-                                    .StylingMode(ButtonStylingMode.Contained)
-                                    )
-                            </div>
+
+                            @if (!Model.EnableSaveAdminChanges)
+                            {
+                                <div style="display: inline-block">
+
+                                    @(Html.DevExtreme().Button()
+                                        .ID("submitForApprovalBtn")
+                                        .Text("Submit for Approval")
+                                        .UseSubmitBehavior(true)
+                                        .Type(ButtonType.Default)
+                                        .StylingMode(ButtonStylingMode.Contained)
+                                        )
+                                </div>
+                            }
+
+                            @if (Model.EnableDraftButton)
+                            {
+                                <div style="display: inline-block">
+                                    @(Html.DevExtreme().Button()
+                                        .ID("saveAsDraftBtn")
+                                        .Text("Save as Draft")
+                                        .Type(ButtonType.Normal)
+                                        .StylingMode(ButtonStylingMode.Contained)
+                                        )
+                                </div>
+                            }
+
+                            @if (Model.EnableSaveAdminChanges)
+                            {
+                                <div style="display: inline-block">
+                                    @(Html.DevExtreme().Button()
+                                        .ID("adminEditSaveChangesBtn")
+                                        .Text("Save Changes")
+                                        .Type(ButtonType.Default)
+                                        .StylingMode(ButtonStylingMode.Contained)
+                                        )
+                                </div>
+                            }
+
+                            
                         </div>
                     </div>
                 </div>
@@ -154,11 +176,7 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 
-
-                                
-
                                 <div class="dx-fieldset">
                                     <div class="row">
                                         <div class="col-md-4">
@@ -184,6 +202,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-4">
                         <div class="box box-solid">
                             <div class="box-body">
@@ -213,10 +232,66 @@
                                                 .ReadOnly(true))
                                         </div>
                                     </div>
+                                    @if (Model.IsApproved)
+                                    {
+                                        <div class="dx-field">
+                                            <div class="dx-field-label">Approved By</div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().TextBoxFor(m => m.ApprovedBy)
+                                                    .StylingMode(EditorStylingMode.Underlined)
+                                                    .ReadOnly(true))
+                                            </div>
+                                        </div>
+                                        <div class="dx-field">
+                                            <div class="dx-field-label">Approved Date</div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().DateBoxFor(m => m.ApprovedDate)
+                                                    .StylingMode(EditorStylingMode.Underlined)
+                                                    .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                                    .ReadOnly(true))
+                                            </div>
+                                        </div>
+                                        <div class="dx-field">
+                                            <div class="dx-field-label">Approval/Rejection Notes</div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().TextAreaFor(m => m.ApprovalOrRejectionNotes)
+                                                    .StylingMode(EditorStylingMode.Underlined)
+                                                    .ReadOnly(true))
+                                            </div>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>
+
+                        @if (Model.IsAdminEdited)
+                        {
+                            <div class="box box-solid" style="background: #FFEBEE">
+                                <div class="box-body">
+                                    <div class="dx-fieldset">
+                                        <div class="dx-field">
+                                            <div class="dx-field-label text-red">Admin Edited By</div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().TextBoxFor(m => m.AdminEditedBy)
+                                                    .StylingMode(EditorStylingMode.Underlined)
+                                                    .ReadOnly(true))
+                                            </div>
+                                        </div>
+                                        <div class="dx-field">
+                                            <div class="dx-field-label text-red">Admin Edited Date</div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().DateBoxFor(m => m.AdminEditedDate)
+                                                    .StylingMode(EditorStylingMode.Underlined)
+                                                    .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                                    .ReadOnly(true))
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     </div>
+
                 </div>
             </form>
         </div>
@@ -259,5 +334,5 @@
 
 @section scripts
 {
-    <script src="~/Scripts/app/issd/tradeSettlement/new.js"></script>
+    <script src="~/Scripts/app/issd/tradeSettlement/edit.js"></script>
 }

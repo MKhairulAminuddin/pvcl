@@ -81,7 +81,7 @@ namespace xDC_Web.Extension
             get
             {
                 if (IsAuthenticated() &&
-                    (HttpContext.Current.User.IsInRole(Config.AclAdministrator) || HttpContext.Current.User.IsInRole(Config.AclPowerUser) || HttpContext.Current.User.IsInRole(Config.AclIisd)))
+                    (HttpContext.Current.User.IsInRole(Config.AclAdministrator) || HttpContext.Current.User.IsInRole(Config.AclPowerUser) || HttpContext.Current.User.IsInRole(Config.AclIssd)))
                 {
                     return true;
                 }
