@@ -1,6 +1,8 @@
 ﻿(function ($, window, document) {
 
     $(function () {
+        populateData();
+
         var approverStore = DevExpress.data.AspNet.createStore({
             key: "id",
             loadUrl: window.location.origin + "/api/common/GetTradeSettlementApprover"
@@ -9,7 +11,7 @@
         var $tabpanel, $equityGrid, $bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid, $feesGrid,
             $mtmGrid, $fxSettlementGrid, $contributionCreditedGrid, $altidGrid, $othersGrid,
             $tradeSettlementForm, $currencySelectBox, $obRentasTb, $obMmaTb, $cbRentasTb, $cbMmaTb,
-            $approverDropdown, $settlementDateBox, $loadPanel;
+            $approverDropdown, $settlementDateBox, $loadPanel, isSaveAsDraft = false, isSaveAdminEdit = false;
         
 
         $approverDropdown = $("#approverDropdown").dxSelectBox({
@@ -30,21 +32,55 @@
             function(e) {
                 e.preventDefault();
 
-                $couponGrid.saveEditData();
-                $feesGrid.saveEditData();
-                $mtmGrid.saveEditData();
-                $fxSettlementGrid.saveEditData();
-                $contributionCreditedGrid.saveEditData();
-                $altidGrid.saveEditData();
-                $othersGrid.saveEditData();
+                saveAllGridEditData();
                 
-                if (moment().subtract(1, "days").isAfter($settlementDateBox.option("value")))
-                {
-                    alert("T-n only available for viewing..");
+                if (isSaveAsDraft || isSaveAdminEdit) {
+                    $loadPanel.option("position", { of: "#tradeSettlementForm" });
+                    $loadPanel.show();
+
+                    var data = {
+                        id: window.location.pathname.split("/").pop(),
+                        currency: $currencySelectBox.option("value"),
+                        settlementDateEpoch: moment($settlementDateBox.option("value")).unix(),
+                        isSaveAsDraft: isSaveAsDraft,
+                        isSaveAdminEdit: isSaveAdminEdit,
+
+                        equity: $equityGrid.getDataSource().items(),
+                        bond: $bondGrid.getDataSource().items(),
+                        cp: $cpGrid.getDataSource().items(),
+                        notesPaper: $notesPaperGrid.getDataSource().items(),
+                        repo: $repoGrid.getDataSource().items(),
+                        coupon: $couponGrid.getDataSource().items(),
+                        fees: $feesGrid.getDataSource().items(),
+                        mtm: $mtmGrid.getDataSource().items(),
+                        fxSettlement: $fxSettlementGrid.getDataSource().items(),
+                        contributionCredited: $contributionCreditedGrid.getDataSource().items(),
+                        altid: $altidGrid.getDataSource().items(),
+                        others: $othersGrid.getDataSource().items(),
+                        
+                        rentasClosingBalance: $cbRentasTb.option("value"),
+                        mmaClosingBalance: $obMmaTb.option("value")
+                    };
+
+                    $.ajax({
+                        data: data,
+                        dataType: "json",
+                        url: window.location.origin +
+                            "/api/issd/TradeSettlement/Edit",
+                        method: "post",
+                        success: function(data) {
+                            window.location.href = "/issd/TradeSettlement/View/" + data;
+                        },
+                        fail: function(jqXHR, textStatus, errorThrown) {
+                            $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                        },
+                        complete: function(data) {
+                            $loadPanel.hide();
+                        }
+                    });
                 }
-                else
-                {
-                    $("#selectApproverModal").modal("show");
+                else {
+                    $('#selectApproverModal').modal('show');
                 }
             });
 
@@ -101,58 +137,22 @@
 
         $("#saveAsDraftBtn").on({
             "click": function (e) {
-                $inflowFundsGrid.saveEditData().then(function () {
-
-                    if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
-                        $("#error_container").bs_warning("Please key in at least one item.");
-                    }
-                    else {
-                        $loadPanel.option("position", { of: "#formContainer" });
-                        $loadPanel.show();
-
-                        var data;
-                        if (getUrlParameter('id') != false) {
-                            data = {
-                                id: getUrlParameter('id'),
-                                amsdInflowFunds: $inflowFundsGrid.getDataSource().items()
-                            };
-                        } else {
-                            data = {
-                                amsdInflowFunds: $inflowFundsGrid.getDataSource().items()
-                            };
-                        }
-
-                        $.ajax({
-                            data: data,
-                            dataType: 'json',
-                            url: window.location.origin + '/api/issd/TradeSettlement/Draft',
-                            method: 'post',
-                            success: function (data) {
-                                window.location.href = window.location.origin + "/issd";
-                            },
-                            fail: function (jqXHR, textStatus, errorThrown) {
-                                $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
-                            },
-                            complete: function (data) {
-                                $loadPanel.hide();
-                            }
-                        });
-                    }
-
-                });
-
-                e.preventDefault();
+                isSaveAsDraft = true;
             }
         });
+
+        $("#adminEditSaveChangesBtn").on({
+            "click": function (e) {
+                isSaveAdminEdit = true;
+            }
+        });
+
+        //#region Other Widget
 
         $settlementDateBox = $("#settlementDateBox").dxDateBox({
             type: "date",
             displayFormat: "dd/MM/yyyy",
-            value: new Date(),
-            //min: moment().subtract(1, 'days'),
-            onValueChanged: function (data) {
-                populateDwData(data.value, $currencySelectBox.option("value"));
-            }
+            readOnly: true
         }).dxValidator({
             validationRules: [
                 {
@@ -167,7 +167,7 @@
                 items: ["MYR", "USD"],
                 placeHolder: "Currency..",
                 onValueChanged: function (data) {
-                    populateDwData($settlementDateBox.option("value"), data.value);
+                    populateData($settlementDateBox.option("value"), data.value);
                 }
             })
             .dxValidator({
@@ -180,20 +180,18 @@
             })
             .dxSelectBox("instance");
 
-        $obRentasTb = $("#obRentasTb").dxNumberBox({
-            readOnly: true
-        }).dxNumberBox("instance");
+        $obRentasTb = $("#obRentasTb").dxNumberBox("instance");
 
-        $obMmaTb = $("#obMmaTb").dxNumberBox({
-            readOnly: true,
-        }).dxNumberBox("instance");
+        $obMmaTb = $("#obMmaTb").dxNumberBox("instance");
 
         $cbRentasTb = $("#cbRentasTb").dxNumberBox({
             readOnly: true,
+            stylingMode: "filled"
         }).dxNumberBox("instance");
 
         $cbMmaTb = $("#cbMmaTb").dxNumberBox({
             readOnly: true,
+            stylingMode: "filled"
         }).dxNumberBox("instance");
 
         $tabpanel = $("#tabpanel-container").dxTabPanel({
@@ -214,82 +212,85 @@
             deferRendering: false
         });
 
+        //#endregion Data Source
+
         //#region Data Source
 
-        function ds(instrumentType, settlementDate, currency) {
+        function ds(instrumentType) {
             return $.ajax({
-                url: window.location.origin + "/api/issd/GetTradeSettlementFromEdw/" + instrumentType + "/" + moment(settlementDate).unix() + "/" + currency,
+                url: window.location.origin +
+                    "/api/issd/TradeSettlement/TradeItem/" +
+                    window.location.pathname.split("/").pop() +
+                    "/" +
+                    instrumentType,
                 type: "get"
             });
         }
 
-        function dsOpeningBalance(instrumentType, settlementDate, currency) {
+        function dsBalance(balanceType, balanceCategory) {
             return $.ajax({
-                url: window.location.origin + "/api/issd/GetOpeningBalance/" + instrumentType + "/" + moment(settlementDate).unix() + "/" + currency,
+                url: window.location.origin +
+                    "/api/issd/GetBalance/" +
+                    window.location.pathname.split("/").pop() +
+                    "/" +
+                    balanceType +
+                    "/" +
+                    balanceCategory,
                 type: "get"
             });
         }
 
-        function populateDwData(settlementDate, currency) {
-            if (settlementDate && currency) {
-                $.when(
-                        ds("EQUITY", settlementDate, currency),
-                        ds("BOND", settlementDate, currency),
-                        ds("COMMERCIAL PAPER", settlementDate, currency),
-                        ds("NOTES AND PAPERS", settlementDate, currency),
-                        ds("REPO", settlementDate, currency),
-                        ds("COUPON", settlementDate, currency),
-                        dsOpeningBalance("RENTAS", settlementDate, currency),
-                        dsOpeningBalance("MMA", settlementDate, currency)
-                    )
-                    .done(function (data1, data2, data3, data4, data5, data6, data7, data8) {
-                        $equityGrid.option("dataSource", data1[0].data);
-                        $equityGrid.repaint();
+        function populateData() {
+            $.when(
+                ds("equity"),
+                ds("bond"),
+                ds("cp"),
+                ds("notesPaper"),
+                ds("repo"),
+                ds("coupon"),
+                ds("fees"),
+                ds("mtm"),
+                ds("fxSettlement"),
+                ds("contributionCredited"),
+                ds("altid"),
+                ds("others"),
 
-                        $bondGrid.option("dataSource", data2[0].data);
-                        $bondGrid.repaint();
+                dsBalance("CLOSING", "RENTAS"),
+                dsBalance("CLOSING", "MMA")
+                )
+                .done(function (data1, data2, data3, data4, data5, data6, data7, data8, data9, data10, data11, data12, data13, data14) {
+                    $equityGrid.option("dataSource", data1[0].data);
+                    $bondGrid.option("dataSource", data2[0].data);
+                    $cpGrid.option("dataSource", data3[0].data);
+                    $notesPaperGrid.option("dataSource", data4[0].data);
+                    $repoGrid.option("dataSource", data5[0].data);
+                    $couponGrid.option("dataSource", data6[0].data);
+                    $feesGrid.option("dataSource", data7[0].data);
+                    $mtmGrid.option("dataSource", data8[0].data);
+                    $fxSettlementGrid.option("dataSource", data9[0].data);
+                    $contributionCreditedGrid.option("dataSource", data10[0].data);
+                    $altidGrid.option("dataSource", data11[0].data);
+                    $othersGrid.option("dataSource", data12[0].data);
 
-                        $cpGrid.option("dataSource", data3[0].data);
-                        $cpGrid.repaint();
+                    $equityGrid.repaint();
+                    $bondGrid.repaint();
+                    $cpGrid.repaint();
+                    $notesPaperGrid.repaint();
+                    $repoGrid.repaint();
+                    $couponGrid.repaint();
+                    $feesGrid.repaint();
+                    $mtmGrid.repaint();
+                    $fxSettlementGrid.repaint();
+                    $contributionCreditedGrid.repaint();
+                    $altidGrid.repaint();
+                    $othersGrid.repaint();
 
-                        $notesPaperGrid.option("dataSource", data4[0].data);
-                        $notesPaperGrid.repaint();
-
-                        $repoGrid.option("dataSource", data5[0].data);
-                        $repoGrid.repaint();
-
-                        $couponGrid.option("dataSource", data6[0].data);
-                        $couponGrid.repaint();
-                        
-                        $obRentasTb.option("value", data7[0]);
-                        $obMmaTb.option("value", data8[0]);
-
-                        setTimeout(updateClosingBalance, 1000);
-                    })
-                    .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-                        DevExpress.ui.notify({
-                            message: "Data Updated",
-                            type: "info",
-                            position: {
-                                my: "right",
-                                at:"bottom",
-                                of: "#toast-container"
-                            },
-                            displayTime: 800,
-                            width: "300px"
-                        });
-                    })
-                    .then(function() {
-                        
-                    });
-            } else {
-                dxGridUtils.clearGrid($equityGrid);
-                dxGridUtils.clearGrid($bondGrid);
-                dxGridUtils.clearGrid($cpGrid);
-                dxGridUtils.clearGrid($notesPaperGrid);
-                dxGridUtils.clearGrid($repoGrid);
-                dxGridUtils.clearGrid($couponGrid);
-            }
+                    $cbRentasTb.option("value", data13[0]);
+                    $cbMmaTb.option("value", data14[0]);
+                })
+                .then(function() {
+                    console.log("Done load data");
+                });
         }
 
         function updateClosingBalance() {
@@ -332,6 +333,16 @@
                 displayTime: 800,
                 width: "300px"
             });
+        }
+
+        function saveAllGridEditData() {
+            $couponGrid.saveEditData();
+            $feesGrid.saveEditData();
+            $mtmGrid.saveEditData();
+            $fxSettlementGrid.saveEditData();
+            $contributionCreditedGrid.saveEditData();
+            $altidGrid.saveEditData();
+            $othersGrid.saveEditData();
         }
 
         //#endregion

@@ -82,7 +82,7 @@
                             icon: "fa fa-trash-o",
                             cssClass: "dx-datagrid-command-btn text-red",
                             visible: function (e) {
-                                return (e.row.data.isDraft);
+                                return (e.row.data.isDraft && e.row.data.isMeCanEditDraft);
                             },
                             onClick: function (e) {
                                 if (!confirm("Do you really want to delete this?")) {

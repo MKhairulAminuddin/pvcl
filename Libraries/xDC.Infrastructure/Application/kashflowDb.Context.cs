@@ -39,5 +39,6 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<ISSD_TradeSettlement> ISSD_TradeSettlement { get; set; }
         public virtual DbSet<EDW_TradeItem> EDW_TradeItem { get; set; }
         public virtual DbSet<EDW_BankBalance> EDW_BankBalance { get; set; }
+        public virtual DbSet<ISSD_Balance> ISSD_Balance { get; set; }
     }
 }

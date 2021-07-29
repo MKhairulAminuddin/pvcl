@@ -195,19 +195,23 @@
             .dxSelectBox("instance");
 
         $obRentasTb = $("#obRentasTb").dxNumberBox({
-            readOnly: true
+            readOnly: true,
+            stylingMode: "filled"
         }).dxNumberBox("instance");
 
         $obMmaTb = $("#obMmaTb").dxNumberBox({
             readOnly: true,
+            stylingMode: "filled"
         }).dxNumberBox("instance");
 
         $cbRentasTb = $("#cbRentasTb").dxNumberBox({
             readOnly: true,
+            stylingMode: "filled"
         }).dxNumberBox("instance");
 
         $cbMmaTb = $("#cbMmaTb").dxNumberBox({
             readOnly: true,
+            stylingMode: "filled"
         }).dxNumberBox("instance");
 
         $tabpanel = $("#tabpanel-container").dxTabPanel({

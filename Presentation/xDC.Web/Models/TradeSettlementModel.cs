@@ -32,6 +32,7 @@ namespace xDC_Web.Models
         public List<Trades> Others { get; set; }
 
         public bool IsSaveAsDraft { get; set; }
+        public bool IsSaveAdminEdit { get; set; }
 
         public TradeSettlementModel()
         {

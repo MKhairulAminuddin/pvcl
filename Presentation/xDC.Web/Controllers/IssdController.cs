@@ -36,11 +36,11 @@ namespace xDC_Web.Controllers
 
         #region Trade Settlement Form
 
-        [Authorize(Roles = "IISD")]
+        [Authorize(Roles = "ISSD")]
         [Route("TradeSettlement/New")]
         public ActionResult NewTradeSettlement()
         {
-            var model = new TradeSettlementFormViewModel()
+            var model = new ViewTradeSettlementFormViewModel()
             {
                 PreparedBy = User.Identity.Name,
                 PreparedDate = DateTime.Now,
@@ -63,12 +63,26 @@ namespace xDC_Web.Controllers
 
                     if (getForm != null)
                     {
-                        var formObj = new TradeSettlementFormViewModel()
+                        var getOpeningBalanceRentas = db.ISSD_Balance.FirstOrDefault(x =>
+                            x.FormId == getForm.Id && x.BalanceType == "OPENING" && x.BalanceCategory == "RENTAS");
+                        decimal openingBalanceRentas =
+                            (getOpeningBalanceRentas != null)
+                                ? (decimal) getOpeningBalanceRentas.Amount
+                                : (decimal) 0.0;
+
+                        var getOpeningBalanceMma = db.ISSD_Balance.FirstOrDefault(x =>
+                            x.FormId == getForm.Id && x.BalanceType == "OPENING" && x.BalanceCategory == "MMA");
+                        decimal openingBalanceMma =
+                            (getOpeningBalanceMma != null) ? (decimal) getOpeningBalanceMma.Amount : (decimal) 0.0;
+
+                        var formObj = new ViewTradeSettlementFormViewModel()
                         {
                             Id = getForm.Id,
                             FormStatus = getForm.FormStatus,
-                            FormDate = getForm.FormDate,
-                            FormCurrency = getForm.Currency,
+                            SettlementDate = getForm.FormDate,
+                            Currency = getForm.Currency,
+                            OpeningBalanceRentas = openingBalanceRentas,
+                            OpeningBalanceMma = openingBalanceMma,
 
                             PreparedBy = getForm.PreparedBy,
                             PreparedDate = getForm.PreparedDate,
@@ -105,6 +119,8 @@ namespace xDC_Web.Controllers
             }
         }
 
+
+        [Authorize(Roles = "Power User, ISSD")]
         [Route("TradeSettlement/Edit/{formId}")]
         public ActionResult EditTradeSettlement(string formId)
         {
@@ -114,13 +130,33 @@ namespace xDC_Web.Controllers
                 {
                     var formIdParsed = Convert.ToInt32(formId);
                     var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formIdParsed);
+                    
+                    if (IsMeApprover(db))
+                    {
+                        TempData["ErrorMessage"] = "Unauthorized!";
+                        return View("Error");
+                    }
 
                     if (getForm != null)
                     {
-                        var formObj = new TradeSettlementFormViewModel()
+                        var getOpeningBalanceRentas = db.ISSD_Balance.FirstOrDefault(x =>
+                            x.FormId == getForm.Id && x.BalanceType == "OPENING" && x.BalanceCategory == "RENTAS");
+                        decimal openingBalanceRentas =
+                            (getOpeningBalanceRentas != null) ? (decimal)getOpeningBalanceRentas.Amount : (decimal) 0.0;
+
+                        var getOpeningBalanceMma = db.ISSD_Balance.FirstOrDefault(x =>
+                            x.FormId == getForm.Id && x.BalanceType == "OPENING" && x.BalanceCategory == "MMA");
+                        decimal openingBalanceMma=
+                            (getOpeningBalanceMma != null) ? (decimal)getOpeningBalanceMma.Amount : (decimal)0.0;
+
+                        var formObj = new EditTradeSettlementFormViewModel()
                         {
                             Id = getForm.Id,
                             FormStatus = getForm.FormStatus,
+                            SettlementDate = getForm.FormDate,
+                            Currency = getForm.Currency,
+                            OpeningBalanceRentas = openingBalanceRentas,
+                            OpeningBalanceMma = openingBalanceMma,
 
                             PreparedBy = getForm.PreparedBy,
                             PreparedDate = getForm.PreparedDate,

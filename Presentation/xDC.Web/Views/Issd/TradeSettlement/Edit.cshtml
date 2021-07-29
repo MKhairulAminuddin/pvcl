@@ -1,4 +1,4 @@
-﻿@model xDC_Web.ViewModels.TradeSettlementFormViewModel
+﻿@model xDC_Web.ViewModels.EditTradeSettlementFormViewModel
 @{
     ViewBag.Title = "Trade Settlement (Editing)";
 }
@@ -53,6 +53,7 @@
                                     @(Html.DevExtreme().Button()
                                         .ID("saveAsDraftBtn")
                                         .Text("Save as Draft")
+                                        .UseSubmitBehavior(true)
                                         .Type(ButtonType.Normal)
                                         .StylingMode(ButtonStylingMode.Contained)
                                         )
@@ -65,6 +66,7 @@
                                     @(Html.DevExtreme().Button()
                                         .ID("adminEditSaveChangesBtn")
                                         .Text("Save Changes")
+                                        .UseSubmitBehavior(true)
                                         .Type(ButtonType.Default)
                                         .StylingMode(ButtonStylingMode.Contained)
                                         )
@@ -86,12 +88,22 @@
                                             <div class="dx-field">
                                                 <div class="dx-field-label">Settlement Date</div>
                                                 <div class="dx-field-value">
-                                                    <div id="settlementDateBox"></div>
+                                                    @(Html.DevExtreme().DateBoxFor(m => m.SettlementDate)
+                                                        .ID("settlementDateBox")
+                                                        .DisplayFormat("dd/MM/yyyy")
+                                                        .StylingMode(EditorStylingMode.Filled)
+                                                        .ReadOnly(true)
+                                                        )
                                                 </div>
                                             </div>
                                             <div class="dx-field">
                                                 <div class="dx-field-label">Currency</div>
                                                 <div class="dx-field-value">
+                                                    @(Html.DevExtreme().SelectBoxFor(m => m.Currency)
+                                                        .ID("currencySelectBox")
+                                                        .StylingMode(EditorStylingMode.Filled)
+                                                        .ReadOnly(true)
+                                                        )
                                                     <div id="currencySelectBox"></div>
                                                 </div>
                                             </div>
@@ -101,13 +113,21 @@
                                             <div class="dx-field">
                                                 <div class="dx-field-label">Rentas</div>
                                                 <div class="dx-field-value">
-                                                    <div id="obRentasTb"></div>
+                                                    @(Html.DevExtreme().NumberBoxFor(m => m.OpeningBalanceRentas)
+                                                        .ID("obRentasTb")
+                                                        .StylingMode(EditorStylingMode.Filled)
+                                                        .ReadOnly(true)
+                                                        )
                                                 </div>
                                             </div>
                                             <div class="dx-field">
                                                 <div class="dx-field-label">MMA</div>
                                                 <div class="dx-field-value">
-                                                    <div id="obMmaTb"></div>
+                                                    @(Html.DevExtreme().NumberBoxFor(m => m.OpeningBalanceMma)
+                                                        .ID("obMmaTb")
+                                                        .StylingMode(EditorStylingMode.Filled)
+                                                        .ReadOnly(true)
+                                                        )
                                                 </div>
                                             </div>
                                         </div>

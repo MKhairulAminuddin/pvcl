@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using xDC.Infrastructure.Application;
 
 namespace xDC_Web.Controllers
 {
@@ -25,6 +26,13 @@ namespace xDC_Web.Controllers
         public ActionResult Unauthorized()
         {
             return View();
+        }
+
+        public bool IsMeApprover(kashflowDBEntities db)
+        {
+            var getApprover = db.Config_Approver.Where(x => x.Username == User.Identity.Name);
+            var isMeApprover = getApprover.Any();
+            return isMeApprover;
         }
     }
 }
