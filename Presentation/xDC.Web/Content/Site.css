@@ -346,4 +346,25 @@ div .validation-summary-errors.text-danger {
     background-color: #5B8EFB !important;
     color: white !important;
     font-weight: bold;
+    font-size: medium;
+    border-radius: 0;
+}
+
+.dropdown-header {
+    color: white;
+    background-color: #5B8EFB;
+}
+
+.dropdown-header > p.dropdown-header-title {
+    font-size: medium;
+    margin-bottom: 2px;
+    font-weight: bold;
+}
+
+.dropdown-header > p.dropdown-header-subtitle {
+    margin-bottom: 2px;
+}
+
+.dropdown-menu > li.dropdown-item > a {
+    color: #777777;
 }

@@ -39,7 +39,7 @@ namespace xDC_Web.Extension.CustomHtmlHelper
             }
 
 
-            var output = String.Format("<li class='dropdown-header' style='color: white'>{0}</li> <li class='dropdown-header' style='color: white'>{1}</li>", username, role);
+            var output = String.Format("<p class='dropdown-header-title'>{0}</p> <p class='dropdown-header-subtitle'>{1}</p>", username, role);
 
             return new HtmlString(output);
         }
