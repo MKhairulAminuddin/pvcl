@@ -199,6 +199,24 @@ var dxGridUtils = (function () {
         },
         wordWrapEnabled: true
     };
+
+    var tradeSettlementGridConfig = {
+        showRowLines: true,
+        rowAlternationEnabled: false,
+        showBorders: true,
+        allowColumnReordering: true,
+        allowColumnResizing: true,
+        sorting: {
+            mode: "multiple",
+            showSortIndexes: true
+        },
+        onCellPrepared: function (e) {
+            if (e.rowType === 'header') {
+                e.cellElement.css("backgroundColor", "#5B8EFB");
+                e.cellElement.css("color", "white");
+            }
+        }
+    };
     
 
     var commonFileTitle = function (reportName, isDownload) {
@@ -279,6 +297,7 @@ var dxGridUtils = (function () {
         clearGrid: clearGrid,
         exportGrid: exportGrid,
 
+        tradeSettlementGridConfig: tradeSettlementGridConfig,
 
         commonMainGridConfig: commonMainGridConfig,
         commonSummaryGridConfig: commonSummaryGridConfig,

@@ -161,7 +161,7 @@
         <div id="loadPanelContainer"></div>
 
         <div id="pageContent" class="content-wrapper">
-            <span id="toast-container" style="float: right; margin-top: 30px;margin-right: 20px"></span>
+
 
             @if (!string.IsNullOrEmpty(@ViewBag.Title))
             {
@@ -179,6 +179,7 @@
 
             @RenderBody()
 
+            <span id="toast-container" style="position: fixed;bottom: 60px;right: 10px;"></span>
         </div>
 
         <footer class="main-footer clearfix">

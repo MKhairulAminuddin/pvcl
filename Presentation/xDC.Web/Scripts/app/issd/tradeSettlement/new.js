@@ -1,6 +1,8 @@
 ﻿(function ($, window, document) {
 
     $(function () {
+        DevExpress.setTemplateEngine("underscore");
+
         var approverStore = DevExpress.data.AspNet.createStore({
             key: "id",
             loadUrl: window.location.origin + "/api/common/GetTradeSettlementApprover"
@@ -29,10 +31,7 @@
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function (e) {
                 e.preventDefault();
-
                 saveAllGridEditData();
-
-                console.log(isSaveAsDraft);
                 
                 if (moment().subtract(1, "days").isAfter($settlementDateBox.option("value")))
                 {
@@ -40,52 +39,49 @@
                 }
                 else {
                     if (isSaveAsDraft) {
-                        if (moment().subtract(1, "days").isAfter($settlementDateBox.option("value"))) {
-                            alert("T-n only available for viewing..");
-                        } else {
-                            $loadPanel.option("position", { of: "#tradeSettlementForm" });
-                            $loadPanel.show();
+                        // new clean draft
+                        $loadPanel.option("position", { of: "#tradeSettlementForm" });
+                        $loadPanel.show();
 
-                            var data = {
-                                currency: $currencySelectBox.option("value"),
-                                settlementDateEpoch: moment($settlementDateBox.option("value")).unix(),
-                                isSaveAsDraft: true,
+                        var data = {
+                            currency: $currencySelectBox.option("value"),
+                            settlementDateEpoch: moment($settlementDateBox.option("value")).unix(),
+                            isSaveAsDraft: true,
 
-                                equity: $equityGrid.getDataSource().items(),
-                                bond: $bondGrid.getDataSource().items(),
-                                cp: $cpGrid.getDataSource().items(),
-                                notesPaper: $notesPaperGrid.getDataSource().items(),
-                                repo: $repoGrid.getDataSource().items(),
-                                coupon: $couponGrid.getDataSource().items(),
-                                fees: $feesGrid.getDataSource().items(),
-                                mtm: $mtmGrid.getDataSource().items(),
-                                fxSettlement: $fxSettlementGrid.getDataSource().items(),
-                                contributionCredited: $contributionCreditedGrid.getDataSource().items(),
-                                altid: $altidGrid.getDataSource().items(),
-                                others: $othersGrid.getDataSource().items(),
+                            equity: $equityGrid.getDataSource().items(),
+                            bond: $bondGrid.getDataSource().items(),
+                            cp: $cpGrid.getDataSource().items(),
+                            notesPaper: $notesPaperGrid.getDataSource().items(),
+                            repo: $repoGrid.getDataSource().items(),
+                            coupon: $couponGrid.getDataSource().items(),
+                            fees: $feesGrid.getDataSource().items(),
+                            mtm: $mtmGrid.getDataSource().items(),
+                            fxSettlement: $fxSettlementGrid.getDataSource().items(),
+                            contributionCredited: $contributionCreditedGrid.getDataSource().items(),
+                            altid: $altidGrid.getDataSource().items(),
+                            others: $othersGrid.getDataSource().items(),
 
-                                rentasOpeningBalance: $obRentasTb.option("value"),
-                                mmaOpeningBalance: $cbMmaTb.option("value"),
-                                rentasClosingBalance: $cbRentasTb.option("value"),
-                                mmaClosingBalance: $obMmaTb.option("value")
-                            };
+                            rentasOpeningBalance: $obRentasTb.option("value"),
+                            mmaOpeningBalance: $cbMmaTb.option("value"),
+                            rentasClosingBalance: $cbRentasTb.option("value"),
+                            mmaClosingBalance: $obMmaTb.option("value")
+                        };
 
-                            $.ajax({
-                                data: data,
-                                dataType: "json",
-                                url: window.location.origin + "/api/issd/TradeSettlement/New",
-                                method: "post",
-                                success: function(data) {
-                                    window.location.href = "/issd/TradeSettlement/View/" + data;
-                                },
-                                fail: function(jqXHR, textStatus, errorThrown) {
-                                    $("#error_container").bs_alert(textStatus + ": " + errorThrown);
-                                },
-                                complete: function(data) {
-                                    $loadPanel.hide();
-                                }
-                            });
-                        }
+                        $.ajax({
+                            data: data,
+                            dataType: "json",
+                            url: window.location.origin + "/api/issd/TradeSettlement/New",
+                            method: "post",
+                            success: function (data) {
+                                window.location.href = "/issd/TradeSettlement/View/" + data;
+                            },
+                            fail: function (jqXHR, textStatus, errorThrown) {
+                                $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                            },
+                            complete: function (data) {
+                                $loadPanel.hide();
+                            }
+                        });
                     }
                     else
                     {
@@ -158,7 +154,9 @@
                 isSaveAsDraft = false;
             }
         });
-        
+
+        //#region Other Widgets
+
         $settlementDateBox = $("#settlementDateBox").dxDateBox({
             type: "date",
             displayFormat: "dd/MM/yyyy",
@@ -216,21 +214,44 @@
 
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
-                { title: "Equity", template: "equityTab" },
-                { title: "Bond", template: "bondTab" },
-                { title: "CP", template: "cpTab" },
-                { title: "Notes & Papers", template: "notesPaperTab" },
-                { title: "REPO", template: "repoTab" },
-                { title: "Coupon Received", template: "couponReceivedTab" },
-                { title: "Fees", template: "feesTab" },
-                { title: "MTM", template: "mtmTab" },
-                { title: "FX Settlement", template: "fxSettlementTab" },
-                { title: "Contribution Credited", template: "contributionCreditedTab" },
-                { title: "ALTID DD", template: "altidTab" },
-                { title: "Others", template: "othersTab" }
+                { titleId: "titleBadge1", title: "Equity", template: "equityTab" },
+                { titleId: "titleBadge2", title: "Bond", template: "bondTab" },
+                { titleId: "titleBadge3", title: "CP", template: "cpTab" },
+                { titleId: "titleBadge4", title: "Notes & Papers", template: "notesPaperTab" },
+                { titleId: "titleBadge5", title: "REPO", template: "repoTab" },
+                { titleId: "titleBadge6", title: "Coupon", template: "couponReceivedTab" },
+                { titleId: "titleBadge7", title: "Fees", template: "feesTab" },
+                { titleId: "titleBadge8", title: "MTM", template: "mtmTab" },
+                { titleId: "titleBadge9", title: "FX", template: "fxSettlementTab" },
+                { titleId: "titleBadge10", title: "Contribution", template: "contributionCreditedTab" },
+                { titleId: "titleBadge11", title: "ALTID", template: "altidTab" },
+                { titleId: "titleBadge12", title: "Others", template: "othersTab" }
             ],
-            deferRendering: false
+            deferRendering: false,
+            itemTitleTemplate: $("#dxPanelTitle"),
+            showNavButtons: true
         });
+
+        function togglePanelTitleItemCount(countTagId, gridInstance) {
+            var count = gridInstance.getDataSource().items().length;
+
+            if (count > 0) {
+                $("#" + countTagId).addClass("label label-danger").css("margin-left", "4px").text(count);
+            } else {
+                $("#" + countTagId).removeClass("label label-danger").css("margin-left", "0").text("");
+            }
+        }
+
+        function togglePanelTitleItemCountOnFetchEdw() {
+            togglePanelTitleItemCount("titleBadge1", $equityGrid);
+            togglePanelTitleItemCount("titleBadge2", $bondGrid);
+            togglePanelTitleItemCount("titleBadge3", $cpGrid);
+            togglePanelTitleItemCount("titleBadge4", $notesPaperGrid);
+            togglePanelTitleItemCount("titleBadge5", $repoGrid);
+            togglePanelTitleItemCount("titleBadge6", $couponGrid);
+        }
+
+        //#endregion
 
         //#region Data Source
 
@@ -263,42 +284,32 @@
                     .done(function (data1, data2, data3, data4, data5, data6, data7, data8) {
                         $equityGrid.option("dataSource", data1[0].data);
                         $equityGrid.repaint();
-
+                        
                         $bondGrid.option("dataSource", data2[0].data);
                         $bondGrid.repaint();
-
+                        
                         $cpGrid.option("dataSource", data3[0].data);
                         $cpGrid.repaint();
-
+                        
                         $notesPaperGrid.option("dataSource", data4[0].data);
                         $notesPaperGrid.repaint();
-
+                        
                         $repoGrid.option("dataSource", data5[0].data);
                         $repoGrid.repaint();
-
+                        
                         $couponGrid.option("dataSource", data6[0].data);
                         $couponGrid.repaint();
                         
                         $obRentasTb.option("value", data7[0]);
                         $obMmaTb.option("value", data8[0]);
 
-                        setTimeout(calculateClosingBalance, 1000);
+                        setTimeout(calculateClosingBalance, 500);
+                        setTimeout(togglePanelTitleItemCountOnFetchEdw, 500);
                     })
                     .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-                        DevExpress.ui.notify({
-                            message: "Data Updated",
-                            type: "info",
-                            position: {
-                                my: "right",
-                                at:"bottom",
-                                of: "#toast-container"
-                            },
-                            displayTime: 800,
-                            width: "300px"
-                        });
+                        toast("Data Updated", "info");
                     })
-                    .then(function() {
-                        
+                    .then(function () {
                     });
             } else {
                 dxGridUtils.clearGrid($equityGrid);
@@ -339,17 +350,7 @@
             
             $cbRentasTb.option("value", totalRentasClosing.toFixed(2));
 
-            DevExpress.ui.notify({
-                message: "Form Updated",
-                type: "info",
-                position: {
-                    my: "right",
-                    at: "bottom",
-                    of: "#toast-container"
-                },
-                displayTime: 800,
-                width: "300px"
-            });
+            toast("Closing balance recalculated", "info");
         }
 
         function saveAllGridEditData() {
@@ -361,7 +362,7 @@
             $altidGrid.saveEditData();
             $othersGrid.saveEditData();
         }
-
+        
         //#endregion
 
         // #region Data Grid
@@ -441,9 +442,7 @@
                 ]
             }
         }).dxDataGrid("instance");
-
-        $equityGrid.option(dxGridUtils.viewOnlyGridConfig);
-
+        
         $bondGrid = $("#bondGrid").dxDataGrid({
             dataSource: [],
             columns: [
@@ -519,9 +518,7 @@
                 ]
             }
         }).dxDataGrid("instance");
-
-        $bondGrid.option(dxGridUtils.viewOnlyGridConfig);
-
+        
         $cpGrid = $("#cpGrid").dxDataGrid({
             dataSource: [],
             columns: [
@@ -597,9 +594,7 @@
                 ]
             }
         }).dxDataGrid("instance");
-
-        $cpGrid.option(dxGridUtils.viewOnlyGridConfig);
-
+        
         $notesPaperGrid = $("#notesPaperGrid").dxDataGrid({
             dataSource: [],
             columns: [
@@ -675,9 +670,7 @@
                 ]
             }
         }).dxDataGrid("instance");
-
-        $notesPaperGrid.option(dxGridUtils.viewOnlyGridConfig);
-
+        
         $repoGrid = $("#repoGrid").dxDataGrid({
             dataSource: [],
             columns: [
@@ -735,9 +728,7 @@
                 ]
             }
         }).dxDataGrid("instance");
-
-        $repoGrid.option(dxGridUtils.viewOnlyGridConfig);
-
+        
         $couponGrid = $("#couponGrid").dxDataGrid({
             dataSource: [],
             columns: [
@@ -778,11 +769,16 @@
             },
             onSaved: function () {
                 calculateClosingBalance();
+                togglePanelTitleItemCount("titleBadge6", $couponGrid);
+            },
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowDeleting: true,
+                allowAdding: true
             }
         }).dxDataGrid("instance");
-
-        $couponGrid.option(dxGridUtils.editingGridConfig);
-
+        
         $feesGrid = $("#feesGrid").dxDataGrid({
             dataSource: [],
             columns: [
@@ -819,11 +815,16 @@
             },
             onSaved: function () {
                 calculateClosingBalance();
+                togglePanelTitleItemCount("titleBadge7", $feesGrid);
+            },
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowDeleting: true,
+                allowAdding: true
             }
         }).dxDataGrid("instance");
-
-        $feesGrid.option(dxGridUtils.editingGridConfig);
-
+        
         $mtmGrid = $("#mtmGrid").dxDataGrid({
             dataSource: [],
             columns: [
@@ -878,10 +879,15 @@
             },
             onSaved: function () {
                 calculateClosingBalance();
+                togglePanelTitleItemCount("titleBadge8", $mtmGrid);
+            },
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowDeleting: true,
+                allowAdding: true
             }
         }).dxDataGrid("instance");
-
-        $mtmGrid.option(dxGridUtils.editingGridConfig);
 
         $fxSettlementGrid = $("#fxSettlementGrid").dxDataGrid({
             dataSource: [],
@@ -937,11 +943,16 @@
             },
             onSaved: function () {
                 calculateClosingBalance();
+                togglePanelTitleItemCount("titleBadge9", $fxSettlementGrid);
+            },
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowDeleting: true,
+                allowAdding: true
             }
         }).dxDataGrid("instance");
-
-        $fxSettlementGrid.option(dxGridUtils.editingGridConfig);
-
+        
         $contributionCreditedGrid = $("#contributionCreditedGrid").dxDataGrid({
             dataSource: [],
             columns: [
@@ -978,11 +989,16 @@
             },
             onSaved: function () {
                 calculateClosingBalance();
+                togglePanelTitleItemCount("titleBadge10", $contributionCreditedGrid);
+            },
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowDeleting: true,
+                allowAdding: true
             }
         }).dxDataGrid("instance");
-
-        $contributionCreditedGrid.option(dxGridUtils.editingGridConfig);
-
+        
         $altidGrid = $("#altidGrid").dxDataGrid({
             dataSource: [],
             columns: [
@@ -1037,11 +1053,16 @@
             },
             onSaved: function () {
                 calculateClosingBalance();
+                togglePanelTitleItemCount("titleBadge11", $altidGrid);
+            },
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowDeleting: true,
+                allowAdding: true
             }
         }).dxDataGrid("instance");
-
-        $altidGrid.option(dxGridUtils.editingGridConfig);
-
+        
         $othersGrid = $("#othersGrid").dxDataGrid({
             dataSource: [],
             columns: [
@@ -1096,10 +1117,28 @@
             },
             onSaved: function () {
                 calculateClosingBalance();
+                togglePanelTitleItemCount("titleBadge12", $othersGrid);
+            },
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowDeleting: true,
+                allowAdding: true
             }
         }).dxDataGrid("instance");
 
-        $othersGrid.option(dxGridUtils.editingGridConfig);
+        $equityGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $bondGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $cpGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $notesPaperGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $repoGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $couponGrid.option(dxGridUtils.tradeSettlementGridConfig);
+        $feesGrid.option(dxGridUtils.tradeSettlementGridConfig);
+        $mtmGrid.option(dxGridUtils.tradeSettlementGridConfig);
+        $fxSettlementGrid.option(dxGridUtils.tradeSettlementGridConfig);
+        $contributionCreditedGrid.option(dxGridUtils.tradeSettlementGridConfig);
+        $altidGrid.option(dxGridUtils.tradeSettlementGridConfig);
+        $othersGrid.option(dxGridUtils.tradeSettlementGridConfig);
 
         // #endregion Data Grid
 
