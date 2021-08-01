@@ -1,6 +1,8 @@
 ﻿(function ($, window, document) {
 
     $(function () {
+        populateData();
+
         var $tabpanel, $equityGrid, $bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid, $feesGrid,
             $mtmGrid, $fxSettlementGrid, $contributionCreditedGrid, $altidGrid, $othersGrid,
             $tradeSettlementForm, $currencySelectBox, $obRentasTb, $obMmaTb, $cbRentasTb, $cbMmaTb,
@@ -22,6 +24,18 @@
             }
         });
 
+        //#region Other Widgets
+
+        $cbRentasTb = $("#cbRentasTb").dxNumberBox({
+            readOnly: true,
+            stylingMode: "filled"
+        }).dxNumberBox("instance");
+
+        $cbMmaTb = $("#cbMmaTb").dxNumberBox({
+            readOnly: true,
+            stylingMode: "filled"
+        }).dxNumberBox("instance");
+
         $printBtn = $("#printBtn").dxDropDownButton({
             text: "Print",
             icon: "print",
@@ -30,19 +44,21 @@
             dropDownOptions: {
                 width: 230
             },
+            items: [
+                "Excel Workbook (*.xlsx)",
+                "PDF"
+            ],
             onItemClick: function (e) {
                 if (e.itemData == "Excel Workbook (*.xlsx)") {
                     //$loadPanel.show();
 
-                    var data = {
-                        id: getUrlParameter("id"),
-                        isExportAsExcel: true
-                    };
-
                     $.ajax({
                         type: "POST",
                         url: window.location.origin + "/issd/Print",
-                        data: data,
+                        data: {
+                            id: window.location.pathname.split("/").pop(),
+                            isExportAsExcel: true
+                        },
                         dataType: "text",
                         success: function(data) {
                             var url = window.location.origin + "/issd/ViewPrinted/" + data;
@@ -59,15 +75,13 @@
                 } else {
                     //$loadPanel.show();
 
-                    var data = {
-                        id: getUrlParameter("id"),
-                        isExportAsExcel: false
-                    };
-
                     $.ajax({
                         type: "POST",
                         url: window.location.origin + "/issd/Print",
-                        data: data,
+                        data: {
+                            id: window.location.pathname.split("/").pop(),
+                            isExportAsExcel: false
+                        },
                         dataType: "text",
                         success: function (data) {
                             var url = window.location.origin + "/issd/ViewPrinted/" + data;
@@ -82,43 +96,185 @@
                     });
                     e.event.preventDefault();
                 }
-            },
-            items: [
-                "Excel Workbook (*.xlsx)",
-                "PDF"
-            ]
+            }
         }).dxDropDownButton("instance");
         
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
-                { title: "Equity", template: "equityTab" },
-                { title: "Bond", template: "bondTab" },
-                { title: "CP", template: "cpTab" },
-                { title: "Notes & Papers", template: "notesPaperTab" },
-                { title: "REPO", template: "repoTab" },
-                { title: "Coupon Received", template: "couponReceivedTab" },
-                { title: "Fees", template: "feesTab" },
-                { title: "MTM", template: "mtmTab" },
-                { title: "FX Settlement", template: "fxSettlementTab" },
-                { title: "Contribution Credited", template: "contributionCreditedTab" },
-                { title: "ALTID DD", template: "altidTab" },
-                { title: "Others", template: "othersTab" }
+                { titleId: "titleBadge1", title: "Equity", template: "equityTab" },
+                { titleId: "titleBadge2", title: "Bond", template: "bondTab" },
+                { titleId: "titleBadge3", title: "CP", template: "cpTab" },
+                { titleId: "titleBadge4", title: "Notes & Papers", template: "notesPaperTab" },
+                { titleId: "titleBadge5", title: "REPO", template: "repoTab" },
+                { titleId: "titleBadge6", title: "Coupon", template: "couponReceivedTab" },
+                { titleId: "titleBadge7", title: "Fees", template: "feesTab" },
+                { titleId: "titleBadge8", title: "MTM", template: "mtmTab" },
+                { titleId: "titleBadge9", title: "FX", template: "fxSettlementTab" },
+                { titleId: "titleBadge10", title: "Contribution", template: "contributionCreditedTab" },
+                { titleId: "titleBadge11", title: "ALTID", template: "altidTab" },
+                { titleId: "titleBadge12", title: "Others", template: "othersTab" }
             ],
-            deferRendering: false
+            deferRendering: false,
+            itemTitleTemplate: $("#dxPanelTitle"),
+            showNavButtons: true
         });
 
-        // #region DataGrid
+        function togglePanelTitleItemCount(countTagId, gridInstance) {
+            var count = gridInstance.getDataSource().items().length;
 
-        function gridDataSource(tradeType) {
-            return DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: window.location.origin +
-                    "/api/issd/TradeSettlement/TradeItem/" + window.location.pathname.split("/").pop() + "/" + tradeType
+            if (count > 0) {
+                $("#" + countTagId).addClass("label label-danger").css("margin-left", "4px").text(count);
+            } else {
+                $("#" + countTagId).removeClass("label label-danger").css("margin-left", "0").text("");
+            }
+        }
+
+        function togglePanelTitleItemCountOnFetchEdw() {
+            togglePanelTitleItemCount("titleBadge1", $equityGrid);
+            togglePanelTitleItemCount("titleBadge2", $bondGrid);
+            togglePanelTitleItemCount("titleBadge3", $cpGrid);
+            togglePanelTitleItemCount("titleBadge4", $notesPaperGrid);
+            togglePanelTitleItemCount("titleBadge5", $repoGrid);
+            togglePanelTitleItemCount("titleBadge6", $couponGrid);
+            togglePanelTitleItemCount("titleBadge7", $feesGrid);
+            togglePanelTitleItemCount("titleBadge8", $mtmGrid);
+            togglePanelTitleItemCount("titleBadge9", $fxSettlementGrid);
+            togglePanelTitleItemCount("titleBadge10", $contributionCreditedGrid);
+            togglePanelTitleItemCount("titleBadge11", $altidGrid);
+            togglePanelTitleItemCount("titleBadge12", $othersGrid);
+        }
+
+        //#endregion
+
+        //#region Data Source
+
+        function ds(instrumentType) {
+            return $.ajax({
+                url: window.location.origin +
+                    "/api/issd/TradeSettlement/TradeItem/" +
+                    window.location.pathname.split("/").pop() +
+                    "/" +
+                    instrumentType,
+                type: "get"
             });
         }
 
+        function dsBalance(balanceType, balanceCategory) {
+            return $.ajax({
+                url: window.location.origin +
+                    "/api/issd/GetBalance/" +
+                    window.location.pathname.split("/").pop() +
+                    "/" +
+                    balanceType +
+                    "/" +
+                    balanceCategory,
+                type: "get"
+            });
+        }
+
+        function populateData() {
+            $.when(
+                ds("equity"),
+                ds("bond"),
+                ds("cp"),
+                ds("notesPaper"),
+                ds("repo"),
+                ds("coupon"),
+                ds("fees"),
+                ds("mtm"),
+                ds("fxSettlement"),
+                ds("contributionCredited"),
+                ds("altid"),
+                ds("others"),
+
+                dsBalance("CLOSING", "RENTAS"),
+                dsBalance("CLOSING", "MMA")
+            )
+                .done(function (data1, data2, data3, data4, data5, data6, data7, data8, data9, data10, data11, data12, data13, data14) {
+                    $equityGrid.option("dataSource", data1[0].data);
+                    $bondGrid.option("dataSource", data2[0].data);
+                    $cpGrid.option("dataSource", data3[0].data);
+                    $notesPaperGrid.option("dataSource", data4[0].data);
+                    $repoGrid.option("dataSource", data5[0].data);
+                    $couponGrid.option("dataSource", data6[0].data);
+                    $feesGrid.option("dataSource", data7[0].data);
+                    $mtmGrid.option("dataSource", data8[0].data);
+                    $fxSettlementGrid.option("dataSource", data9[0].data);
+                    $contributionCreditedGrid.option("dataSource", data10[0].data);
+                    $altidGrid.option("dataSource", data11[0].data);
+                    $othersGrid.option("dataSource", data12[0].data);
+
+                    $equityGrid.repaint();
+                    $bondGrid.repaint();
+                    $cpGrid.repaint();
+                    $notesPaperGrid.repaint();
+                    $repoGrid.repaint();
+                    $couponGrid.repaint();
+                    $feesGrid.repaint();
+                    $mtmGrid.repaint();
+                    $fxSettlementGrid.repaint();
+                    $contributionCreditedGrid.repaint();
+                    $altidGrid.repaint();
+                    $othersGrid.repaint();
+
+                    $cbRentasTb.option("value", data13[0]);
+                    $cbMmaTb.option("value", data14[0]);
+
+                    setTimeout(togglePanelTitleItemCountOnFetchEdw, 1000);
+                })
+                .then(function () {
+                    console.log("Done load data");
+                });
+        }
+
+        function calculateClosingBalance() {
+            var totalRentasClosing = $obRentasTb.option("value")
+
+                + $equityGrid.getTotalSummaryValue("sales")
+                + $bondGrid.getTotalSummaryValue("sales")
+                + $cpGrid.getTotalSummaryValue("sales")
+                + $notesPaperGrid.getTotalSummaryValue("sales")
+                + $repoGrid.getTotalSummaryValue("firstLeg")
+                + $couponGrid.getTotalSummaryValue("amountPlus")
+                + $feesGrid.getTotalSummaryValue("amountPlus")
+                + $mtmGrid.getTotalSummaryValue("amountPlus")
+                + $fxSettlementGrid.getTotalSummaryValue("amountPlus")
+                + $contributionCreditedGrid.getTotalSummaryValue("amountPlus")
+                + $altidGrid.getTotalSummaryValue("amountPlus")
+                + $othersGrid.getTotalSummaryValue("amountPlus")
+
+                - $equityGrid.getTotalSummaryValue("purchase")
+                - $bondGrid.getTotalSummaryValue("purchase")
+                - $cpGrid.getTotalSummaryValue("purchase")
+                - $notesPaperGrid.getTotalSummaryValue("purchase")
+                - $repoGrid.getTotalSummaryValue("secondLeg")
+                - $mtmGrid.getTotalSummaryValue("amountMinus")
+                - $fxSettlementGrid.getTotalSummaryValue("amountMinus")
+                - $altidGrid.getTotalSummaryValue("amountMinus")
+                - $othersGrid.getTotalSummaryValue("amountMinus")
+                ;
+
+            $cbRentasTb.option("value", totalRentasClosing.toFixed(2));
+
+            toast("Closing balance recalculated", "info");
+        }
+
+        function saveAllGridEditData() {
+            $couponGrid.saveEditData();
+            $feesGrid.saveEditData();
+            $mtmGrid.saveEditData();
+            $fxSettlementGrid.saveEditData();
+            $contributionCreditedGrid.saveEditData();
+            $altidGrid.saveEditData();
+            $othersGrid.saveEditData();
+        }
+
+        //#endregion
+
+        // #region DataGrid
+
         $equityGrid = $("#equityGrid").dxDataGrid({
-            dataSource: gridDataSource("equity"),
+            dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -193,10 +349,8 @@
             }
         }).dxDataGrid("instance");
 
-        $equityGrid.option(dxGridUtils.viewOnlyGridConfig);
-
         $bondGrid = $("#bondGrid").dxDataGrid({
-            dataSource: gridDataSource("bond"),
+            dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -271,10 +425,8 @@
             }
         }).dxDataGrid("instance");
 
-        $bondGrid.option(dxGridUtils.viewOnlyGridConfig);
-
         $cpGrid = $("#cpGrid").dxDataGrid({
-            dataSource: gridDataSource("cp"),
+            dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -349,14 +501,12 @@
             }
         }).dxDataGrid("instance");
 
-        $cpGrid.option(dxGridUtils.viewOnlyGridConfig);
-
         $notesPaperGrid = $("#notesPaperGrid").dxDataGrid({
-            dataSource: gridDataSource("notesPaper"),
+            dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
-                    caption: "Notes & Papers",
+                    caption: "Notes & Papers"
                 },
                 {
                     dataField: "stockCode",
@@ -427,10 +577,8 @@
             }
         }).dxDataGrid("instance");
 
-        $notesPaperGrid.option(dxGridUtils.viewOnlyGridConfig);
-
         $repoGrid = $("#repoGrid").dxDataGrid({
-            dataSource: gridDataSource("repo"),
+            dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -487,10 +635,8 @@
             }
         }).dxDataGrid("instance");
 
-        $repoGrid.option(dxGridUtils.viewOnlyGridConfig);
-
         $couponGrid = $("#couponGrid").dxDataGrid({
-            dataSource: gridDataSource("coupon"),
+            dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -529,10 +675,8 @@
             }
         }).dxDataGrid("instance");
 
-        $couponGrid.option(dxGridUtils.viewOnlyGridConfig);
-
         $feesGrid = $("#feesGrid").dxDataGrid({
-            dataSource: gridDataSource("fees"),
+            dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -567,10 +711,8 @@
             }
         }).dxDataGrid("instance");
 
-        $feesGrid.option(dxGridUtils.viewOnlyGridConfig);
-
         $mtmGrid = $("#mtmGrid").dxDataGrid({
-            dataSource: gridDataSource("mtm"),
+            dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -623,10 +765,8 @@
             }
         }).dxDataGrid("instance");
 
-        $mtmGrid.option(dxGridUtils.viewOnlyGridConfig);
-
         $fxSettlementGrid = $("#fxSettlementGrid").dxDataGrid({
-            dataSource: gridDataSource("fxSettlement"),
+            dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -679,10 +819,8 @@
             }
         }).dxDataGrid("instance");
 
-        $fxSettlementGrid.option(dxGridUtils.viewOnlyGridConfig);
-
         $contributionCreditedGrid = $("#contributionCreditedGrid").dxDataGrid({
-            dataSource: gridDataSource("contributionCredited"),
+            dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -717,10 +855,8 @@
             }
         }).dxDataGrid("instance");
 
-        $contributionCreditedGrid.option(dxGridUtils.viewOnlyGridConfig);
-
         $altidGrid = $("#altidGrid").dxDataGrid({
-            dataSource: gridDataSource("altid"),
+            dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -773,10 +909,8 @@
             }
         }).dxDataGrid("instance");
 
-        $altidGrid.option(dxGridUtils.viewOnlyGridConfig);
-
         $othersGrid = $("#othersGrid").dxDataGrid({
-            dataSource: gridDataSource("others"),
+            dataSource: [],
             columns: [
                 {
                     dataField: "instrumentCode",
@@ -829,6 +963,17 @@
             }
         }).dxDataGrid("instance");
 
+        $equityGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $bondGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $cpGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $notesPaperGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $repoGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $couponGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $feesGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $mtmGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $fxSettlementGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $contributionCreditedGrid.option(dxGridUtils.viewOnlyGridConfig);
+        $altidGrid.option(dxGridUtils.viewOnlyGridConfig);
         $othersGrid.option(dxGridUtils.viewOnlyGridConfig);
 
         // #endregion DataGrid

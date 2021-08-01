@@ -126,8 +126,8 @@ namespace xDC_Web.Extension.DocGenerator
                     foreach (var item in equity)
                     {
                         ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentType;
-                        sheet["B" + tradeItemStartRow].Value = item.InstrumentCode;
+                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
                         sheet["C" + tradeItemStartRow].Value = item.Maturity;
                         sheet["D" + tradeItemStartRow].Value = item.Sales;
                         sheet["E" + tradeItemStartRow].Value = item.Purchase;
@@ -138,6 +138,10 @@ namespace xDC_Web.Extension.DocGenerator
                         true);
                     table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
                     
+                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+                    table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+                    table.Columns[4].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[4].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
@@ -168,8 +172,8 @@ namespace xDC_Web.Extension.DocGenerator
                     foreach (var item in bond)
                     {
                         ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentType;
-                        sheet["B" + tradeItemStartRow].Value = item.InstrumentCode;
+                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
                         sheet["C" + tradeItemStartRow].Value = item.Maturity;
                         sheet["D" + tradeItemStartRow].Value = item.Sales;
                         sheet["E" + tradeItemStartRow].Value = item.Purchase;
@@ -178,7 +182,11 @@ namespace xDC_Web.Extension.DocGenerator
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow], true);
                     table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
-                    
+
+                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+                    table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+                    table.Columns[4].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[4].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
@@ -209,8 +217,8 @@ namespace xDC_Web.Extension.DocGenerator
                     foreach (var item in cp)
                     {
                         ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentType;
-                        sheet["B" + tradeItemStartRow].Value = item.InstrumentCode;
+                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
                         sheet["C" + tradeItemStartRow].Value = item.Maturity;
                         sheet["D" + tradeItemStartRow].Value = item.Sales;
                         sheet["E" + tradeItemStartRow].Value = item.Purchase;
@@ -220,7 +228,11 @@ namespace xDC_Web.Extension.DocGenerator
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow],
                         true);
                     table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
-                    
+
+                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+                    table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+                    table.Columns[4].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[4].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
@@ -251,8 +263,8 @@ namespace xDC_Web.Extension.DocGenerator
                     foreach (var item in notes)
                     {
                         ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentType;
-                        sheet["B" + tradeItemStartRow].Value = item.InstrumentCode;
+                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
                         sheet["C" + tradeItemStartRow].Value = item.Maturity;
                         sheet["D" + tradeItemStartRow].Value = item.Sales;
                         sheet["E" + tradeItemStartRow].Value = item.Purchase;
@@ -261,6 +273,10 @@ namespace xDC_Web.Extension.DocGenerator
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow], true);
                     table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+
+                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+                    table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+                    table.Columns[4].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
@@ -291,8 +307,8 @@ namespace xDC_Web.Extension.DocGenerator
                     foreach (var item in repo)
                     {
                         ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentType;
-                        sheet["B" + tradeItemStartRow].Value = item.InstrumentCode;
+                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
                         sheet["C" + tradeItemStartRow].Value = item.FirstLeg;
                         sheet["D" + tradeItemStartRow].Value = item.SecondLeg;
                     }
@@ -300,6 +316,9 @@ namespace xDC_Web.Extension.DocGenerator
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
                     table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+
+                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+                    table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
@@ -326,8 +345,8 @@ namespace xDC_Web.Extension.DocGenerator
                     foreach (var item in coupon)
                     {
                         ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentType;
-                        sheet["B" + tradeItemStartRow].Value = item.InstrumentCode;
+                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
                         sheet["C" + tradeItemStartRow].Value = item.AmountPlus;
                     }
 
@@ -335,6 +354,8 @@ namespace xDC_Web.Extension.DocGenerator
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
                     table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+
+                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
 
@@ -357,13 +378,15 @@ namespace xDC_Web.Extension.DocGenerator
                     foreach (var item in fees)
                     {
                         ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentType;
+                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
                     }
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":B" + tradeItemStartRow], true);
                     table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+
+                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
                     table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
 
@@ -387,7 +410,7 @@ namespace xDC_Web.Extension.DocGenerator
                     foreach (var item in mtm)
                     {
                         ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentType;
+                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
                         sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
                     }
@@ -395,6 +418,9 @@ namespace xDC_Web.Extension.DocGenerator
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
                     table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+
+                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
                     table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
@@ -421,13 +447,16 @@ namespace xDC_Web.Extension.DocGenerator
                     foreach (var item in fx)
                     {
                         ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentType;
+                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
                         sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
                     }
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
                     table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+
+                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
                     table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
@@ -453,13 +482,15 @@ namespace xDC_Web.Extension.DocGenerator
                     foreach (var item in contribution)
                     {
                         ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentType;
+                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
                     }
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":B" + tradeItemStartRow], true);
                     table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+
+                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
                     table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
 
@@ -483,7 +514,7 @@ namespace xDC_Web.Extension.DocGenerator
                     foreach (var item in altid)
                     {
                         ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentType;
+                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
                         sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
                     }
@@ -491,6 +522,9 @@ namespace xDC_Web.Extension.DocGenerator
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
                     table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+
+                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
                     table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
@@ -517,7 +551,7 @@ namespace xDC_Web.Extension.DocGenerator
                     foreach (var item in others)
                     {
                         ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentType;
+                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
                         sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
                     }
@@ -526,6 +560,9 @@ namespace xDC_Web.Extension.DocGenerator
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
                     table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+
+                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
                     table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
