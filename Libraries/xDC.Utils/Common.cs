@@ -216,6 +216,16 @@ namespace xDC.Utils
                     return "Inflow Funds";
                 case 2:
                     return "Trade Settlement";
+                case 3:
+                    return "Trade Settlement (Part A)";
+                case 4:
+                    return "Trade Settlement (Part B)";
+                case 5:
+                    return "Trade Settlement (Part C)";
+                case 6:
+                    return "Trade Settlement (Part D)";
+                case 7:
+                    return "Trade Settlement (Part E)";
             }
             return String.Empty;
         }
@@ -240,6 +250,8 @@ namespace xDC.Utils
                     return "Amsd.InflowFunds.FundType";
                 case 2:
                     return "Amsd.InflowFunds.Bank";
+                case 3:
+                    return "IISD.TradeSettlement.Currency";
             }
             return String.Empty;
         }

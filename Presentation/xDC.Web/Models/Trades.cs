@@ -14,5 +14,15 @@ namespace xDC_Web.Models
         public decimal SecondLeg { get; set; }
         public decimal AmountPlus { get; set; }
         public decimal AmountMinus { get; set; }
+
+        public string Remarks { get; set; }
+    }
+
+    public class BankBalance
+    {
+        public int Id { get; set; }
+        public int FormId { get; set; }
+        public string InstrumentType { get; set; }
+        public decimal Amount { get; set; }
     }
 }

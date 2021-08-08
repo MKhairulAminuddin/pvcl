@@ -26,6 +26,7 @@ namespace xDC.Infrastructure.Application
         public Nullable<decimal> SecondLeg { get; set; }
         public Nullable<decimal> AmountPlus { get; set; }
         public Nullable<decimal> AmountMinus { get; set; }
+        public string Remarks { get; set; }
         public string CreatedBy { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public string UpdatedBy { get; set; }

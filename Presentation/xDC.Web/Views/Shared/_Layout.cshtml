@@ -117,6 +117,25 @@
                     {
                         <li><a href="@Url.Action("Index","Issd")"><i class="fa fa-circle-thin"></i> <span>ISSD</span> </a></li>
                     }
+                    @if (MenuSecurity.IisdMenu)
+                    {
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-circle-thin"></i> <span>ISSD v2</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("Index","Issd")"><i class="fa fa-circle-thin"></i> <span>Trade Settlement</span></a></li>
+                                <li><a href="@Url.Action("PartA","Issd")"><i class="fa fa-circle-thin"></i> <span>Part A</span></a></li>
+                                <li><a ><i class="fa fa-circle-thin"></i> <span>Part B</span></a></li>
+                                <li><a ><i class="fa fa-circle-thin"></i> <span>Part C</span></a></li>
+                                <li><a ><i class="fa fa-circle-thin"></i> <span>Part D</span></a></li>
+                                <li><a ><i class="fa fa-circle-thin"></i> <span>Part E</span></a></li>
+                            </ul>
+                        </li>
+                    }
                     @if (MenuSecurity.PowerUsersMenu)
                     {
                         <li class="treeview">
@@ -131,7 +150,7 @@
                                 <li><a href="@Url.Action("NotificationConfig","Setting")"><i class="fa fa-circle-thin"></i> <span>Notification</span></a></li>
                                 <li><a href="@Url.Action("ApproverManagement","Setting")"><i class="fa fa-circle-thin"></i> <span>Approver</span></a></li>
                                 @*<li><a href="@Url.Action("Workflow","Setting")"><i class="fa fa-circle-thin"></i> <span>Workflow</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>
-                                <li><a href="@Url.Action("AuditTrail","Setting")"><i class="fa fa-circle-thin"></i> <span>Audit Trail</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>*@
+                    <li><a href="@Url.Action("AuditTrail","Setting")"><i class="fa fa-circle-thin"></i> <span>Audit Trail</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>*@
                             </ul>
                         </li>
                     }
@@ -149,7 +168,7 @@
                                 <li><a href="@Url.Action("ApplicationConfig","Admin")"><i class="fa fa-circle-thin"></i> <span>Application Config</span></a></li>
                                 <li><a href="@Url.Action("Utility","Admin")"><i class="fa fa-circle-thin"></i> <span>Utility</span></a></li>
                                 @*<li><a href="@Url.Action("SystemInformation","Admin")"><i class="fa fa-circle-thin"></i> <span>System Information</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>
-                                <li><a href="@Url.Action("SystemLogs","Admin")"><i class="fa fa-circle-thin"></i> <span>System Logs</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>*@
+                    <li><a href="@Url.Action("SystemLogs","Admin")"><i class="fa fa-circle-thin"></i> <span>System Logs</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>*@
                                 <li><a href="~/hangfire"><i class="fa fa-circle-thin"></i> <span>Task Scheduler</span></a></li>
                             </ul>
                         </li>
@@ -157,9 +176,7 @@
                 </ul>
             </section>
         </aside>
-
-        <div id="loadPanelContainer"></div>
-
+        
         <div id="pageContent" class="content-wrapper">
 
 
@@ -191,6 +208,8 @@
             </div>
         </footer>
     </div>
+    
+    <div id="loadpanel"></div>
 
     @RenderSection("scripts", required: false)
 
@@ -198,7 +217,8 @@
         
         $(function () {
             DevExpress.setTemplateEngine("underscore");
-            
+
+            var $loadPanel;
             var $notificationBell = $('#notifyBellCount');
             var $notificationDropdown = $("#notificationDropdown");
             var $notificationDropdownItemTemplate = $("#notificationDropdownItemTemplate");
@@ -252,6 +272,15 @@
                         });
                 }
             });
+
+            $loadPanel = $("#loadpanel").dxLoadPanel({
+                shadingColor: "rgba(0,0,0,0.4)",
+                visible: false,
+                showIndicator: true,
+                showPane: true,
+                shading: true,
+                closeOnOutsideClick: false
+            }).dxLoadPanel("instance");
         });
 
     </script>

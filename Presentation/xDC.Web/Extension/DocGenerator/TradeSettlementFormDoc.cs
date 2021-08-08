@@ -39,7 +39,7 @@ namespace xDC_Web.Extension.DocGenerator
                         workbook.Options.Culture = new CultureInfo("en-US");
                         workbook.LoadDocument(MapPath("~/App_Data/Trade Settlement Template.xltx"));
                         workbook = GenerateDocument(workbook, getForm, getFormWorkflow, getTrades);
-                        var randomFileName = "IISD Trade Settlement - " + DateTime.Now.ToString("yyyyMMddHHmmss");
+                        var randomFileName = "ISSD Trade Settlement - " + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                         if (isExportAsExcel)
                         {

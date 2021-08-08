@@ -6,18 +6,11 @@ namespace xDC_Web.Models
     public class TradeSettlementModel
     {
         public int Id { get; set; }
-        public string FormType { get; set; }
+        public int FormType { get; set; }
         public long SettlementDateEpoch { get; set; }
         public string Approver { get; set; }
         public string Currency { get; set; }
-
-        public decimal RentasOpeningBalance { get; set; }
-        public decimal MmaOpeningBalance { get; set; }
-
-        public decimal RentasClosingBalance { get; set; }
-        public decimal MmaClosingBalance { get; set; }
-
-
+        
         public List<Trades> Equity { get; set; }
         public List<Trades> Bond { get; set; }
         public List<Trades> Cp { get; set; }
@@ -30,6 +23,8 @@ namespace xDC_Web.Models
         public List<Trades> ContributionCredited { get; set; }
         public List<Trades> Altid { get; set; }
         public List<Trades> Others { get; set; }
+
+        public List<BankBalance> OpeningBalance { get; set; }
 
         public bool IsSaveAsDraft { get; set; }
         public bool IsSaveAdminEdit { get; set; }
@@ -48,6 +43,8 @@ namespace xDC_Web.Models
             this.ContributionCredited = new List<Trades>();
             this.Altid = new List<Trades>();
             this.Others = new List<Trades>();
+
+            this.OpeningBalance = new List<BankBalance>();
         }
     }
 }

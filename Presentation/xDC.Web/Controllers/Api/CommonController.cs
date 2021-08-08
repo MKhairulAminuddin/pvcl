@@ -123,6 +123,26 @@ namespace xDC_Web.Controllers.Api
         #endregion
 
         #region Dropdown List
+        
+        [HttpGet]
+        [Route("GetTradeSettlementCurrencies")]
+        public HttpResponseMessage GetTradeSettlementCurrencies(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var key = Common.DropdownConfigKeyMapping(3);
+                    var result = db.Config_Dropdown.Where(x => x.Key == key).ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
 
         [HttpGet]
         [Route("GetInflowFundsFundType")]

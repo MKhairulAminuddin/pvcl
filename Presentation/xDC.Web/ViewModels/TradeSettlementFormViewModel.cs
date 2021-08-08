@@ -8,8 +8,6 @@ namespace xDC_Web.ViewModels
         public string FormStatus { get; set; }
         public DateTime? SettlementDate { get; set; }
         public string Currency { get; set; }
-        public decimal OpeningBalanceRentas { get; set; }
-        public decimal OpeningBalanceMma { get; set; }
 
 
         public string PreparedBy { get; set; }

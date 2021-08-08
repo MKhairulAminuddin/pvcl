@@ -46,18 +46,18 @@
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Data.v21.1, Version=21.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Docs.v21.1, Version=21.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Office.v21.1.Core, Version=21.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Charts.v21.1.Core, Version=21.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Printing.v21.1.Core, Version=21.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="DevExpress.RichEdit.v21.1.Export, Version=21.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="DevExpress.Spreadsheet.v21.1.Core, Version=21.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Web.ASPxThemes.v21.1, Version=21.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="DevExpress.Web.Mvc5.v21.1, Version=21.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.RichEdit.v21.1.Core, Version=21.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.Web.v21.1, Version=21.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.XtraSpreadsheet.v21.1, Version=21.1.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Data.v21.1, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Docs.v21.1, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Office.v21.1.Core, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Charts.v21.1.Core, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Printing.v21.1.Core, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.RichEdit.v21.1.Export, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Spreadsheet.v21.1.Core, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Web.ASPxThemes.v21.1, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.Web.Mvc5.v21.1, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.RichEdit.v21.1.Core, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Web.v21.1, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraSpreadsheet.v21.1, Version=21.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExtreme.AspNet.Data, Version=2.8.2.0, Culture=neutral, PublicKeyToken=982f5dab1439d0f7, processorArchitecture=MSIL">
       <HintPath>..\..\packages\DevExtreme.AspNet.Data.2.8.2\lib\net452\DevExtreme.AspNet.Data.dll</HintPath>
     </Reference>
@@ -284,9 +284,13 @@
     <Content Include="Scripts\app\amsd\index.js" />
     <Content Include="Scripts\app.dxGrid.utils.js" />
     <Content Include="Scripts\app\issd\index.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partA\edit.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\edit.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partA\index.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partA\new.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\new.js" />
     <Content Include="Scripts\app\admin\applicationConfig.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partA\view.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\view.js" />
     <Content Include="Scripts\app\setting\approverManagement.js" />
     <Content Include="Scripts\app\setting\dropdownConfig.js" />
@@ -521,6 +525,10 @@
     <Content Include="Views\Amsd\InflowFund\View.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\View.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\Edit.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartA\EditPartA.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartA\NewPartA.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartA\ViewPartA.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartA\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -579,7 +587,16 @@
     <Compile Include="ViewModels\AmsdViewModel.cs" />
     <Compile Include="ViewModels\NotificationConfigViewModel.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Scripts\app\issd\tradeSettlement\partB\" />
+    <Folder Include="Scripts\app\issd\tradeSettlement\partC\" />
+    <Folder Include="Scripts\app\issd\tradeSettlement\partD\" />
+    <Folder Include="Scripts\app\issd\tradeSettlement\partE\" />
+    <Folder Include="Views\Issd\TradeSettlement\PartB\" />
+    <Folder Include="Views\Issd\TradeSettlement\PartC\" />
+    <Folder Include="Views\Issd\TradeSettlement\PartD\" />
+    <Folder Include="Views\Issd\TradeSettlement\PartE\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\xDC.Infrastructure\xDC.Infrastructure.csproj">
       <Project>{2672ed98-2d96-458e-b2ce-0488e163eb98}</Project>

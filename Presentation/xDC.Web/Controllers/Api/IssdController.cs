@@ -81,6 +81,65 @@ namespace xDC_Web.Controllers.Api
 
         }
 
+        [HttpGet]
+        [Route("GetIssdForm/{formType}")]
+        public HttpResponseMessage GetTradeSettlementForm(int formType, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new xDC.Infrastructure.Application.kashflowDBEntities())
+                {
+                    var selectedFormType = Common.FormTypeMapping(formType);
+
+                    var result = db.ISSD_FormHeader
+                        .Where(x => x.FormType == selectedFormType);
+
+                    var getApprover = db.Config_Approver.Where(x => x.Username == User.Identity.Name);
+                    var isMeApprover = getApprover.Any();
+
+                    var resultVM = new List<ViewTradeSettlementFormHeaderModel>();
+
+                    foreach (var item in result)
+                    {
+                        resultVM.Add(new ViewTradeSettlementFormHeaderModel()
+                        {
+                            Id = item.Id,
+                            FormType = item.FormType,
+                            SettlementDate = item.SettlementDate,
+                            FormStatus = item.FormStatus,
+                            Currency = item.Currency,
+                            PreparedBy = item.PreparedBy,
+                            PreparedDate = item.PreparedDate,
+                            ApprovedBy = item.ApprovedBy,
+                            ApprovedDate = item.ApprovedDate,
+                            AdminEditted = item.AdminEditted,
+                            AdminEdittedBy = item.AdminEdittedBy,
+                            AdminEdittedDate = item.AdminEdittedDate,
+
+                            IsDraft = (item.FormStatus == Common.FormStatusMapping(0)),
+
+                            IsMeCanEditDraft = (User.IsInRole(Config.AclIssd) && !isMeApprover),
+
+
+                            IsMyFormRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatusMapping(4)),
+                            IsFormPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatusMapping(2)),
+                            IsFormOwner = (User.Identity.Name == item.PreparedBy),
+                            IsCanAdminEdit = (User.IsInRole(Config.AclPowerUser)),
+                            IsResubmitEnabled = (item.FormStatus == "Rejected" && User.IsInRole(Config.AclAmsd) && User.Identity.Name != item.ApprovedBy)
+                        });
+                    }
+
+                    return Request.CreateResponse(DataSourceLoader.Load(resultVM, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+
+        }
+
+
         #region Trade Settlement Form
 
         [HttpPost]
@@ -91,18 +150,18 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var newFormHeader = new Form_Header()
+                    var newFormHeader = new ISSD_FormHeader()
                     {
-                        FormType = Common.FormTypeMapping(2),
+                        FormType = Common.FormTypeMapping(inputs.FormType),
                         PreparedBy = User.Identity.Name,
                         PreparedDate = DateTime.Now,
                         FormStatus = (inputs.IsSaveAsDraft) ? Common.FormStatusMapping(0) : Common.FormStatusMapping(2),
-                        FormDate = Common.ConvertEpochToDateTime(inputs.SettlementDateEpoch),
+                        SettlementDate = Common.ConvertEpochToDateTime(inputs.SettlementDateEpoch)?.Date,
                         Currency = inputs.Currency,
                         ApprovedBy = (inputs.IsSaveAsDraft) ? null : inputs.Approver
                     };
                     
-                    db.Form_Header.Add(newFormHeader);
+                    db.ISSD_FormHeader.Add(newFormHeader);
                     db.SaveChanges();
                     
                     var newTrades = new List<ISSD_TradeSettlement>();
@@ -120,6 +179,7 @@ namespace xDC_Web.Controllers.Api
                                 Maturity = item.Maturity,
                                 Sales = item.Sales,
                                 Purchase = item.Purchase,
+                                Remarks = item.Remarks,
                                 CreatedBy = User.Identity.Name,
                                 CreatedDate = DateTime.Now
                             });
@@ -139,6 +199,7 @@ namespace xDC_Web.Controllers.Api
                                 Maturity = item.Maturity,
                                 Sales = item.Sales,
                                 Purchase = item.Purchase,
+                                Remarks = item.Remarks,
                                 CreatedBy = User.Identity.Name,
                                 CreatedDate = DateTime.Now
                             });
@@ -158,6 +219,7 @@ namespace xDC_Web.Controllers.Api
                                 Maturity = item.Maturity,
                                 Sales = item.Sales,
                                 Purchase = item.Purchase,
+                                Remarks = item.Remarks,
                                 CreatedBy = User.Identity.Name,
                                 CreatedDate = DateTime.Now
                             });
@@ -177,6 +239,7 @@ namespace xDC_Web.Controllers.Api
                                 Maturity = item.Maturity,
                                 Sales = item.Sales,
                                 Purchase = item.Purchase,
+                                Remarks = item.Remarks,
                                 CreatedBy = User.Identity.Name,
                                 CreatedDate = DateTime.Now
                             });
@@ -195,6 +258,7 @@ namespace xDC_Web.Controllers.Api
                                 StockCode = item.StockCode,
                                 FirstLeg = item.FirstLeg,
                                 SecondLeg = item.SecondLeg,
+                                Remarks = item.Remarks,
                                 CreatedBy = User.Identity.Name,
                                 CreatedDate = DateTime.Now
                             });
@@ -212,6 +276,7 @@ namespace xDC_Web.Controllers.Api
                                 InstrumentCode = item.InstrumentCode,
                                 StockCode = item.StockCode,
                                 AmountPlus = item.AmountPlus,
+                                Remarks = item.Remarks,
                                 CreatedBy = User.Identity.Name,
                                 CreatedDate = DateTime.Now
                             });
@@ -228,6 +293,7 @@ namespace xDC_Web.Controllers.Api
                                 InstrumentType = Common.TradeSettlementMapping(7),
                                 InstrumentCode = item.InstrumentCode,
                                 AmountPlus = item.AmountPlus,
+                                Remarks = item.Remarks,
                                 CreatedBy = User.Identity.Name,
                                 CreatedDate = DateTime.Now
                             });
@@ -246,6 +312,7 @@ namespace xDC_Web.Controllers.Api
                                 StockCode = item.StockCode,
                                 AmountPlus = item.AmountPlus,
                                 AmountMinus = item.AmountMinus,
+                                Remarks = item.Remarks,
                                 CreatedBy = User.Identity.Name,
                                 CreatedDate = DateTime.Now
                             });
@@ -263,6 +330,7 @@ namespace xDC_Web.Controllers.Api
                                 InstrumentCode = item.InstrumentCode,
                                 AmountPlus = item.AmountPlus,
                                 AmountMinus = item.AmountMinus,
+                                Remarks = item.Remarks,
                                 CreatedBy = User.Identity.Name,
                                 CreatedDate = DateTime.Now
                             });
@@ -279,6 +347,7 @@ namespace xDC_Web.Controllers.Api
                                 InstrumentType = Common.TradeSettlementMapping(10),
                                 InstrumentCode = item.InstrumentCode,
                                 AmountPlus = item.AmountPlus,
+                                Remarks = item.Remarks,
                                 CreatedBy = User.Identity.Name,
                                 CreatedDate = DateTime.Now
                             });
@@ -296,6 +365,7 @@ namespace xDC_Web.Controllers.Api
                                 InstrumentCode = item.InstrumentCode,
                                 AmountPlus = item.AmountPlus,
                                 AmountMinus = item.AmountMinus,
+                                Remarks = item.Remarks,
                                 CreatedBy = User.Identity.Name,
                                 CreatedDate = DateTime.Now
                             });
@@ -313,6 +383,7 @@ namespace xDC_Web.Controllers.Api
                                 InstrumentCode = item.InstrumentCode,
                                 AmountPlus = item.AmountPlus,
                                 AmountMinus = item.AmountMinus,
+                                Remarks = item.Remarks,
                                 CreatedBy = User.Identity.Name,
                                 CreatedDate = DateTime.Now
                             });
@@ -321,49 +392,23 @@ namespace xDC_Web.Controllers.Api
                     
                     db.ISSD_TradeSettlement.AddRange(newTrades);
                     db.SaveChanges();
-
-                    db.ISSD_Balance.Add(new ISSD_Balance()
+                    
+                    if (inputs.OpeningBalance.Any())
                     {
-                        FormId = newFormHeader.Id,
-                        BalanceType = "OPENING",
-                        BalanceCategory = "RENTAS",
-                        CreatedBy = User.Identity.Name,
-                        CreatedDate = DateTime.Now,
-                        SettlementDate = newFormHeader.FormDate,
-                        Amount = inputs.RentasOpeningBalance
-                    });
-                    db.ISSD_Balance.Add(new ISSD_Balance()
-                    {
-                        FormId = newFormHeader.Id,
-                        BalanceType = "OPENING",
-                        BalanceCategory = "MMA",
-                        CreatedBy = User.Identity.Name,
-                        CreatedDate = DateTime.Now,
-                        SettlementDate = newFormHeader.FormDate,
-                        Amount = inputs.MmaOpeningBalance
-                    });
-                    db.ISSD_Balance.Add(new ISSD_Balance()
-                    {
-                        FormId = newFormHeader.Id,
-                        BalanceType = "CLOSING",
-                        BalanceCategory = "RENTAS",
-                        CreatedBy = User.Identity.Name,
-                        CreatedDate = DateTime.Now,
-                        SettlementDate = newFormHeader.FormDate,
-                        Amount = inputs.RentasClosingBalance
-                    });
-                    db.ISSD_Balance.Add(new ISSD_Balance()
-                    {
-                        FormId = newFormHeader.Id,
-                        BalanceType = "CLOSING",
-                        BalanceCategory = "MMA",
-                        CreatedBy = User.Identity.Name,
-                        CreatedDate = DateTime.Now,
-                        SettlementDate = newFormHeader.FormDate,
-                        Amount = inputs.MmaClosingBalance
-                    });
-                    db.SaveChanges();
-
+                        foreach (var item in inputs.OpeningBalance)
+                        {
+                            db.ISSD_Balance.Add(new ISSD_Balance()
+                            {
+                                FormId = newFormHeader.Id,
+                                BalanceCategory = item.InstrumentType,
+                                Amount = item.Amount,
+                                CreatedBy = User.Identity.Name,
+                                CreatedDate = DateTime.Now
+                            });
+                        }
+                        db.SaveChanges();
+                    }
+                    
                     return Request.CreateResponse(HttpStatusCode.Created, newFormHeader.Id);
                 }
             }
@@ -626,75 +671,18 @@ namespace xDC_Web.Controllers.Api
         #endregion
 
         #region Bank Balance
-
+        
         [HttpGet]
-        [Route("GetOpeningBalance/{type}/{settlementDateEpoch}/{currency}")]
-        public HttpResponseMessage GetOpeningBalance(string type, long settlementDateEpoch, string currency)
+        [Route("GetBalance/{formId}")]
+        public HttpResponseMessage GetBalance(int formId, DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+                    var result = db.ISSD_Balance.Where(x => x.FormId == formId).ToList();
 
-                    var amount = 0.0;
-
-                    if (settlementDate != null)
-                    {
-                        type = type.ToUpper();
-                        settlementDate = settlementDate.Value.Date;
-
-                        var result = db.EDW_BankBalance.AsNoTracking().Where(x =>
-                                x.InstrumentType == type && x.SettlementDate == settlementDate &&
-                                x.Currency == currency)
-                            .GroupBy(x => x.Currency)
-                            .Select(x => new
-                            {
-                                amount = x.Sum(y => y.Amount)
-                            }).FirstOrDefault();
-
-                        if (result!=null)
-                        {
-                            amount = (double) result.amount;
-                        }
-                        
-
-                        return Request.CreateResponse(HttpStatusCode.OK, amount);
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Failed convert to actual date");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-        }
-
-        [HttpGet]
-        [Route("GetBalance/{formId}/{balanceType}/{balanceCategory}")]
-        public HttpResponseMessage GetBalance(string formId, string balanceType, string balanceCategory)
-        {
-            try
-            {
-                var formIdParsed = Convert.ToInt32(formId);
-                
-                using (var db = new kashflowDBEntities())
-                {
-                    var result = db.ISSD_Balance.FirstOrDefault(x =>
-                        x.FormId == formIdParsed &&
-                        x.BalanceType == balanceType && x.BalanceCategory == balanceCategory);
-
-                    if (result != null)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, result.Amount);
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, 0);
-                    }
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
             }
             catch (Exception ex)
@@ -724,9 +712,8 @@ namespace xDC_Web.Controllers.Api
                         settlementDate = settlementDate.Value.Date;
 
                         var result = db.EDW_TradeItem.AsNoTracking().Where(x =>
-                                x.InstrumentType == type && x.SettlementDate == settlementDate &&
-                                x.Currency == currency)
-                            .ToList();
+                            x.InstrumentType == type && x.SettlementDate == settlementDate &&
+                            x.Currency == currency);
 
                         var finalResult = new List<ISSD_TradeSettlement>();
                         foreach (var item in result)
@@ -735,7 +722,7 @@ namespace xDC_Web.Controllers.Api
                             {
                                 InstrumentType = item.InstrumentType,
                                 InstrumentCode = item.InstrumentName,
-                                StockCode = item.StockCode,
+                                StockCode = string.IsNullOrEmpty(item.ISIN)?item.StockCode:string.Concat(item.StockCode, " / " + item.ISIN),
                                 Maturity = (decimal?)((item.Type == "M" && item.InstrumentType != Common.TradeSettlementMapping(5)) ? item.Amount : 0),
                                 Sales = (decimal?)((item.Type == "S" && item.InstrumentType != Common.TradeSettlementMapping(5)) ? item.Amount : 0),
                                 Purchase = (decimal?)((item.Type == "P" && item.InstrumentType != Common.TradeSettlementMapping(5)) ? item.Amount : 0),
@@ -896,5 +883,46 @@ namespace xDC_Web.Controllers.Api
             }
 
         }
+
+        [HttpGet]
+        [Route("GetOpeningBalanceEdw/{settlementDateEpoch}/{currency}")]
+        public HttpResponseMessage GetOpeningBalance(long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+
+                    if (settlementDate != null)
+                    {
+                        settlementDate = settlementDate.Value.Date;
+
+                        var result =
+                            db.EDW_BankBalance.AsNoTracking()
+                                .Where(x =>
+                                    x.SettlementDate == settlementDate && x.Currency == currency)
+                                .GroupBy(x => new { x.Currency, x.InstrumentType })
+                                .Select(x => new
+                                {
+                                    instrumentType = x.Key.InstrumentType,
+                                    currency = x.Key.Currency,
+                                    amount = x.Sum(y => y.Amount)
+                                }).ToList();
+
+                        return Request.CreateResponse(HttpStatusCode.OK, DataSourceLoader.Load(result, loadOptions));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Failed convert to actual date");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
     }
 }

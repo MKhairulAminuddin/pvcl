@@ -1,0 +1,51 @@
+﻿@model xDC_Web.ViewModels.ISSDLandingPageViewModel
+
+@{
+    ViewBag.Title = "Trade Settlement (Equity)";
+}
+
+<section class="content-header content-toolbar">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="left-container">
+                @if (Model.IsAllowedToCreateForm)
+                {
+                    <div>
+                        @(Html.DevExtreme().Button()
+                            .Text("New")
+                            .Icon("plus")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .OnClick(@<text> function(){ window.location = "@Url.Action("NewPartA", "Issd")"; } </text>)
+                            )
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div id="right-toolbar-container" class="right-container">
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-solid">
+                <div class="box-body">
+                    <div id="issdGrid" class="grid-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div id="loadpanel"></div>
+
+@section scripts
+{
+    <script src="~/Scripts/app/issd/tradeSettlement/partA/index.js"></script>
+}
