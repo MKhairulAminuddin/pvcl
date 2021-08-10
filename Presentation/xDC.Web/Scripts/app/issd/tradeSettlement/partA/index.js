@@ -6,7 +6,7 @@
 
         var referenceUrl = {
             load: window.location.origin + "/api/Issd/GetIssdForm/3",
-            edit: window.location.origin + "/issd/TradeSettlement/Edit/",
+            edit: window.location.origin + "/issd/TradeSettlement/PartA/Edit/",
             deleteDraft: window.location.origin + "/api/issd/TradeSettlement/",
             view: window.location.origin + "/issd/TradeSettlement/PartA/View/",
             printed: window.location.origin + "/issd/ViewPrinted/",
@@ -53,8 +53,7 @@
                 },
                 {
                     dataField: "formType",
-                    caption: "Form Type",
-                    visible: false
+                    caption: "Form Type"
                 },
                 {
                     dataField: "settlementDate",

@@ -1,34 +1,30 @@
 ﻿(function ($, window, document) {
     $(function () {
-        populateData();
+        //#region Variable Definition
+        
+        tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement/PartA");
 
-        var $tabpanel, $equityGrid, $openingBalanceGrid,
-            $tradeSettlementForm, $currencySelectBox, 
-            $approverDropdown, $printBtn, $loadPanel;
+        var $tabpanel,
+            $equityGrid,
+            $openingBalanceGrid,
+            $tradeSettlementForm,
+            $currencySelectBox,
+            $approverDropdown,
+            $printBtn;
+
+        var referenceUrl = {
+            submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
+            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartA/View/"
+        };
+
+        //#endregion
 
         //#region Data Source & Functions
-
-        function ds(instrumentType) {
-            return $.ajax({
-                url: window.location.origin +
-                    "/api/issd/TradeSettlement/TradeItem/" +
-                    window.location.pathname.split("/").pop() +
-                    "/" + instrumentType,
-                type: "get"
-            });
-        }
-
-        function dsOpeningBalance(formId) {
-            return $.ajax({
-                url: window.location.origin + "/api/issd/GetBalance/" + formId,
-                type: "get"
-            });
-        }
         
-        function populateData() {
+        var populateData = function() {
             $.when(
-                    ds("equity"),
-                    dsOpeningBalance(window.location.pathname.split("/").pop())
+                    tradeSettlement.dsTradeItem("equity"),
+                    tradeSettlement.dsOpeningBalance()
                 )
                 .done(function(data1, data2) {
                     $equityGrid.option("dataSource", data1[0].data);
@@ -37,94 +33,43 @@
                     $openingBalanceGrid.option("dataSource", data2[0].data);
                     $openingBalanceGrid.repaint();
 
-                    setTimeout(defineTabBadgeNumbers, 1000);
+                    tradeSettlement.defineTabBadgeNumbers([
+                        { titleId: "titleBadge1", dxDataGrid: $equityGrid }
+                    ]);
+
                 })
                 .then(function() {
                     console.log("Done load data");
                 });
         }
 
-        function tabBadgeItemCount(countTagId, gridInstance) {
-            var count = gridInstance.getDataSource().items().length;
+        var submitApprovalRequest = function (isToApprove) {
+            var data = {
+                approvalNote: (isToApprove)
+                    ? $("#approvalNoteTextBox").dxTextArea("instance").option("value")
+                    : $("#rejectionNoteTextBox").dxTextArea("instance").option("value"),
+                approvalStatus: isToApprove,
+                formId: tradeSettlement.getIdFromQueryString
+            };
+            
+            $.ajax({
+                data: data,
+                dataType: "json",
+                url: referenceUrl.submitApprovalRequest,
+                method: "post"
+            }).done(function (data) {
+                window.location.href = referenceUrl.submitApprovalResponse + data;
 
-            if (count > 0) {
-                $("#" + countTagId).addClass("label label-danger").css("margin-left", "4px").text(count);
-            } else {
-                $("#" + countTagId).removeClass("label label-danger").css("margin-left", "0").text("");
-            }
-        }
-
-        function defineTabBadgeNumbers() {
-            tabBadgeItemCount("titleBadge1", $equityGrid);
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+            });
         }
 
         //#endregion
         
-        
         //#region Other Widgets
         
-        $printBtn = $("#printBtn").dxDropDownButton({
-            text: "Print",
-            icon: "print",
-            type: "normal",
-            stylingMode: "contained",
-            dropDownOptions: {
-                width: 230
-            },
-            items: [
-                "Excel Workbook (*.xlsx)",
-                "PDF"
-            ],
-            onItemClick: function (e) {
-                if (e.itemData == "Excel Workbook (*.xlsx)") {
-                    //$loadPanel.show();
-
-                    $.ajax({
-                        type: "POST",
-                        url: window.location.origin + "/issd/Print",
-                        data: {
-                            id: window.location.pathname.split("/").pop(),
-                            isExportAsExcel: true
-                        },
-                        dataType: "text",
-                        success: function(data) {
-                            var url = window.location.origin + "/issd/ViewPrinted/" + data;
-                            window.location = url;
-                        },
-                        fail: function(jqXHR, textStatus, errorThrown) {
-                            $("#error_container").bs_alert(textStatus + ": " + errorThrown);
-                        },
-                        complete: function(data) {
-                            //$loadPanel.hide();
-                        }
-                    });
-                    e.event.preventDefault();
-                } else {
-                    //$loadPanel.show();
-
-                    $.ajax({
-                        type: "POST",
-                        url: window.location.origin + "/issd/Print",
-                        data: {
-                            id: window.location.pathname.split("/").pop(),
-                            isExportAsExcel: false
-                        },
-                        dataType: "text",
-                        success: function (data) {
-                            var url = window.location.origin + "/issd/ViewPrinted/" + data;
-                            window.location = url;
-                        },
-                        fail: function (jqXHR, textStatus, errorThrown) {
-                            $("#error_container").bs_alert(textStatus + ": " + errorThrown);
-                        },
-                        complete: function (data) {
-                            //$loadPanel.hide();
-                        }
-                    });
-                    e.event.preventDefault();
-                }
-            }
-        }).dxDropDownButton("instance");
+        $printBtn = $("#printBtn").dxDropDownButton(tradeSettlement.printBtnWidgetSetting).dxDropDownButton("instance");
         
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
@@ -137,7 +82,6 @@
         
         //#endregion
         
-
         // #region DataGrid
 
         $openingBalanceGrid = $("#openingBalanceGrid").dxDataGrid({
@@ -246,8 +190,6 @@
                 ]
             }
         }).dxDataGrid("instance");
-
-        $equityGrid.option(dxGridUtils.viewOnlyGridConfig);
         
         // #endregion DataGrid
         
@@ -269,53 +211,23 @@
 
         $("#approveFormBtn").on({
             "click": function (e) {
-
-                var data = {
-                    approvalNote: $("#approvalNoteTextBox").dxTextArea("instance").option("value"),
-                    approvalStatus: true,
-                    formId: getUrlParameter("id")
-                };
-
-                $.ajax({
-                    data: data,
-                    dataType: "json",
-                    url: window.location.origin + "/api/issd/TradeSettlement/Approval",
-                    method: "post"
-                }).done(function (data) {
-                    window.location.href = window.location.origin + "/issd/TradeSettlement/View?id=" + data;
-
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(textStatus + ": " + errorThrown);
-                });
-
+                submitApprovalRequest(true);
                 e.preventDefault();
             }
         });
 
         $("#rejectFormBtn").on({
             "click": function (e) {
-
-                var data = {
-                    approvalNote: $("#rejectionNoteTextBox").dxTextArea("instance").option("value"),
-                    approvalStatus: false,
-                    formId: getUrlParameter("id")
-                };
-
-                $.ajax({
-                    data: data,
-                    dataType: "json",
-                    url: window.location.origin + "/api/issd/TradeSettlement/Approval",
-                    method: "post"
-                }).done(function (data) {
-                    window.location.href = window.location.origin + "/issd/TradeSettlement/View?id=" + data;
-
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(textStatus + ": " + errorThrown);
-                });
-
+                submitApprovalRequest(false);
                 e.preventDefault();
             }
         });
+
+        //#endregion
+
+        //#region Immediate Invocation function
+
+        populateData();
 
         //#endregion
     });

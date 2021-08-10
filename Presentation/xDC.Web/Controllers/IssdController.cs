@@ -290,7 +290,7 @@ namespace xDC_Web.Controllers
                 using (var db = new kashflowDBEntities())
                 {
                     var formIdParsed = Convert.ToInt32(formId);
-                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formIdParsed);
+                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formIdParsed);
 
                     if (IsMeApprover(db))
                     {
@@ -300,24 +300,12 @@ namespace xDC_Web.Controllers
 
                     if (getForm != null)
                     {
-                        var getOpeningBalanceRentas = db.ISSD_Balance.FirstOrDefault(x =>
-                            x.FormId == getForm.Id && x.BalanceType == "OPENING" && x.BalanceCategory == "RENTAS");
-                        decimal openingBalanceRentas =
-                            (getOpeningBalanceRentas != null) ? (decimal)getOpeningBalanceRentas.Amount : (decimal)0.0;
-
-                        var getOpeningBalanceMma = db.ISSD_Balance.FirstOrDefault(x =>
-                            x.FormId == getForm.Id && x.BalanceType == "OPENING" && x.BalanceCategory == "MMA");
-                        decimal openingBalanceMma =
-                            (getOpeningBalanceMma != null) ? (decimal)getOpeningBalanceMma.Amount : (decimal)0.0;
-
                         var formObj = new EditTradeSettlementFormViewModel()
                         {
                             Id = getForm.Id,
                             FormStatus = getForm.FormStatus,
-                            SettlementDate = getForm.FormDate,
+                            SettlementDate = getForm.SettlementDate,
                             Currency = getForm.Currency,
-                            OpeningBalanceRentas = openingBalanceRentas,
-                            OpeningBalanceMma = openingBalanceMma,
 
                             PreparedBy = getForm.PreparedBy,
                             PreparedDate = getForm.PreparedDate,

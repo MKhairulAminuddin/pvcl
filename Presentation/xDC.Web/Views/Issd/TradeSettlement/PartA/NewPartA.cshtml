@@ -1,6 +1,6 @@
 ﻿@model xDC_Web.ViewModels.ViewTradeSettlementFormViewModel
 @{
-    ViewBag.Title = "New Trade Settlement";
+    ViewBag.Title = "New Trade Settlement (Equity)";
 }
 
 
@@ -29,7 +29,7 @@
                                 @(Html.DevExtreme().Button()
                                     .Type(ButtonType.Back)
                                     .StylingMode(ButtonStylingMode.Contained)
-                                    .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Issd")"; } </text>)
+                                    .OnClick(@<text> function(){ window.location = "@Url.Action("PartA", "Issd")"; } </text>)
                                     )
                             </div>
                             <div style="display: inline-block">
@@ -44,7 +44,7 @@
                             <div style="display: inline-block">
                                 @(Html.DevExtreme().Button()
                                     .ID("saveAsDraftBtn")
-                                    .Text("Save as Draft")
+                                    .Text("Save Draft")
                                     .UseSubmitBehavior(true)
                                     .Type(ButtonType.Normal)
                                     .StylingMode(ButtonStylingMode.Contained)
@@ -104,7 +104,6 @@
                                         <div class="col-md-12">
                                             <div id="tabpanel-container" style="background-color: white;">
                                                 <div data-options="dxTemplate : { name: 'equityTab' }" style="padding-top: 10px; overflow: auto">
-
                                                     <div id="equityGrid" class="grid-container" style="width: 100%"></div>
                                                 </div>
                                             </div>
@@ -201,5 +200,6 @@
 
 @section scripts
 {
+    <script src="~/Scripts/app/issd/tradeSettlement.js"></script>
     <script src="~/Scripts/app/issd/tradeSettlement/partA/new.js"></script>
 }

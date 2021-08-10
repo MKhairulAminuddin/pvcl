@@ -127,12 +127,21 @@
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="@Url.Action("Index","Issd")"><i class="fa fa-circle-thin"></i> <span>Trade Settlement</span></a></li>
-                                <li><a href="@Url.Action("PartA","Issd")"><i class="fa fa-circle-thin"></i> <span>Part A</span></a></li>
-                                <li><a ><i class="fa fa-circle-thin"></i> <span>Part B</span></a></li>
-                                <li><a ><i class="fa fa-circle-thin"></i> <span>Part C</span></a></li>
-                                <li><a ><i class="fa fa-circle-thin"></i> <span>Part D</span></a></li>
-                                <li><a ><i class="fa fa-circle-thin"></i> <span>Part E</span></a></li>
+                                <li class="treeview">
+                                    <a href="@Url.Action("Index", "Issd")">
+                                        <i class="fa fa-circle-thin"></i> <span>Trade Settlement</span>
+                                        <span class="pull-right-container">
+                                            <i class="fa fa-angle-left pull-right"></i>
+                                        </span>
+                                    </a>
+                                    <ul class="treeview-menu">
+                                        <li><a href="@Url.Action("PartA","Issd")"><i class="fa fa-circle-thin"></i> <span>Part A</span></a></li>
+                                        <li><a ><i class="fa fa-circle-thin"></i> <span>Part B</span></a></li>
+                                        <li><a ><i class="fa fa-circle-thin"></i> <span>Part C</span></a></li>
+                                        <li><a ><i class="fa fa-circle-thin"></i> <span>Part D</span></a></li>
+                                        <li><a ><i class="fa fa-circle-thin"></i> <span>Part E</span></a></li>
+                                    </ul>
+                                </li>
                             </ul>
                         </li>
                     }

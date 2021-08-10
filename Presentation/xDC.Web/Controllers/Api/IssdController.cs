@@ -427,7 +427,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == inputs.Id);
+                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == inputs.Id);
 
                     if (getForm == null)
                     {
@@ -445,23 +445,34 @@ namespace xDC_Web.Controllers.Api
                         getForm.PreparedBy = User.Identity.Name;
                         getForm.PreparedDate = DateTime.Now;
                     }
-                    // exclude item which no need to be delete
-                    var excludeItems = new List<string>()
-                    {
-                        Common.TradeSettlementMapping(6),
-                        Common.TradeSettlementMapping(7),
-                        Common.TradeSettlementMapping(8),
-                        Common.TradeSettlementMapping(9),
-                        Common.TradeSettlementMapping(10),
-                        Common.TradeSettlementMapping(11),
-                        Common.TradeSettlementMapping(12)
-                    };
 
-                    var currentTradeItems = db.ISSD_TradeSettlement.Where(x =>
-                        x.FormId == getForm.Id && excludeItems.Contains(x.InstrumentType));
-                    db.ISSD_TradeSettlement.RemoveRange(currentTradeItems);
-                    db.SaveChanges();
+                    if (inputs.Approver != null)
+                    {
+                        getForm.ApprovedBy = inputs.Approver;
+                        getForm.FormStatus = Common.FormStatusMapping(2);
+                    }
                     
+                    var getTradeItems = db.ISSD_TradeSettlement.Where(x =>
+                        x.FormId == getForm.Id);
+
+                    if (inputs.Equity != null)
+                    {
+                        foreach (var item in inputs.Equity)
+                        {
+                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            if (foundItem != null)
+                            {
+                                if (foundItem.Remarks != item.Remarks)
+                                {
+                                    foundItem.Remarks = item.Remarks;
+                                    foundItem.CreatedBy = User.Identity.Name;
+                                    foundItem.CreatedDate = DateTime.Now;
+                                }
+                            }
+                        }
+                    }
+
+                    /*
                     if (inputs.Coupon != null)
                     {
                         foreach (var item in inputs.Coupon)
@@ -621,7 +632,7 @@ namespace xDC_Web.Controllers.Api
                                 CreatedDate = DateTime.Now
                             });
                         }
-                    }
+                    }*/
                     
                     db.SaveChanges();
 

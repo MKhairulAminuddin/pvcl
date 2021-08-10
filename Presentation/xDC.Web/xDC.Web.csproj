@@ -291,6 +291,7 @@
     <Content Include="Scripts\app\issd\tradeSettlement\new.js" />
     <Content Include="Scripts\app\admin\applicationConfig.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partA\view.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\view.js" />
     <Content Include="Scripts\app\setting\approverManagement.js" />
     <Content Include="Scripts\app\setting\dropdownConfig.js" />

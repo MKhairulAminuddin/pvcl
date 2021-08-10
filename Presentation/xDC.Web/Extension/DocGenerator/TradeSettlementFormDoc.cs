@@ -20,7 +20,7 @@ namespace xDC_Web.Extension.DocGenerator
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
 
                     if (getForm != null)
                     {
@@ -69,7 +69,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private IWorkbook GenerateDocument(IWorkbook workbook, Form_Header formHeader, Form_Workflow formWorkflow, List<ISSD_TradeSettlement> trades)
+        private IWorkbook GenerateDocument(IWorkbook workbook, ISSD_FormHeader formHeader, Form_Workflow formWorkflow, List<ISSD_TradeSettlement> trades)
         {
             workbook.BeginUpdate();
             try
@@ -101,8 +101,8 @@ namespace xDC_Web.Extension.DocGenerator
                     startingRownumber += 3;
                 }*/
 
-                if (formHeader.FormDate != null)
-                    sheet["B6"].Value = formHeader.FormDate.Value.ToString("dd/MM/yyyy HH:ss");
+                if (formHeader.SettlementDate != null)
+                    sheet["B6"].Value = formHeader.SettlementDate.Value.ToString("dd/MM/yyyy HH:ss");
 
                 sheet["B7"].Value = formHeader.Currency;
 
