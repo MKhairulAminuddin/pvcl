@@ -283,7 +283,7 @@
     <Content Include="Scripts\app\amsd\inflowFund\new.js" />
     <Content Include="Scripts\app\amsd\index.js" />
     <Content Include="Scripts\app.dxGrid.utils.js" />
-    <Content Include="Scripts\app\issd\index.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\index.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partA\edit.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\edit.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partA\index.js" />
@@ -292,6 +292,9 @@
     <Content Include="Scripts\app\admin\applicationConfig.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partA\view.js" />
     <Content Include="Scripts\app\issd\tradeSettlement.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partB\edit.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partB\new.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partB\view.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\view.js" />
     <Content Include="Scripts\app\setting\approverManagement.js" />
     <Content Include="Scripts\app\setting\dropdownConfig.js" />
@@ -514,7 +517,7 @@
     <Content Include="Views\Admin\SystemInformation.cshtml" />
     <Content Include="Views\Admin\SystemLogs.cshtml" />
     <Content Include="Views\Admin\UserManagement.cshtml" />
-    <Content Include="Views\Issd\Index.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\Index.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\New.cshtml" />
     <Content Include="Views\Admin\ApplicationConfig.cshtml" />
     <Content Include="Views\Setting\ApproverManagement.cshtml" />
@@ -530,6 +533,9 @@
     <Content Include="Views\Issd\TradeSettlement\PartA\NewPartA.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartA\ViewPartA.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartA\Index.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartB\Edit.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartB\New.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartB\View.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -589,11 +595,9 @@
     <Compile Include="ViewModels\NotificationConfigViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Scripts\app\issd\tradeSettlement\partB\" />
     <Folder Include="Scripts\app\issd\tradeSettlement\partC\" />
     <Folder Include="Scripts\app\issd\tradeSettlement\partD\" />
     <Folder Include="Scripts\app\issd\tradeSettlement\partE\" />
-    <Folder Include="Views\Issd\TradeSettlement\PartB\" />
     <Folder Include="Views\Issd\TradeSettlement\PartC\" />
     <Folder Include="Views\Issd\TradeSettlement\PartD\" />
     <Folder Include="Views\Issd\TradeSettlement\PartE\" />

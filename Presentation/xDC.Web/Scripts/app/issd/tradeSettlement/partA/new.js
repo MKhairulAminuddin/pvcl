@@ -3,7 +3,7 @@
     $(function () {
         //#region Variable Definition
         
-        tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement/PartA");
+        tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
         
         var $tabpanel,
             $openingBalanceGrid,

@@ -2,12 +2,12 @@
 
     $(function () {
 
-        var $issdGrid, $loadPanel;
+        var $issdGrid, $newFormBtn;
         
         $issdGrid = $("#issdGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: window.location.origin + "/api/Issd/GetIssdForm"
+                loadUrl: window.location.origin + "/api/issd/TradeSettlement"
             }),
             columns: [
                 {
@@ -15,11 +15,13 @@
                     caption: "Form ID",
                     width: "100px",
                     alignment: "left",
-                    headerFilter: { visible: false }
+                    allowHeaderFiltering: false,
+                    visible: false
                 },
                 {
                     dataField: "formType",
-                    caption: "Form Type"
+                    caption: "Form Type",
+                    groupIndex: 0
                 },
                 {
                     dataField: "formDate",
@@ -214,23 +216,54 @@
                     ]
                 }
             ],
-            editing: {
-                mode: "row",
-                allowUpdating: false,
-                allowDeleting: false,
-                allowAdding: false
+            groupPanel: {
+                visible: true
+            },
+            showBorders: true,
+            sorting: {
+                mode: "multiple"
+            },
+            headerFilter: {
+                visible: true
             }
         }).dxDataGrid("instance");
 
-        $issdGrid.option(dxGridUtils.viewOnlyGridConfig);
-
-        $loadPanel = $("#loadpanel").dxLoadPanel({
-            shadingColor: "rgba(0,0,0,0.4)",
-            visible: false,
-            showIndicator: true,
-            showPane: true,
-            shading: true,
-            closeOnOutsideClick: false
-        }).dxLoadPanel("instance");
+        $newFormBtn = $("#newFormBtn").dxDropDownButton({
+            text: "New Trade Settlement",
+            icon: "plus",
+            type: "normal",
+            stylingMode: "contained",
+            dropDownOptions: {
+                width: 230
+            },
+            items: [
+                "Part A (Equity)",
+                "Part B (Bond, CP, Notes and Papers, REPO, Coupon)",
+                "Part C (MTM, FX)",
+                "Part D (ALTID)",
+                "Part E (Fees, Contribution, Others)"
+            ],
+            onItemClick: function (e) {
+                switch (e.itemData) {
+                    case "Part A (Equity)":
+                        window.location = window.location.origin + "/issd/TradeSettlement/PartA/New";
+                        return;
+                    case "Part B (Bond, CP, Notes and Papers, REPO, Coupon)":
+                        window.location = window.location.origin + "/issd/TradeSettlement/PartB/New";
+                        return;
+                    case "Part C (MTM, FX)":
+                        window.location = window.location.origin + "/issd/TradeSettlement/PartC/New";
+                        return;
+                    case "Part D (ALTID)":
+                        window.location = window.location.origin + "/issd/TradeSettlement/PartD/New";
+                        return;
+                    case "Part E (Fees, Contribution, Others)":
+                        window.location = window.location.origin + "/issd/TradeSettlement/PartE/New";
+                        return;
+                    default:
+                        alert("Invalid Selection");
+                }
+            }
+        }).dxDropDownButton("instance");
     });
 }(window.jQuery, window, document));

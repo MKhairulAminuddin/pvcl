@@ -190,26 +190,27 @@ namespace xDC_Web.Controllers
 
         #endregion
 
-        #region Trade Settlement Form Part A
-
-        [Route("TradeSettlement/PartA")]
-        public ActionResult PartA()
+        [Route("TradeSettlement")]
+        public ActionResult TradeSettlement()
         {
             using (var db = new kashflowDBEntities())
             {
                 var isApprover = db.Config_Approver.Any(x => x.Username == User.Identity.Name);
-                var isIisdUser = User.IsInRole(Config.AclIssd);
+                var isIssdUser = User.IsInRole(Config.AclIssd);
 
                 var model = new ISSDLandingPageViewModel()
                 {
-                    IsAllowedToCreateForm = (!isApprover && isIisdUser)
+                    IsAllowedToCreateForm = (!isApprover && isIssdUser)
                 };
 
-                return View("TradeSettlement/PartA/Index", model);
+                return View("TradeSettlement/Index", model);
             }
 
 
         }
+
+
+        #region Trade Settlement Form Part A
 
         [Authorize(Roles = "ISSD")]
         [Route("TradeSettlement/PartA/New")]
@@ -323,6 +324,138 @@ namespace xDC_Web.Controllers
                         };
 
                         return View("TradeSettlement/PartA/EditPartA", formObj);
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Form Not found";
+                        return View("Error");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Error");
+            }
+        }
+
+        #endregion
+
+        #region Trade Settlement Form Part B
+
+        [Authorize(Roles = "ISSD")]
+        [Route("TradeSettlement/PartB/New")]
+        public ActionResult NewPartB()
+        {
+            var model = new ViewTradeSettlementFormViewModel()
+            {
+                PreparedBy = User.Identity.Name,
+                PreparedDate = DateTime.Now,
+                FormStatus = Common.FormStatusMapping(0),
+                EnableDraftButton = true
+            };
+
+            return View("TradeSettlement/PartB/New", model);
+        }
+
+        [Route("TradeSettlement/PartB/View/{id}")]
+        public ActionResult ViewPartB(string id)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formId = Convert.ToInt32(id);
+                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
+
+                    if (getForm != null)
+                    {
+                        var formObj = new ViewTradeSettlementFormViewModel()
+                        {
+                            Id = getForm.Id,
+                            FormStatus = getForm.FormStatus,
+                            SettlementDate = getForm.SettlementDate,
+                            Currency = getForm.Currency,
+
+                            PreparedBy = getForm.PreparedBy,
+                            PreparedDate = getForm.PreparedDate,
+
+                            IsApproved = (getForm.FormStatus == Common.FormStatusMapping(3)),
+                            ApprovedBy = getForm.ApprovedBy,
+                            ApprovedDate = getForm.ApprovedDate,
+
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatusMapping(0) ||
+                                              getForm.FormStatus == Common.FormStatusMapping(1)),
+
+                            IsAdminEdited = getForm.AdminEditted,
+                            AdminEditedBy = getForm.AdminEdittedBy,
+                            AdminEditedDate = getForm.AdminEdittedDate,
+
+                            ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
+                            AdminEditPermission = User.IsInRole(Config.AclPowerUser)
+                        };
+
+                        return View("TradeSettlement/PartB/View", formObj);
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Form Not found";
+                        return View("Error");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Error");
+            }
+        }
+
+
+        [Authorize(Roles = "Power User, ISSD")]
+        [Route("TradeSettlement/PartB/Edit/{formId}")]
+        public ActionResult EditPartB(string formId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formIdParsed = Convert.ToInt32(formId);
+                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formIdParsed);
+
+                    if (IsMeApprover(db))
+                    {
+                        TempData["ErrorMessage"] = "Unauthorized!";
+                        return View("Error");
+                    }
+
+                    if (getForm != null)
+                    {
+                        var formObj = new EditTradeSettlementFormViewModel()
+                        {
+                            Id = getForm.Id,
+                            FormStatus = getForm.FormStatus,
+                            SettlementDate = getForm.SettlementDate,
+                            Currency = getForm.Currency,
+
+                            PreparedBy = getForm.PreparedBy,
+                            PreparedDate = getForm.PreparedDate,
+                            ApprovedBy = getForm.ApprovedBy,
+                            ApprovedDate = getForm.ApprovedDate,
+
+                            IsAdminEdited = getForm.AdminEditted,
+                            AdminEditedBy = getForm.AdminEdittedBy,
+                            AdminEditedDate = getForm.AdminEdittedDate,
+
+
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatusMapping(0)),
+                            EnableSaveAdminChanges = (User.IsInRole(Config.AclPowerUser)),
+
+                        };
+
+                        return View("TradeSettlement/PartB/Edit", formObj);
                     }
                     else
                     {

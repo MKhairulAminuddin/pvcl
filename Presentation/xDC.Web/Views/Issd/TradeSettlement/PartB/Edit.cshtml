@@ -1,6 +1,6 @@
 ﻿@model xDC_Web.ViewModels.EditTradeSettlementFormViewModel
 @{
-    ViewBag.Title = "Edit: Trade Settlement (Part A) - Equity";
+    ViewBag.Title = "Edit: Trade Settlement (Part B) - Bond, CP, Notes & Papers, REPO, Coupon)";
 }
 
 
@@ -136,9 +136,25 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div id="tabpanel-container" style="background-color: white;">
-                                                <div data-options="dxTemplate : { name: 'equityTab' }" style="padding-top: 10px; overflow: auto">
+                                                <div data-options="dxTemplate : { name: 'bondTab' }" style="padding-top: 10px; overflow: auto">
 
-                                                    <div id="equityGrid" class="grid-container" style="width: 100%"></div>
+                                                    <div id="bondGrid" class="grid-container" style="width: 100%"></div>
+                                                </div>
+                                                <div data-options="dxTemplate : { name: 'cpTab' }" style="padding-top: 10px; overflow: auto">
+
+                                                    <div id="cpGrid" class="grid-container" style="width: 100%"></div>
+                                                </div>
+                                                <div data-options="dxTemplate : { name: 'notesPaperTab' }" style="padding-top: 10px; overflow: auto">
+
+                                                    <div id="notesPaperGrid" class="grid-container" style="width: 100%"></div>
+                                                </div>
+                                                <div data-options="dxTemplate : { name: 'repoTab' }" style="padding-top: 10px; overflow: auto">
+
+                                                    <div id="repoGrid" class="grid-container" style="width: 100%"></div>
+                                                </div>
+                                                <div data-options="dxTemplate : { name: 'couponReceivedTab' }" style="padding-top: 10px; overflow: auto">
+
+                                                    <div id="couponGrid" class="grid-container" style="width: 100%"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -294,5 +310,5 @@
 @section scripts
 {
     <script src="~/Scripts/app/issd/tradeSettlement.js"></script>
-    <script src="~/Scripts/app/issd/tradeSettlement/partA/edit.js"></script>
+    <script src="~/Scripts/app/issd/tradeSettlement/partB/edit.js"></script>
 }

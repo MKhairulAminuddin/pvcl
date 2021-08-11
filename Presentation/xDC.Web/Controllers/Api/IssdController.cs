@@ -21,20 +21,24 @@ namespace xDC_Web.Controllers.Api
     public class IssdController : ApiController
     {
         [HttpGet]
-        [Route("GetIssdForm")]
-        public HttpResponseMessage GetIssdForm(DataSourceLoadOptions loadOptions)
+        [Route("TradeSettlement")]
+        public HttpResponseMessage TradeSettlement(DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new xDC.Infrastructure.Application.kashflowDBEntities())
                 {
-                    var issdFormTypes = new List<string>()
+                    var formTypes = new List<string>()
                     {
-                        Common.FormTypeMapping(2)
+                        Common.FormTypeMapping(3),
+                        Common.FormTypeMapping(4),
+                        Common.FormTypeMapping(5),
+                        Common.FormTypeMapping(6),
+                        Common.FormTypeMapping(7)
                     };
 
-                    var result = db.Form_Header
-                        .Where(x => issdFormTypes.Contains(x.FormType)).ToList();
+                    var result = db.ISSD_FormHeader
+                        .Where(x => formTypes.Contains(x.FormType));
 
                     var getApprover = db.Config_Approver.Where(x => x.Username == User.Identity.Name);
                     var isMeApprover = getApprover.Any();
@@ -47,7 +51,7 @@ namespace xDC_Web.Controllers.Api
                         {
                             Id = item.Id,
                             FormType = item.FormType,
-                            FormDate = item.FormDate,
+                            FormDate = item.SettlementDate,
                             FormStatus = item.FormStatus,
                             Currency = item.Currency,
                             PreparedBy = item.PreparedBy,
@@ -472,30 +476,109 @@ namespace xDC_Web.Controllers.Api
                         }
                     }
 
-                    /*
+                    if (inputs.Bond != null)
+                    {
+                        foreach (var item in inputs.Bond)
+                        {
+                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            if (foundItem != null)
+                            {
+                                if (foundItem.Remarks != item.Remarks)
+                                {
+                                    foundItem.Remarks = item.Remarks;
+                                    foundItem.CreatedBy = User.Identity.Name;
+                                    foundItem.CreatedDate = DateTime.Now;
+                                }
+                            }
+                        }
+                    }
+
+                    if (inputs.Cp != null)
+                    {
+                        foreach (var item in inputs.Cp)
+                        {
+                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            if (foundItem != null)
+                            {
+                                if (foundItem.Remarks != item.Remarks)
+                                {
+                                    foundItem.Remarks = item.Remarks;
+                                    foundItem.CreatedBy = User.Identity.Name;
+                                    foundItem.CreatedDate = DateTime.Now;
+                                }
+                            }
+                        }
+                    }
+
+                    if (inputs.NotesPaper != null)
+                    {
+                        foreach (var item in inputs.NotesPaper)
+                        {
+                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            if (foundItem != null)
+                            {
+                                if (foundItem.Remarks != item.Remarks)
+                                {
+                                    foundItem.Remarks = item.Remarks;
+                                    foundItem.CreatedBy = User.Identity.Name;
+                                    foundItem.CreatedDate = DateTime.Now;
+                                }
+                            }
+                        }
+                    }
+
+                    if (inputs.Repo != null)
+                    {
+                        foreach (var item in inputs.Repo)
+                        {
+                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            if (foundItem != null)
+                            {
+                                if (foundItem.Remarks != item.Remarks)
+                                {
+                                    foundItem.Remarks = item.Remarks;
+                                    foundItem.CreatedBy = User.Identity.Name;
+                                    foundItem.CreatedDate = DateTime.Now;
+                                }
+                            }
+                        }
+                    }
+
                     if (inputs.Coupon != null)
                     {
                         foreach (var item in inputs.Coupon)
                         {
-                            db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
+                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            if (foundItem != null)
                             {
-                                FormId = getForm.Id,
-                                InstrumentType = Common.TradeSettlementMapping(6),
-                                InstrumentCode = item.InstrumentCode,
-                                StockCode = item.StockCode,
-                                Maturity = item.Maturity,
-                                Sales = item.Sales,
-                                Purchase = item.Purchase,
-                                AmountPlus = item.AmountPlus,
-                                AmountMinus = item.AmountMinus,
-                                SecondLeg = item.SecondLeg,
-                                FirstLeg = item.FirstLeg,
-                                CreatedBy = User.Identity.Name,
-                                CreatedDate = DateTime.Now
-                            });
+                                if (foundItem.Remarks != item.Remarks)
+                                {
+                                    foundItem.InstrumentCode = item.InstrumentCode;
+                                    foundItem.StockCode = item.StockCode;
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                    foundItem.Remarks = item.Remarks;
+                                    foundItem.CreatedBy = User.Identity.Name;
+                                    foundItem.CreatedDate = DateTime.Now;
+                                }
+                            }
+                            else
+                            {
+                                db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
+                                {
+                                    FormId = inputs.Id,
+                                    InstrumentType = Common.TradeSettlementUrlParamMapping("coupon"),
+                                    InstrumentCode = item.InstrumentCode,
+                                    StockCode = item.StockCode,
+                                    AmountPlus = item.AmountPlus,
+                                    Remarks = item.Remarks,
+                                    CreatedBy = User.Identity.Name,
+                                    CreatedDate = DateTime.Now
+                                });
+                            }
                         }
                     }
 
+                    /*
                     if (inputs.Fees != null)
                     {
                         foreach (var item in inputs.Fees)
@@ -633,7 +716,7 @@ namespace xDC_Web.Controllers.Api
                             });
                         }
                     }*/
-                    
+
                     db.SaveChanges();
 
                     return Request.CreateResponse(HttpStatusCode.Created, getForm.Id);

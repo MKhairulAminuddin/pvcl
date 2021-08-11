@@ -480,6 +480,11 @@
                         type: "fixedPoint",
                         precision: 2
                     }
+                },
+                {
+                    dataField: "remarks",
+                    caption: "Remarks",
+                    dataType: "text"
                 }
             ],
             summary: {
@@ -516,6 +521,12 @@
                         }
                     }
                 ]
+            },
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowDeleting: false,
+                allowAdding: false
             }
         }).dxDataGrid("instance");
         
@@ -556,6 +567,11 @@
                         type: "fixedPoint",
                         precision: 2
                     }
+                },
+                {
+                    dataField: "remarks",
+                    caption: "Remarks",
+                    dataType: "text"
                 }
             ],
             summary: {
@@ -592,6 +608,12 @@
                         }
                     }
                 ]
+            },
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowDeleting: false,
+                allowAdding: false
             }
         }).dxDataGrid("instance");
         
@@ -632,6 +654,11 @@
                         type: "fixedPoint",
                         precision: 2
                     }
+                },
+                {
+                    dataField: "remarks",
+                    caption: "Remarks",
+                    dataType: "text"
                 }
             ],
             summary: {
@@ -668,6 +695,12 @@
                         }
                     }
                 ]
+            },
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowDeleting: false,
+                allowAdding: false
             }
         }).dxDataGrid("instance");
         
@@ -700,6 +733,11 @@
                         precision: 2
                     }
                 },
+                {
+                    dataField: "remarks",
+                    caption: "Remarks",
+                    dataType: "text"
+                }
             ],
             summary: {
                 totalItems: [
@@ -726,6 +764,12 @@
                         }
                     }
                 ]
+            },
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowDeleting: false,
+                allowAdding: false
             }
         }).dxDataGrid("instance");
         
@@ -748,6 +792,11 @@
                         type: "fixedPoint",
                         precision: 2
                     }
+                },
+                {
+                    dataField: "remarks",
+                    caption: "Remarks",
+                    dataType: "text"
                 }
             ],
             summary: {
