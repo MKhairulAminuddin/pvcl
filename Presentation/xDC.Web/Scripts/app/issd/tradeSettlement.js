@@ -212,14 +212,19 @@
             .addClass('active');
     };
 
-    _tradeSettlement.tabBadgeItemCount = function(countTagId, gridInstance) {
-        var count = gridInstance.getDataSource().items().length;
+    _tradeSettlement.tabBadgeItemCount = function (countTagId, gridInstance) {
+        if (gridInstance != undefined) {
+            var count = gridInstance.getDataSource().items().length;
 
-        if (count > 0) {
-            $("#" + countTagId).addClass("label label-danger").css("margin-left", "4px").text(count);
+            if (count > 0) {
+                $("#" + countTagId).addClass("label label-danger").css("margin-left", "4px").text(count);
+            } else {
+                $("#" + countTagId).removeClass("label label-danger").css("margin-left", "0").text("");
+            }
         } else {
             $("#" + countTagId).removeClass("label label-danger").css("margin-left", "0").text("");
         }
+        
     };
 
     _tradeSettlement.defineTabBadgeNumbers = function(obj) {

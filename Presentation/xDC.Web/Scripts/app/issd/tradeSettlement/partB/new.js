@@ -600,7 +600,9 @@
                 else {
                     if (isSaveAsDraft) {
                         // new clean draft
-                        postData(true);
+                        setTimeout(function () {
+                            postData(true);
+                        }, 1000);
                     }
                     else {
                         $selectApproverModal.modal('show');
@@ -612,8 +614,11 @@
 
         $submitForApprovalModalBtn = $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                tradeSettlement.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid); 
-                postData(false);
+                tradeSettlement.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid);
+
+                setTimeout(function () {
+                    postData(false);
+                }, 1000);
                 e.preventDefault();
             }
         });

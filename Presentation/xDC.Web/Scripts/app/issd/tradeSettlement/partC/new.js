@@ -6,8 +6,8 @@
         tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
         
         var $tabpanel,
-            $openingBalanceGrid,
-            $equityGrid,
+            $mtmGrid,
+            $fxSettlementGrid,
             
             $approverDropdown,
             $approvalNotes,
@@ -26,28 +26,29 @@
 
         var referenceUrl = {
             postNewFormRequest: window.location.origin + "/api/issd/TradeSettlement/New",
-            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartA/View/",
+            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartC/View/",
         };
         
         //#endregion
 
         //#region Data Source & Functions
-        
-        function populateDwData(settlementDate, currency) {
+
+        var populateDwData = function(settlementDate, currency) {
             if (settlementDate && currency) {
                 $.when(
-                        tradeSettlement.dsTradeItemEdw("EQUITY", settlementDate, currency),
-                        tradeSettlement.dsOpeningBalanceEdw(settlementDate, currency)
+                    tradeSettlement.dsTradeItemEdw("PAYMENT/RECEIVED (MTM)", settlementDate, currency),
+                    tradeSettlement.dsTradeItemEdw("FX SETTLEMENT", settlementDate, currency)
                     )
                     .done(function(data1, data2) {
-                        $equityGrid.option("dataSource", data1[0].data);
-                        $equityGrid.repaint();
+                        $mtmGrid.option("dataSource", data1[0].data);
+                        $mtmGrid.repaint();
 
-                        $openingBalanceGrid.option("dataSource", data2[0].data);
-                        $openingBalanceGrid.repaint();
+                        $fxSettlementGrid.option("dataSource", data2[0].data);
+                        $fxSettlementGrid.repaint();
 
                         tradeSettlement.defineTabBadgeNumbers([
-                            { titleId: "titleBadge1", dxDataGrid: $equityGrid }
+                            { titleId: "titleBadge8", title: "MTM", template: "mtmTab" },
+                            { titleId: "titleBadge9", title: "FX", template: "fxSettlementTab" }
                         ]);
                     })
                     .always(function(dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
@@ -59,21 +60,21 @@
             } else {
                 dxGridUtils.clearGrid($equityGrid);
             }
-        }
+        };
 
         function postData(isDraft) {
             
             var data = {
                 currency: $currencySelectBox.option("value"),
                 settlementDateEpoch: moment($settlementDateBox.option("value")).unix(),
-                formType: 3,
+                formType: 5,
                 isSaveAsDraft: isDraft,
-
-                openingBalance: $openingBalanceGrid.getDataSource().items(),
-                equity: $equityGrid.getDataSource().items(),
+                
+                mtm: $mtmGrid.getDataSource().items(),
+                fxSettlement: $fxSettlementGrid.getDataSource().items(),
 
                 approver: (isDraft) ? null : $approverDropdown.option("value"),
-                approvalNotes: (isDraft) ? null : $approvalNotes.option("value"),
+                approvalNotes: (isDraft) ? null : $approvalNotes.option("value")
             };
 
             return $.ajax({
@@ -119,7 +120,8 @@
 
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
-                { titleId: "titleBadge1", title: "Equity", template: "equityTab" }
+                { titleId: "titleBadge8", title: "MTM", template: "mtmTab" },
+                { titleId: "titleBadge9", title: "FX", template: "fxSettlementTab" }
             ],
             deferRendering: false,
             itemTitleTemplate: $("#dxPanelTitle"),
@@ -133,75 +135,41 @@
         //#endregion
         
         // #region Data Grid
-
-        $openingBalanceGrid = $("#openingBalanceGrid").dxDataGrid({
+        
+        $mtmGrid = $("#mtmGrid").dxDataGrid({
             dataSource: [],
-            showColumnHeaders: false,
-            showColumnLines: false,
             columns: [
                 {
-                    dataField: "instrumentType",
-                    caption: "Opening Balance"
-                },
-                {
-                    dataField: "currency",
-                    caption: "Currency",
+                    dataField: "id",
+                    caption: "Id",
                     visible: false
                 },
                 {
-                    dataField: "amount",
-                    caption: "Amount",
+                    dataField: "formId",
+                    caption: "Form Id",
+                    visible: false
+                },
+                {
+                    dataField: "instrumentCode",
+                    caption: "Payment/ Receipt (MTM)"
+                },
+                {
+                    dataField: "amountPlus",
+                    caption: "Amount (+)",
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
                         precision: 2
                     }
-                }
-            ]
-        }).dxDataGrid("instance");
-
-        $equityGrid = $("#equityGrid").dxDataGrid({
-            dataSource: [],
-            columns: [
-                {
-                    dataField: "instrumentCode",
-                    caption: "Equity",
-                    allowEditing: false
                 },
                 {
-                    dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    allowEditing: false
-                },
-                {
-                    dataField: "maturity",
-                    caption: "Maturity (+)",
+                    dataField: "amountMinus",
+                    caption: "Amount (-)",
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
-                },
-                {
-                    dataField: "sales",
-                    caption: "Sales (+)",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    },
-                    allowEditing: false
-                },
-                {
-                    dataField: "purchase",
-                    caption: "Purchase (-)",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "remarks",
@@ -216,7 +184,7 @@
                         displayFormat: "TOTAL"
                     },
                     {
-                        column: "maturity",
+                        column: "amountPlus",
                         summaryType: "sum",
                         displayFormat: "{0}",
                         valueFormat: {
@@ -225,16 +193,7 @@
                         }
                     },
                     {
-                        column: "sales",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    },
-                    {
-                        column: "purchase",
+                        column: "amountMinus",
                         summaryType: "sum",
                         displayFormat: "{0}",
                         valueFormat: {
@@ -244,11 +203,96 @@
                     }
                 ]
             },
+            onSaved: function () {
+                tradeSettlement.defineTabBadgeNumbers([
+                    { titleId: "titleBadge8", dxDataGrid: $mtmGrid }
+                ]);
+            },
             editing: {
                 mode: "batch",
                 allowUpdating: true,
-                allowDeleting: false,
-                allowAdding: false
+                allowDeleting: true,
+                allowAdding: true
+            }
+        }).dxDataGrid("instance");
+
+        $fxSettlementGrid = $("#fxSettlementGrid").dxDataGrid({
+            dataSource: [],
+            columns: [
+                {
+                    dataField: "id",
+                    caption: "Id",
+                    visible: false
+                },
+                {
+                    dataField: "formId",
+                    caption: "Form Id",
+                    visible: false
+                },
+                {
+                    dataField: "instrumentCode",
+                    caption: "FX Settlement"
+                },
+                {
+                    dataField: "amountPlus",
+                    caption: "Amount (+)",
+                    dataType: "number",
+                    format: {
+                        type: "fixedPoint",
+                        precision: 2
+                    }
+                },
+                {
+                    dataField: "amountMinus",
+                    caption: "Amount (-)",
+                    dataType: "number",
+                    format: {
+                        type: "fixedPoint",
+                        precision: 2
+                    }
+                },
+                {
+                    dataField: "remarks",
+                    caption: "Remarks",
+                    dataType: "text"
+                }
+            ],
+            summary: {
+                totalItems: [
+                    {
+                        column: "instrumentCode",
+                        displayFormat: "TOTAL"
+                    },
+                    {
+                        column: "amountPlus",
+                        summaryType: "sum",
+                        displayFormat: "{0}",
+                        valueFormat: {
+                            type: "fixedPoint",
+                            precision: 2
+                        }
+                    },
+                    {
+                        column: "amountMinus",
+                        summaryType: "sum",
+                        displayFormat: "{0}",
+                        valueFormat: {
+                            type: "fixedPoint",
+                            precision: 2
+                        }
+                    }
+                ]
+            },
+            onSaved: function () {
+                tradeSettlement.defineTabBadgeNumbers([
+                    { titleId: "titleBadge9", dxDataGrid: $fxSettlementGrid }
+                ]);
+            },
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowDeleting: true,
+                allowAdding: true
             }
         }).dxDataGrid("instance");
         
@@ -279,7 +323,7 @@
 
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function (e) {
-                tradeSettlement.saveAllGrids($equityGrid);
+                tradeSettlement.saveAllGrids($mtmGrid, $fxSettlementGrid);
 
                 if (moment().subtract(1, "days").isAfter($settlementDateBox.option("value"))) {
                     alert("T-n only available for viewing..");
@@ -301,7 +345,7 @@
 
         $submitForApprovalModalBtn = $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                tradeSettlement.saveAllGrids($equityGrid);
+                tradeSettlement.saveAllGrids($mtmGrid, $fxSettlementGrid);
 
                 setTimeout(function () {
                     postData(false);

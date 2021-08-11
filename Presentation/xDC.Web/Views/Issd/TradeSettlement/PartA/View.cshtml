@@ -1,7 +1,8 @@
-﻿@model xDC_Web.ViewModels.ViewTradeSettlementFormViewModel
+﻿@using xDC_Web.Extension.CustomHtmlHelper
+@model xDC_Web.ViewModels.ViewTradeSettlementFormViewModel
 
 @{
-    ViewBag.Title = "View Trade Settlement (Equity)";
+    ViewBag.Title = "View: Trade Settlement (Part A) - Equity";
 }
 
 <section class="content-header content-toolbar">
@@ -67,77 +68,7 @@
 <section class="content container-fluid">
     <div class="row">
         <div class="col-md-12">
-            @if (Model.FormStatus == "Preparation")
-            {
-                <div class="stepper-wrapper">
-                    <div class="stepper-item">
-                        <div class="step-counter">1</div>
-                        <div class="step-name">Preparation</div>
-                    </div>
-                    <div class="stepper-item">
-                        <div class="step-counter">2</div>
-                        <div class="step-name">Pending Approval</div>
-                    </div>
-                    <div class="stepper-item">
-                        <div class="step-counter">3</div>
-                        <div class="step-name">Done</div>
-                    </div>
-                </div>
-            }
-
-            @if (Model.FormStatus == "Pending Approval")
-            {
-                <div class="stepper-wrapper">
-                    <div class="stepper-item completed">
-                        <div class="step-counter">1</div>
-                        <div class="step-name">Preparation</div>
-                    </div>
-                    <div class="stepper-item active">
-                        <div class="step-counter">2</div>
-                        <div class="step-name">Pending Approval</div>
-                    </div>
-                    <div class="stepper-item">
-                        <div class="step-counter">3</div>
-                        <div class="step-name">Done</div>
-                    </div>
-                </div>
-            }
-
-            @if (Model.FormStatus == "Approved")
-            {
-                <div class="stepper-wrapper">
-                    <div class="stepper-item completed">
-                        <div class="step-counter">1</div>
-                        <div class="step-name">Preparation</div>
-                    </div>
-                    <div class="stepper-item completed">
-                        <div class="step-counter">2</div>
-                        <div class="step-name">Pending Approval</div>
-                    </div>
-                    <div class="stepper-item completed">
-                        <div class="step-counter">3</div>
-                        <div class="step-name">Approved</div>
-                    </div>
-                </div>
-            }
-
-            @if (Model.FormStatus == "Rejected")
-            {
-                <div class="stepper-wrapper">
-                    <div class="stepper-item completed">
-                        <div class="step-counter">1</div>
-                        <div class="step-name">Preparation</div>
-                    </div>
-                    <div class="stepper-item completed">
-                        <div class="step-counter">2</div>
-                        <div class="step-name">Pending Approval</div>
-                    </div>
-                    <div class="stepper-item completed">
-                        <div class="step-counter">3</div>
-                        <div class="step-name">Rejected</div>
-                    </div>
-                </div>
-            }
+            @xDC_HtmlHelper.WorkflowStepper(Model.FormStatus)
         </div>
     </div>
     <div class="row">

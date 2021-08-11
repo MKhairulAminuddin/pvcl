@@ -1,7 +1,7 @@
 ﻿@model xDC_Web.ViewModels.ISSDLandingPageViewModel
 
 @{
-    ViewBag.Title = "ISSD";
+    ViewBag.Title = "ISSD - Trade Settlement";
 }
 
 <section class="content-header content-toolbar">
@@ -27,8 +27,24 @@
     <div class="row">
         <div class="col-md-12">
             <div class="box box-solid">
+                <div class="box-header">
+                    <h3 class="box-title">Today's Submission</h3>
+                </div>
                 <div class="box-body">
                     <div id="issdGrid" class="grid-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-solid">
+                <div class="box-header">
+                    <h3 class="box-title">Approved Submission (Consolidated)</h3>
+                </div>
+                <div class="box-body">
+                    @*<div id="issdGrid" class="grid-container"></div>*@
                 </div>
             </div>
         </div>

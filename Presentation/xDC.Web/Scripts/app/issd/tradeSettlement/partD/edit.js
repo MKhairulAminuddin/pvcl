@@ -6,8 +6,8 @@
         tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
 
         var $tabpanel,
-            $openingBalanceGrid,
-            $equityGrid,
+            $altidGrid,
+
             $tradeSettlementForm,
             
             $approverDropdown,
@@ -18,48 +18,43 @@
 
         var referenceUrl = {
             submitEditRequest: window.location.origin + "/api/issd/TradeSettlement/Edit",
-            submitEditResponse: window.location.origin + "/issd/TradeSettlement/PartA/View/",
+            submitEditResponse: window.location.origin + "/issd/TradeSettlement/PartD/View/",
 
             submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
-            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartA/View/"
+            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartD/View/"
         };
 
         //#endregion
 
 
         //#region Data Source & Functions
-        
+
         var populateData = function() {
             $.when(
-                    tradeSettlement.dsTradeItem("equity"),
-                    tradeSettlement.dsOpeningBalance()
+                tradeSettlement.dsTradeItem("altid")
                 )
-                .done(function(data1, data2) {
-                    $equityGrid.option("dataSource", data1[0].data);
-                    $equityGrid.repaint();
-
-                    $openingBalanceGrid.option("dataSource", data2[0].data);
-                    $openingBalanceGrid.repaint();
+                .done(function(data1) {
+                    $altidGrid.option("dataSource", data1[0].data);
+                    $altidGrid.repaint();
 
                     tradeSettlement.defineTabBadgeNumbers([
-                        { titleId: "titleBadge1", dxDataGrid: $equityGrid }
+                        { titleId: "titleBadge11", title: "ALTID", template: "altidTab" }
                     ]);
                 })
                 .then(function() {
                     console.log("Done load data");
                 });
-        }
+        };
 
         function postData(isDraft, isAdminEdit) {
 
             var data = {
                 id: tradeSettlement.getIdFromQueryString,
-                formType: 3,
+                formType: 6,
                 isSaveAsDraft: isDraft,
                 isSaveAdminEdit: isAdminEdit,
 
-                equity: $equityGrid.getDataSource().items(),
-                openingBalance: $openingBalanceGrid.getDataSource().items(),
+                altid: $altidGrid.getDataSource().items(),
 
                 approver: (isDraft) ? null : $approverDropdown.option("value"),
                 approvalNotes: (isDraft) ? null : $approvalNotes.option("value"),
@@ -88,7 +83,7 @@
         
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
-                { titleId: "titleBadge1", title: "Equity", template: "equityTab" }
+                { titleId: "titleBadge11", title: "ALTID", template: "altidTab" }
             ],
             deferRendering: false,
             itemTitleTemplate: $("#dxPanelTitle"),
@@ -102,11 +97,9 @@
         //#endregion
 
         // #region Data Grid
-
-        $openingBalanceGrid = $("#openingBalanceGrid").dxDataGrid({
+        
+        $altidGrid = $("#altidGrid").dxDataGrid({
             dataSource: [],
-            showColumnHeaders: false,
-            showColumnLines: false,
             columns: [
                 {
                     dataField: "id",
@@ -119,80 +112,26 @@
                     visible: false
                 },
                 {
-                    dataField: "instrumentType",
-                    caption: "Opening Balance"
+                    dataField: "instrumentCode",
+                    caption: "ALTID Distribution & Drawdown"
                 },
                 {
-                    dataField: "currency",
-                    caption: "Currency",
-                    visible: false
-                },
-                {
-                    dataField: "amount",
-                    caption: "Amount",
+                    dataField: "amountPlus",
+                    caption: "Amount (+)",
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
                         precision: 2
                     }
-                }
-            ]
-        }).dxDataGrid("instance");
-
-        $equityGrid = $("#equityGrid").dxDataGrid({
-            dataSource: [],
-            columns: [
-                {
-                    dataField: "id",
-                    caption: "Id",
-                    visible: false,
-                    allowEditing: false
                 },
                 {
-                    dataField: "formId",
-                    caption: "Form Id",
-                    visible: false,
-                    allowEditing: false
-                },
-                {
-                    dataField: "instrumentCode",
-                    caption: "Equity",
-                    allowEditing: false
-                },
-                {
-                    dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    allowEditing: false
-                },
-                {
-                    dataField: "maturity",
-                    caption: "Maturity (+)",
+                    dataField: "amountMinus",
+                    caption: "Amount (-)",
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
-                },
-                {
-                    dataField: "sales",
-                    caption: "Sales (+)",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    },
-                    allowEditing: false
-                },
-                {
-                    dataField: "purchase",
-                    caption: "Purchase (-)",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "remarks",
@@ -207,7 +146,7 @@
                         displayFormat: "TOTAL"
                     },
                     {
-                        column: "maturity",
+                        column: "amountPlus",
                         summaryType: "sum",
                         displayFormat: "{0}",
                         valueFormat: {
@@ -216,16 +155,7 @@
                         }
                     },
                     {
-                        column: "sales",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    },
-                    {
-                        column: "purchase",
+                        column: "amountMinus",
                         summaryType: "sum",
                         displayFormat: "{0}",
                         valueFormat: {
@@ -235,11 +165,16 @@
                     }
                 ]
             },
+            onSaved: function () {
+                tradeSettlement.defineTabBadgeNumbers([
+                    { titleId: "titleBadge11", title: "ALTID", template: "altidTab" }
+                ]);
+            },
             editing: {
                 mode: "batch",
                 allowUpdating: true,
-                allowDeleting: false,
-                allowAdding: false
+                allowDeleting: true,
+                allowAdding: true
             }
         }).dxDataGrid("instance");
 
@@ -261,7 +196,7 @@
 
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function(e) {
-                tradeSettlement.saveAllGrids($equityGrid);
+                tradeSettlement.saveAllGrids($altidGrid);
                 
                 if (isDraft || isAdminEdit) {
                     setTimeout(function() {
@@ -277,7 +212,7 @@
 
         $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                tradeSettlement.saveAllGrids($equityGrid);
+                tradeSettlement.saveAllGrids($altidGrid);
                 setTimeout(function() {
                     postData(false, false);
                 }, 1000);

@@ -286,7 +286,6 @@
     <Content Include="Scripts\app\issd\tradeSettlement\index.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partA\edit.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\edit.js" />
-    <Content Include="Scripts\app\issd\tradeSettlement\partA\index.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partA\new.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\new.js" />
     <Content Include="Scripts\app\admin\applicationConfig.js" />
@@ -295,6 +294,15 @@
     <Content Include="Scripts\app\issd\tradeSettlement\partB\edit.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partB\new.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partB\view.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partC\edit.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partC\new.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partC\view.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partD\edit.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partD\new.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partD\view.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partE\edit.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partE\new.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partE\view.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\view.js" />
     <Content Include="Scripts\app\setting\approverManagement.js" />
     <Content Include="Scripts\app\setting\dropdownConfig.js" />
@@ -529,13 +537,22 @@
     <Content Include="Views\Amsd\InflowFund\View.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\View.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\Edit.cshtml" />
-    <Content Include="Views\Issd\TradeSettlement\PartA\EditPartA.cshtml" />
-    <Content Include="Views\Issd\TradeSettlement\PartA\NewPartA.cshtml" />
-    <Content Include="Views\Issd\TradeSettlement\PartA\ViewPartA.cshtml" />
-    <Content Include="Views\Issd\TradeSettlement\PartA\Index.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartA\Edit.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartA\New.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartA\View.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartB\Edit.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartB\New.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartB\View.cshtml" />
+    <Content Include="App_Code\xDC_HtmlHelper.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartC\Edit.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartC\New.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartC\View.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartD\Edit.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartD\New.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartD\View.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartE\Edit.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartE\New.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartE\View.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -566,7 +583,7 @@
     <Compile Include="Extension\AdAuthentication.cs" />
     <Compile Include="Extension\CustomAttribute\InflowFundFormPermissionAttribute.cs" />
     <Compile Include="Extension\CustomAttribute\KashflowAuthorize.cs" />
-    <Compile Include="Extension\CustomHtmlHelper\xDC_HtmlHelper.cs" />
+    <Compile Include="Extension\CustomHtmlHelper\xDC_HtmlHelperTest.cs" />
     <Compile Include="Extension\DocGenerator\DocGeneratorBase.cs" />
     <Compile Include="Extension\DocGenerator\TradeSettlementFormDoc.cs" />
     <Compile Include="Extension\DocGenerator\InflowFundsFormDoc.cs" />
@@ -594,14 +611,7 @@
     <Compile Include="ViewModels\AmsdViewModel.cs" />
     <Compile Include="ViewModels\NotificationConfigViewModel.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Scripts\app\issd\tradeSettlement\partC\" />
-    <Folder Include="Scripts\app\issd\tradeSettlement\partD\" />
-    <Folder Include="Scripts\app\issd\tradeSettlement\partE\" />
-    <Folder Include="Views\Issd\TradeSettlement\PartC\" />
-    <Folder Include="Views\Issd\TradeSettlement\PartD\" />
-    <Folder Include="Views\Issd\TradeSettlement\PartE\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\xDC.Infrastructure\xDC.Infrastructure.csproj">
       <Project>{2672ed98-2d96-458e-b2ce-0488e163eb98}</Project>

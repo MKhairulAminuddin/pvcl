@@ -136,12 +136,14 @@
                 {
                     dataField: "id",
                     caption: "Id",
-                    visible: false
+                    visible: false,
+                    allowEditing: false
                 },
                 {
                     dataField: "formId",
                     caption: "Form Id",
-                    visible: false
+                    visible: false,
+                    allowEditing: false
                 },
                 {
                     dataField: "instrumentCode",
@@ -238,12 +240,14 @@
                 {
                     dataField: "id",
                     caption: "Id",
-                    visible: false
+                    visible: false,
+                    allowEditing: false
                 },
                 {
                     dataField: "formId",
                     caption: "Form Id",
-                    visible: false
+                    visible: false,
+                    allowEditing: false
                 },
                 {
                     dataField: "instrumentCode",
@@ -340,12 +344,14 @@
                 {
                     dataField: "id",
                     caption: "Id",
-                    visible: false
+                    visible: false,
+                    allowEditing: false
                 },
                 {
                     dataField: "formId",
                     caption: "Form Id",
-                    visible: false
+                    visible: false,
+                    allowEditing: false
                 },
                 {
                     dataField: "instrumentCode",
@@ -442,12 +448,14 @@
                 {
                     dataField: "id",
                     caption: "Id",
-                    visible: false
+                    visible: false,
+                    allowEditing: false
                 },
                 {
                     dataField: "formId",
                     caption: "Form Id",
-                    visible: false
+                    visible: false,
+                    allowEditing: false
                 },
                 {
                     dataField: "instrumentCode",

@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
+using System.Web.Mvc;
+using System.Web.Mvc.Html;
 using xDC.Utils;
 
 namespace xDC_Web.Extension.CustomHtmlHelper
 {
-    public class xDC_HtmlHelper
+    public class xDC_HtmlHelperTest
     {
         public static IHtmlString LoggedInUser()
         {
@@ -37,11 +40,18 @@ namespace xDC_Web.Extension.CustomHtmlHelper
             {
                 role = "Error";
             }
-
-
+            
             var output = String.Format("<p class='dropdown-header-title'>{0}</p> <p class='dropdown-header-subtitle'>{1}</p>", username, role);
 
             return new HtmlString(output);
         }
+
+        /*public static MvcHtmlString WorkflowStepper(this HtmlHelper helper, string workflowStatus)
+        {
+            var sb = new StringBuilder();
+            sb.Append(helper.Partial("_SomeOtherPartialView", workflowStatus));
+
+            return new MvcHtmlString(sb.ToString());
+        }*/
     }
 }

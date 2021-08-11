@@ -1,0 +1,108 @@
+﻿@using xDC.Utils
+@helper WorkflowStepper(string formStatus)
+{
+    if (formStatus == "Draft")
+    {
+        <div class="stepper-wrapper">
+            <div class="stepper-item active">
+                <div class="step-counter">1</div>
+                <div class="step-name">Draft</div>
+            </div>
+            <div class="stepper-item">
+                <div class="step-counter">2</div>
+                <div class="step-name">Pending Approval</div>
+            </div>
+            <div class="stepper-item">
+                <div class="step-counter">3</div>
+                <div class="step-name">Done</div>
+            </div>
+        </div>
+    }
+
+    if (formStatus == "Pending Approval")
+    {
+        <div class="stepper-wrapper">
+            <div class="stepper-item completed">
+                <div class="step-counter">1</div>
+                <div class="step-name">Draft</div>
+            </div>
+            <div class="stepper-item active">
+                <div class="step-counter">2</div>
+                <div class="step-name">Pending Approval</div>
+            </div>
+            <div class="stepper-item">
+                <div class="step-counter">3</div>
+                <div class="step-name">Done</div>
+            </div>
+        </div>
+    }
+
+    if (formStatus == "Approved")
+    {
+        <div class="stepper-wrapper">
+            <div class="stepper-item completed">
+                <div class="step-counter">1</div>
+                <div class="step-name">Draft</div>
+            </div>
+            <div class="stepper-item completed">
+                <div class="step-counter">2</div>
+                <div class="step-name">Pending Approval</div>
+            </div>
+            <div class="stepper-item completed">
+                <div class="step-counter">3</div>
+                <div class="step-name">Approved</div>
+            </div>
+        </div>
+    }
+
+    if (formStatus == "Rejected")
+    {
+        <div class="stepper-wrapper">
+            <div class="stepper-item completed">
+                <div class="step-counter">1</div>
+                <div class="step-name">Draft</div>
+            </div>
+            <div class="stepper-item completed">
+                <div class="step-counter">2</div>
+                <div class="step-name">Pending Approval</div>
+            </div>
+            <div class="stepper-item completed">
+                <div class="step-counter">3</div>
+                <div class="step-name">Rejected</div>
+            </div>
+        </div>
+    }
+}
+
+@helper LoggedInUser()
+{
+    var username = HttpContext.Current.User.Identity.Name;
+    var role = "Anonymous";
+
+    if (HttpContext.Current.User.IsInRole(Config.AclAdministrator))
+    {
+        role = Config.AclAdministrator;
+    }
+    else if (HttpContext.Current.User.IsInRole(Config.AclPowerUser))
+    {
+        role = Config.AclPowerUser;
+    }
+    else if (HttpContext.Current.User.IsInRole(Config.AclAmsd))
+    {
+        role = Config.AclAmsd;
+    }
+    else if (HttpContext.Current.User.IsInRole(Config.AclFid))
+    {
+        role = Config.AclFid;
+    }
+    else if (HttpContext.Current.User.IsInRole(Config.AclIssd))
+    {
+        role = Config.AclIssd;
+    }
+    else
+    {
+        role = "Error";
+    }
+
+    <p class='dropdown-header-title'>@username</p> <p class='dropdown-header-subtitle'>@role</p>
+}

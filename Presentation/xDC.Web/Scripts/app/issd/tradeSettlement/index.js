@@ -75,7 +75,27 @@
                                 return (e.row.data.isDraft && e.row.data.isMeCanEditDraft);
                             },
                             onClick: function (e) {
-                                window.location.href = "/issd/TradeSettlement/Edit/" + e.row.data.id;
+                                switch (e.row.data.formType) {
+                                    case "Trade Settlement (Part A)":
+                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartA/Edit/" + e.row.data.id;
+                                        return;
+                                    case "Trade Settlement (Part B)":
+                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartB/Edit/" + e.row.data.id;
+                                        return;
+                                    case "Trade Settlement (Part C)":
+                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartC/Edit/" + e.row.data.id;
+                                        return;
+                                    case "Trade Settlement (Part D)":
+                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartD/Edit/" + e.row.data.id;
+                                        return;
+                                    case "Trade Settlement (Part E)":
+                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartE/Edit/" + e.row.data.id;
+                                        return;
+                                    
+                                    default:
+                                        alert("Invalid selection!");
+                                }
+                                
                                 e.event.preventDefault();
                             }
                         },
@@ -139,7 +159,26 @@
                             icon: "fa fa-eye",
                             cssClass: "dx-datagrid-command-btn",
                             onClick: function (e) {
-                                window.location.href = "/issd/TradeSettlement/View/" + e.row.data.id;
+                                switch (e.row.data.formType) {
+                                case "Trade Settlement (Part A)":
+                                    window.location.href = window.location.origin + "/issd/TradeSettlement/PartA/View/" + e.row.data.id;
+                                    return;
+                                case "Trade Settlement (Part B)":
+                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartB/View/" + e.row.data.id;
+                                    return;
+                                case "Trade Settlement (Part C)":
+                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartC/View/" + e.row.data.id;
+                                    return;
+                                case "Trade Settlement (Part D)":
+                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartD/View/" + e.row.data.id;
+                                    return;
+                                case "Trade Settlement (Part E)":
+                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartE/View/" + e.row.data.id;
+                                    return;
+
+                                default:
+                                    alert("Invalid selection!");
+                                }
                                 e.event.preventDefault();
                             }
                         },
