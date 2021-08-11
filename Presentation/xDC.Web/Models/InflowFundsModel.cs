@@ -18,4 +18,12 @@ namespace xDC_Web.Models
         public string ApprovalNote { get; set; }
         public bool ApprovalStatus { get; set; }
     }
+
+    public class ApprovalTradeSettlementModel
+    {
+        public int Id { get; set; }
+        public int FormId { get; set; }
+        public string ApprovalNote { get; set; }
+        public bool ApprovalStatus { get; set; }
+    }
 }

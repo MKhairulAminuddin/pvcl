@@ -2,7 +2,7 @@
 
     $(function () {
 
-        var $issdGrid, $newFormBtn;
+        var $issdGrid, $newFormBtn, $consolidatedTradeSettlementGrid;
         
         $issdGrid = $("#issdGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
@@ -190,9 +190,6 @@
                                 return (!e.row.data.isDraft);
                             },
                             onClick: function (e) {
-                                $loadPanel.option("position", { of: ".content-wrapper" });
-                                $loadPanel.show();
-
                                 var data = {
                                     id: e.row.data.id,
                                     isExportAsExcel: true
@@ -211,7 +208,7 @@
                                         $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
                                     },
                                     complete: function (data) {
-                                        $loadPanel.hide();
+
                                     }
                                 });
                                 e.event.preventDefault();
@@ -225,8 +222,6 @@
                                 return (!e.row.data.isDraft);
                             },
                             onClick: function (e) {
-                                $loadPanel.option("position", { of: ".content-wrapper" });
-                                $loadPanel.show();
 
                                 var data = {
                                     id: e.row.data.id,
@@ -246,7 +241,7 @@
                                         $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
                                     },
                                     complete: function (data) {
-                                        $loadPanel.hide();
+
                                     }
                                 });
                                 e.event.preventDefault();
@@ -304,5 +299,113 @@
                 }
             }
         }).dxDropDownButton("instance");
+
+        $consolidatedTradeSettlementGrid = $("#consolidatedTradeSettlementGrid").dxDataGrid({
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: window.location.origin + "/api/issd/TradeSettlement/Approved"
+            }),
+            columns: [
+                {
+                    dataField: "formDate",
+                    caption: "Settlement Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy",
+                    sortIndex: 0,
+                    sortOrder: "desc"
+                },
+                {
+                    dataField: "currency",
+                    caption: "Currency"
+                },
+                {
+                    dataField: "approvedDate",
+                    caption: "Approved Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy HH:mm"
+                },
+                {
+                    caption: "Actions",
+                    type: "buttons",
+                    width: 110,
+                    buttons: [
+                        {
+                            hint: "Download as Excel",
+                            icon: "fa fa-file-excel-o",
+                            cssClass: "dx-datagrid-command-btn text-green",
+                            visible: function (e) {
+                                return (!e.row.data.isDraft);
+                            },
+                            onClick: function (e) {
+                                var data = {
+                                    settlementDate: moment(e.row.data.formDate).unix(),
+                                    currency: e.row.data.currency,
+                                    isExportAsExcel: true
+                                };
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: '/issd/PrintConsolidated',
+                                    data: data,
+                                    dataType: "text",
+                                    success: function (data) {
+                                        var url = '/issd/ViewPrinted/' + data;
+                                        window.location = url;
+                                    },
+                                    fail: function (jqXHR, textStatus, errorThrown) {
+                                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                                    },
+                                    complete: function (data) {
+
+                                    }
+                                });
+                                e.event.preventDefault();
+                            }
+                        },
+                        {
+                            hint: "Download as PDF",
+                            icon: "fa fa-file-pdf-o",
+                            cssClass: "dx-datagrid-command-btn text-orange",
+                            visible: function (e) {
+                                return (!e.row.data.isDraft);
+                            },
+                            onClick: function (e) {
+
+                                var data = {
+                                    settlementDate: moment(e.row.data.formDate).unix(),
+                                    currency: e.row.data.currency,
+                                    isExportAsExcel: false
+                                };
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: '/issd/PrintConsolidated',
+                                    data: data,
+                                    dataType: "text",
+                                    success: function (data) {
+                                        var url = '/issd/ViewPrinted/' + data;
+                                        window.location = url;
+                                    },
+                                    fail: function (jqXHR, textStatus, errorThrown) {
+                                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                                    },
+                                    complete: function (data) {
+
+                                    }
+                                });
+                                e.event.preventDefault();
+                            }
+                        }
+                    ]
+                }
+            ],
+            showBorders: true,
+            sorting: {
+                mode: "multiple"
+            },
+            headerFilter: {
+                visible: true
+            }
+        }).dxDataGrid("instance");
     });
 }(window.jQuery, window, document));

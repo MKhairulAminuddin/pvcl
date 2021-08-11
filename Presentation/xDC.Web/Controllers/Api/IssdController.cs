@@ -86,6 +86,60 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpGet]
+        [Route("TradeSettlement/Approved")]
+        public HttpResponseMessage ApprovedTradeSettlement(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new xDC.Infrastructure.Application.kashflowDBEntities())
+                {
+                    var formTypes = new List<string>()
+                    {
+                        Common.FormTypeMapping(3),
+                        Common.FormTypeMapping(4),
+                        Common.FormTypeMapping(5),
+                        Common.FormTypeMapping(6),
+                        Common.FormTypeMapping(7)
+                    };
+
+                    var formStatus  = new List<string>()
+                    {
+                        Common.FormStatusMapping(3)
+                    };
+
+                    var result = db.ISSD_FormHeader
+                        .Where(x => formTypes.Contains(x.FormType) && formStatus.Contains(x.FormStatus))
+                        .GroupBy(x => new { x.SettlementDate, x.Currency})
+                        .Select(x => new
+                        {
+                            SettlementDate = x.Key.SettlementDate,
+                            Currency = x.Key.Currency,
+                            ApprovedDate = x.Max(i=>i.ApprovedDate)
+                        });
+
+                    var resultVM = new List<ViewFormHeaderModel>();
+
+                    foreach (var item in result)
+                    {
+                        resultVM.Add(new ViewFormHeaderModel
+                        {
+                            FormDate = item.SettlementDate,
+                            Currency = item.Currency,
+                            ApprovedDate = item.ApprovedDate
+                        });
+                    }
+
+                    return Request.CreateResponse(DataSourceLoader.Load(resultVM, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+
+        }
+
+        [HttpGet]
         [Route("GetIssdForm/{formType}")]
         public HttpResponseMessage GetTradeSettlementForm(int formType, DataSourceLoadOptions loadOptions)
         {
@@ -821,6 +875,47 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
 
+        }
+
+        [HttpPost]
+        [Route("TradeSettlement/Approval")]
+        public HttpResponseMessage ApprovalTradeSettlement([FromBody] ApprovalInflowFundsModel inputs)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formId = Convert.ToInt32(inputs.FormId);
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
+
+                    if (form != null)
+                    {
+                        if (form.ApprovedBy == User.Identity.Name)
+                        {
+                            form.ApprovedDate = DateTime.Now;
+                            form.FormStatus = (inputs.ApprovalStatus)
+                                ? Common.FormStatusMapping(3)
+                                : Common.FormStatusMapping(4);
+
+                            db.SaveChanges();
+
+                            return Request.CreateResponse(HttpStatusCode.Accepted, formId);
+                        }
+                        else
+                        {
+                            return Request.CreateResponse(HttpStatusCode.BadRequest, "Unauthorized Approver!");
+                        }
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not Found!");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
         }
 
         /*
