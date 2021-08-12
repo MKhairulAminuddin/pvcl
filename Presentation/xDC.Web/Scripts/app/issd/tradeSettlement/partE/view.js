@@ -16,6 +16,8 @@
             $printBtn;
 
         var referenceUrl = {
+            adminEdit: window.location.origin + "/issd/TradeSettlement/PartE/Edit/",
+
             submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
             submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartE/View/"
         };
@@ -299,6 +301,13 @@
         // #endregion DataGrid
         
         //#region Events
+
+        $("#adminEditBtn").on({
+            "click": function (e) {
+                window.location.href = referenceUrl.adminEdit + tradeSettlement.getIdFromQueryString;
+                e.preventDefault();
+            }
+        });
 
         $("#approveBtn").on({
             "click": function (e) {

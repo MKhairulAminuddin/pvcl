@@ -130,7 +130,7 @@
                                 }
                             }
                         },
-                        {
+                        /*{
                             hint: "Resubmit",
                             icon: "fa fa-repeat",
                             cssClass: "dx-datagrid-command-btn",
@@ -141,7 +141,7 @@
                                 window.location.href = "/issd/TradeSettlement/Edit/" + e.row.data.id;
                                 e.event.preventDefault();
                             }
-                        },
+                        },*/
                         {
                             hint: "Admin Edit",
                             icon: "fa fa-pencil-square-o",
@@ -150,7 +150,27 @@
                                 return (e.row.data.isCanAdminEdit);
                             },
                             onClick: function (e) {
-                                window.location.href = "/issd/TradeSettlement/Edit" + e.row.data.id;
+                                switch (e.row.data.formType) {
+                                case "Trade Settlement (Part A)":
+                                    window.location.href = window.location.origin + "/issd/TradeSettlement/PartA/Edit/" + e.row.data.id;
+                                    return;
+                                case "Trade Settlement (Part B)":
+                                    window.location.href = window.location.origin + "/issd/TradeSettlement/PartB/Edit/" + e.row.data.id;
+                                    return;
+                                case "Trade Settlement (Part C)":
+                                    window.location.href = window.location.origin + "/issd/TradeSettlement/PartC/Edit/" + e.row.data.id;
+                                    return;
+                                case "Trade Settlement (Part D)":
+                                    window.location.href = window.location.origin + "/issd/TradeSettlement/PartD/Edit/" + e.row.data.id;
+                                    return;
+                                case "Trade Settlement (Part E)":
+                                    window.location.href = window.location.origin + "/issd/TradeSettlement/PartE/Edit/" + e.row.data.id;
+                                    return;
+
+                                default:
+                                    alert("Invalid selection!");
+                                }
+
                                 e.event.preventDefault();
                             }
                         },

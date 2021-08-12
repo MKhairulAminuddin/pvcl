@@ -64,16 +64,17 @@ namespace xDC_Web.Controllers.Api
                             AdminEdittedBy = item.AdminEdittedBy,
                             AdminEdittedDate = item.AdminEdittedDate,
 
-                            IsDraft = (item.FormStatus == Common.FormStatusMapping(0)),
+                            IsDraft = (item.FormStatus != Common.FormStatusMapping(2)),
 
                             IsMeCanEditDraft = (User.IsInRole(Config.AclIssd) && !isMeApprover),
 
 
                             IsMyFormRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatusMapping(4)),
                             IsFormPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatusMapping(2)),
-                            IsFormOwner = (User.Identity.Name == item.PreparedBy),
-                            IsCanAdminEdit = (User.IsInRole(Config.AclPowerUser)),
-                            IsResubmitEnabled = (item.FormStatus == "Rejected" && User.IsInRole(Config.AclAmsd) && User.Identity.Name != item.ApprovedBy)
+                            //IsFormOwner = (User.Identity.Name == item.PreparedBy),
+                            IsCanAdminEdit = (User.IsInRole(Config.AclPowerUser) && !isMeApprover && item.FormStatus != Common.FormStatusMapping(2)),
+
+                            //IsResubmitEnabled = (item.FormStatus == "Rejected" && User.IsInRole(Config.AclAmsd) && User.Identity.Name != item.ApprovedBy)
                         });
                     }
 
@@ -514,6 +515,7 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.IsSaveAdminEdit)
                     {
+                        getForm.AdminEditted = true;
                         getForm.AdminEdittedBy = User.Identity.Name;
                         getForm.AdminEdittedDate = DateTime.Now;
                     }
