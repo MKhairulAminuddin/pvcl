@@ -59,12 +59,10 @@
                 method: "post",
                 error: function (jqXHR, textStatus, errorThrown) {
                     $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                },
+                success: function(data) {
+                    window.location.href = referenceUrl.submitApprovalResponse + data;
                 }
-            }).done(function (data) {
-                window.location.href = referenceUrl.submitApprovalResponse + data;
-
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                $("#error_container").bs_alert(textStatus + ": " + errorThrown);
             });
         }
 

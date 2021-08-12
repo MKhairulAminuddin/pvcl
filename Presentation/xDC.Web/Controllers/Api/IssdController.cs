@@ -27,7 +27,7 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                using (var db = new xDC.Infrastructure.Application.kashflowDBEntities())
+                using (var db = new kashflowDBEntities())
                 {
                     var formTypes = new List<string>()
                     {
@@ -954,13 +954,10 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
-        /*
-         * To delete draft form
-         *
-         */
+        
         [HttpDelete]
         [Authorize(Roles = "Administrator, ISSD")]
-        [Route("TradeSettlement/")]
+        [Route("TradeSettlement")]
         public HttpResponseMessage DeleteTradeSettlement(FormDataCollection form)
         {
             try
@@ -969,14 +966,32 @@ namespace xDC_Web.Controllers.Api
                 {
                     var key = Convert.ToInt32(form.Get("id"));
 
-                    var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == key);
-                    var inflowFunds = db.ISSD_TradeSettlement.Where(x => x.FormId == formHeader.Id);
-                    
-                    db.Form_Header.Remove(formHeader);
-                    db.ISSD_TradeSettlement.RemoveRange(inflowFunds);
-                    db.SaveChanges();
+                    var formHeader = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == key);
 
-                    return Request.CreateResponse(HttpStatusCode.OK);
+                    if (formHeader != null)
+                    {
+                        db.ISSD_FormHeader.Remove(formHeader);
+
+                        var tradeItems = db.ISSD_TradeSettlement.Where(x => x.FormId == key);
+                        if (tradeItems.Any())
+                        {
+                            db.ISSD_TradeSettlement.RemoveRange(tradeItems);
+                        }
+
+                        var openingBalances = db.ISSD_Balance.Where(x => x.FormId == key);
+                        if (openingBalances.Any())
+                        {
+                            db.ISSD_Balance.RemoveRange(openingBalances);
+                        }
+
+                        db.SaveChanges();
+
+                        return Request.CreateResponse(HttpStatusCode.OK);
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not found!");
+                    }
                 }
             }
             catch (Exception ex)

@@ -15,6 +15,10 @@ namespace xDC_Web.Extension.DocGenerator
 {
     public class TradeSettlementFormDoc : DocGeneratorBase
     {
+        private Color _tableHeaderPrimaryColor = System.Drawing.ColorTranslator.FromHtml("#5b8efb");
+        private Color _tableHeaderInflowColor = System.Drawing.ColorTranslator.FromHtml("#2ECC71");
+        private Color _tableHeaderOutFlowColor = System.Drawing.ColorTranslator.FromHtml("#E74C3C");
+
         public string GenerateFile(int formId, bool isExportAsExcel)
         {
             try
@@ -36,10 +40,12 @@ namespace xDC_Web.Extension.DocGenerator
                                         x.FormId == getForm.Id).OrderByDescending(x => x.EndDate)
                             .FirstOrDefault();
 
+                        var openingBalance = db.ISSD_Balance.Where(x => x.FormId == formId).ToList();
+
                         IWorkbook workbook = new Workbook();
                         workbook.Options.Culture = new CultureInfo("en-US");
                         workbook.LoadDocument(MapPath("~/App_Data/Trade Settlement Template.xltx"));
-                        workbook = GenerateDocument(workbook, getForm, getFormWorkflow, getTrades);
+                        workbook = GenerateDocument(workbook, getForm, getFormWorkflow, getTrades, openingBalance);
                         var randomFileName = "ISSD Trade Settlement - " + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                         if (isExportAsExcel)
@@ -130,27 +136,30 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private IWorkbook GenerateDocument(IWorkbook workbook, ISSD_FormHeader formHeader, Form_Workflow formWorkflow, List<ISSD_TradeSettlement> trades)
+        private IWorkbook GenerateDocument(IWorkbook workbook, ISSD_FormHeader formHeader, Form_Workflow formWorkflow, List<ISSD_TradeSettlement> trades, List<ISSD_Balance> ob = null)
         {
             workbook.BeginUpdate();
             try
             {
-                
                 var sheet = workbook.Worksheets[0];
-                
-                sheet["G2"].Value = formHeader.PreparedBy;
+
+                if (formHeader.SettlementDate != null)
+                    sheet["B2"].Value = formHeader.SettlementDate.Value.ToString("dd/MM/yyyy");
+                sheet["B3"].Value = formHeader.Currency;
+
+                sheet["H2"].Value = formHeader.PreparedBy;
                 if (formHeader.PreparedDate != null)
                 {
-                    sheet["G3"].Value = formHeader.PreparedDate.Value.ToString("dd/MM/yyyy HH:ss");
+                    sheet["H3"].Value = formHeader.PreparedDate.Value.ToString("dd/MM/yyyy HH:ss");
                 }
 
-                sheet["G5"].Value = formHeader.ApprovedBy;
+                sheet["H5"].Value = formHeader.ApprovedBy;
                 if (formHeader.ApprovedDate != null)
                 {
-                    sheet["G6"].Value = formHeader.ApprovedDate.Value.ToString("dd/MM/yyyy HH:ss");
+                    sheet["H6"].Value = formHeader.ApprovedDate.Value.ToString("dd/MM/yyyy HH:ss");
                     if (formWorkflow != null)
                     {
-                        sheet["G7"].Value = formWorkflow.WorkflowNotes;
+                        sheet["H7"].Value = formWorkflow.WorkflowNotes;
                     }
                 }
 
@@ -164,17 +173,34 @@ namespace xDC_Web.Extension.DocGenerator
                     
                     startingRownumber += 3;
                 }*/
-
-                if (formHeader.SettlementDate != null)
-                    sheet["B6"].Value = formHeader.SettlementDate.Value.ToString("dd/MM/yyyy HH:ss");
-
-                sheet["B7"].Value = formHeader.Currency;
-
+                
+                int tradeItemStartRow = 7;
                 // Opening Balance
-                //sheet["B10"].Value = formHeader.Currency;
-                //sheet["B11"].Value = formHeader.Currency;
+                var openingBalance = ob.Where(x => x.FormId == formHeader.Id).ToList();
+                if (openingBalance.Any())
+                {
+                    sheet["A5"].Value = "Opening Balance:";
+                    sheet["A5"].Font.Bold = true;
+                    sheet["A5:B5"].Merge();
 
-                int tradeItemStartRow = 15;
+                    var headerStartRow = tradeItemStartRow;
+                    
+                    foreach (var item in openingBalance)
+                    {
+                        sheet["A" + tradeItemStartRow].Value = item.BalanceCategory;
+                        sheet["B" + tradeItemStartRow].Value = item.Amount;
+                        sheet["B" + tradeItemStartRow].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+                        tradeItemStartRow++;
+                    }
+                    
+                    tradeItemStartRow += 2;
+                }
+
+                sheet["A" + tradeItemStartRow].Value = "Daily Trade Settlement:";
+                sheet["A" + tradeItemStartRow].Font.Bold = true;
+                sheet["A" + tradeItemStartRow + ":B" + tradeItemStartRow].Merge();
+                tradeItemStartRow += 2;
+
                 // equity
                 var equity = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(1)).ToList();
                 if (equity.Any())
@@ -186,6 +212,7 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
                     sheet["D" + tradeItemStartRow].Value = "Sales (+)";
                     sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
+                    sheet["F" + tradeItemStartRow].Value = "Remarks";
 
                     foreach (var item in equity)
                     {
@@ -195,12 +222,14 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["C" + tradeItemStartRow].Value = item.Maturity;
                         sheet["D" + tradeItemStartRow].Value = item.Sales;
                         sheet["E" + tradeItemStartRow].Value = item.Purchase;
+                        sheet["F" + tradeItemStartRow].Value = item.Remarks;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow],
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow],
                         true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
                     
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -217,7 +246,9 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[4].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    
+
+                    table.Columns[5].TotalRowFunction = TotalRowFunction.None;
+
                     tradeItemStartRow += 3;
                 }
 
@@ -232,7 +263,8 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
                     sheet["D" + tradeItemStartRow].Value = "Sales (+)";
                     sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
-                    
+                    sheet["F" + tradeItemStartRow].Value = "Remarks";
+
                     foreach (var item in bond)
                     {
                         ++tradeItemStartRow;
@@ -241,11 +273,13 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["C" + tradeItemStartRow].Value = item.Maturity;
                         sheet["D" + tradeItemStartRow].Value = item.Sales;
                         sheet["E" + tradeItemStartRow].Value = item.Purchase;
+                        sheet["F" + tradeItemStartRow].Value = item.Remarks;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -262,6 +296,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[4].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[5].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -277,7 +313,8 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
                     sheet["D" + tradeItemStartRow].Value = "Sales (+)";
                     sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
-                    
+                    sheet["F" + tradeItemStartRow].Value = "Remarks";
+
                     foreach (var item in cp)
                     {
                         ++tradeItemStartRow;
@@ -286,12 +323,14 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["C" + tradeItemStartRow].Value = item.Maturity;
                         sheet["D" + tradeItemStartRow].Value = item.Sales;
                         sheet["E" + tradeItemStartRow].Value = item.Purchase;
+                        sheet["F" + tradeItemStartRow].Value = item.Remarks;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow],
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow],
                         true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -308,6 +347,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[4].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+                    
+                    table.Columns[5].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -323,7 +364,8 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
                     sheet["D" + tradeItemStartRow].Value = "Sales (+)";
                     sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
-                    
+                    sheet["F" + tradeItemStartRow].Value = "Remarks";
+
                     foreach (var item in notes)
                     {
                         ++tradeItemStartRow;
@@ -332,11 +374,13 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["C" + tradeItemStartRow].Value = item.Maturity;
                         sheet["D" + tradeItemStartRow].Value = item.Sales;
                         sheet["E" + tradeItemStartRow].Value = item.Purchase;
+                        sheet["F" + tradeItemStartRow].Value = item.Remarks;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -354,6 +398,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[4].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
 
+                    table.Columns[5].TotalRowFunction = TotalRowFunction.None;
+
                     tradeItemStartRow += 3;
                 }
 
@@ -367,7 +413,8 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
                     sheet["C" + tradeItemStartRow].Value = "1st Leg (+)";
                     sheet["D" + tradeItemStartRow].Value = "2nd Leg (-)";
-                    
+                    sheet["E" + tradeItemStartRow].Value = "Remarks";
+
                     foreach (var item in repo)
                     {
                         ++tradeItemStartRow;
@@ -375,11 +422,13 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["B" + tradeItemStartRow].Value = item.StockCode;
                         sheet["C" + tradeItemStartRow].Value = item.FirstLeg;
                         sheet["D" + tradeItemStartRow].Value = item.SecondLeg;
+                        sheet["E" + tradeItemStartRow].Value = item.Remarks;
                     }
                     
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -393,6 +442,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
 
+                    table.Columns[4].TotalRowFunction = TotalRowFunction.None;
+
                     tradeItemStartRow += 3;
                 }
 
@@ -405,19 +456,22 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["A" + tradeItemStartRow].Value = "Coupon Received";
                     sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
                     sheet["C" + tradeItemStartRow].Value = "Amount (+)";
-                    
+                    sheet["D" + tradeItemStartRow].Value = "Remarks";
+
                     foreach (var item in coupon)
                     {
                         ++tradeItemStartRow;
                         sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.StockCode;
                         sheet["C" + tradeItemStartRow].Value = item.AmountPlus;
+                        sheet["D" + tradeItemStartRow].Value = item.Remarks;
                     }
 
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
@@ -426,6 +480,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.ShowTotals = true;
                     table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -438,25 +494,29 @@ namespace xDC_Web.Extension.DocGenerator
 
                     sheet["A" + tradeItemStartRow].Value = "Fees";
                     sheet["B" + tradeItemStartRow].Value = "Amount (+)";
-                    
+                    sheet["C" + tradeItemStartRow].Value = "Remarks";
+
                     foreach (var item in fees)
                     {
                         ++tradeItemStartRow;
                         sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
+                        sheet["C" + tradeItemStartRow].Value = item.Remarks;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":B" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
                     table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
 
                     table.ShowTotals = true;
                     table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
                     table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[2].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -470,18 +530,21 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["A" + tradeItemStartRow].Value = "Coupon Received";
                     sheet["B" + tradeItemStartRow].Value = "Amount (+)";
                     sheet["C" + tradeItemStartRow].Value = "Amount (-)";
-                    
+                    sheet["D" + tradeItemStartRow].Value = "Remarks";
+
                     foreach (var item in mtm)
                     {
                         ++tradeItemStartRow;
                         sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
                         sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
+                        sheet["D" + tradeItemStartRow].Value = item.Remarks;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -494,6 +557,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
                     table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -507,17 +572,20 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["A" + tradeItemStartRow].Value = "FX Settlement";
                     sheet["B" + tradeItemStartRow].Value = "Amount (+)";
                     sheet["C" + tradeItemStartRow].Value = "Amount (-)";
-                    
+                    sheet["D" + tradeItemStartRow].Value = "Remarks";
+
                     foreach (var item in fx)
                     {
                         ++tradeItemStartRow;
                         sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
                         sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
+                        sheet["D" + tradeItemStartRow].Value = item.Remarks;
                     }
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -531,6 +599,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
 
+                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
+
                     tradeItemStartRow += 3;
                 }
 
@@ -542,17 +612,20 @@ namespace xDC_Web.Extension.DocGenerator
 
                     sheet["A" + tradeItemStartRow].Value = "Contribution credited";
                     sheet["B" + tradeItemStartRow].Value = "Amount (+)";
-                    
+                    sheet["C" + tradeItemStartRow].Value = "Remarks";
+
                     foreach (var item in contribution)
                     {
                         ++tradeItemStartRow;
                         sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
+                        sheet["C" + tradeItemStartRow].Value = item.Remarks;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":B" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
@@ -561,6 +634,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.ShowTotals = true;
                     table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
                     table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[2].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -574,18 +649,21 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["A" + tradeItemStartRow].Value = "ALTID Distribution & Drawdown";
                     sheet["B" + tradeItemStartRow].Value = "Amount (+)";
                     sheet["C" + tradeItemStartRow].Value = "Amount (-)";
-                    
+                    sheet["D" + tradeItemStartRow].Value = "Remarks";
+
                     foreach (var item in altid)
                     {
                         ++tradeItemStartRow;
                         sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
                         sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
+                        sheet["D" + tradeItemStartRow].Value = item.AmountMinus;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -598,6 +676,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
                     table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -611,6 +691,7 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["A" + tradeItemStartRow].Value = "Others";
                     sheet["B" + tradeItemStartRow].Value = "Amount (+)";
                     sheet["C" + tradeItemStartRow].Value = "Amount (-)";
+                    sheet["D" + tradeItemStartRow].Value = "Remarks";
                     
                     foreach (var item in others)
                     {
@@ -618,12 +699,13 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
                         sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
+                        sheet["D" + tradeItemStartRow].Value = item.Remarks;
                     }
-
-
+                    
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -636,6 +718,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
                     table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -667,16 +751,19 @@ namespace xDC_Web.Extension.DocGenerator
             {
                 var sheet = workbook.Worksheets[0];
                 
-                sheet["B6"].Value = settlementDate.ToString("dd/MM/yyyy HH:ss");
-                sheet["B7"].Value = currency;
-
-                int tradeItemStartRow = 10;
-
+                sheet["B2"].Value = settlementDate.ToString("dd/MM/yyyy");
+                sheet["B3"].Value = currency;
+                
+                int tradeItemStartRow = 7;
                 // Opening Balance
                 if (ob.Any())
                 {
+                    sheet["A5"].Value = "Opening Balance:";
+                    sheet["A5"].Font.Bold = true;
+                    sheet["A5:B5"].Merge();
+
                     var headerStartRow = tradeItemStartRow;
-                    
+
                     foreach (var item in ob)
                     {
                         sheet["A" + tradeItemStartRow].Value = item.BalanceCategory;
@@ -684,14 +771,15 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["B" + tradeItemStartRow].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                         tradeItemStartRow++;
                     }
-                    
+
                     tradeItemStartRow += 2;
                 }
 
                 sheet["A" + tradeItemStartRow].Value = "Daily Trade Settlement:";
                 sheet["A" + tradeItemStartRow].Font.Bold = true;
-                tradeItemStartRow += 3;
-                
+                sheet["A" + tradeItemStartRow + ":B" + tradeItemStartRow].Merge();
+                tradeItemStartRow += 2;
+
                 // equity
                 var equity = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(1)).ToList();
                 if (equity.Any())
@@ -703,6 +791,7 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
                     sheet["D" + tradeItemStartRow].Value = "Sales (+)";
                     sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
+                    sheet["F" + tradeItemStartRow].Value = "Remarks";
 
                     foreach (var item in equity)
                     {
@@ -712,12 +801,14 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["C" + tradeItemStartRow].Value = item.Maturity;
                         sheet["D" + tradeItemStartRow].Value = item.Sales;
                         sheet["E" + tradeItemStartRow].Value = item.Purchase;
+                        sheet["F" + tradeItemStartRow].Value = item.Remarks;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow],
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow],
                         true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -734,6 +825,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[4].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[5].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -749,6 +842,7 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
                     sheet["D" + tradeItemStartRow].Value = "Sales (+)";
                     sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
+                    sheet["F" + tradeItemStartRow].Value = "Remarks";
 
                     foreach (var item in bond)
                     {
@@ -758,11 +852,13 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["C" + tradeItemStartRow].Value = item.Maturity;
                         sheet["D" + tradeItemStartRow].Value = item.Sales;
                         sheet["E" + tradeItemStartRow].Value = item.Purchase;
+                        sheet["F" + tradeItemStartRow].Value = item.Remarks;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -779,6 +875,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[4].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[5].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -794,6 +892,7 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
                     sheet["D" + tradeItemStartRow].Value = "Sales (+)";
                     sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
+                    sheet["F" + tradeItemStartRow].Value = "Remarks";
 
                     foreach (var item in cp)
                     {
@@ -803,12 +902,14 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["C" + tradeItemStartRow].Value = item.Maturity;
                         sheet["D" + tradeItemStartRow].Value = item.Sales;
                         sheet["E" + tradeItemStartRow].Value = item.Purchase;
+                        sheet["F" + tradeItemStartRow].Value = item.Remarks;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow],
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow],
                         true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -825,6 +926,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[4].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[5].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -840,6 +943,7 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
                     sheet["D" + tradeItemStartRow].Value = "Sales (+)";
                     sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
+                    sheet["F" + tradeItemStartRow].Value = "Remarks";
 
                     foreach (var item in notes)
                     {
@@ -849,11 +953,13 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["C" + tradeItemStartRow].Value = item.Maturity;
                         sheet["D" + tradeItemStartRow].Value = item.Sales;
                         sheet["E" + tradeItemStartRow].Value = item.Purchase;
+                        sheet["F" + tradeItemStartRow].Value = item.Remarks;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -871,6 +977,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[4].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
 
+                    table.Columns[5].TotalRowFunction = TotalRowFunction.None;
+
                     tradeItemStartRow += 3;
                 }
 
@@ -884,6 +992,7 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
                     sheet["C" + tradeItemStartRow].Value = "1st Leg (+)";
                     sheet["D" + tradeItemStartRow].Value = "2nd Leg (-)";
+                    sheet["E" + tradeItemStartRow].Value = "Remarks";
 
                     foreach (var item in repo)
                     {
@@ -892,11 +1001,13 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["B" + tradeItemStartRow].Value = item.StockCode;
                         sheet["C" + tradeItemStartRow].Value = item.FirstLeg;
                         sheet["D" + tradeItemStartRow].Value = item.SecondLeg;
+                        sheet["E" + tradeItemStartRow].Value = item.Remarks;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -910,6 +1021,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
 
+                    table.Columns[4].TotalRowFunction = TotalRowFunction.None;
+
                     tradeItemStartRow += 3;
                 }
 
@@ -922,6 +1035,7 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["A" + tradeItemStartRow].Value = "Coupon Received";
                     sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
                     sheet["C" + tradeItemStartRow].Value = "Amount (+)";
+                    sheet["D" + tradeItemStartRow].Value = "Remarks";
 
                     foreach (var item in coupon)
                     {
@@ -929,12 +1043,14 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.StockCode;
                         sheet["C" + tradeItemStartRow].Value = item.AmountPlus;
+                        sheet["D" + tradeItemStartRow].Value = item.Remarks;
                     }
 
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
@@ -943,6 +1059,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.ShowTotals = true;
                     table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -955,25 +1073,29 @@ namespace xDC_Web.Extension.DocGenerator
 
                     sheet["A" + tradeItemStartRow].Value = "Fees";
                     sheet["B" + tradeItemStartRow].Value = "Amount (+)";
+                    sheet["C" + tradeItemStartRow].Value = "Remarks";
 
                     foreach (var item in fees)
                     {
                         ++tradeItemStartRow;
                         sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
+                        sheet["C" + tradeItemStartRow].Value = item.Remarks;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":B" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
                     table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
 
                     table.ShowTotals = true;
                     table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
                     table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[2].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -987,6 +1109,7 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["A" + tradeItemStartRow].Value = "Coupon Received";
                     sheet["B" + tradeItemStartRow].Value = "Amount (+)";
                     sheet["C" + tradeItemStartRow].Value = "Amount (-)";
+                    sheet["D" + tradeItemStartRow].Value = "Remarks";
 
                     foreach (var item in mtm)
                     {
@@ -994,11 +1117,13 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
                         sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
+                        sheet["D" + tradeItemStartRow].Value = item.Remarks;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -1011,6 +1136,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
                     table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -1024,6 +1151,7 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["A" + tradeItemStartRow].Value = "FX Settlement";
                     sheet["B" + tradeItemStartRow].Value = "Amount (+)";
                     sheet["C" + tradeItemStartRow].Value = "Amount (-)";
+                    sheet["D" + tradeItemStartRow].Value = "Remarks";
 
                     foreach (var item in fx)
                     {
@@ -1031,10 +1159,12 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
                         sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
+                        sheet["D" + tradeItemStartRow].Value = item.Remarks;
                     }
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -1048,6 +1178,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
 
+                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
+
                     tradeItemStartRow += 3;
                 }
 
@@ -1059,17 +1191,20 @@ namespace xDC_Web.Extension.DocGenerator
 
                     sheet["A" + tradeItemStartRow].Value = "Contribution credited";
                     sheet["B" + tradeItemStartRow].Value = "Amount (+)";
+                    sheet["C" + tradeItemStartRow].Value = "Remarks";
 
                     foreach (var item in contribution)
                     {
                         ++tradeItemStartRow;
                         sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
+                        sheet["C" + tradeItemStartRow].Value = item.Remarks;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":B" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
@@ -1078,6 +1213,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.ShowTotals = true;
                     table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
                     table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[2].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -1091,6 +1228,7 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["A" + tradeItemStartRow].Value = "ALTID Distribution & Drawdown";
                     sheet["B" + tradeItemStartRow].Value = "Amount (+)";
                     sheet["C" + tradeItemStartRow].Value = "Amount (-)";
+                    sheet["D" + tradeItemStartRow].Value = "Remarks";
 
                     foreach (var item in altid)
                     {
@@ -1098,11 +1236,13 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
                         sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
+                        sheet["D" + tradeItemStartRow].Value = item.AmountMinus;
                     }
 
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -1115,6 +1255,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
                     table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -1128,6 +1270,7 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["A" + tradeItemStartRow].Value = "Others";
                     sheet["B" + tradeItemStartRow].Value = "Amount (+)";
                     sheet["C" + tradeItemStartRow].Value = "Amount (-)";
+                    sheet["D" + tradeItemStartRow].Value = "Remarks";
 
                     foreach (var item in others)
                     {
@@ -1135,12 +1278,13 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
                         sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
                         sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
+                        sheet["D" + tradeItemStartRow].Value = item.Remarks;
                     }
 
-
                     // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight9];
+                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -1153,6 +1297,8 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
                     table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
 
                     tradeItemStartRow += 3;
                 }
@@ -1176,7 +1322,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             return workbook;
         }
-
+        
 
     }
 }
