@@ -26,7 +26,7 @@
                 tradeSettlement.dsTradeItem("altid")
                 )
                 .done(function (data1) {
-                    $altidGrid.option("dataSource", data1[0].data);
+                    $altidGrid.option("dataSource", data1.data);
                     $altidGrid.repaint();
 
                     tradeSettlement.defineTabBadgeNumbers([
@@ -118,6 +118,16 @@
                     dataField: "remarks",
                     caption: "Remarks",
                     dataType: "text"
+                },
+                {
+                    dataField: "modifiedBy",
+                    caption: "Modified"
+                },
+                {
+                    dataField: "modifiedDate",
+                    caption: "Modified Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy HH:mm a"
                 }
             ],
             summary: {

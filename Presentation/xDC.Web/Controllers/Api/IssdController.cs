@@ -11,6 +11,7 @@ using DevExtreme.AspNet.Mvc;
 using Newtonsoft.Json;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Services.App;
 using xDC.Utils;
 using xDC_Web.Models;
 
@@ -37,8 +38,9 @@ namespace xDC_Web.Controllers.Api
                         Common.FormTypeMapping(7)
                     };
 
+                    var todayDate = DateTime.Now.Date;
                     var result = db.ISSD_FormHeader
-                        .Where(x => formTypes.Contains(x.FormType));
+                        .Where(x => formTypes.Contains(x.FormType) && DbFunctions.TruncateTime(x.SettlementDate) >= todayDate);
 
                     var getApprover = db.Config_Approver.Where(x => x.Username == User.Identity.Name);
                     var isMeApprover = getApprover.Any();
@@ -206,8 +208,21 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
+                var settlementDateConverted = Common.ConvertEpochToDateTime(inputs.SettlementDateEpoch);
+                inputs.Currency = inputs.Currency.ToUpper();
+
                 using (var db = new kashflowDBEntities())
                 {
+                    if (TradeSettlementService.IsSameDateAndCurrencyExist(db, settlementDateConverted.Value.Date, inputs.Currency, Common.FormTypeMapping(inputs.FormType)))
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Similar form has been created. Use that instead.");
+                    }
+
+                    if (TradeSettlementService.IsTMinus(settlementDateConverted.Value.Date))
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Submission for Settlement Date T-n is not allowed");
+                    }
+
                     var newFormHeader = new ISSD_FormHeader()
                     {
                         FormType = Common.FormTypeMapping(inputs.FormType),
@@ -238,8 +253,8 @@ namespace xDC_Web.Controllers.Api
                                 Sales = item.Sales,
                                 Purchase = item.Purchase,
                                 Remarks = item.Remarks,
-                                CreatedBy = User.Identity.Name,
-                                CreatedDate = DateTime.Now
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
                             });
                         }
                     }
@@ -258,8 +273,8 @@ namespace xDC_Web.Controllers.Api
                                 Sales = item.Sales,
                                 Purchase = item.Purchase,
                                 Remarks = item.Remarks,
-                                CreatedBy = User.Identity.Name,
-                                CreatedDate = DateTime.Now
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
                             });
                         }
                     }
@@ -278,8 +293,8 @@ namespace xDC_Web.Controllers.Api
                                 Sales = item.Sales,
                                 Purchase = item.Purchase,
                                 Remarks = item.Remarks,
-                                CreatedBy = User.Identity.Name,
-                                CreatedDate = DateTime.Now
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
                             });
                         }
                     }
@@ -298,8 +313,8 @@ namespace xDC_Web.Controllers.Api
                                 Sales = item.Sales,
                                 Purchase = item.Purchase,
                                 Remarks = item.Remarks,
-                                CreatedBy = User.Identity.Name,
-                                CreatedDate = DateTime.Now
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
                             });
                         }
                     }
@@ -317,8 +332,8 @@ namespace xDC_Web.Controllers.Api
                                 FirstLeg = item.FirstLeg,
                                 SecondLeg = item.SecondLeg,
                                 Remarks = item.Remarks,
-                                CreatedBy = User.Identity.Name,
-                                CreatedDate = DateTime.Now
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
                             });
                         }
                     }
@@ -335,8 +350,8 @@ namespace xDC_Web.Controllers.Api
                                 StockCode = item.StockCode,
                                 AmountPlus = item.AmountPlus,
                                 Remarks = item.Remarks,
-                                CreatedBy = User.Identity.Name,
-                                CreatedDate = DateTime.Now
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
                             });
                         }
                     }
@@ -352,8 +367,8 @@ namespace xDC_Web.Controllers.Api
                                 InstrumentCode = item.InstrumentCode,
                                 AmountPlus = item.AmountPlus,
                                 Remarks = item.Remarks,
-                                CreatedBy = User.Identity.Name,
-                                CreatedDate = DateTime.Now
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
                             });
                         }
                     }
@@ -371,8 +386,8 @@ namespace xDC_Web.Controllers.Api
                                 AmountPlus = item.AmountPlus,
                                 AmountMinus = item.AmountMinus,
                                 Remarks = item.Remarks,
-                                CreatedBy = User.Identity.Name,
-                                CreatedDate = DateTime.Now
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
                             });
                         }
                     }
@@ -389,8 +404,8 @@ namespace xDC_Web.Controllers.Api
                                 AmountPlus = item.AmountPlus,
                                 AmountMinus = item.AmountMinus,
                                 Remarks = item.Remarks,
-                                CreatedBy = User.Identity.Name,
-                                CreatedDate = DateTime.Now
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
                             });
                         }
                     }
@@ -406,8 +421,8 @@ namespace xDC_Web.Controllers.Api
                                 InstrumentCode = item.InstrumentCode,
                                 AmountPlus = item.AmountPlus,
                                 Remarks = item.Remarks,
-                                CreatedBy = User.Identity.Name,
-                                CreatedDate = DateTime.Now
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
                             });
                         }
                     }
@@ -424,8 +439,8 @@ namespace xDC_Web.Controllers.Api
                                 AmountPlus = item.AmountPlus,
                                 AmountMinus = item.AmountMinus,
                                 Remarks = item.Remarks,
-                                CreatedBy = User.Identity.Name,
-                                CreatedDate = DateTime.Now
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
                             });
                         }
                     }
@@ -442,8 +457,8 @@ namespace xDC_Web.Controllers.Api
                                 AmountPlus = item.AmountPlus,
                                 AmountMinus = item.AmountMinus,
                                 Remarks = item.Remarks,
-                                CreatedBy = User.Identity.Name,
-                                CreatedDate = DateTime.Now
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
                             });
                         }
                     }
@@ -465,6 +480,11 @@ namespace xDC_Web.Controllers.Api
                             });
                         }
                         db.SaveChanges();
+                    }
+
+                    if (!inputs.IsSaveAsDraft)
+                    {
+                        TradeSettlementService.NotifyApprover(inputs.Approver, newFormHeader.Id, User.Identity.Name, inputs.FormType);
                     }
                     
                     return Request.CreateResponse(HttpStatusCode.Created, newFormHeader.Id);
@@ -523,8 +543,8 @@ namespace xDC_Web.Controllers.Api
                                 if (foundItem.Remarks != item.Remarks)
                                 {
                                     foundItem.Remarks = item.Remarks;
-                                    foundItem.CreatedBy = User.Identity.Name;
-                                    foundItem.CreatedDate = DateTime.Now;
+                                    foundItem.ModifiedBy = User.Identity.Name;
+                                    foundItem.ModifiedDate = DateTime.Now;
                                 }
                             }
                         }
@@ -540,8 +560,8 @@ namespace xDC_Web.Controllers.Api
                                 if (foundItem.Remarks != item.Remarks)
                                 {
                                     foundItem.Remarks = item.Remarks;
-                                    foundItem.CreatedBy = User.Identity.Name;
-                                    foundItem.CreatedDate = DateTime.Now;
+                                    foundItem.ModifiedBy = User.Identity.Name;
+                                    foundItem.ModifiedDate = DateTime.Now;
                                 }
                             }
                         }
@@ -557,8 +577,8 @@ namespace xDC_Web.Controllers.Api
                                 if (foundItem.Remarks != item.Remarks)
                                 {
                                     foundItem.Remarks = item.Remarks;
-                                    foundItem.CreatedBy = User.Identity.Name;
-                                    foundItem.CreatedDate = DateTime.Now;
+                                    foundItem.ModifiedBy = User.Identity.Name;
+                                    foundItem.ModifiedDate = DateTime.Now;
                                 }
                             }
                         }
@@ -574,8 +594,8 @@ namespace xDC_Web.Controllers.Api
                                 if (foundItem.Remarks != item.Remarks)
                                 {
                                     foundItem.Remarks = item.Remarks;
-                                    foundItem.CreatedBy = User.Identity.Name;
-                                    foundItem.CreatedDate = DateTime.Now;
+                                    foundItem.ModifiedBy = User.Identity.Name;
+                                    foundItem.ModifiedDate = DateTime.Now;
                                 }
                             }
                         }
@@ -591,8 +611,8 @@ namespace xDC_Web.Controllers.Api
                                 if (foundItem.Remarks != item.Remarks)
                                 {
                                     foundItem.Remarks = item.Remarks;
-                                    foundItem.CreatedBy = User.Identity.Name;
-                                    foundItem.CreatedDate = DateTime.Now;
+                                    foundItem.ModifiedBy = User.Identity.Name;
+                                    foundItem.ModifiedDate = DateTime.Now;
                                 }
                             }
                         }
@@ -605,14 +625,17 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
-                                if (foundItem.Remarks != item.Remarks)
+                                if (foundItem.InstrumentCode != item.InstrumentCode ||
+                                    foundItem.StockCode != item.StockCode ||
+                                    foundItem.AmountPlus != item.AmountPlus ||
+                                    foundItem.Remarks != item.Remarks)
                                 {
                                     foundItem.InstrumentCode = item.InstrumentCode;
                                     foundItem.StockCode = item.StockCode;
                                     foundItem.AmountPlus = item.AmountPlus;
                                     foundItem.Remarks = item.Remarks;
-                                    foundItem.CreatedBy = User.Identity.Name;
-                                    foundItem.CreatedDate = DateTime.Now;
+                                    foundItem.ModifiedBy = User.Identity.Name;
+                                    foundItem.ModifiedDate = DateTime.Now;
                                 }
                             }
                             else
@@ -625,8 +648,8 @@ namespace xDC_Web.Controllers.Api
                                     StockCode = item.StockCode,
                                     AmountPlus = item.AmountPlus,
                                     Remarks = item.Remarks,
-                                    CreatedBy = User.Identity.Name,
-                                    CreatedDate = DateTime.Now
+                                    ModifiedBy = User.Identity.Name,
+                                    ModifiedDate = DateTime.Now
                                 });
                             }
                         }
@@ -639,13 +662,21 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
-                                foundItem.InstrumentCode = item.InstrumentCode;
-                                foundItem.StockCode = item.StockCode;
-                                foundItem.AmountPlus = item.AmountPlus;
-                                foundItem.AmountMinus = item.AmountMinus;
-                                foundItem.Remarks = item.Remarks;
-                                foundItem.CreatedBy = User.Identity.Name;
-                                foundItem.CreatedDate = DateTime.Now;
+                                if (foundItem.InstrumentCode != item.InstrumentCode ||
+                                    foundItem.StockCode != item.StockCode ||
+                                    foundItem.AmountPlus != item.AmountPlus ||
+                                    foundItem.AmountMinus != item.AmountMinus ||
+                                    foundItem.Remarks != item.Remarks)
+                                {
+                                    foundItem.InstrumentCode = item.InstrumentCode;
+                                    foundItem.StockCode = item.StockCode;
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                    foundItem.AmountMinus = item.AmountMinus;
+                                    foundItem.Remarks = item.Remarks;
+                                    foundItem.ModifiedBy = User.Identity.Name;
+                                    foundItem.ModifiedDate = DateTime.Now;
+                                }
+                                    
                             }
                             else
                             {
@@ -658,41 +689,8 @@ namespace xDC_Web.Controllers.Api
                                     AmountPlus = item.AmountPlus,
                                     AmountMinus = item.AmountMinus,
                                     Remarks = item.Remarks,
-                                    CreatedBy = User.Identity.Name,
-                                    CreatedDate = DateTime.Now
-                                });
-                            }
-                        }
-                    }
-
-                    if (inputs.Mtm != null)
-                    {
-                        foreach (var item in inputs.Mtm)
-                        {
-                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
-                            if (foundItem != null)
-                            {
-                                foundItem.InstrumentCode = item.InstrumentCode;
-                                foundItem.StockCode = item.StockCode;
-                                foundItem.AmountPlus = item.AmountPlus;
-                                foundItem.AmountMinus = item.AmountMinus;
-                                foundItem.Remarks = item.Remarks;
-                                foundItem.CreatedBy = User.Identity.Name;
-                                foundItem.CreatedDate = DateTime.Now;
-                            }
-                            else
-                            {
-                                db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
-                                {
-                                    FormId = inputs.Id,
-                                    InstrumentType = Common.TradeSettlementUrlParamMapping("mtm"),
-                                    InstrumentCode = item.InstrumentCode,
-                                    StockCode = item.StockCode,
-                                    AmountPlus = item.AmountPlus,
-                                    AmountMinus = item.AmountMinus,
-                                    Remarks = item.Remarks,
-                                    CreatedBy = User.Identity.Name,
-                                    CreatedDate = DateTime.Now
+                                    ModifiedBy = User.Identity.Name,
+                                    ModifiedDate = DateTime.Now
                                 });
                             }
                         }
@@ -705,13 +703,21 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
-                                foundItem.InstrumentCode = item.InstrumentCode;
-                                foundItem.StockCode = item.StockCode;
-                                foundItem.AmountPlus = item.AmountPlus;
-                                foundItem.AmountMinus = item.AmountMinus;
-                                foundItem.Remarks = item.Remarks;
-                                foundItem.CreatedBy = User.Identity.Name;
-                                foundItem.CreatedDate = DateTime.Now;
+                                if (foundItem.InstrumentCode != item.InstrumentCode ||
+                                    foundItem.StockCode != item.StockCode ||
+                                    foundItem.AmountPlus != item.AmountPlus ||
+                                    foundItem.AmountMinus != item.AmountMinus ||
+                                    foundItem.Remarks != item.Remarks)
+                                {
+                                    foundItem.InstrumentCode = item.InstrumentCode;
+                                    foundItem.StockCode = item.StockCode;
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                    foundItem.AmountMinus = item.AmountMinus;
+                                    foundItem.Remarks = item.Remarks;
+                                    foundItem.ModifiedBy = User.Identity.Name;
+                                    foundItem.ModifiedDate = DateTime.Now;
+                                }
+                                    
                             }
                             else
                             {
@@ -724,8 +730,8 @@ namespace xDC_Web.Controllers.Api
                                     AmountPlus = item.AmountPlus,
                                     AmountMinus = item.AmountMinus,
                                     Remarks = item.Remarks,
-                                    CreatedBy = User.Identity.Name,
-                                    CreatedDate = DateTime.Now
+                                    ModifiedBy = User.Identity.Name,
+                                    ModifiedDate = DateTime.Now
                                 });
                             }
                         }
@@ -738,13 +744,20 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
-                                foundItem.InstrumentCode = item.InstrumentCode;
-                                foundItem.StockCode = item.StockCode;
-                                foundItem.AmountPlus = item.AmountPlus;
-                                foundItem.AmountMinus = item.AmountMinus;
-                                foundItem.Remarks = item.Remarks;
-                                foundItem.CreatedBy = User.Identity.Name;
-                                foundItem.CreatedDate = DateTime.Now;
+                                if (foundItem.InstrumentCode != item.InstrumentCode ||
+                                    foundItem.StockCode != item.StockCode ||
+                                    foundItem.AmountPlus != item.AmountPlus ||
+                                    foundItem.AmountMinus != item.AmountMinus ||
+                                    foundItem.Remarks != item.Remarks)
+                                {
+                                    foundItem.InstrumentCode = item.InstrumentCode;
+                                    foundItem.StockCode = item.StockCode;
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                    foundItem.AmountMinus = item.AmountMinus;
+                                    foundItem.Remarks = item.Remarks;
+                                    foundItem.ModifiedBy = User.Identity.Name;
+                                    foundItem.ModifiedDate = DateTime.Now;
+                                }
                             }
                             else
                             {
@@ -757,8 +770,8 @@ namespace xDC_Web.Controllers.Api
                                     AmountPlus = item.AmountPlus,
                                     AmountMinus = item.AmountMinus,
                                     Remarks = item.Remarks,
-                                    CreatedBy = User.Identity.Name,
-                                    CreatedDate = DateTime.Now
+                                    ModifiedBy = User.Identity.Name,
+                                    ModifiedDate = DateTime.Now
                                 });
                             }
                         }
@@ -771,14 +784,21 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
-                                foundItem.InstrumentCode = item.InstrumentCode;
-                                foundItem.StockCode = item.StockCode;
-                                foundItem.AmountPlus = item.AmountPlus;
-                                foundItem.Remarks = item.Remarks;
+                                if (foundItem.InstrumentCode != item.InstrumentCode ||
+                                    foundItem.StockCode != item.StockCode ||
+                                    foundItem.AmountPlus != item.AmountPlus ||
+                                    foundItem.Remarks != item.Remarks)
+                                {
+                                    foundItem.InstrumentCode = item.InstrumentCode;
+                                    foundItem.StockCode = item.StockCode;
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                    foundItem.Remarks = item.Remarks;
 
-                                foundItem.CreatedBy = User.Identity.Name;
-                                foundItem.CreatedDate = DateTime.Now;
+                                    foundItem.ModifiedBy = User.Identity.Name;
+                                    foundItem.ModifiedDate = DateTime.Now;
+                                }
                             }
+                                    
                             else
                             {
                                 db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
@@ -790,8 +810,8 @@ namespace xDC_Web.Controllers.Api
                                     AmountPlus = item.AmountPlus,
                                     Remarks = item.Remarks,
 
-                                    CreatedBy = User.Identity.Name,
-                                    CreatedDate = DateTime.Now
+                                    ModifiedBy = User.Identity.Name,
+                                    ModifiedDate = DateTime.Now
                                 });
                             }
                         }
@@ -804,13 +824,19 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
-                                foundItem.InstrumentCode = item.InstrumentCode;
-                                foundItem.StockCode = item.StockCode;
-                                foundItem.AmountPlus = item.AmountPlus;
-                                foundItem.Remarks = item.Remarks;
+                                if (foundItem.InstrumentCode != item.InstrumentCode ||
+                                    foundItem.StockCode != item.StockCode ||
+                                    foundItem.AmountPlus != item.AmountPlus ||
+                                    foundItem.Remarks != item.Remarks)
+                                {
+                                    foundItem.InstrumentCode = item.InstrumentCode;
+                                    foundItem.StockCode = item.StockCode;
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                    foundItem.Remarks = item.Remarks;
 
-                                foundItem.CreatedBy = User.Identity.Name;
-                                foundItem.CreatedDate = DateTime.Now;
+                                    foundItem.ModifiedBy = User.Identity.Name;
+                                    foundItem.ModifiedDate = DateTime.Now;
+                                }
                             }
                             else
                             {
@@ -823,8 +849,8 @@ namespace xDC_Web.Controllers.Api
                                     AmountPlus = item.AmountPlus,
                                     Remarks = item.Remarks,
 
-                                    CreatedBy = User.Identity.Name,
-                                    CreatedDate = DateTime.Now
+                                    ModifiedBy = User.Identity.Name,
+                                    ModifiedDate = DateTime.Now
                                 });
                             }
                         }
@@ -837,14 +863,22 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
-                                foundItem.InstrumentCode = item.InstrumentCode;
-                                foundItem.StockCode = item.StockCode;
-                                foundItem.AmountPlus = item.AmountPlus;
-                                foundItem.AmountMinus = item.AmountMinus;
-                                foundItem.Remarks = item.Remarks;
+                                if (foundItem.InstrumentCode != item.InstrumentCode ||
+                                    foundItem.StockCode != item.StockCode||
+                                    foundItem.AmountPlus != item.AmountPlus||
+                                    foundItem.AmountMinus != item.AmountMinus ||
+                                    foundItem.Remarks != item.Remarks)
+                                {
+                                    foundItem.InstrumentCode = item.InstrumentCode;
+                                    foundItem.StockCode = item.StockCode;
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                    foundItem.AmountMinus = item.AmountMinus;
+                                    foundItem.Remarks = item.Remarks;
 
-                                foundItem.CreatedBy = User.Identity.Name;
-                                foundItem.CreatedDate = DateTime.Now;
+                                    foundItem.ModifiedBy = User.Identity.Name;
+                                    foundItem.ModifiedDate = DateTime.Now;
+                                }
+                                
                             }
                             else
                             {
@@ -858,8 +892,8 @@ namespace xDC_Web.Controllers.Api
                                     AmountMinus = item.AmountMinus,
                                     Remarks = item.Remarks,
 
-                                    CreatedBy = User.Identity.Name,
-                                    CreatedDate = DateTime.Now
+                                    ModifiedBy = User.Identity.Name,
+                                    ModifiedDate = DateTime.Now
                                 });
                             }
                         }
@@ -898,6 +932,8 @@ namespace xDC_Web.Controllers.Api
                                 : Common.FormStatusMapping(4);
 
                             db.SaveChanges();
+
+                            TradeSettlementService.NotifyPreparer(form.PreparedBy, form.Id, User.Identity.Name, Common.FormTypeMappingReverse(form.FormType), inputs.ApprovalStatus);
 
                             return Request.CreateResponse(HttpStatusCode.Accepted, formId);
                         }
@@ -1074,8 +1110,8 @@ namespace xDC_Web.Controllers.Api
 
                 if (existingRecord != null)
                 {
-                    existingRecord.UpdatedBy = User.Identity.Name;
-                    existingRecord.UpdatedDate = DateTime.Now;
+                    existingRecord.ModifiedBy = User.Identity.Name;
+                    existingRecord.ModifiedDate = DateTime.Now;
                 }
 
                 Validate(existingRecord);

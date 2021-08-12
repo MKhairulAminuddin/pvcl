@@ -56,7 +56,10 @@
                 data: data,
                 dataType: "json",
                 url: referenceUrl.submitApprovalRequest,
-                method: "post"
+                method: "post",
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                }
             }).done(function (data) {
                 window.location.href = referenceUrl.submitApprovalResponse + data;
 
@@ -152,6 +155,16 @@
                     dataField: "remarks",
                     caption: "Remarks",
                     dataType: "text"
+                },
+                {
+                    dataField: "modifiedBy",
+                    caption: "Modified"
+                },
+                {
+                    dataField: "modifiedDate",
+                    caption: "Modified Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy HH:mm a"
                 }
             ],
             summary: {

@@ -684,9 +684,8 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["B" + tradeItemStartRow].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                         tradeItemStartRow++;
                     }
-                    sheet["A" + headerStartRow + ":B" + tradeItemStartRow].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
                     
-                    tradeItemStartRow += 3;
+                    tradeItemStartRow += 2;
                 }
 
                 sheet["A" + tradeItemStartRow].Value = "Daily Trade Settlement:";

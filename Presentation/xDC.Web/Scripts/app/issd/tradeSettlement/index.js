@@ -116,14 +116,14 @@
 
                                     $.ajax({
                                         type: "delete",
-                                        url: window.location.origin + '/api/issd/TradeSettlement/',
+                                        url: window.location.origin + "/api/issd/TradeSettlement/",
                                         data: data,
                                         success: function (data) {
                                             $("#error_container").bs_success("Draft deleted");
                                             $issdGrid.refresh();
                                         },
                                         fail: function (jqXHR, textStatus, errorThrown) {
-                                            $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                                            $("#error_container").bs_alert(textStatus + ": " + errorThrown);
                                         }
                                     });
                                     e.event.preventDefault();
@@ -197,15 +197,15 @@
 
                                 $.ajax({
                                     type: "POST",
-                                    url: '/issd/Print',
+                                    url: "/issd/Print",
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
-                                        var url = '/issd/ViewPrinted/' + data;
+                                        var url = "/issd/ViewPrinted/" + data;
                                         window.location = url;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
-                                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                                        $("#error_container").bs_alert(textStatus + ": " + errorThrown);
                                     },
                                     complete: function (data) {
 
@@ -230,15 +230,15 @@
 
                                 $.ajax({
                                     type: "POST",
-                                    url: '/issd/Print',
+                                    url: "/issd/Print",
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
-                                        var url = '/issd/ViewPrinted/' + data;
+                                        var url = "/issd/ViewPrinted/" + data;
                                         window.location = url;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
-                                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                                        $("#error_container").bs_alert(textStatus + ": " + errorThrown);
                                     },
                                     complete: function (data) {
 
@@ -250,6 +250,16 @@
                     ]
                 }
             ],
+            onRowPrepared: function (e) {
+                if (e.rowType == "data") {
+                    if (e.data.isFormPendingMyApproval) {
+                        e.rowElement.css("background-color", "#FFEBEE");
+                    }
+                    if (e.data.isMyFormRejected) {
+                        e.rowElement.css("background-color", "#FFEBEE");
+                    }
+                }
+            },
             groupPanel: {
                 visible: true
             },
@@ -345,15 +355,15 @@
 
                                 $.ajax({
                                     type: "POST",
-                                    url: '/issd/PrintConsolidated',
+                                    url: "/issd/PrintConsolidated",
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
-                                        var url = '/issd/ViewPrinted/' + data;
+                                        var url = "/issd/ViewPrinted/" + data;
                                         window.location = url;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
-                                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                                        $("#error_container").bs_alert(textStatus + ": " + errorThrown);
                                     },
                                     complete: function (data) {
 
@@ -379,15 +389,15 @@
 
                                 $.ajax({
                                     type: "POST",
-                                    url: '/issd/PrintConsolidated',
+                                    url: "/issd/PrintConsolidated",
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
-                                        var url = '/issd/ViewPrinted/' + data;
+                                        var url = "/issd/ViewPrinted/" + data;
                                         window.location = url;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
-                                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                                        $("#error_container").bs_alert(textStatus + ": " + errorThrown);
                                     },
                                     complete: function (data) {
 
@@ -407,5 +417,17 @@
                 visible: true
             }
         }).dxDataGrid("instance");
+
+        $("#submissionBox").boxWidget({
+            animationSpeed: 500,
+            collapseIcon: "dx-icon-chevrondown",
+            expandIcon: "dx-icon-chevronprev"
+        });
+
+        $("#approvedBox").boxWidget({
+            animationSpeed: 500,
+            collapseIcon: "dx-icon-chevrondown",
+            expandIcon: "dx-icon-chevronprev"
+        });
     });
 }(window.jQuery, window, document));

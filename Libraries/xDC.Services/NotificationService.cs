@@ -27,6 +27,50 @@ namespace xDC.Services
             }
         }
 
+        public void PushNotificationForApproval(string formApprover, int formId, string formSubmittedBy, int formType)
+        {
+            var notificationObj = new App_Notification()
+            {
+                Title = "Request for approval",
+                ShortMessage = string.Format("Please approve " + " <a href='" + Common.FormUrlViewMapping(Common.FormTypeMapping(formType)) + formId + "'>Click here to open it</a>"),
+                Message = string.Format(
+                    Common.FormTypeMapping(formType) + 
+                    " form was submitted by " + formSubmittedBy +
+                    " and is now pending your approval. You can approve it from here " +
+                    " <a href='" + Common.FormUrlViewMapping(Common.FormTypeMapping(formType)) + formId + "'>Click here to open it</a>"),
+                NotificationIconClass = "fa fa-exclamation",
+                NotificationType = "bg-aqua",
+                CreatedOn = DateTime.Now,
+                UserId = formApprover
+            };
+
+            PushNotification(notificationObj);
+        }
+
+        public void PushNotificationForApprovalResult(string formPreparer, int formId, string formApprovalBy, int formType, bool isApprove)
+        {
+            var approvalResult = (isApprove) ? "<b>Approved</b>" : "<b>Rejected</b>";
+
+            var notificationObj = new App_Notification()
+            {
+                Title = "Approval Result",
+                ShortMessage = string.Format("Your submission have been " + approvalResult + " <a href='" +
+                                             Common.FormUrlViewMapping(Common.FormTypeMapping(formType)) + formId +
+                                             "'>Click here to open it</a>"),
+                Message = string.Format(
+                    Common.FormTypeMapping(formType) +
+                    " form was " + approvalResult + " by " + formApprovalBy + " " +
+                    " <a href='" + Common.FormUrlViewMapping(Common.FormTypeMapping(formType)) + formId +
+                    "'>Click here to open it</a>"),
+                NotificationIconClass = "fa fa-exclamation",
+                NotificationType = (isApprove) ? "bg-green" : "bg-red",
+                CreatedOn = DateTime.Now,
+                UserId = formPreparer
+            };
+
+            PushNotification(notificationObj);
+        }
+
         /// <summary>
         /// Send notification to a Approver for Submitted Form Approval
         /// </summary>

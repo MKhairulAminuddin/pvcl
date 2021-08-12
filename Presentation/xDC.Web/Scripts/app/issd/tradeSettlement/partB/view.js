@@ -153,6 +153,16 @@
                     dataField: "remarks",
                     caption: "Remarks",
                     dataType: "text"
+                },
+                {
+                    dataField: "modifiedBy",
+                    caption: "Modified"
+                },
+                {
+                    dataField: "modifiedDate",
+                    caption: "Modified Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy HH:mm a"
                 }
             ],
             summary: {
@@ -239,6 +249,16 @@
                     dataField: "remarks",
                     caption: "Remarks",
                     dataType: "text"
+                },
+                {
+                    dataField: "modifiedBy",
+                    caption: "Modified"
+                },
+                {
+                    dataField: "modifiedDate",
+                    caption: "Modified Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy HH:mm a"
                 }
             ],
             summary: {
@@ -325,6 +345,16 @@
                     dataField: "remarks",
                     caption: "Remarks",
                     dataType: "text"
+                },
+                {
+                    dataField: "modifiedBy",
+                    caption: "Modified"
+                },
+                {
+                    dataField: "modifiedDate",
+                    caption: "Modified Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy HH:mm a"
                 }
             ],
             summary: {
@@ -401,6 +431,16 @@
                     dataField: "remarks",
                     caption: "Remarks",
                     dataType: "text"
+                },
+                {
+                    dataField: "modifiedBy",
+                    caption: "Modified"
+                },
+                {
+                    dataField: "modifiedDate",
+                    caption: "Modified Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy HH:mm a"
                 }
             ],
             summary: {
@@ -455,6 +495,16 @@
                     dataField: "remarks",
                     caption: "Remarks",
                     dataType: "text"
+                },
+                {
+                    dataField: "modifiedBy",
+                    caption: "Modified"
+                },
+                {
+                    dataField: "modifiedDate",
+                    caption: "Modified Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy HH:mm a"
                 }
             ],
             summary: {

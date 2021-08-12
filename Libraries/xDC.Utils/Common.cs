@@ -230,6 +230,36 @@ namespace xDC.Utils
             return String.Empty;
         }
 
+        /// <summary>
+        /// Get form type id
+        /// </summary>
+        /// <param name="value">
+        /// 1 Inflow Funds 2 Trade Settlement
+        /// </param>
+        /// <returns></returns>
+        public static int FormTypeMappingReverse(string value)
+        {
+            switch (value)
+            {
+                case "Inflow Funds":
+                    return 1;
+                case "Trade Settlement":
+                    return 2;
+                case "Trade Settlement (Part A)":
+                    return 3;
+                case "Trade Settlement (Part B)":
+                    return 4;
+                case "Trade Settlement (Part C)":
+                    return 5;
+                case "Trade Settlement (Part D)":
+                    return 6;
+                case "Trade Settlement (Part E)":
+                    return 7;
+                default:
+                    return 0;
+            }
+        }
+
         public static string FormCurrencyMapping(int value)
         {
             switch (value)
@@ -238,6 +268,34 @@ namespace xDC.Utils
                     return "MYR";
                 case 2:
                     return "USD";
+            }
+            return String.Empty;
+        }
+
+        /// <summary>
+        /// Get form view url
+        /// </summary>
+        /// <param name="formType">
+        /// woi
+        /// </param>
+        /// <returns></returns>
+        public static string FormUrlViewMapping(string formType)
+        {
+            switch (formType)
+            {
+                case "Inflow Funds":
+                    return "../amsd/InflowFundsFormStatus?id=";
+
+                case "Trade Settlement (Part A)":
+                    return "../issd/TradeSettlement/PartA/View/";
+                case "Trade Settlement (Part B)":
+                    return "../issd/TradeSettlement/PartB/View/";
+                case "Trade Settlement (Part C)":
+                    return "../issd/TradeSettlement/PartC/View/";
+                case "Trade Settlement (Part D)":
+                    return "../issd/TradeSettlement/PartD/View/";
+                case "Trade Settlement (Part E)":
+                    return "../issd/TradeSettlement/PartE/View/";
             }
             return String.Empty;
         }

@@ -84,11 +84,11 @@
                 success: function (response) {
                     window.location.href = referenceUrl.postNewFormResponse + response;
                 },
-                fail: function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
                 },
                 complete: function (data) {
-                    
+                    $selectApproverModal.modal("hide");
                 }
             });
         }

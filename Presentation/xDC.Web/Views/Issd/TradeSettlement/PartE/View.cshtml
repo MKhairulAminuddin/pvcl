@@ -81,26 +81,26 @@
                                     <div class="dx-field-label">Settlement Date</div>
                                     <div class="dx-field-value">
                                         @(Html.DevExtreme().DateBoxFor(m => m.SettlementDate)
-                                                .ID("tradesettlementDateBox")
-                                                .StylingMode(EditorStylingMode.Filled)
-                                                .DisplayFormat("dd/MM/yyyy")
-                                                .ReadOnly(true))
+                                            .ID("tradesettlementDateBox")
+                                            .StylingMode(EditorStylingMode.Filled)
+                                            .DisplayFormat("dd/MM/yyyy")
+                                            .ReadOnly(true))
                                     </div>
                                 </div>
                                 <div class="dx-field">
                                     <div class="dx-field-label">Currency</div>
                                     <div class="dx-field-value">
                                         @(Html.DevExtreme().TextBoxFor(m=> m.Currency)
-                                                .ID("currencySelectBox")
-                                                .StylingMode(EditorStylingMode.Filled)
-                                                .ReadOnly(true))
+                                            .ID("currencySelectBox")
+                                            .StylingMode(EditorStylingMode.Filled)
+                                            .ReadOnly(true))
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-8"></div>
                         </div>
                     </div>
-                    
+
                     <div class="dx-fieldset">
                         <div class="row">
                             <div class="col-md-12">
@@ -137,50 +137,50 @@
                             <div class="dx-field-label">Form ID</div>
                             <div class="dx-field-value">
                                 @(Html.DevExtreme().TextBoxFor(m => m.Id)
-                                .StylingMode(EditorStylingMode.Underlined)
-                                .ReadOnly(true))
+                                    .StylingMode(EditorStylingMode.Underlined)
+                                    .ReadOnly(true))
                             </div>
                         </div>
                         <div class="dx-field">
                             <div class="dx-field-label">Status</div>
                             <div class="dx-field-value">
                                 @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
-                                .StylingMode(EditorStylingMode.Underlined)
-                                .ReadOnly(true))
+                                    .StylingMode(EditorStylingMode.Underlined)
+                                    .ReadOnly(true))
                             </div>
                         </div>
                         <div class="dx-field">
                             <div class="dx-field-label">Preparer</div>
                             <div class="dx-field-value">
                                 @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
-                                .StylingMode(EditorStylingMode.Underlined)
-                                .ReadOnly(true))
+                                    .StylingMode(EditorStylingMode.Underlined)
+                                    .ReadOnly(true))
                             </div>
                         </div>
                         <div class="dx-field">
                             <div class="dx-field-label">Prepared Date</div>
                             <div class="dx-field-value">
                                 @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
-                                .StylingMode(EditorStylingMode.Underlined)
-                                .DisplayFormat("dd/MM/yyyy hh:mm a")
-                                .ReadOnly(true))
+                                    .StylingMode(EditorStylingMode.Underlined)
+                                    .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                    .ReadOnly(true))
                             </div>
                         </div>
                         <div class="dx-field">
                             <div class="dx-field-label">Approver</div>
                             <div class="dx-field-value">
                                 @(Html.DevExtreme().TextBoxFor(m => m.ApprovedBy)
-                                .StylingMode(EditorStylingMode.Underlined)
-                                .ReadOnly(true))
+                                    .StylingMode(EditorStylingMode.Underlined)
+                                    .ReadOnly(true))
                             </div>
                         </div>
                         <div class="dx-field">
                             <div class="dx-field-label">Approved Date</div>
                             <div class="dx-field-value">
                                 @(Html.DevExtreme().DateBoxFor(m => m.ApprovedDate)
-                                .StylingMode(EditorStylingMode.Underlined)
-                                .DisplayFormat("dd/MM/yyyy hh:mm a")
-                                .ReadOnly(true))
+                                    .StylingMode(EditorStylingMode.Underlined)
+                                    .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                    .ReadOnly(true))
                             </div>
                         </div>
                     </div>
@@ -189,6 +189,90 @@
         </div>
     </div>
 </section>
+
+<div id="approvalNoteModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content" id="approvalNoteModalContainer">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Approve Submission</h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>Approval Notes (optional) :</p>
+                        @(Html.DevExtreme().TextArea()
+                            .ID("approvalNoteTextBox")
+                            .Height(90)
+                            )
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div>
+                    @(Html.DevExtreme().Button()
+                        .ID("approveFormBtn")
+                        .Text("Approve")
+                        .Type(ButtonType.Default)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        )
+                    @(Html.DevExtreme().Button()
+                        .Text("Cancel")
+                        .Type(ButtonType.Normal)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        .OnClick(@<text> function(){ $('#approvalNoteModal').modal('hide'); } </text>)
+                        )
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="rejectionNoteModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content" id="rejectionNoteModalContainer">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Reject Submission</h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>Rejection Notes (optional) :</p>
+                        @(Html.DevExtreme().TextArea()
+                            .ID("rejectionNoteTextBox")
+                            .Height(90)
+                            )
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div>
+                    @(Html.DevExtreme().Button()
+                        .ID("rejectFormBtn")
+                        .Text("Reject")
+                        .Type(ButtonType.Danger)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        )
+                    @(Html.DevExtreme().Button()
+                        .Text("Cancel")
+                        .Type(ButtonType.Normal)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        .OnClick(@<text> function(){ $('#rejectionNoteModal').modal('hide'); } </text>)
+                        )
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script type="text/html" id="dxPanelTitle">
     <div style="margin: 4px 0">

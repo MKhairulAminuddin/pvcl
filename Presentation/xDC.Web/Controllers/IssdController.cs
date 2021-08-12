@@ -739,6 +739,39 @@ namespace xDC_Web.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("PrintConsolidated")]
+        public ActionResult PrintConsolidated(long settlementDate, string currency, bool isExportAsExcel)
+        {
+            try
+            {
+                var settlementDateParsed = Common.ConvertEpochToDateTime(settlementDate);
+
+                if (settlementDateParsed == null)
+                {
+                    return HttpNotFound();
+                }
+
+                var generatedDocumentFile =
+                    new TradeSettlementFormDoc().GenerateFileConsolidated(settlementDateParsed.Value.Date,
+                        currency.ToUpper(), isExportAsExcel);
+
+                if (!string.IsNullOrEmpty(generatedDocumentFile))
+                {
+                    return Content(generatedDocumentFile);
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return HttpNotFound();
+            }
+        }
+
         [Route("ViewPrinted/{id}")]
         public ActionResult ViewPrinted(string id)
         {
@@ -773,39 +806,6 @@ namespace xDC_Web.Controllers
 
                 TempData["ErrorMessage"] = ex.Message;
                 return View("Error");
-            }
-        }
-
-        [HttpPost]
-        [Route("PrintConsolidated")]
-        public ActionResult PrintConsolidated(long settlementDate, string currency, bool isExportAsExcel)
-        {
-            try
-            {
-                var settlementDateParsed = Common.ConvertEpochToDateTime(settlementDate);
-
-                if (settlementDateParsed == null)
-                {
-                    return HttpNotFound();
-                }
-
-                var generatedDocumentFile =
-                    new TradeSettlementFormDoc().GenerateFileConsolidated(settlementDateParsed.Value.Date,
-                        currency.ToUpper(), isExportAsExcel);
-
-                if (!string.IsNullOrEmpty(generatedDocumentFile))
-                {
-                    return Content(generatedDocumentFile);
-                }
-                else
-                {
-                    return HttpNotFound();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return HttpNotFound();
             }
         }
         

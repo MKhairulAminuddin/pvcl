@@ -285,9 +285,7 @@
     <Content Include="Scripts\app.dxGrid.utils.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\index.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partA\edit.js" />
-    <Content Include="Scripts\app\issd\tradeSettlement\edit.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partA\new.js" />
-    <Content Include="Scripts\app\issd\tradeSettlement\new.js" />
     <Content Include="Scripts\app\admin\applicationConfig.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partA\view.js" />
     <Content Include="Scripts\app\issd\tradeSettlement.js" />
@@ -303,7 +301,6 @@
     <Content Include="Scripts\app\issd\tradeSettlement\partE\edit.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partE\new.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partE\view.js" />
-    <Content Include="Scripts\app\issd\tradeSettlement\view.js" />
     <Content Include="Scripts\app\setting\approverManagement.js" />
     <Content Include="Scripts\app\setting\dropdownConfig.js" />
     <Content Include="Scripts\app\setting\notificationConfig.js" />

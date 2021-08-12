@@ -287,6 +287,8 @@ div .validation-summary-errors.text-danger {
 
 .box-header {
     border-left: 5px solid #2c3e50;
+    border-bottom: 1px solid #E5E7EB;
+    border-top: 1px solid #E5E7EB;
 }
 
 .info-box-custom {
