@@ -310,7 +310,7 @@ namespace xDC.Services
                         {
                             var contributionItemKey = Common.TradeSettlementMapping(10);
                             var getContributionItems = db.ISSD_TradeSettlement
-                                .Where(x => x.InstrumentType == contributionItemKey).ToList();
+                                .Where(x => x.InstrumentType == contributionItemKey && x.FormId == formId).ToList();
 
                             if (getContributionItems.Any())
                             {
@@ -333,10 +333,34 @@ namespace xDC.Services
                                 message.To.AddRange(cnEmailListAddress);
 
                                 var pageUrl = string.Format("{0}" + Common.FormUrlViewMappingForEmailNotification(getForm.FormType) + "{1}", Config.EmailApplicationUrl, formId);
-
                                 var bodyBuilder = new StringBuilder();
-                                bodyBuilder.Append(string.Format("<p>Hi {0}, </p>", preparerName.DisplayName));
+                                bodyBuilder.Append("<p>Hi All, </p>");
                                 bodyBuilder.AppendLine(string.Format("<p>Contribution Credited item in  <a href='" + pageUrl + "'>#" + getForm.Id + "</a> form have been " + getForm.FormStatus));
+
+                                bodyBuilder.Append(
+                                    @"<table>
+                                      <tr>
+                                        <th>Contribution Credited</th>
+                                        <th>Amount (+)</th>
+                                        <th>Remarks</th>
+                                        <th>Modified By</th>
+                                        <th>Modified Date</th>
+                                      </tr>");
+                                var tableRows = string.Empty;
+                                foreach (var item in getContributionItems)
+                                {
+                                    tableRows += string.Format(@"<tr>
+                                            <td>{0}</td>
+                                            <td>{1}</td>
+                                            <td>{3}</td>
+                                            <td>{4}</td>
+                                          </tr>", item.InstrumentCode, item.AmountPlus, item.Remarks, item.ModifiedBy, item.ModifiedDate.Value.ToString("dd/MM/yyyy"))
+                                        ;
+                                }
+                                bodyBuilder.Append(tableRows);
+                                bodyBuilder.Append(@"</table>");
+
+
 
                                 message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                                 {
