@@ -10,6 +10,9 @@
             $notesPaperGrid,
             $repoGrid,
             $couponGrid,
+
+            $workflowGrid,
+
             $tradeSettlementForm,
             $currencySelectBox,
             $approverDropdown,
@@ -528,10 +531,63 @@
                 ]
             }
         }).dxDataGrid("instance");
+
+        $workflowGrid = $("#workflowGrid").dxDataGrid({
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: tradeSettlement.api.loadWorkflowHistory + "/4"
+            }),
+            columns: [
+                {
+                    dataField: "requestBy",
+                    caption: "Requested By"
+                },
+                {
+                    dataField: "requestTo",
+                    caption: "Requested To"
+                },
+                {
+                    dataField: "startDate",
+                    caption: "Start Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy HH:mm"
+                },
+                {
+                    dataField: "endDate",
+                    caption: "End Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy HH:mm"
+                },
+                {
+                    dataField: "workflowStatus",
+                    caption: "Workflow Status"
+                },
+                {
+                    dataField: "workflowNotes",
+                    caption: "Notes"
+                }
+            ],
+            showRowLines: true,
+            rowAlternationEnabled: false,
+            showBorders: true,
+            sorting: {
+                mode: "multiple",
+                showSortIndexes: true
+            },
+            wordWrapEnabled: true
+        }).dxDataGrid("instance");
         
         // #endregion DataGrid
         
         //#region Events
+
+        $("#viewWorkflowBtn").on({
+            "click": function (e) {
+                $('#viewWorkflowModal').modal('show');
+
+                e.preventDefault();
+            }
+        });
 
         $("#adminEditBtn").on({
             "click": function (e) {

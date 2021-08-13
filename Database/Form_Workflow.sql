@@ -1,6 +1,7 @@
 ﻿CREATE TABLE [dbo].[Form_Workflow](
 	[Id] INT NOT NULL Identity(1,1) PRIMARY KEY, 
 	[FormId] INT NOT NULL,
+	[FormType] NVARCHAR(150) NULL, 
 
     [RequestBy] NVARCHAR(50) NULL, 
 	[RequestTo] NVARCHAR(50) NULL,

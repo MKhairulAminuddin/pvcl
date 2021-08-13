@@ -85,11 +85,11 @@ namespace xDC_Web.Extension.DocGenerator
                     var getForm = db.ISSD_FormHeader.Where(x =>
                             DbFunctions.TruncateTime(x.SettlementDate) == settlementDate.Date 
                             && x.Currency == currency 
-                            && x.FormStatus == "Approved");
+                            && x.FormStatus == "Approved").ToList();
 
                     if (getForm.Any())
                     {
-                        var associatedFormIdParts = getForm.Select(x => x.Id);
+                        var associatedFormIdParts = getForm.Select(x => x.Id).ToList();
                         var getTrades = db.ISSD_TradeSettlement.Where(x => associatedFormIdParts.Contains(x.FormId)).ToList();
 
 
@@ -100,8 +100,12 @@ namespace xDC_Web.Extension.DocGenerator
                         var getFormWorkflow = new Form_Workflow();
 
                         var getEquityFormId = getForm.FirstOrDefault(x => x.FormType == "Trade Settlement (Part A)");
-                        var getOpeningBalance = db.ISSD_Balance.Where(x => x.FormId == getEquityFormId.Id).ToList();
-
+                        var getOpeningBalance = new List<ISSD_Balance>();
+                        if (getEquityFormId != null)
+                        {
+                            getOpeningBalance = db.ISSD_Balance.Where(x => x.FormId == getEquityFormId.Id).ToList();
+                        }
+                        
                         IWorkbook workbook = new Workbook();
                         workbook.Options.Culture = new CultureInfo("en-US");
                         workbook.LoadDocument(MapPath("~/App_Data/Trade Settlement Template - Consolidated.xltx"));
@@ -750,10 +754,10 @@ namespace xDC_Web.Extension.DocGenerator
             try
             {
                 var sheet = workbook.Worksheets[0];
-                
+
                 sheet["B2"].Value = settlementDate.ToString("dd/MM/yyyy");
                 sheet["B3"].Value = currency;
-                
+
                 int tradeItemStartRow = 7;
                 // Opening Balance
                 if (ob.Any())
@@ -1161,6 +1165,7 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
                         sheet["D" + tradeItemStartRow].Value = item.Remarks;
                     }
+
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
                     table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
@@ -1305,7 +1310,10 @@ namespace xDC_Web.Extension.DocGenerator
 
                 var footerRowNumber = tradeItemStartRow + 4;
                 sheet["A" + footerRowNumber + ":G" + footerRowNumber].Merge();
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Value = "Generated on " + DateTime.Now.ToString("dd/MM/yyyy HH:ss") + " by " + HttpContext.Current.User.Identity.Name;
+                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Value = "Generated on " +
+                                                                              DateTime.Now.ToString(
+                                                                                  "dd/MM/yyyy HH:ss") + " by " +
+                                                                              HttpContext.Current.User.Identity.Name;
                 sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Italic = true;
                 sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Size = 10;
                 sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Color = Color.LightSlateGray;
@@ -1314,6 +1322,10 @@ namespace xDC_Web.Extension.DocGenerator
 
 
                 workbook.Calculate();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
             }
             finally
             {

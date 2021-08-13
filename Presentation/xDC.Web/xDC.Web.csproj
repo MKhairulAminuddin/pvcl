@@ -524,7 +524,6 @@
     <Content Include="Views\Admin\SystemLogs.cshtml" />
     <Content Include="Views\Admin\UserManagement.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\Index.cshtml" />
-    <Content Include="Views\Issd\TradeSettlement\New.cshtml" />
     <Content Include="Views\Admin\ApplicationConfig.cshtml" />
     <Content Include="Views\Setting\ApproverManagement.cshtml" />
     <Content Include="Views\My\Notification.cshtml" />
@@ -533,8 +532,6 @@
     <Content Include="Views\Base\Unauthorized.cshtml" />
     <Content Include="Views\Amsd\InflowFund\New.cshtml" />
     <Content Include="Views\Amsd\InflowFund\View.cshtml" />
-    <Content Include="Views\Issd\TradeSettlement\View.cshtml" />
-    <Content Include="Views\Issd\TradeSettlement\Edit.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartA\Edit.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartA\New.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartA\View.cshtml" />

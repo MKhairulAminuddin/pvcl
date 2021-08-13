@@ -24,14 +24,16 @@ namespace xDC.Services.App
             return isTMinus;
         }
 
-        public static void NotifyApprover(string approverUsername, int formId, string submittedBy, int formType)
+        public static void NotifyApprover(string approverUsername, int formId, string submittedBy, int formType, string notes)
         {
             new NotificationService().PushNotificationForApproval(approverUsername, formId, submittedBy, formType);
+            new WorkflowService().SubmitForApprovalWorkflow(formId, formType, notes);
         }
 
-        public static void NotifyPreparer(string preparer, int formId, string approvedBy, int formType, bool isApproved)
+        public static void NotifyPreparer(string preparer, int formId, string approvedBy, int formType, bool isApproved, string approvalNotes)
         {
             new NotificationService().PushNotificationForApprovalResult(preparer, formId, approvedBy, formType, isApproved);
+            new WorkflowService().ApprovalFeedbackWorkflow(formId, isApproved, approvalNotes, formType);
         }
     }
 }

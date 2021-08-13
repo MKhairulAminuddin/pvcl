@@ -27,23 +27,45 @@ namespace xDC.Services
             }
         }
 
-        public void SubmitForApprovalWorkflow(int formId)
+        public void SubmitForApprovalWorkflow(int formId, int formType, string notes)
         {
             try
             {
+                var formTypeParsed = Common.FormTypeMapping(formType);
+
                 using (var db = new kashflowDBEntities())
                 {
-                    var form = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+                    Form_Workflow formWorkflow;
 
-                    var formWorkflow = new Form_Workflow()
+                    if (formId == 1)
                     {
-                        FormId = formId,
-                        RequestBy = form.PreparedBy,
-                        StartDate = form.PreparedDate,
-                        RequestTo = form.ApprovedBy,
-                        WorkflowStatus = Common.FormStatusMapping(2)
-                    };
-
+                        var form = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+                        formWorkflow = new Form_Workflow()
+                        {
+                            FormId = formId,
+                            FormType = Common.FormTypeMapping(formType),
+                            RequestBy = form.PreparedBy,
+                            StartDate = form.PreparedDate,
+                            RequestTo = form.ApprovedBy,
+                            WorkflowStatus = Common.FormStatusMapping(2),
+                            WorkflowNotes = notes
+                        };
+                    }
+                    else
+                    {
+                        var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId && x.FormType == formTypeParsed);
+                        formWorkflow = new Form_Workflow()
+                        {
+                            FormId = formId,
+                            FormType = Common.FormTypeMapping(formType),
+                            RequestBy = form.PreparedBy,
+                            StartDate = form.PreparedDate,
+                            RequestTo = form.ApprovedBy,
+                            WorkflowStatus = Common.FormStatusMapping(2),
+                            WorkflowNotes = notes
+                        };
+                    }
+                    
                     db.Form_Workflow.Add(formWorkflow);
                     db.SaveChanges();
                 }
@@ -54,20 +76,24 @@ namespace xDC.Services
             }
         }
 
-        public void ApprovalFeedbackWorkflow(int formId, bool isApproved,string notes)
+        public void ApprovalFeedbackWorkflow(int formId, bool isApproved,string notes, int formType)
         {
+            var formTypeParsed = Common.FormTypeMapping(formType);
+
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
                     var currentFormWorkflow = db.Form_Workflow
-                        .Where(x => x.FormId == formId)
+                        .Where(x => x.FormId == formId && x.FormType == formTypeParsed)
                         .OrderByDescending(x => new { x.StartDate, x.Id}).FirstOrDefault();
+
                     currentFormWorkflow.EndDate = DateTime.Now;
 
                     var newFormWorkflow = new Form_Workflow()
                     {
                         FormId = formId,
+                        FormType = Common.FormTypeMapping(formType),
                         RequestBy = currentFormWorkflow.RequestTo,
                         StartDate = DateTime.Now,
                         RequestTo = currentFormWorkflow.RequestBy,

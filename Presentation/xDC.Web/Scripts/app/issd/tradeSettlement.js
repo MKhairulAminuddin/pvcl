@@ -13,6 +13,7 @@
     };
 
     _tradeSettlement.api = {
+        loadWorkflowHistory: window.location.origin + "/api/common/GetWorkflow/" + _getIdFromQueryString + "/",
         loadApprover: window.location.origin + "/api/common/GetTradeSettlementApprover",
         loadCurrencies: window.location.origin + "/api/common/GetTradeSettlementCurrencies",
         loadTradeItemEdw: function(instrumentType, settlementDate, currency) {

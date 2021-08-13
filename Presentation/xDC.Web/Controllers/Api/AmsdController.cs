@@ -182,7 +182,7 @@ namespace xDC_Web.Controllers.Api
 
                         new NotificationService().PushSubmitForApprovalNotification(existingForm.Id);
                         new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(existingForm.Id);
-                        new WorkflowService().SubmitForApprovalWorkflow(existingForm.Id);
+                        new WorkflowService().SubmitForApprovalWorkflow(existingForm.Id, 1, "");
 
                         return Request.CreateResponse(HttpStatusCode.Created, existingForm.Id);
                     }
@@ -231,7 +231,7 @@ namespace xDC_Web.Controllers.Api
 
                         new NotificationService().PushSubmitForApprovalNotification(newRecord.Id);
                         new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(newRecord.Id);
-                        new WorkflowService().SubmitForApprovalWorkflow(newRecord.Id);
+                        new WorkflowService().SubmitForApprovalWorkflow(newRecord.Id, 1, "");
 
                         return Request.CreateResponse(HttpStatusCode.Created, newRecord.Id);
                     }
@@ -395,7 +395,7 @@ namespace xDC_Web.Controllers.Api
 
                             new NotificationService().PushApprovalStatusNotification(formId);
                             new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(formId);
-                            new WorkflowService().ApprovalFeedbackWorkflow(formId, inputs.ApprovalStatus, inputs.ApprovalNote);
+                            new WorkflowService().ApprovalFeedbackWorkflow(formId, inputs.ApprovalStatus, inputs.ApprovalNote, 1);
 
                             return Request.CreateResponse(HttpStatusCode.Accepted, formId);
                         }

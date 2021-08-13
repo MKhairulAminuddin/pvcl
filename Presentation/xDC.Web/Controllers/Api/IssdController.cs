@@ -483,9 +483,9 @@ namespace xDC_Web.Controllers.Api
                         db.SaveChanges();
                     }
 
-                    if (!inputs.IsSaveAsDraft)
+                    if (inputs.Approver != null)
                     {
-                        TradeSettlementService.NotifyApprover(inputs.Approver, newFormHeader.Id, User.Identity.Name, inputs.FormType);
+                        TradeSettlementService.NotifyApprover(inputs.Approver, newFormHeader.Id, User.Identity.Name, inputs.FormType, inputs.ApprovalNotes);
                     }
                     
                     return Request.CreateResponse(HttpStatusCode.Created, newFormHeader.Id);
@@ -529,7 +529,11 @@ namespace xDC_Web.Controllers.Api
                     if (inputs.Approver != null)
                     {
                         getForm.ApprovedBy = inputs.Approver;
+                        getForm.ApprovedDate = null; // empty the date as this is new submission
                         getForm.FormStatus = Common.FormStatusMapping(2);
+
+                        TradeSettlementService.NotifyApprover(getForm.PreparedBy, getForm.Id, User.Identity.Name,
+                            Common.FormTypeMappingReverse(getForm.FormType), inputs.ApprovalNotes);
                     }
                     
                     var getTradeItems = db.ISSD_TradeSettlement.Where(x =>
@@ -935,7 +939,9 @@ namespace xDC_Web.Controllers.Api
 
                             db.SaveChanges();
 
-                            TradeSettlementService.NotifyPreparer(form.PreparedBy, form.Id, User.Identity.Name, Common.FormTypeMappingReverse(form.FormType), inputs.ApprovalStatus);
+                            TradeSettlementService.NotifyPreparer(form.PreparedBy, form.Id, User.Identity.Name,
+                                Common.FormTypeMappingReverse(form.FormType), inputs.ApprovalStatus,
+                                inputs.ApprovalNote);
 
                             return Request.CreateResponse(HttpStatusCode.Accepted, formId);
                         }
