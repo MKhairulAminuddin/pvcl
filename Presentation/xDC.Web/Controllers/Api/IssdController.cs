@@ -532,7 +532,7 @@ namespace xDC_Web.Controllers.Api
                         getForm.ApprovedDate = null; // empty the date as this is new submission
                         getForm.FormStatus = Common.FormStatusMapping(2);
 
-                        TradeSettlementService.NotifyApprover(getForm.PreparedBy, getForm.Id, User.Identity.Name,
+                        TradeSettlementService.NotifyApprover(getForm.ApprovedBy, getForm.Id, User.Identity.Name,
                             Common.FormTypeMappingReverse(getForm.FormType), inputs.ApprovalNotes);
                     }
                     
