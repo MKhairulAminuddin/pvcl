@@ -300,6 +300,34 @@ namespace xDC.Utils
             return String.Empty;
         }
 
+        /// <summary>
+        /// Get form view url
+        /// </summary>
+        /// <param name="formType">
+        /// woi
+        /// </param>
+        /// <returns></returns>
+        public static string FormUrlViewMappingForEmailNotification(string formType)
+        {
+            switch (formType)
+            {
+                case "Inflow Funds":
+                    return "/amsd/InflowFundsFormStatus?id=";
+
+                case "Trade Settlement (Part A)":
+                    return "/issd/TradeSettlement/PartA/View/";
+                case "Trade Settlement (Part B)":
+                    return "/issd/TradeSettlement/PartB/View/";
+                case "Trade Settlement (Part C)":
+                    return "/issd/TradeSettlement/PartC/View/";
+                case "Trade Settlement (Part D)":
+                    return "/issd/TradeSettlement/PartD/View/";
+                case "Trade Settlement (Part E)":
+                    return "/issd/TradeSettlement/PartE/View/";
+            }
+            return String.Empty;
+        }
+
         public static string DropdownConfigKeyMapping(int value)
         {
             switch (value)

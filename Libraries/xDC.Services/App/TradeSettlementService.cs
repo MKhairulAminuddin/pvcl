@@ -27,12 +27,14 @@ namespace xDC.Services.App
         public static void NotifyApprover(string approverUsername, int formId, string submittedBy, int formType, string notes)
         {
             new NotificationService().PushNotificationForApproval(approverUsername, formId, submittedBy, formType);
+            new MailService().SubmitForApprovalTradeSettlement(formId);
             new WorkflowService().SubmitForApprovalWorkflow(formId, formType, notes);
         }
 
         public static void NotifyPreparer(string preparer, int formId, string approvedBy, int formType, bool isApproved, string approvalNotes)
         {
             new NotificationService().PushNotificationForApprovalResult(preparer, formId, approvedBy, formType, isApproved);
+            new MailService().ApprovalStatusTradeSettlement(formId);
             new WorkflowService().ApprovalFeedbackWorkflow(formId, isApproved, approvalNotes, formType);
         }
     }
