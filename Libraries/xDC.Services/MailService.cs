@@ -293,6 +293,77 @@ namespace xDC.Services
             }
         }
 
+        public void ContributionCreditedTradeSettlement(int formId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var contributionEmailKey = Common.ApplicationConfigKeyMapping(4);
+                    var currentCnEmailList = db.Config_Application.FirstOrDefault(x => x.Key == contributionEmailKey);
+
+                    if (currentCnEmailList != null && currentCnEmailList.Value != null)
+                    {
+                        var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
+
+                        if (getForm != null)
+                        {
+                            var contributionItemKey = Common.TradeSettlementMapping(10);
+                            var getContributionItems = db.ISSD_TradeSettlement
+                                .Where(x => x.InstrumentType == contributionItemKey).ToList();
+
+                            if (getContributionItems.Any())
+                            {
+                                var preparerName =
+                                    db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == getForm.PreparedBy);
+
+                                var contributionEmailList = currentCnEmailList.Value.Split(';').ToList();
+                                var cnEmailListAddress = new InternetAddressList();
+                                foreach (var item in contributionEmailList)
+                                {
+                                    cnEmailListAddress.Add(new MailboxAddress(item,item));
+                                }
+
+                                var message = new MimeMessage()
+                                {
+                                    Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                                    Subject = "[Kashflow] Contribution Credited submitted in " + getForm.FormType
+                                };
+
+                                message.To.AddRange(cnEmailListAddress);
+
+                                var pageUrl = string.Format("{0}" + Common.FormUrlViewMappingForEmailNotification(getForm.FormType) + "{1}", Config.EmailApplicationUrl, formId);
+
+                                var bodyBuilder = new StringBuilder();
+                                bodyBuilder.Append(string.Format("<p>Hi {0}, </p>", preparerName.DisplayName));
+                                bodyBuilder.AppendLine(string.Format("<p>Contribution Credited item in  <a href='" + pageUrl + "'>#" + getForm.Id + "</a> form have been " + getForm.FormStatus));
+
+                                message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                                {
+                                    Text = bodyBuilder.ToString()
+                                };
+
+                                SendEmailToSmtp(message);
+                            }
+                        }
+                        else
+                        {
+                            Logger.LogError("SendApprovalStatusEmail FAILED, form data error: " + formId);
+                        }
+                    }
+                    else
+                    {
+                        Logger.LogError("SendApprovalStatusEmail FAILED, form data error: " + formId);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
         private void SendEmailToSmtp(MimeMessage message)
         {
             try

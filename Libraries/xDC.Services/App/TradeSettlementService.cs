@@ -35,6 +35,7 @@ namespace xDC.Services.App
         {
             new NotificationService().PushNotificationForApprovalResult(preparer, formId, approvedBy, formType, isApproved);
             new MailService().ApprovalStatusTradeSettlement(formId);
+            new MailService().ContributionCreditedTradeSettlement(formId);
             new WorkflowService().ApprovalFeedbackWorkflow(formId, isApproved, approvalNotes, formType);
         }
     }

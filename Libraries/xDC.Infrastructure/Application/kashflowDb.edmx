@@ -89,7 +89,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Key" Type="nvarchar" MaxLength="250" Nullable="false" />
-          <Property Name="Value" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Value" Type="nvarchar(max)" />
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="250" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="UpdatedBy" Type="nvarchar" MaxLength="250" />
@@ -352,7 +352,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
           </AssociationSet>
-          <EntitySet Name="Config_Application" EntityType="kashflowDbModel.Config_Application" />
           <EntitySet Name="Config_Dropdown" EntityType="kashflowDbModel.Config_Dropdown" />
           <EntitySet Name="Config_Key" EntityType="kashflowDbModel.Config_Key" />
           <EntitySet Name="Config_Approver" EntityType="kashflowDbModel.Config_Approver" />
@@ -365,6 +364,7 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="ISSD_FormHeader" EntityType="kashflowDbModel.ISSD_FormHeader" />
           <EntitySet Name="ISSD_TradeSettlement" EntityType="kashflowDbModel.ISSD_TradeSettlement" />
           <EntitySet Name="Form_Workflow" EntityType="kashflowDbModel.Form_Workflow" />
+          <EntitySet Name="Config_Application" EntityType="kashflowDbModel.Config_Application" />
         </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -412,18 +412,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <End Type="kashflowDbModel.AspNetRoles" Role="AspNetRoles" Multiplicity="*" />
           <End Type="kashflowDbModel.AspNetUsers" Role="AspNetUsers" Multiplicity="*" />
         </Association>
-        <EntityType Name="Config_Application">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Key" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="Value" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="UpdatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
-        </EntityType>
         <EntityType Name="Config_Dropdown">
           <Key>
             <PropertyRef Name="Id" />
@@ -608,6 +596,18 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="WorkflowStatus" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="WorkflowNotes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="Config_Application">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Key" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Value" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -665,19 +665,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
               <ScalarProperty Name="Id" ColumnName="RoleId" />
             </EndProperty>
           </AssociationSetMapping>
-          <EntitySetMapping Name="Config_Application">
-            <EntityTypeMapping TypeName="kashflowDbModel.Config_Application">
-              <MappingFragment StoreEntitySet="Config_Application">
-                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
-                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="Value" ColumnName="Value" />
-                <ScalarProperty Name="Key" ColumnName="Key" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Config_Dropdown">
             <EntityTypeMapping TypeName="kashflowDbModel.Config_Dropdown">
               <MappingFragment StoreEntitySet="Config_Dropdown">
@@ -870,6 +857,19 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
                 <ScalarProperty Name="RequestBy" ColumnName="RequestBy" />
                 <ScalarProperty Name="FormType" ColumnName="FormType" />
                 <ScalarProperty Name="FormId" ColumnName="FormId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Config_Application">
+            <EntityTypeMapping TypeName="kashflowDbModel.Config_Application">
+              <MappingFragment StoreEntitySet="Config_Application">
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Key" ColumnName="Key" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

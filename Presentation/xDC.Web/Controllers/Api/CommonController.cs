@@ -77,7 +77,7 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
-        [Route("api/common/GetActiveDirectoryUsersByDepartment/{department}")]
+        [Route("GetActiveDirectoryUsersByDepartment/{department}")]
         public HttpResponseMessage GetActiveDirectoryUsersByDepartment(string department, DataSourceLoadOptions loadOptions)
         {
             try

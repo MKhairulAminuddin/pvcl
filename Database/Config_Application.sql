@@ -2,7 +2,7 @@
 	[Id] INT NOT NULL Identity(1,1) PRIMARY KEY, 
 
 	[Key] NVARCHAR(250) NOT NULL,
-	[Value] NVARCHAR(MAX) NOT NULL,
+	[Value] NVARCHAR(MAX),
 
     [CreatedBy] NVARCHAR(250) NULL, 
     [CreatedDate] DATETIME NOT NULL DEFAULT GETDATE(), 
@@ -13,3 +13,4 @@
 INSERT INTO [dbo].[Config_Application]([Key],[Value]) VALUES ('Amsd.InflowFunds.CutOffTime' ,'10:00');
 INSERT INTO [dbo].[Config_Application]([Key],[Value]) VALUES ('Amsd.InflowFunds.Notification' ,'true');
 INSERT INTO [dbo].[Config_Application]([Key],[Value]) VALUES ('Amsd.InflowFunds.AmsdEditNotification' ,'true');
+INSERT INTO [dbo].[Config_Application]([Key],[Value]) VALUES ('Issd.TradeSettlement.ContributionEmail' ,'');

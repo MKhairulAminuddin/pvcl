@@ -352,8 +352,10 @@ namespace xDC.Utils
                     return "Amsd.InflowFunds.Notification";
                 case 3:
                     return "Amsd.InflowFunds.AdminEditNotification";
-                    
-                    
+                case 4:
+                    return "Issd.TradeSettlement.ContributionEmail";
+
+
             }
             return String.Empty;
         }

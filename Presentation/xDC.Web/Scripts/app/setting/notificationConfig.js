@@ -3,7 +3,7 @@
     $(function () {
         var adUsersStore = DevExpress.data.AspNet.createStore({
             key: "username",
-            loadUrl: "../api/common/GetActiveDirectoryUsers"
+            loadUrl: "../api/common/GetActiveDirectoryUsersByDepartment/Contribution"
         });
 
         $("#inflowFundSaveButton").dxButton("instance").option("onClick", function (e) {
@@ -42,6 +42,33 @@
                     "</div>";
             }
         }).dxTagBox("instance");
+
+        $("#tradeSettlementSaveButton").dxButton("instance").option("onClick", function (e) {
+            
+            var selectedContributionEmail = $("#contributionEmailList").dxTagBox("instance").option('selectedItems');
+            var emailList = [];
+            $.each(selectedContributionEmail, function (key, value) {
+                //console.log(key, value);
+                emailList.push(value.email);
+            });
+
+            var data = {
+                "tradeSettlementContributionEmail": emailList
+            }
+
+            $.ajax({
+                data: data,
+                dataType: 'json',
+                url: '../api/setting/UpdateTradeSettlementNotificationSetting',
+                method: 'post'
+            }).done(function (data) {
+                $("#error_container").bs_success("Trade Settlement setting updated");
+
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+            });
+
+        });
 
     });
 }(window.jQuery, window, document));

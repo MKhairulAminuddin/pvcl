@@ -498,6 +498,58 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [HttpPost]
+
+        public HttpResponseMessage UpdateTradeSettlementNotificationSetting([FromBody] NotificationConfigViewModel req)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    if (req != null && req.TradeSettlementContributionEmail != null)
+                    {
+                        var submittedEmailList = String.Join(";", req.TradeSettlementContributionEmail);
+
+                        var config = db.Config_Application.ToList();
+
+                        var contributionEmailKey = Common.ApplicationConfigKeyMapping(4);
+                        var currentCnEmailList = config.FirstOrDefault(x => x.Key == contributionEmailKey);
+
+                        if (currentCnEmailList.Value != submittedEmailList)
+                        {
+                            currentCnEmailList.Value = submittedEmailList;
+                            currentCnEmailList.UpdatedBy = User.Identity.Name;
+                            currentCnEmailList.UpdatedDate = DateTime.Now;
+                        }
+
+                        db.SaveChanges();
+
+                        return Request.CreateResponse(HttpStatusCode.Accepted, req);
+                    }
+                    else
+                    {
+                        var config = db.Config_Application.ToList();
+
+                        var contributionEmailKey = Common.ApplicationConfigKeyMapping(4);
+                        var currentCnEmailList = config.FirstOrDefault(x => x.Key == contributionEmailKey);
+                        
+                        currentCnEmailList.Value = null;
+                        currentCnEmailList.UpdatedBy = User.Identity.Name;
+                        currentCnEmailList.UpdatedDate = DateTime.Now;
+
+                        db.SaveChanges();
+
+                        return Request.CreateResponse(HttpStatusCode.Accepted, req);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
         #endregion
     }
 }

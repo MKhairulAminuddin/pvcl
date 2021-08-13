@@ -44,12 +44,24 @@ namespace xDC_Web.Controllers
                         appConfigs.FirstOrDefault(x => x.Key == inflowFundAdminEditNotificationKey);
                     bool.TryParse(inflowFundAdminEditNotificationValue.Value, out var inflowFundAdminEditNotificationValueParsed);
 
+                    var contributionEmailKey = Common.ApplicationConfigKeyMapping(4);
+                    var contributionEmailValue =
+                        appConfigs.FirstOrDefault(x => x.Key == contributionEmailKey);
+                    var emailList = new List<string>();
+                    if (contributionEmailValue != null)
+                    {
+                        if (!string.IsNullOrEmpty(contributionEmailValue.Value))
+                        {
+                            emailList = contributionEmailValue.Value.Split(';').ToList();
+                        }
+                    }
+
                     NotificationConfigViewModel viewModel = new NotificationConfigViewModel()
                     {
                         InflowFundCutOffTime = tryParseValue,
                         InflowFundEnableNotification = inflowFundNotificationValueParsed,
                         InflowFundEnableAdminModificationNotification = inflowFundAdminEditNotificationValueParsed,
-                        
+                        TradeSettlementContributionEmail = emailList
                     };
 
                     return View(viewModel);
