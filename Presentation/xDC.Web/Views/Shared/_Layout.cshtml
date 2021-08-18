@@ -127,6 +127,21 @@
                             </ul>
                         </li>
                     }
+                    @if (MenuSecurity.FidMenu)
+                    {
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-circle-thin"></i> <span>FID</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("FcaAccountAssignment","Fid")"><i class="fa fa-circle-thin"></i> <span>TS FCA Account</span></a></li>
+                                <li><a href="@Url.Action("TenAmCutOff", "Fid")"><i class="fa fa-circle-thin"></i> <span>10am Cut Off</span></a></li>
+                            </ul>
+                        </li>
+                    }
                     @if (MenuSecurity.PowerUsersMenu)
                     {
                         <li class="treeview">
@@ -173,12 +188,7 @@
 
             @if (!string.IsNullOrEmpty(@ViewBag.Title))
             {
-                <section class="content-header">
-                    <h1>
-                        @ViewBag.Title
-                    </h1>
-
-                </section>
+                @Html.Partial("_PageTitle")
             }
 
             <section class="content-header content-alert">

@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App\CommonService.cs" />
+    <Compile Include="App\FidService.cs" />
     <Compile Include="App\TradeSettlementService.cs" />
     <Compile Include="AuthService.cs" />
     <Compile Include="MailService.cs" />

@@ -41,5 +41,8 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<ISSD_TradeSettlement> ISSD_TradeSettlement { get; set; }
         public virtual DbSet<Form_Workflow> Form_Workflow { get; set; }
         public virtual DbSet<Config_Application> Config_Application { get; set; }
+        public virtual DbSet<FID_T10_Approval> FID_T10_Approval { get; set; }
+        public virtual DbSet<FID_TS10> FID_TS10 { get; set; }
+        public virtual DbSet<FID_TS10_TradeItem> FID_TS10_TradeItem { get; set; }
     }
 }

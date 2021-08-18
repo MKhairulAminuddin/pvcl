@@ -83,6 +83,15 @@
     <Compile Include="Application\EDW_TradeItem.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
+    <Compile Include="Application\FID_T10_Approval.cs">
+      <DependentUpon>kashflowDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Application\FID_TS10.cs">
+      <DependentUpon>kashflowDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Application\FID_TS10_TradeItem.cs">
+      <DependentUpon>kashflowDb.tt</DependentUpon>
+    </Compile>
     <Compile Include="Application\Form_Header.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>

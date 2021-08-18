@@ -283,6 +283,8 @@
     <Content Include="Scripts\app\amsd\inflowFund\new.js" />
     <Content Include="Scripts\app\amsd\index.js" />
     <Content Include="Scripts\app.dxGrid.utils.js" />
+    <Content Include="Scripts\app\fid\fcaAccountAssignment.js" />
+    <Content Include="Scripts\app\fid\tenAmCutOff.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\index.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partA\edit.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partA\new.js" />
@@ -548,6 +550,10 @@
     <Content Include="Views\Issd\TradeSettlement\PartE\Edit.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartE\New.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartE\View.cshtml" />
+    <Content Include="Views\Fid\TenAmCutOff.cshtml" />
+    <Content Include="Views\Fid\FcaAccountAssignment.cshtml" />
+    <Content Include="Views\Shared\_PageTitle.cshtml" />
+    <Content Include="Views\Fid\EditFcaAccountAssignment.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -570,6 +576,7 @@
     <Compile Include="Controllers\Api\IssdController.cs" />
     <Compile Include="Controllers\Api\SettingController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\FidController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IssdController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
