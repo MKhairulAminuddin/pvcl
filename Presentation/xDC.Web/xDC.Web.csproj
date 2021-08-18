@@ -284,6 +284,7 @@
     <Content Include="Scripts\app\amsd\index.js" />
     <Content Include="Scripts\app.dxGrid.utils.js" />
     <Content Include="Scripts\app\fid\fcaAccountAssignment.js" />
+    <Content Include="Scripts\app\fid\fcaAccountAssignmentEdit.js" />
     <Content Include="Scripts\app\fid\tenAmCutOff.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\index.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partA\edit.js" />
@@ -573,6 +574,7 @@
     <Compile Include="Controllers\Api\AdminController.cs" />
     <Compile Include="Controllers\Api\AmsdController.cs" />
     <Compile Include="Controllers\Api\CommonController.cs" />
+    <Compile Include="Controllers\Api\FidController.cs" />
     <Compile Include="Controllers\Api\IssdController.cs" />
     <Compile Include="Controllers\Api\SettingController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
@@ -604,6 +606,8 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MailMerge\SpreadsheetPreviewModel.cs" />
     <Compile Include="Models\Trades.cs" />
+    <Compile Include="ViewModels\Fid\EditFcaAccountAssignmentVM.cs" />
+    <Compile Include="ViewModels\Fid\Ts10AmHomeGridVM.cs" />
     <Compile Include="ViewModels\TradeSettlementFormViewModel.cs" />
     <Compile Include="Models\TradeSettlementModel.cs" />
     <Compile Include="Models\UserVM.cs" />

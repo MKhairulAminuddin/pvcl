@@ -23,13 +23,17 @@ namespace xDC_Web
             
             RecurringJob.AddOrUpdate(
                 () => SyncActiveDirectory.Sync(),
-                Cron.Weekly);
+                Cron.Weekly, TimeZoneInfo.Local);
             RecurringJob.AddOrUpdate(
                 () => SyncActiveDirectory.SyncUserProfileWithAd(),
-                Cron.Monthly);
+                Cron.Monthly, TimeZoneInfo.Local);
             RecurringJob.AddOrUpdate(
-                () => FidTask.Fetch10AmTradeSettlement(),
-                "0 10 * * *");
+                () => FidTask.FetchToday10AmTradeSettlement(),
+                "0 10 * * *", TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate(
+                () => FidTask.Fetch10AmTradeSettlementOnDemand(),
+                "0 0 31 2 0", TimeZoneInfo.Local);
+
         }
         
         private IEnumerable<IDisposable> GetHangfireServers()

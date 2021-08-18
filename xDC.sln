@@ -17,6 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{71
 		Database\EDW_TradeItem.sql = Database\EDW_TradeItem.sql
 		Database\FID_TS10.sql = Database\FID_TS10.sql
 		Database\FID_TS10_Approval.sql = Database\FID_TS10_Approval.sql
+		Database\FID_TS10_OpeningBalance.sql = Database\FID_TS10_OpeningBalance.sql
 		Database\FID_TS10_TradeItem.sql = Database\FID_TS10_TradeItem.sql
 		Database\Form_Header.sql = Database\Form_Header.sql
 		Database\Form_Workflow.sql = Database\Form_Workflow.sql

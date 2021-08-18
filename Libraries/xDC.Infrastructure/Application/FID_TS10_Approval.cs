@@ -12,7 +12,7 @@ namespace xDC.Infrastructure.Application
     using System;
     using System.Collections.Generic;
     
-    public partial class FID_T10_Approval
+    public partial class FID_TS10_Approval
     {
         public int Id { get; set; }
         public int FormId { get; set; }

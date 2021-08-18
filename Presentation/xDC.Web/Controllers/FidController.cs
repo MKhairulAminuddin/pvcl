@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using xDC.Infrastructure.Application;
+using xDC_Web.ViewModels.Fid;
 
 namespace xDC_Web.Controllers
 {
@@ -28,10 +30,40 @@ namespace xDC_Web.Controllers
             return View();
         }
 
-        [Route("FcaAccountAssignment/Edit")]
-        public ActionResult EditFcaAccountAssignment()
+        [Route("FcaAccountAssignment/Edit/{formId}")]
+        public ActionResult EditFcaAccountAssignment(int formId)
         {
-            return View();
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.FID_TS10.FirstOrDefault(x => x.Id == formId);
+                    
+                    if (form != null)
+                    {
+                        var vModel = new EditFcaAccountAssignmentVM();
+                        vModel.Currency = form.Currency;
+                        if (form.SettlementDate != null)
+                        {
+                            vModel.SettlementDate = form.SettlementDate.Value;
+                        }
+
+                        return View(vModel);
+                        
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Form Not found";
+                        return View("Error");
+                    }
+                }
+                    
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Error");
+            }
         }
     }
 }

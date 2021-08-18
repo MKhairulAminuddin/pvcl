@@ -536,7 +536,7 @@ namespace xDC_Web.Extension.DocGenerator
                 {
                     var headerStartRow = tradeItemStartRow;
 
-                    sheet["A" + tradeItemStartRow].Value = "Coupon Received";
+                    sheet["A" + tradeItemStartRow].Value = "Payment/ Receipt (MTM)";
                     sheet["B" + tradeItemStartRow].Value = "Amount (+)";
                     sheet["C" + tradeItemStartRow].Value = "Amount (-)";
                     sheet["D" + tradeItemStartRow].Value = "Remarks";
@@ -1145,7 +1145,7 @@ namespace xDC_Web.Extension.DocGenerator
                 {
                     var headerStartRow = tradeItemStartRow;
 
-                    sheet["A" + tradeItemStartRow].Value = "Coupon Received";
+                    sheet["A" + tradeItemStartRow].Value = "Payment/ Receipt (MTM)";
                     sheet["B" + tradeItemStartRow].Value = "Amount (+)";
                     sheet["C" + tradeItemStartRow].Value = "Amount (-)";
                     sheet["D" + tradeItemStartRow].Value = "Remarks";
