@@ -9,6 +9,7 @@ using System.Linq;
 using System.Web;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Services.App;
 using xDC.Utils;
 
 namespace xDC_Web.Extension.DocGenerator
@@ -16,8 +17,8 @@ namespace xDC_Web.Extension.DocGenerator
     public class TradeSettlementFormDoc : DocGeneratorBase
     {
         private Color _tableHeaderPrimaryColor = System.Drawing.ColorTranslator.FromHtml("#5b8efb");
-        private Color _tableHeaderInflowColor = System.Drawing.ColorTranslator.FromHtml("#2ECC71");
-        private Color _tableHeaderOutFlowColor = System.Drawing.ColorTranslator.FromHtml("#E74C3C");
+        private Color _inflowColor = System.Drawing.ColorTranslator.FromHtml("#E8F5E9");
+        private Color _outFlowColor = System.Drawing.ColorTranslator.FromHtml("#FFEBEE");
 
         public string GenerateFile(int formId, bool isExportAsExcel)
         {
@@ -90,14 +91,18 @@ namespace xDC_Web.Extension.DocGenerator
                     if (getForm.Any())
                     {
                         var associatedFormIdParts = getForm.Select(x => x.Id).ToList();
-                        var getTrades = db.ISSD_TradeSettlement.Where(x => associatedFormIdParts.Contains(x.FormId)).ToList();
 
+                        var getTrades = new List<ISSD_TradeSettlement>();
+                        foreach (var formId in associatedFormIdParts)
+                        {
+                            getTrades.AddRange(TradeSettlementService.GetTradeSettlement(db, formId));
+                        }
 
-                        /*var getFormWorkflow = db.Form_Workflow
-                            .Where(x => (x.WorkflowStatus == "Approved" || x.WorkflowStatus == "Rejected") &&
-                                        x.FormId == getForm.Id).OrderByDescending(x => x.EndDate)
-                            .FirstOrDefault();*/
-                        var getFormWorkflow = new Form_Workflow();
+                        var worflows = new List<Form_Workflow>();
+                        foreach (var formId in associatedFormIdParts)
+                        {
+                            worflows.AddRange(TradeSettlementService.GetWorkflow(db, formId));
+                        }
 
                         var getEquityFormId = getForm.FirstOrDefault(x => x.FormType == "Trade Settlement (Part A)");
                         var getOpeningBalance = new List<ISSD_Balance>();
@@ -109,7 +114,7 @@ namespace xDC_Web.Extension.DocGenerator
                         IWorkbook workbook = new Workbook();
                         workbook.Options.Culture = new CultureInfo("en-US");
                         workbook.LoadDocument(MapPath("~/App_Data/Trade Settlement Template - Consolidated.xltx"));
-                        workbook = GenerateDocumentConsolidated(workbook, settlementDate, currency, getFormWorkflow, getTrades, getOpeningBalance);
+                        workbook = GenerateDocumentConsolidated(workbook, settlementDate, currency, worflows, getTrades, getOpeningBalance);
                         var randomFileName = "ISSD Trade Settlement - " + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                         if (isExportAsExcel)
@@ -232,7 +237,7 @@ namespace xDC_Web.Extension.DocGenerator
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow],
                         true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
                     
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -282,7 +287,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -333,7 +338,7 @@ namespace xDC_Web.Extension.DocGenerator
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow],
                         true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -383,7 +388,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -431,7 +436,7 @@ namespace xDC_Web.Extension.DocGenerator
                     
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -474,7 +479,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -510,7 +515,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -547,7 +552,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -588,7 +593,7 @@ namespace xDC_Web.Extension.DocGenerator
                     }
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -628,7 +633,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -666,7 +671,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -708,7 +713,7 @@ namespace xDC_Web.Extension.DocGenerator
                     
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -748,7 +753,7 @@ namespace xDC_Web.Extension.DocGenerator
             return workbook;
         }
 
-        private IWorkbook GenerateDocumentConsolidated(IWorkbook workbook, DateTime settlementDate, string currency, Form_Workflow formWorkflow, List<ISSD_TradeSettlement> trades, List<ISSD_Balance> ob)
+        private IWorkbook GenerateDocumentConsolidated(IWorkbook workbook, DateTime settlementDate, string currency, List<Form_Workflow> formWorkflow, List<ISSD_TradeSettlement> trades, List<ISSD_Balance> ob)
         {
             workbook.BeginUpdate();
             try
@@ -811,8 +816,9 @@ namespace xDC_Web.Extension.DocGenerator
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow],
                         true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
+                    table.ShowTableStyleRowStripes = false;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -821,6 +827,10 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[4].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+                    
+                    table.Columns[2].DataRange.FillColor = _inflowColor;
+                    table.Columns[3].DataRange.FillColor = _inflowColor;
+                    table.Columns[4].DataRange.FillColor = _outFlowColor;
 
                     table.ShowTotals = true;
                     table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
@@ -861,8 +871,9 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
+                    table.ShowTableStyleRowStripes = false;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -871,6 +882,10 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[4].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[2].DataRange.FillColor = _inflowColor;
+                    table.Columns[3].DataRange.FillColor = _inflowColor;
+                    table.Columns[4].DataRange.FillColor = _outFlowColor;
 
                     table.ShowTotals = true;
                     table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
@@ -912,8 +927,9 @@ namespace xDC_Web.Extension.DocGenerator
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow],
                         true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
+                    table.ShowTableStyleRowStripes = false;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -922,6 +938,10 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[4].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[2].DataRange.FillColor = _inflowColor;
+                    table.Columns[3].DataRange.FillColor = _inflowColor;
+                    table.Columns[4].DataRange.FillColor = _outFlowColor;
 
                     table.ShowTotals = true;
                     table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
@@ -962,8 +982,9 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
+                    table.ShowTableStyleRowStripes = false;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
@@ -972,6 +993,10 @@ namespace xDC_Web.Extension.DocGenerator
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[4].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[2].DataRange.FillColor = _inflowColor;
+                    table.Columns[3].DataRange.FillColor = _inflowColor;
+                    table.Columns[4].DataRange.FillColor = _outFlowColor;
 
                     table.ShowTotals = true;
                     table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
@@ -1010,14 +1035,18 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
+                    table.ShowTableStyleRowStripes = false;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[2].DataRange.FillColor = _inflowColor;
+                    table.Columns[3].DataRange.FillColor = _outFlowColor;
 
                     table.ShowTotals = true;
                     table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
@@ -1053,12 +1082,15 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
+                    table.ShowTableStyleRowStripes = false;
 
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[2].DataRange.FillColor = _inflowColor;
 
                     table.ShowTotals = true;
                     table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
@@ -1089,11 +1121,14 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
+                    table.ShowTableStyleRowStripes = false;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[1].DataRange.FillColor = _inflowColor;
 
                     table.ShowTotals = true;
                     table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
@@ -1126,14 +1161,18 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
+                    table.ShowTableStyleRowStripes = false;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
                     table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[1].DataRange.FillColor = _inflowColor;
+                    table.Columns[2].DataRange.FillColor = _outFlowColor;
 
                     table.ShowTotals = true;
                     table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
@@ -1168,14 +1207,18 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
+                    table.ShowTableStyleRowStripes = false;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
                     table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[1].DataRange.FillColor = _inflowColor;
+                    table.Columns[2].DataRange.FillColor = _outFlowColor;
 
                     table.ShowTotals = true;
                     table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
@@ -1208,12 +1251,15 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
+                    table.ShowTableStyleRowStripes = false;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
                     table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[1].DataRange.FillColor = _inflowColor;
 
                     table.ShowTotals = true;
                     table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
@@ -1246,14 +1292,18 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
+                    table.ShowTableStyleRowStripes = false;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
                     table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[1].DataRange.FillColor = _inflowColor;
+                    table.Columns[2].DataRange.FillColor = _outFlowColor;
 
                     table.ShowTotals = true;
                     table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
@@ -1288,14 +1338,18 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // Insert a table in the worksheet.
                     Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleLight8];
+                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                     table.HeaderRowRange.Font.Color = Color.White;
+                    table.ShowTableStyleRowStripes = false;
 
                     table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
                     table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
 
                     table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                    table.Columns[1].DataRange.FillColor = _inflowColor;
+                    table.Columns[2].DataRange.FillColor = _outFlowColor;
 
                     table.ShowTotals = true;
                     table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
@@ -1308,7 +1362,95 @@ namespace xDC_Web.Extension.DocGenerator
                     tradeItemStartRow += 3;
                 }
 
-                var footerRowNumber = tradeItemStartRow + 4;
+
+                var workflowRowNumber = tradeItemStartRow + 2;
+
+                sheet["A" + workflowRowNumber].Value = "Workflow Approval :";
+                sheet["A" + workflowRowNumber].Font.Bold = true;
+                workflowRowNumber += 2;
+
+                var workflowPartA = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part A)" && x.WorkflowStatus == "Approved");
+                if (workflowPartA != null)
+                {
+                    sheet["A" + workflowRowNumber].Value = "Form Type";
+                    sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part A)";
+                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                    workflowRowNumber += 1;
+                    sheet["A" + workflowRowNumber].Value = "Approver";
+                    sheet["B" + workflowRowNumber].Value = workflowPartA.RequestBy;
+                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                    workflowRowNumber += 1;
+                    sheet["A" + workflowRowNumber].Value = "Approved Date";
+                    sheet["B" + workflowRowNumber].Value = workflowPartA.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
+                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                    workflowRowNumber += 2;
+                }
+                var workflowPartB = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part B)" && x.WorkflowStatus == "Approved");
+                if (workflowPartB != null)
+                {
+                    sheet["A" + workflowRowNumber].Value = "Form Type";
+                    sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part B)";
+                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                    workflowRowNumber += 1;
+                    sheet["A" + workflowRowNumber].Value = "Approver";
+                    sheet["B" + workflowRowNumber].Value = workflowPartB.RequestBy;
+                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                    workflowRowNumber += 1;
+                    sheet["A" + workflowRowNumber].Value = "Approved Date";
+                    sheet["B" + workflowRowNumber].Value = workflowPartB.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
+                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                    workflowRowNumber += 2;
+                }
+                var workflowPartC = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part C)" && x.WorkflowStatus == "Approved");
+                if (workflowPartC != null)
+                {
+                    sheet["A" + workflowRowNumber].Value = "Form Type";
+                    sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part C)";
+                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                    workflowRowNumber += 1;
+                    sheet["A" + workflowRowNumber].Value = "Approver";
+                    sheet["B" + workflowRowNumber].Value = workflowPartC.RequestBy;
+                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                    workflowRowNumber += 1;
+                    sheet["A" + workflowRowNumber].Value = "Approved Date";
+                    sheet["B" + workflowRowNumber].Value = workflowPartC.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
+                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                    workflowRowNumber += 2;
+                }
+                var workflowPartD = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part D)" && x.WorkflowStatus == "Approved");
+                if (workflowPartD != null)
+                {
+                    sheet["A" + workflowRowNumber].Value = "Form Type";
+                    sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part D)";
+                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                    workflowRowNumber += 1;
+                    sheet["A" + workflowRowNumber].Value = "Approver";
+                    sheet["B" + workflowRowNumber].Value = workflowPartD.RequestBy;
+                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                    workflowRowNumber += 1;
+                    sheet["A" + workflowRowNumber].Value = "Approved Date";
+                    sheet["B" + workflowRowNumber].Value = workflowPartD.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
+                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                    workflowRowNumber += 2;
+                }
+                var workflowPartE = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part E)" && x.WorkflowStatus == "Approved");
+                if (workflowPartE != null)
+                {
+                    sheet["A" + workflowRowNumber].Value = "Form Type";
+                    sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part E)";
+                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                    workflowRowNumber += 1;
+                    sheet["A" + workflowRowNumber].Value = "Approver";
+                    sheet["B" + workflowRowNumber].Value = workflowPartE.RequestBy;
+                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                    workflowRowNumber += 1;
+                    sheet["A" + workflowRowNumber].Value = "Approved Date";
+                    sheet["B" + workflowRowNumber].Value = workflowPartE.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
+                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                    workflowRowNumber += 2;
+                }
+
+                var footerRowNumber = workflowRowNumber + 4;
                 sheet["A" + footerRowNumber + ":G" + footerRowNumber].Merge();
                 sheet["A" + footerRowNumber + ":G" + footerRowNumber].Value = "Generated on " +
                                                                               DateTime.Now.ToString(

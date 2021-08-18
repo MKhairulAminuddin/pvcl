@@ -38,5 +38,24 @@ namespace xDC.Services.App
             new MailService().ContributionCreditedTradeSettlement(formId);
             new WorkflowService().ApprovalFeedbackWorkflow(formId, isApproved, approvalNotes, formType);
         }
+
+        public static List<Form_Workflow> GetWorkflow(kashflowDBEntities db, int formId)
+        {
+            var result = db.Form_Workflow
+                            .Where(x => x.FormId == formId)
+                            .OrderByDescending(x => x.EndDate)
+                            .ToList();
+
+            return result;
+        }
+
+        public static List<ISSD_TradeSettlement> GetTradeSettlement(kashflowDBEntities db, int formId)
+        {
+            var result = db.ISSD_TradeSettlement
+                .Where(x => x.FormId == formId)
+                .ToList();
+
+            return result;
+        }
     }
 }
