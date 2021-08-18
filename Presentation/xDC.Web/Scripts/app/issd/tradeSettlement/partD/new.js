@@ -38,7 +38,7 @@
                         tradeSettlement.dsTradeItemEdw("ALTID DISTRIBUTION AND DRAWDOWN", settlementDate, currency)
                     )
                     .done(function(data1) {
-                        $altidGrid.option("dataSource", data1[0].data);
+                        $altidGrid.option("dataSource", data1.data);
                         $altidGrid.repaint();
 
                         tradeSettlement.defineTabBadgeNumbers([

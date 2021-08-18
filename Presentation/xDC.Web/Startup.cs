@@ -27,6 +27,9 @@ namespace xDC_Web
             RecurringJob.AddOrUpdate(
                 () => SyncActiveDirectory.SyncUserProfileWithAd(),
                 Cron.Monthly);
+            RecurringJob.AddOrUpdate(
+                () => FidTask.Fetch10AmTradeSettlement(),
+                "0 10 * * *");
         }
         
         private IEnumerable<IDisposable> GetHangfireServers()

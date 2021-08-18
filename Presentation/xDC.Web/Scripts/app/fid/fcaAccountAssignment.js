@@ -107,56 +107,7 @@
         // #endregion DataGrid
 
         //#region Events
-
-        $("#viewWorkflowBtn").on({
-            "click": function (e) {
-                $('#viewWorkflowModal').modal('show');
-
-                e.preventDefault();
-            }
-        });
-
-        $("#adminEditBtn").on({
-            "click": function (e) {
-                window.location.href = referenceUrl.adminEdit + tradeSettlement.getIdFromQueryString;
-                e.preventDefault();
-            }
-        });
-
-        $("#approveBtn").on({
-            "click": function (e) {
-                $("#approvalNoteModal").modal("show");
-                e.preventDefault();
-            }
-        });
-
-        $("#approveBtn").on({
-            "click": function (e) {
-                $("#approvalNoteModal").modal("show");
-                e.preventDefault();
-            }
-        });
-
-        $("#rejectBtn").on({
-            "click": function (e) {
-                $("#rejectionNoteModal").modal("show");
-                e.preventDefault();
-            }
-        });
-
-        $("#approveFormBtn").on({
-            "click": function (e) {
-                submitApprovalRequest(true);
-                e.preventDefault();
-            }
-        });
-
-        $("#rejectFormBtn").on({
-            "click": function (e) {
-                submitApprovalRequest(false);
-                e.preventDefault();
-            }
-        });
+        
 
         //#endregion
 

@@ -591,6 +591,7 @@
     <Compile Include="Extension\DocGenerator\InflowFundsFormDoc.cs" />
     <Compile Include="Extension\MailMerge\HtmlContentGenerator.cs" />
     <Compile Include="Extension\MenuSecurity.cs" />
+    <Compile Include="Extension\SchedulerTask\FidTask.cs" />
     <Compile Include="Extension\SchedulerTask\SyncActiveDirectory.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
