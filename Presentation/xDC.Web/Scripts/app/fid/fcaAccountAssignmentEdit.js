@@ -51,6 +51,45 @@
             key: "id",
             loadUrl: referenceUrl.opBalanceLoad
         });
+
+        var hideIfEmptyGrid = function () {
+            if (jQuery.isEmptyObject($equityGrid.getDataSource().items())) {
+                $("#equityGrid").parent().remove();
+            }
+            if (jQuery.isEmptyObject($bondGrid.getDataSource().items())) {
+                $("#bondGrid").parent().remove();
+            }
+            if (jQuery.isEmptyObject($cpGrid.getDataSource().items())) {
+                $("#cpGrid").parent().remove();
+            }
+            if (jQuery.isEmptyObject($notesPaperGrid.getDataSource().items())) {
+                $("#notesPaperGrid").parent().remove();
+            }
+            if (jQuery.isEmptyObject($repoGrid.getDataSource().items())) {
+                $("#repoGrid").parent().remove();
+            }
+            if (jQuery.isEmptyObject($couponGrid.getDataSource().items())) {
+                $("#couponGrid").parent().remove();
+            }
+            if (jQuery.isEmptyObject($feesGrid.getDataSource().items())) {
+                $("#feesGrid").parent().remove();
+            }
+            if (jQuery.isEmptyObject($mtmGrid.getDataSource().items())) {
+                $("#mtmGrid").parent().remove();
+            }
+            if (jQuery.isEmptyObject($fxSettlementGrid.getDataSource().items())) {
+                $("#fxSettlementGrid").parent().remove();
+            }
+            if (jQuery.isEmptyObject($contributionCreditedGrid.getDataSource().items())) {
+                $("#contributionCreditedGrid").parent().remove();
+            }
+            if (jQuery.isEmptyObject($altidGrid.getDataSource().items())) {
+                $("#altidGrid").parent().remove();
+            }
+            if (jQuery.isEmptyObject($othersGrid.getDataSource().items())) {
+                $("#othersGrid").parent().remove();
+            }
+        }
         
         //#endregion
 
@@ -129,21 +168,21 @@
             }),
             columns: [
                 {
-                    dataField: "inflowTo",
+                    dataField: "inflowTo", width: "120px", 
                     caption: "Inflow To",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account", allowClearing: true, allowClearing: true
                     }
                 },
                 {
-                    dataField: "outflowFrom",
+                    dataField: "outflowFrom", width: "120px",
                     caption: "Outflow From",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account", allowClearing: true, allowClearing: true
                     }
                 },
                 {
@@ -253,21 +292,21 @@
             }),
             columns: [
                 {
-                    dataField: "inflowTo",
+                    dataField: "inflowTo", width: "120px",
                     caption: "Inflow To",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account", allowClearing: true, allowClearing: true
                     }
                 },
                 {
-                    dataField: "outflowFrom",
+                    dataField: "outflowFrom", width: "120px",
                     caption: "Outflow From",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account", allowClearing: true, allowClearing: true
                     }
                 },
                 {
@@ -377,21 +416,23 @@
             }),
             columns: [
                 {
-                    dataField: "inflowTo",
-                    caption: "Inflow To",
+                    dataField: "inflowTo", width: "120px",
+                    caption: "Inflow To", 
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
-                    dataField: "outflowFrom",
+                    dataField: "outflowFrom", width: "120px",
                     caption: "Outflow From",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
@@ -501,21 +542,23 @@
             }),
             columns: [
                 {
-                    dataField: "inflowTo",
+                    dataField: "inflowTo", width: "120px",
                     caption: "Inflow To",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
-                    dataField: "outflowFrom",
+                    dataField: "outflowFrom", width: "120px",
                     caption: "Outflow From",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
@@ -625,21 +668,23 @@
             }),
             columns: [
                 {
-                    dataField: "inflowTo",
+                    dataField: "inflowTo", width: "120px",
                     caption: "Inflow To",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
-                    dataField: "outflowFrom",
+                    dataField: "outflowFrom", width: "120px",
                     caption: "Outflow From",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
@@ -730,21 +775,23 @@
             }),
             columns: [
                 {
-                    dataField: "inflowTo",
+                    dataField: "inflowTo", width: "120px",
                     caption: "Inflow To",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
-                    dataField: "outflowFrom",
+                    dataField: "outflowFrom", width: "120px",
                     caption: "Outflow From",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
@@ -816,21 +863,23 @@
             }),
             columns: [
                 {
-                    dataField: "inflowTo",
+                    dataField: "inflowTo", width: "120px",
                     caption: "Inflow To",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
-                    dataField: "outflowFrom",
+                    dataField: "outflowFrom", width: "120px",
                     caption: "Outflow From",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
@@ -897,21 +946,23 @@
             }),
             columns: [
                 {
-                    dataField: "inflowTo",
+                    dataField: "inflowTo", width: "120px",
                     caption: "Inflow To",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
-                    dataField: "outflowFrom",
+                    dataField: "outflowFrom", width: "120px",
                     caption: "Outflow From",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
@@ -997,21 +1048,23 @@
             }),
             columns: [
                 {
-                    dataField: "inflowTo",
+                    dataField: "inflowTo", width: "120px",
                     caption: "Inflow To",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
-                    dataField: "outflowFrom",
+                    dataField: "outflowFrom", width: "120px",
                     caption: "Outflow From",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
@@ -1097,21 +1150,23 @@
             }),
             columns: [
                 {
-                    dataField: "inflowTo",
+                    dataField: "inflowTo", width: "120px",
                     caption: "Inflow To",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
-                    dataField: "outflowFrom",
+                    dataField: "outflowFrom", width: "120px",
                     caption: "Outflow From",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
@@ -1178,21 +1233,23 @@
             }),
             columns: [
                 {
-                    dataField: "inflowTo",
+                    dataField: "inflowTo", width: "120px",
                     caption: "Inflow To",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
-                    dataField: "outflowFrom",
+                    dataField: "outflowFrom", width: "120px",
                     caption: "Outflow From",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
@@ -1278,21 +1335,23 @@
             }),
             columns: [
                 {
-                    dataField: "inflowTo",
+                    dataField: "inflowTo", width: "120px",
                     caption: "Inflow To",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
-                    dataField: "outflowFrom",
+                    dataField: "outflowFrom", width: "120px",
                     caption: "Outflow From",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "account",
-                        displayExpr: "account"
+                        displayExpr: "account",
+                        allowClearing: true
                     }
                 },
                 {
@@ -1393,8 +1452,6 @@
                 $contributionCreditedGrid.saveEditData();
                 $altidGrid.saveEditData();
                 $othersGrid.saveEditData();
-
-                
             }
         });
 
@@ -1402,6 +1459,9 @@
 
         //#region Immediate Invocation function
 
+        setTimeout(function() {
+            hideIfEmptyGrid();
+        }, "5000");
 
         //#endregion
     });

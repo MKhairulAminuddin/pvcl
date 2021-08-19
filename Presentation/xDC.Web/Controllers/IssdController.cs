@@ -42,7 +42,7 @@ namespace xDC_Web.Controllers
 
                 var model = new ISSDLandingPageViewModel()
                 {
-                    IsAllowedToCreateForm = (!isApprover && isIssdUser)
+                    IsAllowedToCreateForm = (isIssdUser)
                 };
 
                 return View("TradeSettlement/Index", model);
