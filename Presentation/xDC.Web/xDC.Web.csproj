@@ -607,6 +607,8 @@
     <Compile Include="Models\MailMerge\SpreadsheetPreviewModel.cs" />
     <Compile Include="Models\Trades.cs" />
     <Compile Include="ViewModels\Fid\EditFcaAccountAssignmentVM.cs" />
+    <Compile Include="ViewModels\Fid\TenAmCutOffItemVM.cs" />
+    <Compile Include="ViewModels\Fid\TenAmCutOffVM.cs" />
     <Compile Include="ViewModels\Fid\Ts10AmHomeGridVM.cs" />
     <Compile Include="ViewModels\TradeSettlementFormViewModel.cs" />
     <Compile Include="Models\TradeSettlementModel.cs" />

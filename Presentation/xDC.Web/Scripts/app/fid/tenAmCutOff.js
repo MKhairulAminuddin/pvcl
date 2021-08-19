@@ -17,7 +17,21 @@
         //#endregion
 
         //#region Data Source & Functions
-        
+
+        var ds = function(selectedDate) {
+            return $.ajax({
+                url: window.location.origin + "/api/fid/10AmCutOff/" + moment(selectedDate).unix(),
+                type: "get"
+            });
+        };
+
+        function populateData() {
+            $.when(ds(new Date()))
+                .done(function (data1) {
+                    $grid.option("dataSource", data1.data);
+                    $grid.repaint();
+                });
+        }
 
         //#endregion
 
@@ -27,7 +41,13 @@
             type: "date",
             displayFormat: "dd/MM/yyyy",
             value: new Date(),
-            
+            onValueChanged: function (data) {
+                $.when(ds(data.value))
+                    .done(function (data1) {
+                        $grid.option("dataSource", data1.data);
+                        $grid.repaint();
+                    });
+            }
         }).dxDateBox("instance");
         
 
@@ -99,7 +119,8 @@
                         valueFormat: {
                             type: "fixedPoint",
                             precision: 2
-                        }
+                        },
+                        showInGroupFooter: true
                     },
                     {
                         column: "totalInflow",
@@ -108,7 +129,8 @@
                         valueFormat: {
                             type: "fixedPoint",
                             precision: 2
-                        }
+                        },
+                        showInGroupFooter: true
                     },
                     {
                         column: "totalOutflow",
@@ -117,7 +139,8 @@
                         valueFormat: {
                             type: "fixedPoint",
                             precision: 2
-                        }
+                        },
+                        showInGroupFooter: true
                     },
                     {
                         column: "net",
@@ -126,9 +149,14 @@
                         valueFormat: {
                             type: "fixedPoint",
                             precision: 2
-                        }
+                        },
+                        showInGroupFooter: true
                     }
                 ]
+            },
+            showBorders: true,
+            grouping: {
+                autoExpandAll: true,
             }
         }).dxDataGrid("instance");
         
@@ -136,60 +164,13 @@
 
         //#region Events
 
-        $("#viewWorkflowBtn").on({
-            "click": function (e) {
-                $('#viewWorkflowModal').modal('show');
-
-                e.preventDefault();
-            }
-        });
-
-        $("#adminEditBtn").on({
-            "click": function (e) {
-                window.location.href = referenceUrl.adminEdit + tradeSettlement.getIdFromQueryString;
-                e.preventDefault();
-            }
-        });
-
-        $("#approveBtn").on({
-            "click": function (e) {
-                $("#approvalNoteModal").modal("show");
-                e.preventDefault();
-            }
-        });
-
-        $("#approveBtn").on({
-            "click": function (e) {
-                $("#approvalNoteModal").modal("show");
-                e.preventDefault();
-            }
-        });
-
-        $("#rejectBtn").on({
-            "click": function (e) {
-                $("#rejectionNoteModal").modal("show");
-                e.preventDefault();
-            }
-        });
-
-        $("#approveFormBtn").on({
-            "click": function (e) {
-                submitApprovalRequest(true);
-                e.preventDefault();
-            }
-        });
-
-        $("#rejectFormBtn").on({
-            "click": function (e) {
-                submitApprovalRequest(false);
-                e.preventDefault();
-            }
-        });
+        
 
         //#endregion
 
         //#region Immediate Invocation function
-        
+
+        populateData();
 
         //#endregion
     });

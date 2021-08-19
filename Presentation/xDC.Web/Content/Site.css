@@ -55,8 +55,12 @@
     font-size: 11px;
 }
 
-/* replace long text with elipsis*/
+.grid-container {
+    margin-bottom: 10px;
+}
 
+
+/* replace long text with elipsis*/
 a.hide-long-text {
     display: block;
     white-space: nowrap;
