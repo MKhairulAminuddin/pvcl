@@ -102,9 +102,6 @@
                             hint: "Delete Draft",
                             icon: "fa fa-trash-o",
                             cssClass: "dx-datagrid-command-btn text-red",
-                            visible: function (e) {
-                                return (e.row.data.isDraft && e.row.data.isMeCanEditDraft);
-                            },
                             onClick: function (e) {
                                 if (!confirm("Do you really want to delete this?")) {
                                     return false;
@@ -129,18 +126,6 @@
                                 }
                             }
                         },
-                        /*{
-                            hint: "Resubmit",
-                            icon: "fa fa-repeat",
-                            cssClass: "dx-datagrid-command-btn",
-                            visible: function (e) {
-                                return (e.row.data.isResubmitEnabled);
-                            },
-                            onClick: function (e) {
-                                window.location.href = "/issd/TradeSettlement/Edit/" + e.row.data.id;
-                                e.event.preventDefault();
-                            }
-                        },*/
                         {
                             hint: "View Form",
                             icon: "fa fa-eye",
@@ -173,9 +158,6 @@
                             hint: "Download as Excel",
                             icon: "fa fa-file-excel-o",
                             cssClass: "dx-datagrid-command-btn text-green",
-                            visible: function (e) {
-                                return (!e.row.data.isDraft);
-                            },
                             onClick: function (e) {
                                 var data = {
                                     id: e.row.data.id,
@@ -205,9 +187,6 @@
                             hint: "Download as PDF",
                             icon: "fa fa-file-pdf-o",
                             cssClass: "dx-datagrid-command-btn text-orange",
-                            visible: function (e) {
-                                return (!e.row.data.isDraft);
-                            },
                             onClick: function (e) {
 
                                 var data = {
