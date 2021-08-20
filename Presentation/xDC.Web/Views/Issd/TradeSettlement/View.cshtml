@@ -1,0 +1,147 @@
+﻿@model xDC_Web.ViewModels.ViewTradeSettlementFormViewModel
+@{
+    ViewBag.Title = "View: Approved Trade Settlement";
+}
+
+
+<section class="content-header content-toolbar">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="left-container">
+                <div>
+                    @(Html.DevExtreme().Button()
+                        .Type(ButtonType.Back)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        .OnClick(@<text> function(){ window.location = "@Url.Action("TradeSettlement", "Issd")"; } </text>)
+                        )
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div id="right-toolbar-container" class="right-container">
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-solid">
+                <div class="box-body">
+                    <div class="dx-fieldset">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Settlement Date</div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().DateBoxFor(m => m.SettlementDate)
+                                                .ID("tradesettlementDateBox")
+                                                .StylingMode(EditorStylingMode.Filled)
+                                                .DisplayFormat("dd/MM/yyyy")
+                                                .ReadOnly(true))
+                                    </div>
+                                </div>
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Currency</div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().TextBoxFor(m=> m.Currency)
+                                                .ID("currencySelectBox")
+                                                .StylingMode(EditorStylingMode.Filled)
+                                                .ReadOnly(true))
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8"></div>
+                        </div>
+                    </div>
+
+                    <div class="dx-fieldset">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="dx-field">
+                                    <div class="dx-field-label" style="font-weight: bold">Opening Balance</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div id="openingBalanceGrid" class="grid-container"></div>
+                            </div>
+                            <div class="col-md-8"></div>
+                        </div>
+                    </div>
+
+                    <div class="dx-fieldset">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="dx-field">
+                                    <div class="dx-field-label" style="font-weight: bold">Daily Trade Settlement</div>
+                                </div>
+
+                                <div id="tabpanel-container" style="background-color: white;">
+                                    <div data-options="dxTemplate : { name: 'equityTab' }" style="padding-top: 10px; overflow: auto">
+                                        <div id="equityGrid" class="grid-container" style="width: 100%"></div>
+                                    </div>
+
+                                    <div data-options="dxTemplate : { name: 'bondTab' }" style="padding-top: 10px; overflow: auto">
+                                        <div id="bondGrid" class="grid-container" style="width: 100%"></div>
+                                    </div>
+                                    <div data-options="dxTemplate : { name: 'cpTab' }" style="padding-top: 10px; overflow: auto">
+                                        <div id="cpGrid" class="grid-container" style="width: 100%"></div>
+                                    </div>
+                                    <div data-options="dxTemplate : { name: 'notesPaperTab' }" style="padding-top: 10px; overflow: auto">
+                                        <div id="notesPaperGrid" class="grid-container" style="width: 100%"></div>
+                                    </div>
+                                    <div data-options="dxTemplate : { name: 'repoTab' }" style="padding-top: 10px; overflow: auto">
+                                        <div id="repoGrid" class="grid-container" style="width: 100%"></div>
+                                    </div>
+                                    <div data-options="dxTemplate : { name: 'couponReceivedTab' }" style="padding-top: 10px; overflow: auto">
+                                        <div id="couponGrid" class="grid-container" style="width: 100%"></div>
+                                    </div>
+
+                                    <div data-options="dxTemplate : { name: 'mtmTab' }" style="padding-top: 10px; overflow: auto">
+                                        <div id="mtmGrid" class="grid-container" style="width: 100%"></div>
+                                    </div>
+                                    <div data-options="dxTemplate : { name: 'fxSettlementTab' }" style="padding-top: 10px; overflow: auto">
+                                        <div id="fxSettlementGrid" class="grid-container" style="width: 100%"></div>
+                                    </div>
+
+                                    <div data-options="dxTemplate : { name: 'altidTab' }" style="padding-top: 10px; overflow: auto">
+                                        <div id="altidGrid" class="grid-container" style="width: 100%"></div>
+                                    </div>
+
+                                    <div data-options="dxTemplate : { name: 'feesTab' }" style="padding-top: 10px; overflow: auto">
+                                        <div id="feesGrid" class="grid-container" style="width: 100%"></div>
+                                    </div>
+                                    <div data-options="dxTemplate : { name: 'contributionCreditedTab' }" style="padding-top: 10px; overflow: auto">
+                                        <div id="contributionCreditedGrid" class="grid-container" style="width: 100%"></div>
+                                    </div>
+                                    <div data-options="dxTemplate : { name: 'othersTab' }" style="padding-top: 10px; overflow: auto">
+                                        <div id="othersGrid" class="grid-container" style="width: 100%"></div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script type="text/html" id="dxPanelTitle">
+    <div style="margin: 4px 0">
+        <span style="font-size: small"><%= title %></span><span id="<%= titleId %>" style="float: right;"></span>
+    </div>
+</script>
+
+
+@section scripts
+{
+    <script src="~/Scripts/app/issd/tradeSettlement.js"></script>
+    <script src="~/Scripts/app/issd/tradeSettlement/view.js"></script>
+}

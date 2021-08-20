@@ -1033,6 +1033,39 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [HttpGet]
+        [Route("GetBalanceConsolidated/{settlementDateEpoch}/{currency}")]
+        public HttpResponseMessage GetBalanceConsolidated(long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+                var settlementDateOnly = settlementDate.Value.Date;
+
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = new List<ISSD_Balance>();
+
+                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x =>
+                        DbFunctions.TruncateTime(x.SettlementDate) == settlementDateOnly && x.Currency == currency && x.FormStatus == "Approved");
+
+                    if (getForm != null)
+                    {
+                        result = db.ISSD_Balance.Where(x => x.FormId == getForm.Id).ToList();
+                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
         #endregion
 
 
@@ -1118,7 +1151,45 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
         }
-        
+
+        [HttpGet]
+        [Route("TradeSettlement/TradeItemConsolidated/{tradeType}/{settlementDateEpoch}/{currency}")]
+        public HttpResponseMessage GetTradeItemConsolidated(string tradeType, long settlementDateEpoch, string currency ,DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+                var settlementDateOnly = settlementDate.Value.Date;
+                var formType = Common.TsUrlParamInstrumentTypeMapFormType(tradeType);
+
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = new List<ISSD_TradeSettlement>();
+
+                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x =>
+                        DbFunctions.TruncateTime(x.SettlementDate) == settlementDateOnly && x.Currency == currency &&
+                        x.FormStatus == "Approved" && x.FormType == formType);
+
+                    if (getForm != null)
+                    {
+                        var instrumentType = Common.TradeSettlementUrlParamMapping(tradeType);
+                        result = db.ISSD_TradeSettlement
+                            .Where(x => x.FormId == getForm.Id && x.InstrumentType == instrumentType).ToList();
+                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+
         [HttpPut]
         [Route("TradeSettlement/TradeItem/")]
         public HttpResponseMessage UpdateTradeItem(FormDataCollection form)

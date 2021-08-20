@@ -201,6 +201,37 @@ namespace xDC.Utils
             return String.Empty;
         }
 
+        public static string TsUrlParamInstrumentTypeMapFormType(string value)
+        {
+            var finalValue = string.Empty;
+            switch (value)
+            {
+                case "equity":
+                    finalValue = "Trade Settlement (Part A)";
+                    break;
+                case "bond":
+                case "cp":
+                case "notesPaper":
+                case "repo":
+                case "coupon":
+                    finalValue = "Trade Settlement (Part B)";
+                    break;
+                case "mtm":
+                case "fxSettlement":
+                    finalValue = "Trade Settlement (Part C)";
+                    break;
+                case "altid":
+                    finalValue = "Trade Settlement (Part D)";
+                    break;
+                case "fees":
+                case "contributionCredited":
+                case "others":
+                    finalValue = "Trade Settlement (Part E)";
+                    break;
+            }
+            return finalValue;
+        }
+
         /// <summary>
         /// Get form type
         /// </summary>

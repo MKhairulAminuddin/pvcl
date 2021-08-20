@@ -284,6 +284,8 @@
                 visible: true
             },
             showBorders: true,
+            showColumnLines: true,
+            showRowLines: true,
             sorting: {
                 mode: "multiple"
             },
@@ -346,7 +348,8 @@
                 },
                 {
                     dataField: "currency",
-                    caption: "Currency"
+                    caption: "Currency",
+                    groupIndex: 0
                 },
                 {
                     dataField: "approvedDate",
@@ -359,6 +362,21 @@
                     type: "buttons",
                     width: 110,
                     buttons: [
+                        {
+                            hint: "View Form",
+                            icon: "fa fa-eye",
+                            cssClass: "dx-datagrid-command-btn",
+                            onClick: function (e) {
+                                window.location.href = window.location.origin +
+                                    "/issd/TradeSettlement/View/" +
+                                    "?settlementDateEpoch=" +
+                                    moment(e.row.data.formDate).unix() +
+                                    "&currency=" +
+                                    e.row.data.currency;
+
+                                e.event.preventDefault();
+                            }
+                        },
                         {
                             hint: "Download as Excel",
                             icon: "fa fa-file-excel-o",
@@ -429,12 +447,27 @@
                     ]
                 }
             ],
+            groupPanel: {
+                visible: true
+            },
             showBorders: true,
+            showColumnLines: true,
+            showRowLines: true,
             sorting: {
                 mode: "multiple"
             },
             headerFilter: {
                 visible: true
+            },
+            paging: {
+                pageSize: 50
+            },
+            pager: {
+                visible: true,
+                allowedPageSizes: [20, 50, 'all'],
+                showPageSizeSelector: true,
+                showInfo: true,
+                showNavigationButtons: true
             }
         }).dxDataGrid("instance");
 

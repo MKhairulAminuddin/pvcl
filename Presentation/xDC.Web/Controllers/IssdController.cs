@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -50,7 +51,47 @@ namespace xDC_Web.Controllers
 
 
         }
-        
+
+        [Route("TradeSettlement/View/")]
+        public ActionResult View(string settlementDateEpoch, string currency)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var settlementDate = Common.ConvertEpochToDateTime(Convert.ToInt64(settlementDateEpoch));
+                    var settlementDateOnly = settlementDate.Value.Date;
+
+                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x =>
+                        DbFunctions.TruncateTime(x.SettlementDate) == settlementDateOnly && x.Currency == currency);
+
+                    if (getForm != null)
+                    {
+                        var formObj = new ViewTradeSettlementFormViewModel()
+                        {
+                            Id = getForm.Id,
+                            FormStatus = getForm.FormStatus,
+                            SettlementDate = getForm.SettlementDate,
+                            Currency = getForm.Currency
+                        };
+
+                        return View("TradeSettlement/View", formObj);
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Form Not found";
+                        return View("Error");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Error");
+            }
+        }
+
         #region Trade Settlement Form Part A
 
         [Authorize(Roles = "ISSD")]

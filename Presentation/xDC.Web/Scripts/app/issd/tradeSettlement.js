@@ -37,7 +37,22 @@
         },
         loadOpeningBalance: function () {
             return window.location.origin + "/api/issd/GetBalance/" + _getIdFromQueryString;
-        }
+        },
+        loadTradeItemConsolidated: function (instrumentType) {
+            return window.location.origin +
+                "/api/issd/TradeSettlement/TradeItemConsolidated/" +
+                instrumentType +
+                "/" +
+                getUrlParameter("settlementDateEpoch") +
+                "/" +
+                getUrlParameter("currency");
+        },
+        loadOpeningBalanceConsolidated: function () {
+            return window.location.origin + "/api/issd/GetBalanceConsolidated/" +
+                getUrlParameter("settlementDateEpoch") +
+                "/" +
+                getUrlParameter("currency");
+        },
     };
 
 
@@ -70,6 +85,19 @@
         });
     }
 
+    _tradeSettlement.dsTradeItemConsolidated = function (instrumentType) {
+        return $.ajax({
+            url: _tradeSettlement.api.loadTradeItemConsolidated(instrumentType),
+            type: "get"
+        });
+    }
+
+    _tradeSettlement.dsOpeningBalanceConsolidated = function () {
+        return $.ajax({
+            url: _tradeSettlement.api.loadOpeningBalanceConsolidated(),
+            type: "get"
+        });
+    }
 
 
     _tradeSettlement.submitApproverSelectBox = {

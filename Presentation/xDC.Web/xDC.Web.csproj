@@ -304,6 +304,7 @@
     <Content Include="Scripts\app\issd\tradeSettlement\partE\edit.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partE\new.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partE\view.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\view.js" />
     <Content Include="Scripts\app\setting\approverManagement.js" />
     <Content Include="Scripts\app\setting\dropdownConfig.js" />
     <Content Include="Scripts\app\setting\notificationConfig.js" />
@@ -555,6 +556,7 @@
     <Content Include="Views\Fid\FcaAccountAssignment.cshtml" />
     <Content Include="Views\Shared\_PageTitle.cshtml" />
     <Content Include="Views\Fid\EditFcaAccountAssignment.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\View.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

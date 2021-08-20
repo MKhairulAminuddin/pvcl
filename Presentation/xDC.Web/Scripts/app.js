@@ -73,7 +73,7 @@
 })(jQuery);
 
 
-var getUrlParameter = function getUrlParameter(sParam) {
+var getUrlParameter = function(sParam) {
     var sPageURL = window.location.search.substring(1),
         sURLVariables = sPageURL.split('&'),
         sParameterName,
