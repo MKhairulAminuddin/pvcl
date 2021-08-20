@@ -42,7 +42,7 @@
                         $altidGrid.repaint();
 
                         tradeSettlement.defineTabBadgeNumbers([
-                            { titleId: "titleBadge11", title: "ALTID", template: "altidTab" }
+                            { titleId: "titleBadge11", dxDataGrid: $altidGrid }
                         ]);
                     })
                     .always(function(dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
@@ -197,7 +197,7 @@
             },
             onSaved: function () {
                 tradeSettlement.defineTabBadgeNumbers([
-                    { titleId: "titleBadge11", title: "ALTID", template: "altidTab" }
+                    { titleId: "titleBadge11", dxDataGrid: $altidGrid }
                 ]);
             },
             editing: {

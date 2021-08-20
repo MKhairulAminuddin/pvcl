@@ -43,8 +43,8 @@
                     $fxSettlementGrid.repaint();
 
                     tradeSettlement.defineTabBadgeNumbers([
-                        { titleId: "titleBadge8", title: "MTM", template: "mtmTab" },
-                        { titleId: "titleBadge9", title: "FX", template: "fxSettlementTab" }
+                        { titleId: "titleBadge8", dxDataGrid: $mtmGrid },
+                        { titleId: "titleBadge9", dxDataGrid: $fxSettlementGrid }
                     ]);
                 })
                 .then(function() {

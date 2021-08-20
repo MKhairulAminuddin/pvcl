@@ -49,9 +49,9 @@
                     $othersGrid.repaint();
 
                     tradeSettlement.defineTabBadgeNumbers([
-                        { titleId: "titleBadge7", title: "Fees", template: "feesTab" },
-                        { titleId: "titleBadge10", title: "Contribution", template: "contributionCreditedTab" },
-                        { titleId: "titleBadge12", title: "Others", template: "othersTab" }
+                        { titleId: "titleBadge7", dxDataGrid: $feesGrid },
+                        { titleId: "titleBadge10", dxDataGrid: $contributionCreditedGrid },
+                        { titleId: "titleBadge12", dxDataGrid: $othersGrid }
                     ]);
                 })
                 .then(function() {
@@ -166,7 +166,7 @@
             },
             onSaved: function () {
                 tradeSettlement.defineTabBadgeNumbers([
-                    { titleId: "titleBadge7", title: "Fees", template: "feesTab" }
+                    { titleId: "titleBadge7", dxDataGrid: $feesGrid }
                 ]);
             },
             editing: {
@@ -228,7 +228,7 @@
             },
             onSaved: function () {
                 tradeSettlement.defineTabBadgeNumbers([
-                    { titleId: "titleBadge10", title: "Contribution", template: "contributionCreditedTab" }
+                    { titleId: "titleBadge10", dxDataGrid: $contributionCreditedGrid }
                 ]);
             },
             editing: {
@@ -308,7 +308,7 @@
             },
             onSaved: function () {
                 tradeSettlement.defineTabBadgeNumbers([
-                    { titleId: "titleBadge12", title: "Others", template: "othersTab" }
+                    { titleId: "titleBadge12", dxDataGrid: $othersGrid }
                 ]);
             },
             editing: {
