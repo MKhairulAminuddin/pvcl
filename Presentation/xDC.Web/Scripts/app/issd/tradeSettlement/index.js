@@ -67,12 +67,11 @@
                     width: 110,
                     buttons: [
                         {
-                            hint: "Edit Draft",
+                            hint: "Edit",
                             icon: "fa fa-pencil-square",
                             cssClass: "dx-datagrid-command-btn",
                             visible: function (e) {
-                                console.log((e.row.data.isDraft && e.row.data.isMeCanEditDraft));
-                                return (e.row.data.isDraft && e.row.data.isMeCanEditDraft);
+                                return (!e.row.data.isPendingApproval);
                             },
                             onClick: function (e) {
                                 switch (e.row.data.formType) {
@@ -142,38 +141,6 @@
                                 e.event.preventDefault();
                             }
                         },*/
-                        {
-                            hint: "Admin Edit",
-                            icon: "fa fa-pencil-square-o",
-                            cssClass: "dx-datagrid-command-btn text-red",
-                            visible: function (e) {
-                                return (e.row.data.isCanAdminEdit);
-                            },
-                            onClick: function (e) {
-                                switch (e.row.data.formType) {
-                                case "Trade Settlement (Part A)":
-                                    window.location.href = window.location.origin + "/issd/TradeSettlement/PartA/Edit/" + e.row.data.id;
-                                    return;
-                                case "Trade Settlement (Part B)":
-                                    window.location.href = window.location.origin + "/issd/TradeSettlement/PartB/Edit/" + e.row.data.id;
-                                    return;
-                                case "Trade Settlement (Part C)":
-                                    window.location.href = window.location.origin + "/issd/TradeSettlement/PartC/Edit/" + e.row.data.id;
-                                    return;
-                                case "Trade Settlement (Part D)":
-                                    window.location.href = window.location.origin + "/issd/TradeSettlement/PartD/Edit/" + e.row.data.id;
-                                    return;
-                                case "Trade Settlement (Part E)":
-                                    window.location.href = window.location.origin + "/issd/TradeSettlement/PartE/Edit/" + e.row.data.id;
-                                    return;
-
-                                default:
-                                    alert("Invalid selection!");
-                                }
-
-                                e.event.preventDefault();
-                            }
-                        },
                         {
                             hint: "View Form",
                             icon: "fa fa-eye",

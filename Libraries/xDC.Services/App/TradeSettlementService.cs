@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using xDC.Infrastructure.Application;
+using xDC.Utils;
 
 namespace xDC.Services.App
 {
@@ -56,6 +57,26 @@ namespace xDC.Services.App
                 .ToList();
 
             return result;
+        }
+
+        public static bool IsInPendingStatus(string formStatus)
+        {
+            return (formStatus.ToUpper() == Common.FormStatusMapping(2).ToUpper());
+        }
+
+        public static bool IsIamThisFormApprover(kashflowDBEntities db, int formId, string currentUsername)
+        {
+            var result = db.ISSD_FormHeader
+                .FirstOrDefault(x => x.Id == formId);
+
+            if (result != null)
+            {
+                return result.ApprovedBy == currentUsername;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

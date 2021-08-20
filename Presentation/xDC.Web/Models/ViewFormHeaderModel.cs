@@ -22,6 +22,9 @@ namespace xDC_Web.Models
 
 
 
+        public bool IsPendingApproval { get; set; }
+
+
 
         public bool IsFormOwner { get; set; }
         public bool IsDraft { get; set; }
@@ -31,6 +34,7 @@ namespace xDC_Web.Models
         public bool IsResubmitEnabled { get; set; }
 
         public bool IsFormPendingMyApproval { get; set; }
+        
         public bool IsMyFormRejected { get; set; }
     }
 

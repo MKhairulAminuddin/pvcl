@@ -33,13 +33,27 @@
                                     )
                             </div>
 
-                            @if (!Model.EnableSaveAdminChanges)
+                            @if (Model.EnableSubmitForApproval)
                             {
                                 <div style="display: inline-block">
 
                                     @(Html.DevExtreme().Button()
                                         .ID("submitForApprovalBtn")
                                         .Text("Submit for Approval")
+                                        .UseSubmitBehavior(true)
+                                        .Type(ButtonType.Default)
+                                        .StylingMode(ButtonStylingMode.Contained)
+                                        )
+                                </div>
+                            }
+
+                            @if (Model.EnableResubmit)
+                            {
+                                <div style="display: inline-block">
+
+                                    @(Html.DevExtreme().Button()
+                                        .ID("submitForApprovalBtn")
+                                        .Text("Resubmit")
                                         .UseSubmitBehavior(true)
                                         .Type(ButtonType.Default)
                                         .StylingMode(ButtonStylingMode.Contained)
@@ -73,7 +87,7 @@
                                 </div>
                             }
 
-                            
+
                         </div>
                     </div>
                 </div>
