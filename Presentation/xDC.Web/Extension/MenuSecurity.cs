@@ -76,7 +76,7 @@ namespace xDC_Web.Extension
             }
         }
 
-        public static bool IisdMenu
+        public static bool IssdMenu
         {
             get
             {

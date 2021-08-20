@@ -21,11 +21,11 @@ namespace xDC_Web.Controllers
             using (var db = new kashflowDBEntities())
             {
                 var isApprover = db.Config_Approver.Any(x => x.Username == User.Identity.Name);
-                var isIisdUser = User.IsInRole(Config.AclIssd);
+                var isIssdUser = User.IsInRole(Config.AclIssd);
 
                 var model = new ISSDLandingPageViewModel()
                 {
-                    IsAllowedToCreateForm = (!isApprover && isIisdUser)
+                    IsAllowedToCreateForm = (!isApprover && isIssdUser)
                 };
                 
                 return View(model);

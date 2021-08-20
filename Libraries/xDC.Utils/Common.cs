@@ -337,7 +337,7 @@ namespace xDC.Utils
                 case 2:
                     return "Amsd.InflowFunds.Bank";
                 case 3:
-                    return "IISD.TradeSettlement.Currency";
+                    return "ISSD.TradeSettlement.Currency";
             }
             return String.Empty;
         }

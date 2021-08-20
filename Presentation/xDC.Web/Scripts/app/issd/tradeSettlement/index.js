@@ -301,7 +301,7 @@
                 width: 230
             },
             items: [
-                "Part A (Equity)",
+                "Part A (Opening Balance, Equity)",
                 "Part B (Bond, CP, Notes and Papers, REPO, Coupon)",
                 "Part C (MTM, FX)",
                 "Part D (ALTID)",
@@ -309,7 +309,7 @@
             ],
             onItemClick: function (e) {
                 switch (e.itemData) {
-                    case "Part A (Equity)":
+                    case "Part A (Opening Balance, Equity)":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartA/New";
                         return;
                     case "Part B (Bond, CP, Notes and Papers, REPO, Coupon)":

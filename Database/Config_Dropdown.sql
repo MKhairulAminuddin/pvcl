@@ -26,5 +26,5 @@ INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('Amsd.In
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('Amsd.InflowFunds.FundType', 'Proceed', 'System');
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('Amsd.InflowFunds.FundType', 'Interest Received', 'System');
 
-INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('IISD.TradeSettlement.Currency', 'MYR', 'System');
-INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('IISD.TradeSettlement.Currency', 'USD', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('ISSD.TradeSettlement.Currency', 'MYR', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('ISSD.TradeSettlement.Currency', 'USD', 'System');

@@ -249,7 +249,10 @@
                 allowUpdating: true,
                 allowDeleting: false,
                 allowAdding: false
-            }
+            },
+            showBorders: true,
+            showRowLines: true,
+            showColumnLines: true
         }).dxDataGrid("instance");
         
         // #endregion Data Grid

@@ -10,7 +10,7 @@
             "name": "AMSD Inflow Funds"
         }, {
             "id": "Trade Settlement",
-            "name": "IISD Trade Settlement"
+            "name": "ISSD Trade Settlement"
         }
     ];
 

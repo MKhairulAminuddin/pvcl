@@ -11,4 +11,4 @@ INSERT INTO [dbo].[Config_Key]([Key],[KeyType]) VALUES ('Amsd.InflowFunds.CutOff
 INSERT INTO [dbo].[Config_Key]([Key],[KeyType]) VALUES ('Amsd.InflowFunds.Notification' ,'Application');
 
 
-INSERT INTO [dbo].[Config_Key]([Key],[KeyType]) VALUES ('IISD.TradeSettlement.Currency' ,'Dropdown');
+INSERT INTO [dbo].[Config_Key]([Key],[KeyType]) VALUES ('ISSD.TradeSettlement.Currency' ,'Dropdown');
