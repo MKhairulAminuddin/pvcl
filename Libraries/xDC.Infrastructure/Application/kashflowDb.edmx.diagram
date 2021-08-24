@@ -26,7 +26,10 @@
         <EntityTypeShape EntityType="kashflowDbModel.FID_TS10_TradeItem" Width="1.5" PointX="15.5" PointY="5.625" />
         <EntityTypeShape EntityType="kashflowDbModel.FID_TS10_Approval" Width="1.5" PointX="17.375" PointY="3.375" />
         <EntityTypeShape EntityType="kashflowDbModel.FID_TS10_OpeningBalance" Width="1.5" PointX="17.375" PointY="5.625" />
-      </Diagram>
+        <EntityTypeShape EntityType="kashflowDbModel.FID_MMI" Width="1.5" PointX="7.375" PointY="13.75" />
+        <EntityTypeShape EntityType="kashflowDbModel.FID_MMI_Deposit" Width="1.5" PointX="9.375" PointY="13.75" />
+        <EntityTypeShape EntityType="kashflowDbModel.FID_MMI_Item" Width="1.5" PointX="11.5" PointY="13.75" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

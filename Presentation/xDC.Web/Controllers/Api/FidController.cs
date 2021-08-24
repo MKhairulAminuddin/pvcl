@@ -14,6 +14,7 @@ using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Utils;
 using xDC_Web.ViewModels.Fid;
+using xDC_Web.ViewModels.Fid.Mmi;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -21,6 +22,8 @@ namespace xDC_Web.Controllers.Api
     [RoutePrefix("api/fid")]
     public class FidController : ApiController
     {
+        #region 10 AM Cut Off
+
         [HttpGet]
         [Route("Ts10AmAccountAssignment")]
         public HttpResponseMessage Ts10AmAccountAssignment(DataSourceLoadOptions loadOptions)
@@ -29,7 +32,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.FID_TS10_TradeItem.GroupBy(x => new { x.FormId}).Select(x => new Ts10AmHomeGridVM
+                    var result = db.FID_TS10_TradeItem.GroupBy(x => new { x.FormId }).Select(x => new Ts10AmHomeGridVM
                     {
                         FormId = x.Key.FormId,
                         CountPendingEquity = x.Count(y => y.InstrumentType == "EQUITY" && y.OutflowFrom == null && y.InflowTo == null),
@@ -49,7 +52,7 @@ namespace xDC_Web.Controllers.Api
                     var availableForms = db.FID_TS10.ToList();
                     foreach (var form in availableForms)
                     {
-                        foreach (var item in result.Where( x => x.FormId == form.Id))
+                        foreach (var item in result.Where(x => x.FormId == form.Id))
                         {
                             item.Currency = form.Currency;
 
@@ -69,7 +72,7 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
         }
-        
+
         [HttpGet]
         [Route("Ts10AmAccountAssignmentGrid/TradeItem/{tradeType}/{formId}")]
         public HttpResponseMessage Ts10AmAccountAssignmentGrid(string tradeType, int formId, DataSourceLoadOptions loadOptions)
@@ -191,7 +194,7 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var result = new List<TenAmCutOffItemVM>();
-                    
+
                     var forms = db.FID_TS10.Where(x => DbFunctions.TruncateTime(x.SettlementDate) == reportDateParsed)
                         .ToList();
 
@@ -205,7 +208,7 @@ namespace xDC_Web.Controllers.Api
                             item.Account = opBalance.Account;
                             if (opBalance.Amount != null) item.OpeningBalance = opBalance.Amount.Value;
                             item.Currency = form.Currency;
-                            
+
                             var tradeItemInflow = db.FID_TS10_TradeItem.Where(x => x.FormId == form.Id && x.InflowTo == opBalance.Account).ToList();
 
                             var tradeItemInflowGrouped = tradeItemInflow
@@ -221,7 +224,7 @@ namespace xDC_Web.Controllers.Api
                             {
                                 if (tradeItemInflowGrouped.TotalInflow != null) item.TotalInflow = tradeItemInflowGrouped.TotalInflow.Value;
                             }
-                            
+
                             var tradeItemOutflow = db.FID_TS10_TradeItem.Where(x => x.FormId == form.Id && x.OutflowFrom == opBalance.Account).ToList();
 
                             var tradeItemOutflowGrouped = tradeItemOutflow
@@ -243,6 +246,49 @@ namespace xDC_Web.Controllers.Api
                             result.Add(item);
                         }
                     }
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        #endregion
+
+
+        #region Money Market
+
+        [HttpGet]
+        [Route("Mmi")]
+        public HttpResponseMessage Mmi(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.FID_MMI.Select(x => new MmiGridVm
+                    {
+                        FormId = x.Id,
+                        TradeDate = x.TradeDate,
+                        Currency = x.Currency,
+                        FormStatus = x.FormStatus,
+                        Preparer = x.PreparedBy,
+                        PreparedDate = x.PreparedDate,
+                        Approver = x.ApprovedBy,
+                        ApprovedDate = x.ApprovedDate,
+
+                        IsEditAllowed = false,
+                        IsDeleteAllowed = false,
+                        IsViewAllowed = false,
+
+                        IsPendingMyApproval = false,
+                        IsMyFormRejected = false,
+                        IsPendingApproval = false
+                    }).ToList();
                     
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -253,6 +299,8 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
         }
+
+        #endregion
 
     }
 }

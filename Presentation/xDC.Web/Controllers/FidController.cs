@@ -18,6 +18,8 @@ namespace xDC_Web.Controllers
             return View();
         }
 
+        #region 10 AM Cut Off
+
         [Route("10amCutOff")]
         public ActionResult TenAmCutOff()
         {
@@ -38,7 +40,7 @@ namespace xDC_Web.Controllers
                 using (var db = new kashflowDBEntities())
                 {
                     var form = db.FID_TS10.FirstOrDefault(x => x.Id == formId);
-                    
+
                     if (form != null)
                     {
                         var vModel = new EditFcaAccountAssignmentVM();
@@ -49,7 +51,7 @@ namespace xDC_Web.Controllers
                         }
 
                         return View(vModel);
-                        
+
                     }
                     else
                     {
@@ -57,7 +59,7 @@ namespace xDC_Web.Controllers
                         return View("Error");
                     }
                 }
-                    
+
             }
             catch (Exception ex)
             {
@@ -65,5 +67,33 @@ namespace xDC_Web.Controllers
                 return View("Error");
             }
         }
+
+        #endregion
+
+        #region Money Market
+
+        public ActionResult Mmi()
+        {
+            return View("MoneyMarketInstrument/Index");
+        }
+
+        public ActionResult NewMmi()
+        {
+            return View("MoneyMarketInstrument/New");
+        }
+
+        public ActionResult EditMmi()
+        {
+            return View("MoneyMarketInstrument/Index");
+        }
+
+        public ActionResult ViewMmi()
+        {
+            return View("MoneyMarketInstrument/Index");
+        }
+
+        #endregion
+
+
     }
 }
