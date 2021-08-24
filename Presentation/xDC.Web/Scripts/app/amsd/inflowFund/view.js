@@ -42,7 +42,7 @@
                     $loadPanel.show();
 
                     var data = {
-                        id: getUrlParameter("id"),
+                        id: app.getUrlParameter("id"),
                         isExportAsExcel: true
                     };
 
@@ -67,7 +67,7 @@
                     $loadPanel.show();
 
                     var data = {
-                        id: getUrlParameter("id"),
+                        id: app.getUrlParameter("id"),
                         isExportAsExcel: false
                     };
 
@@ -102,7 +102,7 @@
         $inflowFundsGrid = $("#inflowFundsGrid1").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: window.location.origin + "/api/amsd/GetInflowFunds?id=" + getUrlParameter('id')
+                loadUrl: window.location.origin + "/api/amsd/GetInflowFunds?id=" + app.getUrlParameter('id')
             }),
             columns: [
                 {
@@ -147,7 +147,7 @@
         $workflowGrid = $("#workflowGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: window.location.origin + "/api/common/GetWorkflow?id=" + getUrlParameter('id')
+                loadUrl: window.location.origin + "/api/common/GetWorkflow?id=" + app.getUrlParameter('id')
             }),
             columns: [
                 {
@@ -197,7 +197,7 @@
                 var data = {
                     approvalNote: $("#approvalNoteTextBox").dxTextArea("instance").option('value'),
                     approvalStatus: true,
-                    formId: getUrlParameter('id')
+                    formId: app.getUrlParameter('id')
                 };
 
                 $.ajax({
@@ -228,7 +228,7 @@
                 var data = {
                     approvalNote: $("#rejectionNoteTextBox").dxTextArea("instance").option('value'),
                     approvalStatus: false,
-                    formId: getUrlParameter('id')
+                    formId: app.getUrlParameter('id')
                 };
 
                 $.ajax({

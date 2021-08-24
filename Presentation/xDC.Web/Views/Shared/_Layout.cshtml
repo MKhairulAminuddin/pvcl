@@ -137,9 +137,19 @@
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="@Url.Action("FcaAccountAssignment","Fid")"><i class="fa fa-circle-thin"></i> <span>TS FCA Account</span></a></li>
-                                <li><a href="@Url.Action("TenAmCutOff", "Fid")"><i class="fa fa-circle-thin"></i> <span>10am Cut Off</span></a></li>
-                                <li><a href="@Url.Action("Mmi", "Fid")"><i class="fa fa-circle-thin"></i> <span>Money Market Inst.</span></a></li>
+                                <li class="treeview">
+                                    <a href="#">
+                                        <i class="fa fa-circle-thin"></i> <span>10am Cut Off</span>
+                                        <span class="pull-right-container">
+                                            <i class="fa fa-angle-left pull-right"></i>
+                                        </span>
+                                    </a>
+                                    <ul class="treeview-menu">
+                                        <li><a href="@Url.Action("TenAmCutOff", "Fid")"><i class="fa fa-circle-thin"></i> <span>The Screen</span></a></li>
+                                        <li><a href="@Url.Action("FcaAccountAssignment", "Fid")"><i class="fa fa-circle-thin"></i> <span>TS Acct Assign</span></a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="@Url.Action("Mmi", "Fid")"><i class="fa fa-circle-thin"></i> <span>Treasury</span></a></li>
                             </ul>
                         </li>
                     }

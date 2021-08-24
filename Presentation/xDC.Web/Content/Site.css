@@ -59,6 +59,10 @@
     margin-bottom: 10px;
 }
 
+.grid-container-tabview {
+    margin-top: 20px;
+}
+
 
 /* replace long text with elipsis*/
 a.hide-long-text {

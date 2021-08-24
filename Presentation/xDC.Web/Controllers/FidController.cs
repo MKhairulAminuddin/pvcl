@@ -23,13 +23,13 @@ namespace xDC_Web.Controllers
         [Route("10amCutOff")]
         public ActionResult TenAmCutOff()
         {
-            return View();
+            return View("TenAmCutOff/TenAmCutOff");
         }
 
         [Route("FcaAccountAssignment")]
         public ActionResult FcaAccountAssignment()
         {
-            return View();
+            return View("TenAmCutOff/FcaAccountAssignment");
         }
 
         [Route("FcaAccountAssignment/Edit/{formId}")]
@@ -50,7 +50,7 @@ namespace xDC_Web.Controllers
                             vModel.SettlementDate = form.SettlementDate.Value;
                         }
 
-                        return View(vModel);
+                        return View("TenAmCutOff/EditFcaAccountAssignment", vModel);
 
                     }
                     else

@@ -74,9 +74,9 @@
 
                 var data;
 
-                if (getUrlParameter('id') != false) {
+                if (app.getUrlParameter('id') != false) {
                     data = {
-                        id: getUrlParameter('id'),
+                        id: app.getUrlParameter('id'),
                         amsdInflowFunds: $inflowFundsGrid.getDataSource().items(),
                         approver: $approverDropdown.option('value')
                     };
@@ -119,9 +119,9 @@
                         $loadPanel.show();
 
                         var data;
-                        if (getUrlParameter('id') != false) {
+                        if (app.getUrlParameter('id') != false) {
                             data = {
-                                id: getUrlParameter('id'),
+                                id: app.getUrlParameter('id'),
                                 amsdInflowFunds: $inflowFundsGrid.getDataSource().items()
                             };
                         } else {
@@ -153,11 +153,11 @@
             }
         });
 
-        if (getUrlParameter('id') != false) {
+        if (app.getUrlParameter('id') != false) {
             $inflowFundsGrid = $("#inflowFundsGrid1").dxDataGrid({
                 dataSource: DevExpress.data.AspNet.createStore({
                     key: "id",
-                    loadUrl: window.location.origin + "/api/amsd/GetInflowFunds?id=" + getUrlParameter('id'),
+                    loadUrl: window.location.origin + "/api/amsd/GetInflowFunds?id=" + app.getUrlParameter('id'),
                     insertUrl: window.location.origin + "/api/amsd/insertInflowFund",
                     updateUrl: window.location.origin + "/api/amsd/updateInflowFund",
                     deleteUrl: window.location.origin + "/api/amsd/deleteInflowFund"
@@ -203,7 +203,7 @@
                     console.log(e);
                 },
                 onRowInserting: function (e) {
-                    e.data["formId"] = getUrlParameter('id');
+                    e.data["formId"] = app.getUrlParameter('id');
                     
                     e.cancel = false;
                 },

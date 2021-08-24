@@ -43,15 +43,15 @@
                 "/api/issd/TradeSettlement/TradeItemConsolidated/" +
                 instrumentType +
                 "/" +
-                getUrlParameter("settlementDateEpoch") +
+                app.getUrlParameter("settlementDateEpoch") +
                 "/" +
-                getUrlParameter("currency");
+                app.getUrlParameter("currency");
         },
         loadOpeningBalanceConsolidated: function () {
             return window.location.origin + "/api/issd/GetBalanceConsolidated/" +
-                getUrlParameter("settlementDateEpoch") +
+                app.getUrlParameter("settlementDateEpoch") +
                 "/" +
-                getUrlParameter("currency");
+                app.getUrlParameter("currency");
         },
     };
 

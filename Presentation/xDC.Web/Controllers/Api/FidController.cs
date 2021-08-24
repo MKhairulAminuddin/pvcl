@@ -74,6 +74,61 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpGet]
+        [Route("Ts10AmAccountAssignment/AvailableTrades/{formId}")]
+        public HttpResponseMessage Ts10AmAcctAssign_AvailableTrades(int formId, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formIdReq = formId;
+
+                    var form = db.FID_TS10.FirstOrDefault(x => x.Id == formIdReq);
+
+                    var result = db.FID_TS10_TradeItem.Where(x => x.FormId == formIdReq).GroupBy(x => new { x.FormId }).Select(x => new Ts10AmAvailableTradeVM()
+                    {
+                        FormId = x.Key.FormId,
+                        SettlementDate = form.SettlementDate.Value,
+                        Currency = form.Currency,
+                        
+                        Equity = x.Count(y => y.InstrumentType == "EQUITY") > 0,
+                        Bond = x.Count(y => y.InstrumentType == "BOND") > 0,
+                        Cp = x.Count(y => y.InstrumentType == "COMMERCIAL PAPER") > 0,
+                        NotesPapers = x.Count(y => y.InstrumentType == "NOTES AND PAPERS") > 0,
+                        Repo = x.Count(y => y.InstrumentType == "REPO") > 0,
+                        Coupon = x.Count(y => y.InstrumentType == "COUPON") > 0,
+                        Fees = x.Count(y => y.InstrumentType == "FEES") > 0,
+                        Mtm = x.Count(y => y.InstrumentType == "PAYMENT/RECEIVED (MTM)") > 0,
+                        Fx = x.Count(y => y.InstrumentType == "FX SETTLEMENT") > 0,
+                        Contribution = x.Count(y => y.InstrumentType == "CONTRIBUTION CREDITED") > 0,
+                        Altid = x.Count(y => y.InstrumentType == "ALTID DISTRIBUTION AND DRAWDOWN") > 0,
+                        Others = x.Count(y => y.InstrumentType == "OTHERS") > 0,
+
+                        CountPendingEquity = x.Count(y => y.InstrumentType == "EQUITY" && y.OutflowFrom == null && y.InflowTo == null),
+                        CountPendingBond = x.Count(y => y.InstrumentType == "BOND" && y.OutflowFrom == null && y.InflowTo == null),
+                        CountPendingCp = x.Count(y => y.InstrumentType == "COMMERCIAL PAPER" && y.OutflowFrom == null && y.InflowTo == null),
+                        CountPendingNotesPapers = x.Count(y => y.InstrumentType == "NOTES AND PAPERS" && y.OutflowFrom == null && y.InflowTo == null),
+                        CountPendingRepo = x.Count(y => y.InstrumentType == "REPO" && y.OutflowFrom == null && y.InflowTo == null),
+                        CountPendingCoupon = x.Count(y => y.InstrumentType == "COUPON" && y.OutflowFrom == null && y.InflowTo == null),
+                        CountPendingFees = x.Count(y => y.InstrumentType == "FEES" && y.OutflowFrom == null && y.InflowTo == null),
+                        CountPendingMtm = x.Count(y => y.InstrumentType == "PAYMENT/RECEIVED (MTM)" && y.OutflowFrom == null && y.InflowTo == null),
+                        CountPendingFx = x.Count(y => y.InstrumentType == "FX SETTLEMENT" && y.OutflowFrom == null && y.InflowTo == null),
+                        CountPendingContribution = x.Count(y => y.InstrumentType == "CONTRIBUTION CREDITED" && y.OutflowFrom == null && y.InflowTo == null),
+                        CountPendingAltid = x.Count(y => y.InstrumentType == "ALTID DISTRIBUTION AND DRAWDOWN" && y.OutflowFrom == null && y.InflowTo == null),
+                        CountPendingOthers = x.Count(y => y.InstrumentType == "OTHERS" && y.OutflowFrom == null && y.InflowTo == null)
+                    }).ToList();
+                    
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [HttpGet]
         [Route("Ts10AmAccountAssignmentGrid/TradeItem/{tradeType}/{formId}")]
         public HttpResponseMessage Ts10AmAccountAssignmentGrid(string tradeType, int formId, DataSourceLoadOptions loadOptions)
         {
@@ -246,6 +301,31 @@ namespace xDC_Web.Controllers.Api
                             result.Add(item);
                         }
                     }
+
+                    // AMSD - Inflow Funds
+                    var submittedAmsdForms = db.Form_Header.FirstOrDefault(x =>
+                        DbFunctions.TruncateTime(x.ApprovedDate) == reportDateParsed);
+                    if (submittedAmsdForms != null)
+                    {
+                        var inflowFunds = db.AMSD_InflowFund.Where(x => x.FormId == submittedAmsdForms.Id).GroupBy(x => new { x.Bank}).Select(x => new
+                        {
+                            Bank = x.Key.Bank,
+                            Amount = x.Sum(y => y.Amount)
+                        });
+
+                        foreach (var fund in inflowFunds)
+                        {
+                            var inflowFundsFromAmsd = new TenAmCutOffItemVM()
+                            {
+                                Account = fund.Bank,
+                                Currency = "MYR",
+                                OpeningBalance = fund.Amount ?? 0
+                            };
+                            result.Add(inflowFundsFromAmsd);
+                        }
+                        
+                    }
+
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }

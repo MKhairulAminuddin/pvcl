@@ -61,40 +61,40 @@
                     cellTemplate: function (container, options) {
 
                         if (options.data.countPendingEquity > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingEquity + " Equity").appendTo(container);
+                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingEquity + " x Equity").appendTo(container);
                         }
                         if (options.data.countPendingBond > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingBond + " Bond").appendTo(container);
+                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingBond + " x Bond").appendTo(container);
                         }
                         if (options.data.countPendingCp > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingCp + " CP").appendTo(container);
+                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingCp + " x CP").appendTo(container);
                         }
                         if (options.data.countPendingNotesPapers > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingNotesPapers + " Notes & Papers").appendTo(container);
+                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingNotesPapers + " x Notes & Papers").appendTo(container);
                         }
                         if (options.data.countPendingRepo > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingRepo + " Repo").appendTo(container);
+                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingRepo + " x Repo").appendTo(container);
                         }
                         if (options.data.countPendingCoupon > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingCoupon + " Coupon").appendTo(container);
+                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingCoupon + " x Coupon").appendTo(container);
                         }
                         if (options.data.countPendingFees > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingFees + " Fees").appendTo(container);
+                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingFees + " x Fees").appendTo(container);
                         }
                         if (options.data.countPendingMtm > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingMtm + " MTM").appendTo(container);
+                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingMtm + " x MTM").appendTo(container);
                         }
                         if (options.data.countPendingFx > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingFx + " FX").appendTo(container);
+                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingFx + " x FX").appendTo(container);
                         }
                         if (options.data.countPendingContribution > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingContribution + " Contribution").appendTo(container);
+                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingContribution + " x Contribution").appendTo(container);
                         }
                         if (options.data.countPendingAltid > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingAltid + " ALTID").appendTo(container);
+                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingAltid + " x ALTID").appendTo(container);
                         }
                         if (options.data.countPendingOthers > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingOthers + " Others").appendTo(container);
+                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingOthers + " x Others").appendTo(container);
                         }
                         
                     }
@@ -102,10 +102,10 @@
                 {
                     caption: "Actions",
                     type: "buttons",
-                    width: 110,
                     buttons: [
                         {
-                            text: "Assign Account",
+                            hint: "Open Form",
+                            icon: "fa fa-external-link",
                             onClick: function (e) {
                                 window.location.href = window.location.origin + "/fid/fcaAccountAssignment/Edit/" + e.row.data.formId;
                                 e.event.preventDefault();
@@ -114,7 +114,9 @@
                     ]
                 }
             ],
-            showBorders: true
+            showBorders: true,
+            showColumnLines: true,
+            showRowLines: true
         }).dxDataGrid("instance");
 
         // #endregion DataGrid

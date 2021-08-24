@@ -36,7 +36,7 @@
         //#endregion
 
         //#region Other Widgets
-
+        var millisecondsInDay = 24 * 60 * 60 * 1000;
         $dateSelectionBtn = $("#dateSelectionBtn").dxDateBox({
             type: "date",
             displayFormat: "dd/MM/yyyy",
@@ -47,7 +47,40 @@
                         $grid.option("dataSource", data1.data);
                         $grid.repaint();
                     });
-            }
+            },
+            buttons: [{
+                name: "today",
+                location: "before",
+
+                options: {
+                    text: "Today",
+                    onClick: function () {
+                        $dateSelectionBtn.option("value", new Date().getTime());
+                    }
+                }
+            }, {
+                name: "prevDate",
+                location: "before",
+                options: {
+                    icon: "spinprev",
+                    stylingMode: "text",
+                    onClick: function () {
+                        var currentDate = $dateSelectionBtn.option("value");
+                        $dateSelectionBtn.option("value", currentDate - millisecondsInDay);
+                    }
+                }
+            }, {
+                name: "nextDate",
+                location: "after",
+                options: {
+                    icon: "spinnext",
+                    stylingMode: "text",
+                    onClick: function () {
+                        var currentDate = $dateSelectionBtn.option("value");
+                        $dateSelectionBtn.option("value", currentDate + millisecondsInDay);
+                    }
+                }
+            }, "dropDown"]
         }).dxDateBox("instance");
         
 
