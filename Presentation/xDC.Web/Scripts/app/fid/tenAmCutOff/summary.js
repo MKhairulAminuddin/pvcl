@@ -146,6 +146,7 @@
             summary: {
                 groupItems: [
                     {
+                        name: "openingBalance",
                         column: "openingBalance",
                         summaryType: "sum",
                         displayFormat: "{0}",
@@ -156,6 +157,7 @@
                         showInGroupFooter: true
                     },
                     {
+                        name: "totalInflow",
                         column: "totalInflow",
                         summaryType: "sum",
                         displayFormat: "{0}",
@@ -166,6 +168,7 @@
                         showInGroupFooter: true
                     },
                     {
+                        name: "totalOutflow",
                         column: "totalOutflow",
                         summaryType: "sum",
                         displayFormat: "{0}",

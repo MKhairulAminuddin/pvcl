@@ -1549,17 +1549,17 @@
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
                 loadUrl: referenceUrl.opBalanceLoad,
-                updateUrl: referenceUrl.opBalanceUpdate
+                //updateUrl: referenceUrl.opBalanceUpdate
             }),
             columns: [
-                {
+                /*{
                     dataField: "fcaAccount",
                     caption: "FCA Account"
                 },
                 {
                     dataField: "fcaAmount",
                     caption: "FCA Amount"
-                },
+                },*/
                 {
                     dataField: "account",
                     caption: "Account",
@@ -1592,7 +1592,7 @@
             ],
             editing: {
                 mode: "batch",
-                allowUpdating: true,
+                allowUpdating: false,
                 allowDeleting: false,
                 allowAdding: false
             },

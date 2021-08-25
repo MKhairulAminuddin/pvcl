@@ -259,11 +259,13 @@ namespace xDC_Web.Controllers.Api
 
                         foreach (var opBalance in opBalances)
                         {
+                            // create row for account and its opening balance. e.g. RENTAS - OB 20,000
                             var item = new TenAmCutOffItemVM();
                             item.Account = opBalance.Account;
                             if (opBalance.Amount != null) item.OpeningBalance = opBalance.Amount.Value;
                             item.Currency = form.Currency;
 
+                            // get total inflow based on assigned inflow account
                             var tradeItemInflow = db.FID_TS10_TradeItem.Where(x => x.FormId == form.Id && x.InflowTo == opBalance.Account).ToList();
 
                             var tradeItemInflowGrouped = tradeItemInflow
@@ -280,6 +282,7 @@ namespace xDC_Web.Controllers.Api
                                 if (tradeItemInflowGrouped.TotalInflow != null) item.TotalInflow = tradeItemInflowGrouped.TotalInflow.Value;
                             }
 
+                            // get total inflow based on assigned outflow account
                             var tradeItemOutflow = db.FID_TS10_TradeItem.Where(x => x.FormId == form.Id && x.OutflowFrom == opBalance.Account).ToList();
 
                             var tradeItemOutflowGrouped = tradeItemOutflow
@@ -296,7 +299,7 @@ namespace xDC_Web.Controllers.Api
                                 if (tradeItemOutflowGrouped.TotalOutflow != null) item.TotalOutflow = tradeItemOutflowGrouped.TotalOutflow.Value;
                             }
 
-                            item.Net = item.TotalInflow - item.TotalOutflow;
+                            item.Net = item.OpeningBalance + item.TotalInflow - item.TotalOutflow;
 
                             result.Add(item);
                         }
@@ -319,7 +322,8 @@ namespace xDC_Web.Controllers.Api
                             {
                                 Account = fund.Bank,
                                 Currency = "MYR",
-                                OpeningBalance = fund.Amount ?? 0
+                                OpeningBalance = fund.Amount ?? 0,
+                                Net = fund.Amount ?? 0
                             };
                             result.Add(inflowFundsFromAmsd);
                         }

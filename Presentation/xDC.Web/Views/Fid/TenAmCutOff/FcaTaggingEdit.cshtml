@@ -1,6 +1,6 @@
 ﻿@model xDC_Web.ViewModels.Fid.EditFcaAccountAssignmentVM
 @{
-    ViewBag.Title = "FCA Account Assignment";
+    ViewBag.Title = "Edit: FCA Tagging";
 }
 
 
@@ -13,7 +13,7 @@
                     @(Html.DevExtreme().Button()
                         .Type(ButtonType.Back)
                         .StylingMode(ButtonStylingMode.Contained)
-                        .OnClick(@<text> function(){ window.location = "@Url.Action("FcaAccountAssignment", "Fid")"; } </text>)
+                        .OnClick(@<text> function(){ window.location = "@Url.Action("FcaTagging", "Fid")"; } </text>)
                         )
                 </div>
                 <div id="saveChangesBtn"></div>
@@ -128,6 +128,6 @@
 @section scripts
 {
 
-<script src="~/Scripts/app/fid/tenAmCutOff/fcaAccountAssignmentEdit.js"></script>
+<script src="~/Scripts/app/fid/tenAmCutOff/fcaTaggingEdit.js"></script>
 
 }

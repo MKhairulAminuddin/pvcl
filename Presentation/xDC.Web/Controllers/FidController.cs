@@ -20,20 +20,20 @@ namespace xDC_Web.Controllers
 
         #region 10 AM Cut Off
 
-        [Route("10amCutOff")]
-        public ActionResult TenAmCutOff()
+        [Route("Summary")]
+        public ActionResult Summary()
         {
-            return View("TenAmCutOff/TenAmCutOff");
+            return View("TenAmCutOff/Summary");
         }
 
-        [Route("FcaAccountAssignment")]
-        public ActionResult FcaAccountAssignment()
+        [Route("FcaTagging")]
+        public ActionResult FcaTagging()
         {
-            return View("TenAmCutOff/FcaAccountAssignment");
+            return View("TenAmCutOff/FcaTagging");
         }
 
-        [Route("FcaAccountAssignment/Edit/{formId}")]
-        public ActionResult EditFcaAccountAssignment(int formId)
+        [Route("FcaTagging/Edit/{formId}")]
+        public ActionResult FcaTaggingEdit(int formId)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace xDC_Web.Controllers
                             vModel.SettlementDate = form.SettlementDate.Value;
                         }
 
-                        return View("TenAmCutOff/EditFcaAccountAssignment", vModel);
+                        return View("TenAmCutOff/FcaTaggingEdit", vModel);
 
                     }
                     else
