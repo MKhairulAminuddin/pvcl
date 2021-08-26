@@ -59,12 +59,16 @@
         {
             "key": "$tabs-tab-selected-color",
             "value": "rgba(255, 255, 255, 1)"
+        },
+        {
+            "key": "$badge-bg",
+            "value": "rgba(217, 83, 79, 1)"
         }
     ],
     "baseTheme": "generic.light.compact",
     "outputColorScheme": "kashflow-light",
     "makeSwatch": false,
-    "version": "21.1.4",
+    "version": "21.1.5",
     "widgets": [],
     "removeExternalResources": false
 }

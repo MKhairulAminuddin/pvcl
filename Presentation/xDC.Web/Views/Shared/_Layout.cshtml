@@ -1,5 +1,4 @@
 @using xDC_Web.Extension
-@using xDC_Web.Extension.CustomHtmlHelper
 <!DOCTYPE html>
 
 <html>
@@ -145,8 +144,8 @@
                                         </span>
                                     </a>
                                     <ul class="treeview-menu">
-                                        <li><a href="@Url.Action("TenAmCutOff", "Fid")"><i class="fa fa-circle-thin"></i> <span>Summary</span></a></li>
-                                        <li><a href="@Url.Action("FcaAccountAssignment", "Fid")"><i class="fa fa-circle-thin"></i> <span>FCA Tagging</span></a></li>
+                                        <li><a href="@Url.Action("Summary", "Fid")"><i class="fa fa-circle-thin"></i> <span>Summary</span></a></li>
+                                        <li><a href="@Url.Action("FcaTagging", "Fid")"><i class="fa fa-circle-thin"></i> <span>FCA Tagging</span></a></li>
                                     </ul>
                                 </li>
                                 <li><a href="@Url.Action("Mmi", "Fid")"><i class="fa fa-circle-thin"></i> <span>Treasury</span></a></li>

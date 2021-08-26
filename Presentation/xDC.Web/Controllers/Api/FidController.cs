@@ -25,8 +25,8 @@ namespace xDC_Web.Controllers.Api
         #region 10 AM Cut Off
 
         [HttpGet]
-        [Route("Ts10AmAccountAssignment")]
-        public HttpResponseMessage Ts10AmAccountAssignment(DataSourceLoadOptions loadOptions)
+        [Route("FcaTagging")]
+        public HttpResponseMessage TcaTaggingLandingPage(DataSourceLoadOptions loadOptions)
         {
             try
             {
@@ -35,18 +35,21 @@ namespace xDC_Web.Controllers.Api
                     var result = db.FID_TS10_TradeItem.GroupBy(x => new { x.FormId }).Select(x => new Ts10AmHomeGridVM
                     {
                         FormId = x.Key.FormId,
-                        CountPendingEquity = x.Count(y => y.InstrumentType == "EQUITY" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingBond = x.Count(y => y.InstrumentType == "BOND" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingCp = x.Count(y => y.InstrumentType == "COMMERCIAL PAPER" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingNotesPapers = x.Count(y => y.InstrumentType == "NOTES AND PAPERS" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingRepo = x.Count(y => y.InstrumentType == "REPO" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingCoupon = x.Count(y => y.InstrumentType == "COUPON" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingFees = x.Count(y => y.InstrumentType == "FEES" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingMtm = x.Count(y => y.InstrumentType == "PAYMENT/RECEIVED (MTM)" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingFx = x.Count(y => y.InstrumentType == "FX SETTLEMENT" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingContribution = x.Count(y => y.InstrumentType == "CONTRIBUTION CREDITED" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingAltid = x.Count(y => y.InstrumentType == "ALTID DISTRIBUTION AND DRAWDOWN" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingOthers = x.Count(y => y.InstrumentType == "OTHERS" && y.OutflowFrom == null && y.InflowTo == null)
+
+                        CountPendingEquity = x.Count(y => y.InstrumentType == "EQUITY" && ((y.InflowTo == null && (y.Maturity + y.Sales) > 0) || (y.OutflowFrom == null && y.Purchase > 0))),
+                        CountPendingBond = x.Count(y => y.InstrumentType == "BOND" && ((y.InflowTo == null && (y.Maturity + y.Sales) > 0) || (y.OutflowFrom == null && y.Purchase > 0))),
+                        CountPendingCp = x.Count(y => y.InstrumentType == "COMMERCIAL PAPER" && ((y.InflowTo == null && (y.Maturity + y.Sales) > 0) || (y.OutflowFrom == null && y.Purchase > 0))),
+                        CountPendingNotesPapers = x.Count(y => y.InstrumentType == "NOTES AND PAPERS" && ((y.InflowTo == null && (y.Maturity + y.Sales) > 0) || (y.OutflowFrom == null && y.Purchase > 0))),
+                        CountPendingRepo = x.Count(y => y.InstrumentType == "REPO" && ((y.InflowTo == null && y.FirstLeg > 0) || (y.OutflowFrom == null && y.SecondLeg > 0))),
+                        CountPendingMtm = x.Count(y => y.InstrumentType == "PAYMENT/RECEIVED (MTM)" && ((y.InflowTo == null && y.AmountPlus > 0) || (y.OutflowFrom == null && y.AmountMinus > 0))),
+                        CountPendingFx = x.Count(y => y.InstrumentType == "FX SETTLEMENT" && ((y.InflowTo == null && y.AmountPlus > 0) || (y.OutflowFrom == null && y.AmountMinus > 0))),
+                        CountPendingAltid = x.Count(y => y.InstrumentType == "ALTID DISTRIBUTION AND DRAWDOWN" && ((y.InflowTo == null && y.AmountPlus > 0) || (y.OutflowFrom == null && y.AmountMinus > 0))),
+                        CountPendingOthers = x.Count(y => y.InstrumentType == "OTHERS" && ((y.InflowTo == null && y.AmountPlus > 0) || (y.OutflowFrom == null && y.AmountMinus > 0))),
+
+                        //xde outflow for this table
+                        CountPendingCoupon = x.Count(y => y.InstrumentType == "COUPON" && y.InflowTo == null && y.AmountPlus > 0),
+                        CountPendingContribution = x.Count(y => y.InstrumentType == "CONTRIBUTION CREDITED" && y.InflowTo == null && y.AmountPlus > 0),
+                        CountPendingFees = x.Count(y => y.InstrumentType == "FEES" && y.InflowTo == null && y.AmountPlus > 0)
                     }).ToList();
 
                     var availableForms = db.FID_TS10.ToList();
@@ -74,8 +77,8 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpGet]
-        [Route("Ts10AmAccountAssignment/AvailableTrades/{formId}")]
-        public HttpResponseMessage Ts10AmAcctAssign_AvailableTrades(int formId, DataSourceLoadOptions loadOptions)
+        [Route("TcaTagging/AvailableTrades/{formId}")]
+        public HttpResponseMessage TcaTagging_AvailableTrades(int formId, DataSourceLoadOptions loadOptions)
         {
             try
             {
@@ -104,18 +107,21 @@ namespace xDC_Web.Controllers.Api
                         Altid = x.Count(y => y.InstrumentType == "ALTID DISTRIBUTION AND DRAWDOWN") > 0,
                         Others = x.Count(y => y.InstrumentType == "OTHERS") > 0,
 
-                        CountPendingEquity = x.Count(y => y.InstrumentType == "EQUITY" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingBond = x.Count(y => y.InstrumentType == "BOND" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingCp = x.Count(y => y.InstrumentType == "COMMERCIAL PAPER" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingNotesPapers = x.Count(y => y.InstrumentType == "NOTES AND PAPERS" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingRepo = x.Count(y => y.InstrumentType == "REPO" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingCoupon = x.Count(y => y.InstrumentType == "COUPON" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingFees = x.Count(y => y.InstrumentType == "FEES" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingMtm = x.Count(y => y.InstrumentType == "PAYMENT/RECEIVED (MTM)" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingFx = x.Count(y => y.InstrumentType == "FX SETTLEMENT" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingContribution = x.Count(y => y.InstrumentType == "CONTRIBUTION CREDITED" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingAltid = x.Count(y => y.InstrumentType == "ALTID DISTRIBUTION AND DRAWDOWN" && y.OutflowFrom == null && y.InflowTo == null),
-                        CountPendingOthers = x.Count(y => y.InstrumentType == "OTHERS" && y.OutflowFrom == null && y.InflowTo == null)
+                        CountPendingEquity = x.Count(y => y.InstrumentType == "EQUITY" && ((y.InflowTo == null && (y.Maturity + y.Sales) > 0) || (y.OutflowFrom == null && y.Purchase > 0))),
+                        CountPendingBond = x.Count(y => y.InstrumentType == "BOND" && ((y.InflowTo == null && (y.Maturity + y.Sales) > 0) || (y.OutflowFrom == null && y.Purchase > 0))),
+                        CountPendingCp = x.Count(y => y.InstrumentType == "COMMERCIAL PAPER" && ((y.InflowTo == null && (y.Maturity + y.Sales) > 0) || (y.OutflowFrom == null && y.Purchase > 0))),
+                        CountPendingNotesPapers = x.Count(y => y.InstrumentType == "NOTES AND PAPERS" && ((y.InflowTo == null && (y.Maturity + y.Sales) > 0) || (y.OutflowFrom == null && y.Purchase > 0))),
+                        CountPendingRepo = x.Count(y => y.InstrumentType == "REPO" && ((y.InflowTo == null && y.FirstLeg > 0) || (y.OutflowFrom == null && y.SecondLeg > 0))),
+                        CountPendingMtm = x.Count(y => y.InstrumentType == "PAYMENT/RECEIVED (MTM)" && ((y.InflowTo == null && y.AmountPlus > 0) || (y.OutflowFrom == null && y.AmountMinus > 0))),
+                        CountPendingFx = x.Count(y => y.InstrumentType == "FX SETTLEMENT" && ((y.InflowTo == null && y.AmountPlus > 0) || (y.OutflowFrom == null && y.AmountMinus > 0))),
+                        CountPendingAltid = x.Count(y => y.InstrumentType == "ALTID DISTRIBUTION AND DRAWDOWN" && ((y.InflowTo == null && y.AmountPlus > 0) || (y.OutflowFrom == null && y.AmountMinus > 0))),
+                        CountPendingOthers = x.Count(y => y.InstrumentType == "OTHERS" && ((y.InflowTo == null && y.AmountPlus > 0) || (y.OutflowFrom == null && y.AmountMinus > 0))),
+
+                        //xde outflow for this table
+                        CountPendingCoupon = x.Count(y => y.InstrumentType == "COUPON" && y.InflowTo == null && y.AmountPlus > 0),
+                        CountPendingContribution = x.Count(y => y.InstrumentType == "CONTRIBUTION CREDITED" && y.InflowTo == null && y.AmountPlus > 0),
+                        CountPendingFees = x.Count(y => y.InstrumentType == "FEES" && y.InflowTo == null && y.AmountPlus > 0)
+
                     }).ToList();
                     
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
@@ -129,8 +135,8 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpGet]
-        [Route("Ts10AmAccountAssignmentGrid/TradeItem/{tradeType}/{formId}")]
-        public HttpResponseMessage Ts10AmAccountAssignmentGrid(string tradeType, int formId, DataSourceLoadOptions loadOptions)
+        [Route("TcaTaggingGrid/TradeItem/{tradeType}/{formId}")]
+        public HttpResponseMessage TcaTaggingGrid(string tradeType, int formId, DataSourceLoadOptions loadOptions)
         {
             try
             {
@@ -155,8 +161,8 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpPut]
-        [Route("Ts10AmAccountAssignmentGrid/TradeItem")]
-        public HttpResponseMessage Ts10AmAccountAssignmentGridUpdate(FormDataCollection form)
+        [Route("TcaTaggingGrid/TradeItem")]
+        public HttpResponseMessage TcaTaggingGridUpdate(FormDataCollection form)
         {
             using (var db = new kashflowDBEntities())
             {
@@ -186,8 +192,8 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpGet]
-        [Route("Ts10AmAccountAssignmentGrid/opBalance/{formId}")]
-        public HttpResponseMessage Ts10AmAccountAssignmentOpBalanceGrid(int formId, DataSourceLoadOptions loadOptions)
+        [Route("TcaTaggingGrid/opBalance/{formId}")]
+        public HttpResponseMessage TcaTaggingOpBalanceGrid(int formId, DataSourceLoadOptions loadOptions)
         {
             try
             {
@@ -206,8 +212,8 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpPut]
-        [Route("Ts10AmAccountAssignmentGrid/opBalance")]
-        public HttpResponseMessage Ts10AmAccountAssignmentOpBalanceGridUpdate(FormDataCollection form)
+        [Route("TcaTaggingGrid/opBalance")]
+        public HttpResponseMessage TcaTaggingOpBalanceGridUpdate(FormDataCollection form)
         {
             using (var db = new kashflowDBEntities())
             {
@@ -239,7 +245,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("10AmCutOff/{reportDate}")]
-        public HttpResponseMessage TenAmCutOff(long reportDate, DataSourceLoadOptions loadOptions)
+        public HttpResponseMessage SummaryReport(long reportDate, DataSourceLoadOptions loadOptions)
         {
             try
             {

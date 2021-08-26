@@ -22,26 +22,26 @@
             $printBtn;
 
         var referenceUrl = {
-            getAvailableTrades: window.location.origin + "/api/fid/Ts10AmAccountAssignment/AvailableTrades/" + window.location.pathname.split("/").pop(),
+            getAvailableTrades: window.location.origin + "/api/fid/TcaTagging/AvailableTrades/" + window.location.pathname.split("/").pop(),
 
-            equityLoad: window.location.origin + "/api/fid/Ts10AmAccountAssignmentGrid/tradeItem/equity/" + window.location.pathname.split("/").pop(),
-            bondLoad: window.location.origin + "/api/fid/Ts10AmAccountAssignmentGrid/tradeItem/bond/" + window.location.pathname.split("/").pop(),
-            cpLoad: window.location.origin + "/api/fid/Ts10AmAccountAssignmentGrid/tradeItem/cp/" + window.location.pathname.split("/").pop(),
-            notesPaperLoad: window.location.origin + "/api/fid/Ts10AmAccountAssignmentGrid/tradeItem/notesPaper/" + window.location.pathname.split("/").pop(),
-            repoLoad: window.location.origin + "/api/fid/Ts10AmAccountAssignmentGrid/tradeItem/repo/" + window.location.pathname.split("/").pop(),
-            couponLoad: window.location.origin + "/api/fid/Ts10AmAccountAssignmentGrid/tradeItem/coupon/" + window.location.pathname.split("/").pop(),
-            feesLoad: window.location.origin + "/api/fid/Ts10AmAccountAssignmentGrid/tradeItem/fees/" + window.location.pathname.split("/").pop(),
-            mtmLoad: window.location.origin + "/api/fid/Ts10AmAccountAssignmentGrid/tradeItem/mtm/" + window.location.pathname.split("/").pop(),
-            fxLoad: window.location.origin + "/api/fid/Ts10AmAccountAssignmentGrid/tradeItem/fxSettlement/" + window.location.pathname.split("/").pop(),
-            contributionLoad: window.location.origin + "/api/fid/Ts10AmAccountAssignmentGrid/tradeItem/contributionCredited/" + window.location.pathname.split("/").pop(),
-            altidLoad: window.location.origin + "/api/fid/Ts10AmAccountAssignmentGrid/tradeItem/altid/" + window.location.pathname.split("/").pop(),
-            othersLoad: window.location.origin + "/api/fid/Ts10AmAccountAssignmentGrid/tradeItem/others/" + window.location.pathname.split("/").pop(),
+            equityLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/equity/" + window.location.pathname.split("/").pop(),
+            bondLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/bond/" + window.location.pathname.split("/").pop(),
+            cpLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/cp/" + window.location.pathname.split("/").pop(),
+            notesPaperLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/notesPaper/" + window.location.pathname.split("/").pop(),
+            repoLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/repo/" + window.location.pathname.split("/").pop(),
+            couponLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/coupon/" + window.location.pathname.split("/").pop(),
+            feesLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/fees/" + window.location.pathname.split("/").pop(),
+            mtmLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/mtm/" + window.location.pathname.split("/").pop(),
+            fxLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/fxSettlement/" + window.location.pathname.split("/").pop(),
+            contributionLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/contributionCredited/" + window.location.pathname.split("/").pop(),
+            altidLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/altid/" + window.location.pathname.split("/").pop(),
+            othersLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/others/" + window.location.pathname.split("/").pop(),
 
-            updateTradeItem: window.location.origin + "/api/fid/Ts10AmAccountAssignmentGrid/tradeItem",
+            updateTradeItem: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem",
 
 
-            opBalanceLoad: window.location.origin + "/api/fid/Ts10AmAccountAssignmentGrid/opBalance/" + window.location.pathname.split("/").pop(),
-            opBalanceUpdate: window.location.origin + "/api/fid/Ts10AmAccountAssignmentGrid/opBalance",
+            opBalanceLoad: window.location.origin + "/api/fid/TcaTaggingGrid/opBalance/" + window.location.pathname.split("/").pop(),
+            opBalanceUpdate: window.location.origin + "/api/fid/TcaTaggingGrid/opBalance",
             
         };
 
@@ -72,7 +72,7 @@
         }
 
         var loadTabs = function (response) {
-            var tabPanelItems = $tabpanel.option("dataSource");
+            var tabPanelItems = [];
 
             if (response.data[0].equity) {
                 var newItem = {
@@ -202,10 +202,13 @@
                             },
                             showBorders: true
                         });
-                        $equityGrid = newTabView;
+                        $equityGrid = newTabView.dxDataGrid("instance");
                         newTabView.appendTo(element);
                     }
                 };
+                if (response.data[0].countPendingEquity > 0) {
+                    newItem.badge = response.data[0].countPendingEquity;
+                }
                 tabPanelItems.push(newItem);
             }
 
@@ -337,10 +340,13 @@
                             },
                             showBorders: true
                         });
-                        $bondGrid = newTabView;
+                        $bondGrid = newTabView.dxDataGrid("instance");
                         newTabView.appendTo(element);
                     }
                 };
+                if (response.data[0].countPendingBond > 0) {
+                    newItem.badge = response.data[0].countPendingBond;
+                }
                 tabPanelItems.push(newItem);
             }
 
@@ -474,10 +480,13 @@
                             },
                             showBorders: true
                         });
-                        $cpGrid = newTabView;
+                        $cpGrid = newTabView.dxDataGrid("instance");
                         newTabView.appendTo(element);
                     }
                 };
+                if (response.data[0].countPendingCp > 0) {
+                    newItem.badge = response.data[0].countPendingCp;
+                }
                 tabPanelItems.push(newItem);
             }
 
@@ -611,10 +620,13 @@
                             },
                             showBorders: true
                         });
-                        $notesPaperGrid = newTabView;
+                        $notesPaperGrid = newTabView.dxDataGrid("instance");
                         newTabView.appendTo(element);
                     }
                 };
+                if (response.data[0].countPendingNotesPapers > 0) {
+                    newItem.badge = response.data[0].countPendingNotesPapers;
+                }
                 tabPanelItems.push(newItem);
             }
 
@@ -729,10 +741,13 @@
                             },
                             showBorders: true
                         });
-                        $repoGrid = newTabView;
+                        $repoGrid = newTabView.dxDataGrid("instance");
                         newTabView.appendTo(element);
                     }
                 };
+                if (response.data[0].countPendingRepo > 0) {
+                    newItem.badge = response.data[0].countPendingRepo;
+                }
                 tabPanelItems.push(newItem);
             }
 
@@ -751,16 +766,6 @@
                                 {
                                     dataField: "inflowTo", width: "120px",
                                     caption: "Inflow To",
-                                    lookup: {
-                                        dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
-                                        allowClearing: true
-                                    }
-                                },
-                                {
-                                    dataField: "outflowFrom", width: "120px",
-                                    caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
                                         valueExpr: "account",
@@ -832,6 +837,9 @@
                         newTabView.appendTo(element);
                     }
                 };
+                if (response.data[0].countPendingCoupon > 0) {
+                    newItem.badge = response.data[0].countPendingCoupon;
+                }
                 tabPanelItems.push(newItem);
             }
 
@@ -850,16 +858,6 @@
                                 {
                                     dataField: "inflowTo", width: "120px",
                                     caption: "Inflow To",
-                                    lookup: {
-                                        dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
-                                        allowClearing: true
-                                    }
-                                },
-                                {
-                                    dataField: "outflowFrom", width: "120px",
-                                    caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
                                         valueExpr: "account",
@@ -922,10 +920,13 @@
                             },
                             showBorders: true
                         });
-                        $feesGrid = newTabView;
+                        $feesGrid = newTabView.dxDataGrid("instance");
                         newTabView.appendTo(element);
                     }
                 };
+                if (response.data[0].countPendingFees > 0) {
+                    newItem.badge = response.data[0].countPendingFees;
+                }
                 tabPanelItems.push(newItem);
             }
 
@@ -1035,10 +1036,13 @@
                             },
                             showBorders: true
                         });
-                        $mtmGrid = newTabView;
+                        $mtmGrid = newTabView.dxDataGrid("instance");
                         newTabView.appendTo(element);
                     }
                 };
+                if (response.data[0].countPendingMtm > 0) {
+                    newItem.badge = response.data[0].countPendingMtm;
+                }
                 tabPanelItems.push(newItem);
             }
 
@@ -1148,10 +1152,13 @@
                             },
                             showBorders: true
                         });
-                        $fxSettlementGrid = newTabView;
+                        $fxSettlementGrid = newTabView.dxDataGrid("instance");
                         newTabView.appendTo(element);
                     }
                 };
+                if (response.data[0].countPendingFx > 0) {
+                    newItem.badge = response.data[0].countPendingFx;
+                }
                 tabPanelItems.push(newItem);
             }
 
@@ -1170,16 +1177,6 @@
                                 {
                                     dataField: "inflowTo", width: "120px",
                                     caption: "Inflow To",
-                                    lookup: {
-                                        dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
-                                        allowClearing: true
-                                    }
-                                },
-                                {
-                                    dataField: "outflowFrom", width: "120px",
-                                    caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
                                         valueExpr: "account",
@@ -1242,10 +1239,13 @@
                             },
                             showBorders: true
                         });
-                        $contributionCreditedGrid = newTabView;
+                        $contributionCreditedGrid = newTabView.dxDataGrid("instance");
                         newTabView.appendTo(element);
                     }
                 };
+                if (response.data[0].countPendingContribution > 0) {
+                    newItem.badge = response.data[0].countPendingContribution;
+                }
                 tabPanelItems.push(newItem);
             }
 
@@ -1355,10 +1355,13 @@
                             },
                             showBorders: true
                         });
-                        $altidGrid = newTabView;
+                        $altidGrid = newTabView.dxDataGrid("instance");
                         newTabView.appendTo(element);
                     }
                 };
+                if (response.data[0].countPendingAltid > 0) {
+                    newItem.badge = response.data[0].countPendingAltid;
+                }
                 tabPanelItems.push(newItem);
             }
 
@@ -1468,10 +1471,13 @@
                             },
                             showBorders: true
                         });
-                        $othersGrid = newTabView;
+                        $othersGrid = newTabView.dxDataGrid("instance");
                         newTabView.appendTo(element);
                     }
                 };
+                if (response.data[0].countPendingOthers > 0) {
+                    newItem.badge = response.data[0].countPendingOthers;
+                }
                 tabPanelItems.push(newItem);
             }
             
@@ -1485,6 +1491,11 @@
 
         //#region Other Widgets
 
+        $tabpanel = $("#tabpanel").dxTabPanel({
+            dataSource: [],
+            showNavButtons: true
+        }).dxTabPanel("instance");
+
         $saveChangesBtn = $("#saveChangesBtn").dxButton({
             text: "Save Changes",
             stylingMode: "contained",
@@ -1493,54 +1504,54 @@
             onClick: function (e) {
                 e.event.preventDefault();
 
+                var tabPanelItems = [];
+                tabPanelItems = $tabpanel.option("dataSource");
+                $tabpanel.option("selectedIndex", tabPanelItems[0]);
+                
                 $openingBalanceGrid.saveEditData();
 
                 if (typeof ($equityGrid) !== "undefined") {
-                    $("#equityGrid").dxDataGrid("instance").saveEditData();
+                    $equityGrid.saveEditData();
                 }
                 if (typeof ($bondGrid) !== "undefined") {
-                    $("#bondGrid").dxDataGrid("instance").saveEditData();
+                    $bondGrid.saveEditData();
                 }
                 if (typeof ($cpGrid) !== "undefined" ) {
-                    $("#cpGrid").dxDataGrid("instance").saveEditData();
+                    $cpGrid.saveEditData();
                 }
                 if (typeof ($notesPaperGrid) !== "undefined" ) {
-                    $("#notesPaperGrid").dxDataGrid("instance").saveEditData();
+                    $notesPaperGrid.saveEditData();
                 }
                 if (typeof ($repoGrid) !== "undefined") {
-                    $("#repoGrid").dxDataGrid("instance").saveEditData();
+                    $repoGrid.saveEditData();
                 }
                 if (typeof ($couponGrid) !== "undefined") {
-                    $("#couponGrid").dxDataGrid("instance").saveEditData();
+                    $couponGrid.saveEditData();
                 }
                 if (typeof ($feesGrid) !== "undefined") {
-                    $("#feesGrid").dxDataGrid("instance").saveEditData();
+                    $feesGrid.saveEditData();
                 }
                 if (typeof ($mtmGrid) !== "undefined") {
-                    $("#mtmGrid").dxDataGrid("instance").saveEditData();
+                    $mtmGrid.saveEditData();
                 }
                 if (typeof ($fxSettlementGrid) !== "undefined") {
-                    $("#fxSettlementGrid").dxDataGrid("instance").saveEditData();
+                    $fxSettlementGrid.saveEditData();
                 }
                 if (typeof ($contributionCreditedGrid) !== "undefined") {
-                    $("#contributionCreditedGrid").dxDataGrid("instance").saveEditData();
+                    $contributionCreditedGrid.saveEditData();
                 }
                 if (typeof ($altidGrid) !== "undefined") {
-                    $("#altidGrid").dxDataGrid("instance").saveEditData();
+                    $altidGrid.saveEditData();
                 }
                 if (typeof ($othersGrid) !== "undefined") {
-                    $("#othersGrid").dxDataGrid("instance").saveEditData();
+                    $othersGrid.saveEditData();
                 }
 
+                loadData();
                 app.toast("Dah Saved", "Success");
             }
         }).dxButton("instance");
-
-        $tabpanel = $("#tabpanel").dxTabPanel({
-            dataSource: [],
-            showNavButtons: true
-        }).dxTabPanel("instance");
-
+        
         //#endregion
 
         //#region DataGrid

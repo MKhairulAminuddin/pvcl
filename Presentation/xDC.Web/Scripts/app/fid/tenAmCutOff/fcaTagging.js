@@ -8,10 +8,10 @@
             $printBtn;
 
         var referenceUrl = {
-            adminEdit: window.location.origin + "/issd/TradeSettlement/PartA/Edit/",
 
-            submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
-            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartA/View/"
+            loadTcaTagging: window.location.origin + "/api/fid/FcaTagging",
+            editTcaTaggingPage: window.location.origin + "/fid/FcaTagging/Edit/"
+
         };
 
         //#endregion
@@ -32,7 +32,7 @@
         $grid = $("#grid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "formId",
-                loadUrl: window.location.origin + "/api/fid/Ts10AmAccountAssignment"
+                loadUrl: referenceUrl.loadTcaTagging
             }),
             columns: [
                 {
@@ -107,7 +107,7 @@
                             hint: "Open Form",
                             icon: "fa fa-external-link",
                             onClick: function (e) {
-                                window.location.href = window.location.origin + "/fid/fcaAccountAssignment/Edit/" + e.row.data.formId;
+                                window.location.href = referenceUrl.editTcaTaggingPage + e.row.data.formId;
                                 e.event.preventDefault();
                             }
                         }
