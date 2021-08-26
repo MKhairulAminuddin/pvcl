@@ -54,7 +54,7 @@ namespace xDC_Web.Controllers
         }
 
         [Route("TradeSettlement/View/")]
-        public ActionResult View(string settlementDateEpoch, string currency)
+        public ActionResult TradeSettlementView(string settlementDateEpoch, string currency)
         {
             try
             {

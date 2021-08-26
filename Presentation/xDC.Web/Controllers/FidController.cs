@@ -72,22 +72,22 @@ namespace xDC_Web.Controllers
 
         #region Money Market
 
-        public ActionResult Mmi()
+        public ActionResult Treasury()
         {
             return View("MoneyMarketInstrument/Index");
         }
 
-        public ActionResult NewMmi()
+        public ActionResult TreasuryNew()
         {
             return View("MoneyMarketInstrument/New");
         }
 
-        public ActionResult EditMmi()
+        public ActionResult TreasuryEdit()
         {
             return View("MoneyMarketInstrument/Index");
         }
 
-        public ActionResult ViewMmi()
+        public ActionResult TreasuryView()
         {
             return View("MoneyMarketInstrument/Index");
         }

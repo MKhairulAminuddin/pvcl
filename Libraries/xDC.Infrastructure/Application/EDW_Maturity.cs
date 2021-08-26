@@ -12,16 +12,16 @@ namespace xDC.Infrastructure.Application
     using System;
     using System.Collections.Generic;
     
-    public partial class FID_MMI
+    public partial class EDW_Maturity
     {
-        public int Id { get; set; }
-        public string FormType { get; set; }
-        public string FormStatus { get; set; }
-        public string Currency { get; set; }
-        public Nullable<System.DateTime> TradeDate { get; set; }
-        public string PreparedBy { get; set; }
-        public Nullable<System.DateTime> PreparedDate { get; set; }
-        public string ApprovedBy { get; set; }
-        public Nullable<System.DateTime> ApprovedDate { get; set; }
+        public string Operator { get; set; }
+        public string Bank { get; set; }
+        public Nullable<System.DateTime> Value_Date { get; set; }
+        public System.DateTime Maturity_Date { get; set; }
+        public Nullable<double> Principle { get; set; }
+        public Nullable<int> Tenor { get; set; }
+        public Nullable<decimal> Rate { get; set; }
+        public string Asset_Type { get; set; }
+        public string bank_code { get; set; }
     }
 }

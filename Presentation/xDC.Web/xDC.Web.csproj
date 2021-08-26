@@ -285,10 +285,10 @@
     <Content Include="Scripts\app.dxGrid.utils.js" />
     <Content Include="Scripts\app\fid\tenAmCutOff\fcaTagging.js" />
     <Content Include="Scripts\app\fid\tenAmCutOff\fcaTaggingEdit.js" />
-    <Content Include="Scripts\app\fid\moneyMarket\edit.js" />
-    <Content Include="Scripts\app\fid\moneyMarket\index.js" />
-    <Content Include="Scripts\app\fid\moneyMarket\new.js" />
-    <Content Include="Scripts\app\fid\moneyMarket\view.js" />
+    <Content Include="Scripts\app\fid\treasury\edit.js" />
+    <Content Include="Scripts\app\fid\treasury\index.js" />
+    <Content Include="Scripts\app\fid\treasury\new.js" />
+    <Content Include="Scripts\app\fid\treasury\view.js" />
     <Content Include="Scripts\app\fid\tenAmCutOff\summary.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\index.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partA\edit.js" />

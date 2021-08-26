@@ -14,7 +14,7 @@
                         .Icon("plus")
                         .Text("New")
                         .StylingMode(ButtonStylingMode.Contained)
-                        .OnClick(@<text> function(){ window.location = "@Url.Action("NewMmi", "Fid")"; } </text>)
+                        .OnClick(@<text> function(){ window.location = "@Url.Action("TreasuryNew", "Fid")"; } </text>)
                         )
                 </div>
             </div>
@@ -42,6 +42,6 @@
 
 @section scripts
 {
-    <script src="~/Scripts/app/fid/moneyMarket/index.js"></script>
+    <script src="~/Scripts/app/fid/treasury/index.js"></script>
 }
 

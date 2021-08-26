@@ -150,6 +150,31 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_BankBalance' does not have a pr
           <Property Name="UpdatedBy" Type="nvarchar" MaxLength="250" />
           <Property Name="UpdatedDate" Type="datetime" />
         </EntityType>
+        <EntityType Name="EDW_FID_List">
+          <Key>
+            <PropertyRef Name="Reference" />
+            <PropertyRef Name="Type" />
+          </Key>
+          <Property Name="Name" Type="varchar" MaxLength="100" />
+          <Property Name="Reference" Type="varchar" MaxLength="24" Nullable="false" />
+          <Property Name="Type" Type="varchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'kashflowDB.dbo.EDW_Maturity' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="EDW_Maturity">
+          <Key>
+            <PropertyRef Name="Maturity_Date" />
+          </Key>
+          <Property Name="Operator" Type="varchar" MaxLength="256" />
+          <Property Name="Bank" Type="varchar" MaxLength="256" />
+          <Property Name="Value_Date" Type="datetime" />
+          <Property Name="Maturity_Date" Type="datetime" Nullable="false" />
+          <Property Name="Principle" Type="float" />
+          <Property Name="Tenor" Type="int" />
+          <Property Name="Rate" Type="decimal" Precision="10" Scale="4" />
+          <Property Name="Asset_Type" Type="varchar" MaxLength="256" />
+          <Property Name="bank_code" Type="varchar" MaxLength="256" />
+        </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="EDW_TradeItem">
@@ -170,7 +195,7 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="UpdatedBy" Type="nvarchar" MaxLength="250" />
           <Property Name="UpdatedDate" Type="datetime" />
         </EntityType>
-        <EntityType Name="FID_MMI">
+        <EntityType Name="FID_Treasury">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -184,7 +209,7 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="ApprovedBy" Type="nvarchar" MaxLength="150" />
           <Property Name="ApprovedDate" Type="datetime" />
         </EntityType>
-        <EntityType Name="FID_MMI_Deposit">
+        <EntityType Name="FID_Treasury_Deposit">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -205,7 +230,7 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="ModifiedBy" Type="nvarchar" MaxLength="150" />
           <Property Name="ModifiedDate" Type="datetime" />
         </EntityType>
-        <EntityType Name="FID_MMI_Item">
+        <EntityType Name="FID_Treasury_Item">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -408,9 +433,10 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="Config_Approver" EntityType="Self.Config_Approver" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Config_Dropdown" EntityType="Self.Config_Dropdown" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Config_Key" EntityType="Self.Config_Key" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="FID_MMI" EntityType="Self.FID_MMI" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="FID_MMI_Deposit" EntityType="Self.FID_MMI_Deposit" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="FID_MMI_Item" EntityType="Self.FID_MMI_Item" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EDW_FID_List" EntityType="Self.EDW_FID_List" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FID_Treasury" EntityType="Self.FID_Treasury" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FID_Treasury_Deposit" EntityType="Self.FID_Treasury_Deposit" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FID_Treasury_Item" EntityType="Self.FID_Treasury_Item" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FID_TS10" EntityType="Self.FID_TS10" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FID_TS10_Approval" EntityType="Self.FID_TS10_Approval" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FID_TS10_OpeningBalance" EntityType="Self.FID_TS10_OpeningBalance" Schema="dbo" store:Type="Tables" />
@@ -436,6 +462,19 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
     [EDW_BankBalance].[UpdatedBy] AS [UpdatedBy], 
     [EDW_BankBalance].[UpdatedDate] AS [UpdatedDate]
     FROM [dbo].[EDW_BankBalance] AS [EDW_BankBalance]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="EDW_Maturity" EntityType="Self.EDW_Maturity" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [EDW_Maturity].[Operator] AS [Operator], 
+    [EDW_Maturity].[Bank] AS [Bank], 
+    [EDW_Maturity].[Value_Date] AS [Value_Date], 
+    [EDW_Maturity].[Maturity_Date] AS [Maturity_Date], 
+    [EDW_Maturity].[Principle] AS [Principle], 
+    [EDW_Maturity].[Tenor] AS [Tenor], 
+    [EDW_Maturity].[Rate] AS [Rate], 
+    [EDW_Maturity].[Asset_Type] AS [Asset_Type], 
+    [EDW_Maturity].[bank_code] AS [bank_code]
+    FROM [dbo].[EDW_Maturity] AS [EDW_Maturity]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="EDW_TradeItem" EntityType="Self.EDW_TradeItem" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
@@ -492,9 +531,11 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="FID_TS10_TradeItem" EntityType="kashflowDbModel.FID_TS10_TradeItem" />
           <EntitySet Name="FID_TS10_Approval" EntityType="kashflowDbModel.FID_TS10_Approval" />
           <EntitySet Name="FID_TS10_OpeningBalance" EntityType="kashflowDbModel.FID_TS10_OpeningBalance" />
-          <EntitySet Name="FID_MMI" EntityType="kashflowDbModel.FID_MMI" />
-          <EntitySet Name="FID_MMI_Deposit" EntityType="kashflowDbModel.FID_MMI_Deposit" />
-          <EntitySet Name="FID_MMI_Item" EntityType="kashflowDbModel.FID_MMI_Item" />
+          <EntitySet Name="EDW_FID_List" EntityType="kashflowDbModel.EDW_FID_List" />
+          <EntitySet Name="EDW_Maturity" EntityType="kashflowDbModel.EDW_Maturity" />
+          <EntitySet Name="FID_Treasury" EntityType="kashflowDbModel.FID_Treasury" />
+          <EntitySet Name="FID_Treasury_Deposit" EntityType="kashflowDbModel.FID_Treasury_Deposit" />
+          <EntitySet Name="FID_Treasury_Item" EntityType="kashflowDbModel.FID_Treasury_Item" />
           </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -797,7 +838,30 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="AssignedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="AssignedDate" Type="DateTime" Precision="3" />
         </EntityType>
-        <EntityType Name="FID_MMI">
+        <EntityType Name="EDW_FID_List">
+          <Key>
+            <PropertyRef Name="Reference" />
+            <PropertyRef Name="Type" />
+          </Key>
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Reference" Type="String" Nullable="false" MaxLength="24" FixedLength="false" Unicode="false" />
+          <Property Name="Type" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="EDW_Maturity">
+          <Key>
+            <PropertyRef Name="Maturity_Date" />
+          </Key>
+          <Property Name="Operator" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="Bank" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="Value_Date" Type="DateTime" Precision="3" />
+          <Property Name="Maturity_Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Principle" Type="Double" />
+          <Property Name="Tenor" Type="Int32" />
+          <Property Name="Rate" Type="Decimal" Precision="10" Scale="4" />
+          <Property Name="Asset_Type" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="bank_code" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="FID_Treasury">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -811,7 +875,7 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="ApprovedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="ApprovedDate" Type="DateTime" Precision="3" />
         </EntityType>
-        <EntityType Name="FID_MMI_Deposit">
+        <EntityType Name="FID_Treasury_Deposit">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -832,7 +896,7 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
         </EntityType>
-        <EntityType Name="FID_MMI_Item">
+        <EntityType Name="FID_Treasury_Item">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -1183,9 +1247,33 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="FID_MMI">
-            <EntityTypeMapping TypeName="kashflowDbModel.FID_MMI">
-              <MappingFragment StoreEntitySet="FID_MMI">
+          <EntitySetMapping Name="EDW_FID_List">
+            <EntityTypeMapping TypeName="kashflowDbModel.EDW_FID_List">
+              <MappingFragment StoreEntitySet="EDW_FID_List">
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Reference" ColumnName="Reference" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EDW_Maturity">
+            <EntityTypeMapping TypeName="kashflowDbModel.EDW_Maturity">
+              <MappingFragment StoreEntitySet="EDW_Maturity">
+                <ScalarProperty Name="bank_code" ColumnName="bank_code" />
+                <ScalarProperty Name="Asset_Type" ColumnName="Asset_Type" />
+                <ScalarProperty Name="Rate" ColumnName="Rate" />
+                <ScalarProperty Name="Tenor" ColumnName="Tenor" />
+                <ScalarProperty Name="Principle" ColumnName="Principle" />
+                <ScalarProperty Name="Maturity_Date" ColumnName="Maturity_Date" />
+                <ScalarProperty Name="Value_Date" ColumnName="Value_Date" />
+                <ScalarProperty Name="Bank" ColumnName="Bank" />
+                <ScalarProperty Name="Operator" ColumnName="Operator" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FID_Treasury">
+            <EntityTypeMapping TypeName="kashflowDbModel.FID_Treasury">
+              <MappingFragment StoreEntitySet="FID_Treasury">
                 <ScalarProperty Name="ApprovedDate" ColumnName="ApprovedDate" />
                 <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
                 <ScalarProperty Name="PreparedDate" ColumnName="PreparedDate" />
@@ -1198,9 +1286,9 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="FID_MMI_Deposit">
-            <EntityTypeMapping TypeName="kashflowDbModel.FID_MMI_Deposit">
-              <MappingFragment StoreEntitySet="FID_MMI_Deposit">
+          <EntitySetMapping Name="FID_Treasury_Deposit">
+            <EntityTypeMapping TypeName="kashflowDbModel.FID_Treasury_Deposit">
+              <MappingFragment StoreEntitySet="FID_Treasury_Deposit">
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="Notes" ColumnName="Notes" />
@@ -1220,9 +1308,9 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="FID_MMI_Item">
-            <EntityTypeMapping TypeName="kashflowDbModel.FID_MMI_Item">
-              <MappingFragment StoreEntitySet="FID_MMI_Item">
+          <EntitySetMapping Name="FID_Treasury_Item">
+            <EntityTypeMapping TypeName="kashflowDbModel.FID_Treasury_Item">
+              <MappingFragment StoreEntitySet="FID_Treasury_Item">
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="CertNoStockCode" ColumnName="CertNoStockCode" />

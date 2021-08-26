@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[FID_MMI](
+﻿CREATE TABLE [dbo].[FID_Treasury](
 	[Id] INT NOT NULL Identity(1,1) PRIMARY KEY, 
 
     [FormType] NVARCHAR(150), 
@@ -13,7 +13,7 @@
     [ApprovedDate] DATETIME
 )
 
-CREATE TABLE [dbo].[FID_MMI_Deposit](
+CREATE TABLE [dbo].[FID_Treasury_Deposit](
 	[Id] INT NOT NULL Identity(1,1) PRIMARY KEY, 
 
     [CashflowType] NVARCHAR(50), -- inflow/outflow
@@ -35,7 +35,7 @@ CREATE TABLE [dbo].[FID_MMI_Deposit](
     [ModifiedDate] DATETIME
 )
 
-CREATE TABLE [dbo].[FID_MMI_Item](
+CREATE TABLE [dbo].[FID_Treasury_Item](
 	[Id] INT NOT NULL Identity(1,1) PRIMARY KEY, 
 
     [CashflowType] NVARCHAR(50), -- inflow/outflow

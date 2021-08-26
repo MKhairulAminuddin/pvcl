@@ -80,16 +80,22 @@
     <Compile Include="Application\EDW_BankBalance.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
+    <Compile Include="Application\EDW_FID_List.cs">
+      <DependentUpon>kashflowDb.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Application\EDW_Maturity.cs">
+      <DependentUpon>kashflowDb.tt</DependentUpon>
+    </Compile>
     <Compile Include="Application\EDW_TradeItem.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Application\FID_MMI.cs">
+    <Compile Include="Application\FID_Treasury.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Application\FID_MMI_Deposit.cs">
+    <Compile Include="Application\FID_Treasury_Deposit.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Application\FID_MMI_Item.cs">
+    <Compile Include="Application\FID_Treasury_Item.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
     <Compile Include="Application\FID_TS10.cs">

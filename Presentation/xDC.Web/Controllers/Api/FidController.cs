@@ -350,7 +350,7 @@ namespace xDC_Web.Controllers.Api
         #endregion
 
 
-        #region Money Market
+        #region Treasury
 
         [HttpGet]
         [Route("Mmi")]
@@ -360,7 +360,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.FID_MMI.Select(x => new MmiGridVm
+                    var result = db.FID_Treasury.Select(x => new MmiGridVm
                     {
                         FormId = x.Id,
                         TradeDate = x.TradeDate,
