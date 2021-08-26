@@ -12,9 +12,11 @@ using DevExtreme.AspNet.Mvc;
 using Newtonsoft.Json;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Services.App;
 using xDC.Utils;
+using xDC_Web.Models;
 using xDC_Web.ViewModels.Fid;
-using xDC_Web.ViewModels.Fid.Mmi;
+using xDC_Web.ViewModels.Fid.Treasury;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -353,22 +355,22 @@ namespace xDC_Web.Controllers.Api
         #region Treasury
 
         [HttpGet]
-        [Route("Mmi")]
-        public HttpResponseMessage Mmi(DataSourceLoadOptions loadOptions)
+        [Route("Treasury")]
+        public HttpResponseMessage TreasuryIndex(DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.FID_Treasury.Select(x => new MmiGridVm
+                    var result = db.FID_Treasury.Select(x => new TreasuryGridVm
                     {
-                        FormId = x.Id,
+                        Id = x.Id,
                         TradeDate = x.TradeDate,
                         Currency = x.Currency,
                         FormStatus = x.FormStatus,
-                        Preparer = x.PreparedBy,
+                        PreparedBy = x.PreparedBy,
                         PreparedDate = x.PreparedDate,
-                        Approver = x.ApprovedBy,
+                        ApprovedBy = x.ApprovedBy,
                         ApprovedDate = x.ApprovedDate,
 
                         IsEditAllowed = false,
@@ -382,6 +384,253 @@ namespace xDC_Web.Controllers.Api
                     
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("Treasury/EdwMaturity/{tradeDateEpoch}/{Currency}")]
+        public HttpResponseMessage Treasury_EdwMaturity(long tradeDateEpoch, string currency, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var tradeDate = Common.ConvertEpochToDateTime(tradeDateEpoch);
+                    tradeDate = tradeDate.Value.Date;
+                    var result = db.EDW_Maturity.Where(x => DbFunctions.TruncateTime(x.Value_Date) == tradeDate).Select(
+                        x => new TreasuryDepositGridVm
+                        {
+                            Dealer = x.Operator,
+                            Bank = x.Bank,
+                            ValueDate = x.Value_Date.Value,
+                            MaturityDate = x.Maturity_Date,
+                            Principal = x.Principle.Value,
+                            Tenor = x.Tenor.Value,
+                            RatePercent = x.Rate.Value,
+                            IntProfitReceivable = 0,
+                            PrincipalIntProfitReceivable = 0,
+                            AssetType = x.Asset_Type,
+                            RepoTag = null,
+                            ContactPerson = null,
+                            Notes = null
+                        }).ToList();
+
+                    foreach (var item in result)
+                    {
+                        var rate = (double) item.RatePercent / 100;
+                        var tenor = (double) item.Tenor / 365;
+
+                        item.IntProfitReceivable = item.Principal * tenor * rate;
+                        item.PrincipalIntProfitReceivable = item.Principal + item.IntProfitReceivable;
+                    }
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("Treasury/EdwBankCounterParty")]
+        public HttpResponseMessage Treasury_EdwBankCounterParty(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = FidService.List_CounterParty(db);
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("Treasury/EdwIssuer")]
+        public HttpResponseMessage Treasury_EdwIssuer(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = FidService.List_Issuer(db);
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+
+        [HttpPost]
+        [Route("Treasury/New")]
+        public HttpResponseMessage Treasury_FormNew([FromBody] TreasuryFormModel input)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var tradeDateConverted = Common.ConvertEpochToDateTime(input.TradeDate);
+                    tradeDateConverted = tradeDateConverted.Value.Date;
+
+                    var form = new FID_Treasury
+                    {
+                        FormType = "Treasury",
+                        FormStatus = "Pending Approval",
+                        Currency = input.Currency,
+                        TradeDate = tradeDateConverted,
+                        PreparedBy = User.Identity.Name,
+                        PreparedDate = DateTime.Now
+                    };
+                    db.FID_Treasury.Add(form);
+                    db.SaveChanges();
+
+                    var inflowDeposit = new List<FID_Treasury_Deposit>();
+                    if (input.InflowDeposit.Any())
+                    {
+                        foreach (var item in input.InflowDeposit)
+                        {
+                            inflowDeposit.Add(new FID_Treasury_Deposit
+                            {
+                                Id = 0,
+                                // form id mana
+                                CashflowType = "INFLOW",
+                                Dealer = item.Dealer,
+                                Bank = item.Bank,
+                                ValueDate = item.ValueDate,
+                                MaturityDate = item.MaturityDate,
+                                Tenor = item.Tenor,
+                                RatePercent = item.RatePercent,
+                                IntProfitReceivable = item.IntProfitReceivable,
+                                PrincipalIntProfitReceivable = item.PrincipalIntProfitReceivable,
+                                AssetType = item.AssetType,
+                                RepoTag = item.RepoTag,
+                                ContactPerson = item.ContactPerson,
+                                Notes = item.Notes,
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
+                            });
+                        }
+                    }
+                    db.FID_Treasury_Deposit.AddRange(inflowDeposit);
+                    db.SaveChanges();
+
+                    var outflowDeposit = new List<FID_Treasury_Deposit>();
+                    if (input.OutflowDeposit.Any())
+                    {
+                        foreach (var item in input.OutflowDeposit)
+                        {
+                            inflowDeposit.Add(new FID_Treasury_Deposit
+                            {
+                                Id = 0,
+                                // form id mana
+                                CashflowType = "OUTFLOW",
+                                Dealer = item.Dealer,
+                                Bank = item.Bank,
+                                ValueDate = item.ValueDate,
+                                MaturityDate = item.MaturityDate,
+                                Tenor = item.Tenor,
+                                RatePercent = item.RatePercent,
+                                IntProfitReceivable = item.IntProfitReceivable,
+                                PrincipalIntProfitReceivable = item.PrincipalIntProfitReceivable,
+                                AssetType = item.AssetType,
+                                RepoTag = item.RepoTag,
+                                ContactPerson = item.ContactPerson,
+                                Notes = item.Notes,
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
+                            });
+                        }
+                    }
+                    db.FID_Treasury_Deposit.AddRange(outflowDeposit);
+                    db.SaveChanges();
+
+                    var inflowMoneyMarket = new List<FID_Treasury_Item>();
+                    if (input.InflowMoneyMarket.Any())
+                    {
+                        foreach (var item in input.InflowMoneyMarket)
+                        {
+                            inflowMoneyMarket.Add(new FID_Treasury_Item
+                            {
+                                Id = 0,
+                                // form id mana
+                                CashflowType = "INFLOW",
+                                Dealer = item.Dealer,
+                                Issuer = item.Issuer,
+                                ProductType = item.ProductType,
+                                CounterParty = item.CounterParty,
+                                ValueDate = item.ValueDate,
+                                MaturityDate = item.MaturityDate,
+                                HoldingDayTenor = item.HoldingDayTenor,
+                                Nominal = item.Nominal,
+                                SellPurchaseRateYield = item.SellPurchaseRateYield,
+                                Price = item.Price,
+                                IntDividendReceivable = item.IntDividendReceivable,
+                                Proceeds = item.Proceeds,
+                                CertNoStockCode = item.CertNoStockCode,
+
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
+                            });
+                        }
+                    }
+                    db.FID_Treasury_Item.AddRange(inflowMoneyMarket);
+                    db.SaveChanges();
+
+                    var outflowMoneyMarket = new List<FID_Treasury_Item>();
+                    if (input.OutflowMoneyMarket.Any())
+                    {
+                        foreach (var item in input.OutflowMoneyMarket)
+                        {
+                            outflowMoneyMarket.Add(new FID_Treasury_Item
+                            {
+                                Id = 0,
+                                // form id mana
+                                CashflowType = "INFLOW",
+                                Dealer = item.Dealer,
+                                Issuer = item.Issuer,
+                                ProductType = item.ProductType,
+                                CounterParty = item.CounterParty,
+                                ValueDate = item.ValueDate,
+                                MaturityDate = item.MaturityDate,
+                                HoldingDayTenor = item.HoldingDayTenor,
+                                Nominal = item.Nominal,
+                                SellPurchaseRateYield = item.SellPurchaseRateYield,
+                                Price = item.Price,
+                                IntDividendReceivable = item.IntDividendReceivable,
+                                Proceeds = item.Proceeds,
+                                CertNoStockCode = item.CertNoStockCode,
+
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
+                            });
+                        }
+                    }
+                    db.FID_Treasury_Item.AddRange(outflowMoneyMarket);
+                    db.SaveChanges();
+
+
+                    return Request.CreateResponse(HttpStatusCode.Created, form.Id);
+                }
+
             }
             catch (Exception ex)
             {

@@ -7,11 +7,11 @@
         $grid1 = $("#grid1").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: window.location.origin + "/api/fid/mmi"
+                loadUrl: window.location.origin + "/api/fid/treasury"
             }),
             columns: [
                 {
-                    dataField: "formId",
+                    dataField: "id",
                     caption: "Form ID",
                     width: "100px",
                     alignment: "left",
@@ -66,11 +66,11 @@
                             hint: "Edit",
                             icon: "fa fa-pencil-square",
                             cssClass: "dx-datagrid-command-btn",
-                            visible: function (e) {
+                            /*visible: function (e) {
                                 return (e.row.data.isEditAllowed);
-                            },
+                            },*/
                             onClick: function (e) {
-                                window.location.href = window.location.origin + "/issd/TradeSettlement/PartA/Edit/" + e.row.data.id;
+                                window.location.href = window.location.origin + "/fid/Treasury/View/" + e.row.data.id;
                                 e.event.preventDefault();
                             }
                         },
@@ -78,9 +78,9 @@
                             hint: "Delete",
                             icon: "fa fa-trash-o",
                             cssClass: "dx-datagrid-command-btn text-red",
-                            visible: function (e) {
+                            /*visible: function (e) {
                                 return (e.row.data.isDeleteAllowed);
-                            },
+                            },*/
                             onClick: function (e) {
                                 if (!confirm("Do you really want to delete this?")) {
                                     return false;
@@ -91,14 +91,14 @@
 
                                     $.ajax({
                                         type: "delete",
-                                        url: window.location.origin + "/api/issd/TradeSettlement/",
+                                        url: window.location.origin + "/api/fid/Treasury/",
                                         data: data,
                                         success: function (data) {
-                                            $("#error_container").bs_success("Draft deleted");
-                                            $issdGrid.refresh();
+                                            app.toast("Form Deleted", "warning");
+                                            $grid1.refresh();
                                         },
                                         fail: function (jqXHR, textStatus, errorThrown) {
-                                            $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                                            $app.toast(textStatus + ": " + errorThrown, "error");
                                         }
                                     });
                                     e.event.preventDefault();
@@ -109,11 +109,11 @@
                             hint: "View",
                             icon: "fa fa-eye",
                             cssClass: "dx-datagrid-command-btn",
-                            visible: function (e) {
+                            /*visible: function (e) {
                                 return (e.row.data.isViewAllowed);
-                            },
+                            },*/
                             onClick: function (e) {
-                                window.location.href = window.location.origin + "/issd/TradeSettlement/PartA/View/" + e.row.data.id;
+                                window.location.href = window.location.origin + "/fid/Treasury/View/" + e.row.data.id;
                                 e.event.preventDefault();
                             }
                         },
@@ -121,9 +121,9 @@
                             hint: "Download as Excel",
                             icon: "fa fa-file-excel-o",
                             cssClass: "dx-datagrid-command-btn text-green",
-                            visible: function (e) {
+                            /*visible: function (e) {
                                 return (e.row.data.isDownloadAllowed);
-                            },
+                            },*/
                             onClick: function (e) {
                                 var data = {
                                     id: e.row.data.id,
@@ -153,9 +153,9 @@
                             hint: "Download as PDF",
                             icon: "fa fa-file-pdf-o",
                             cssClass: "dx-datagrid-command-btn text-orange",
-                            visible: function (e) {
+                            /*visible: function (e) {
                                 return (e.row.data.isDownloadAllowed);
-                            },
+                            },*/
                             onClick: function (e) {
 
                                 var data = {

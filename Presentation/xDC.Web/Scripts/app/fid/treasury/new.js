@@ -2,39 +2,122 @@
 
     $(function () {
         //#region Variable Definition
-        
+
         var $inflowTabpanel,
             $inflowDepositGrid,
             $inflowMmiGrid,
 
             $outflowTabpanel,
             $outflowDepositGrid,
-            $outflowMmiGrid;
+            $outflowMmiGrid,
+
+            $currencySelectBox,
+            $tradeDate;
 
         var referenceUrl = {
-            postNewFormRequest: window.location.origin + "/api/issd/TradeSettlement/New",
-            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartA/View/",
+            dsMaturity: window.location.origin + "/api/fid/Treasury/EdwMaturity/",
+            dsBankCounterParty: window.location.origin + "/api/fid/Treasury/EdwBankCounterParty/",
+            dsIssuer: window.location.origin + "/api/fid/Treasury/EdwIssuer/",
+
+            postNewFormRequest: window.location.origin + "/api/fid/Treasury/New",
+            postNewFormResponse: window.location.origin + "/fid/Treasury",
         };
         
         //#endregion
 
         //#region Data Source & Functions
+
+        var dsProductType = ["NID", "NIDC", "Commercial Papers", "Bankers Acceptance", "BNMN",
+            "BNMN-i", "MTB", "MTB-i", "Others"];
+
+        var dsNotes = ["w/d P+I", "r/o P+I", "New"];
+
+        var dsAssetType = ["MMD", "FD", "CMD"];
+
+        var dsBankCounterParty = DevExpress.data.AspNet.createStore({
+            key: "reference",
+            loadUrl: referenceUrl.dsBankCounterParty
+        });
+
+        var dsIssuer = DevExpress.data.AspNet.createStore({
+            key: "reference",
+            loadUrl: referenceUrl.dsBankCounterParty
+        });
+
+        var dsMaturity = function (tradeDateEpoch, currency) {
+            return $.ajax({
+                url: referenceUrl.dsMaturity + "/" + moment(tradeDateEpoch).unix() + "/" + currency,
+                type: "get"
+            });
+        };
+
+        var populateDwData = function(tradeDate, currency) {
+            if (tradeDate && currency) {
+                $.when(
+                    dsMaturity(tradeDate, currency)
+                    )
+                    .done(function (data1) {
+                        $inflowDepositGrid.option("dataSource", data1.data);
+                        $inflowDepositGrid.repaint();
+                        
+                    })
+                    .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+                        //tradeSettlement.toast("Data Updated", "info");
+                        app.toast("Data Updated", "info");
+                    })
+                    .then(function () {
+
+                    });
+            } else {
+                dxGridUtils.clearGrid($inflowDepositGrid);
+            }
+        }
+
+        function postData() {
+            var data = {
+                currency: $currencySelectBox.option("value"),
+                tradeDate: moment($tradeDate.option("value")).unix(),
+                
+                inflowDeposit: $inflowDepositGrid.getDataSource().items(),
+                outflowDeposit: $outflowDepositGrid.getDataSource().items(),
+
+                inflowMoneyMarket: $inflowMmiGrid.getDataSource().items(),
+                outflowMoneyMarket: $outflowMmiGrid.getDataSource().items(),
+                
+            };
+
+            return $.ajax({
+                data: data,
+                dataType: "json",
+                url: referenceUrl.postNewFormRequest,
+                method: "post",
+                success: function (response) {
+                    window.location.href = referenceUrl.postNewFormResponse + response;
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                },
+                complete: function (data) {
+                    
+                }
+            });
+        }
         
 
         //#endregion
         
         //#region Other Widgets
 
-        $("#tradeDate").dxDateBox({
+        $tradeDate = $("#tradeDate").dxDateBox({
             type: "date",
             displayFormat: "dd/MM/yyyy",
             value: new Date()
-        });
+        }).dxDateBox("instance");
 
-        $("#currency").dxSelectBox({
-            data: ["MYR", "USD"],
-            placeHolder: "Currency.."
-        });
+        $currencySelectBox = $("#currency").dxSelectBox({
+            dataSource: ["MYR", "USD"],
+            placeHolder: "Currency..",
+        }).dxSelectBox("instance");
         
         $inflowTabpanel = $("#inflowTabpanel").dxTabPanel({
             dataSource: [
@@ -71,11 +154,12 @@
                 {
                     dataField: "bank",
                     caption: "Bank",
-                    /*lookup: {
-                        dataSource: states,
-                        valueExpr: "ID",
-                        displayExpr: "Name"
-                    }*/
+                    lookup: {
+                        dataSource: dsBankCounterParty,
+                        valueExpr: "name",
+                        displayExpr: "name"
+                    },
+                    allowEditing: false
                 },
                 {
                     dataField: "valueDate",
@@ -85,7 +169,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    allowEditing: false
                 },
                 {
                     dataField: "maturityDate",
@@ -95,7 +180,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    allowEditing: false
                 },
                 {
                     dataField: "principal",
@@ -121,7 +207,8 @@
                     dataField: "ratePercent",
                     caption: "Rate (%)",
                     dataType: "number",
-                    format: "#.00 '%'"
+                    format: "#.00 '%'",
+                    allowEditing: false
                 },
                 {
                     dataField: "intProfitReceivable",
@@ -146,11 +233,10 @@
                 {
                     dataField: "assetType",
                     caption: "Asset Type",
-                    /*lookup: {
-                        dataSource: states,
-                        valueExpr: "ID",
-                        displayExpr: "Name"
-                    }*/
+                    lookup: {
+                        dataSource: dsAssetType
+                    },
+                    allowEditing: false,
                 },
                 {
                     dataField: "repoTag",
@@ -191,7 +277,7 @@
                 mode: "batch",
                 allowUpdating: true,
                 allowDeleting: false,
-                allowAdding: true
+                allowAdding: false
             },
             showBorders: true,
             showRowLines: true,
@@ -204,17 +290,16 @@
             columns: [
                 {
                     dataField: "dealer",
-                    caption: "Dealer",
-                    allowEditing: false
+                    caption: "Dealer"
                 },
                 {
                     dataField: "bank",
                     caption: "Bank",
-                    /*lookup: {
-                        dataSource: states,
-                        valueExpr: "ID",
-                        displayExpr: "Name"
-                    }*/
+                    lookup: {
+                        dataSource: dsBankCounterParty,
+                        valueExpr: "name",
+                        displayExpr: "name"
+                    }
                 },
                 {
                     dataField: "valueDate",
@@ -243,8 +328,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "tenor",
@@ -253,6 +337,9 @@
                     format: {
                         type: "fixedPoint",
                         precision: 0
+                    },
+                    calculateCellValue: function (rowData) {
+                        return moment(rowData.maturityDate).diff(rowData.valueDate, "days");
                     },
                     allowEditing: false
                 },
@@ -270,6 +357,13 @@
                         type: "fixedPoint",
                         precision: 2
                     },
+                    calculateCellValue: function (rowData) {
+                        var rate = (parseFloat(rowData.ratePercent * 100) || 0);
+                        var tenor = (parseFloat((moment(rowData.maturityDate).diff(rowData.valueDate, "days")) / 365 * 100) || 0);
+                        var principal = (parseFloat(rowData.principal) || 0);
+
+                        return (principal * tenor * rate);
+                    },
                     allowEditing: false
                 },
                 {
@@ -280,16 +374,21 @@
                         type: "fixedPoint",
                         precision: 2
                     },
+                    calculateCellValue: function (rowData) {
+                        var rate = (parseFloat(rowData.ratePercent * 100) || 0);
+                        var tenor = (parseFloat((moment(rowData.maturityDate).diff(rowData.valueDate, "days")) / 365 * 100) || 0);
+                        var principal = (parseFloat(rowData.principal) || 0);
+
+                        return principal + (principal * tenor * rate);
+                    },
                     allowEditing: false
                 },
                 {
                     dataField: "assetType",
                     caption: "Asset Type",
-                    /*lookup: {
-                        dataSource: states,
-                        valueExpr: "ID",
-                        displayExpr: "Name"
-                    }*/
+                    lookup: {
+                        dataSource: dsAssetType
+                    }
                 },
                 {
                     dataField: "repoTag",
@@ -302,6 +401,9 @@
                 {
                     dataField: "notes",
                     caption: "Notes",
+                    lookup: {
+                        dataSource: dsNotes
+                    }
                 },
             ],
             summary: {
@@ -349,29 +451,27 @@
                 {
                     dataField: "issuer",
                     caption: "Issuer",
-                    /*lookup: {
-                        dataSource: states,
-                        valueExpr: "ID",
-                        displayExpr: "Name"
-                    }*/
+                    lookup: {
+                        dataSource: dsIssuer,
+                        valueExpr: "name",
+                        displayExpr: "name"
+                    }
                 },
                 {
                     dataField: "productType",
                     caption: "Product Type",
-                    /*lookup: {
-                        dataSource: states,
-                        valueExpr: "ID",
-                        displayExpr: "Name"
-                    }*/
+                    lookup: {
+                        dataSource: dsProductType
+                    }
                 },
                 {
                     dataField: "counterParty",
                     caption: "Counterparty",
-                    /*lookup: {
-                        dataSource: states,
-                        valueExpr: "ID",
-                        displayExpr: "Name"
-                    }*/
+                    lookup: {
+                        dataSource: dsBankCounterParty,
+                        valueExpr: "name",
+                        displayExpr: "name"
+                    }
                 },
                 {
                     dataField: "valueDate",
@@ -508,29 +608,27 @@
                 {
                     dataField: "issuer",
                     caption: "Issuer",
-                    /*lookup: {
-                        dataSource: states,
-                        valueExpr: "ID",
-                        displayExpr: "Name"
-                    }*/
+                    lookup: {
+                        dataSource: dsIssuer,
+                        valueExpr: "name",
+                        displayExpr: "name"
+                    }
                 },
                 {
                     dataField: "productType",
                     caption: "Product Type",
-                    /*lookup: {
-                        dataSource: states,
-                        valueExpr: "ID",
-                        displayExpr: "Name"
-                    }*/
+                    lookup: {
+                        dataSource: dsProductType
+                    }
                 },
                 {
                     dataField: "counterParty",
                     caption: "Counterparty",
-                    /*lookup: {
-                        dataSource: states,
-                        valueExpr: "ID",
-                        displayExpr: "Name"
-                    }*/
+                    lookup: {
+                        dataSource: dsBankCounterParty,
+                        valueExpr: "name",
+                        displayExpr: "name"
+                    }
                 },
                 {
                     dataField: "valueDate",
@@ -560,6 +658,9 @@
                         type: "fixedPoint",
                         precision: 0
                     },
+                    calculateCellValue: function (rowData) {
+                        return moment(rowData.maturityDate).diff(rowData.valueDate, "days");
+                    },
                     allowEditing: false
                 },
                 {
@@ -569,8 +670,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "sellPurchaseRatePercent",
@@ -585,8 +685,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "intDividendReceivable",
@@ -605,8 +704,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "certNoStockCode",
@@ -660,6 +758,14 @@
  
         //#region Events
 
+        $tradeDate.on("valueChanged", function (data) {
+            populateDwData(data.value, $currencySelectBox.option("value"));
+        });
+
+        $currencySelectBox.on("valueChanged", function (data) {
+            populateDwData($tradeDate.option("value"), data.value);
+        });
+
         $("#saveAsDraftBtn").dxButton({
             onClick: function(e) {
                 alert("hehe clicked!");
@@ -669,6 +775,8 @@
         $("#submitForApprovalBtn").dxButton({
             onClick: function (e) {
                 e.event.preventDefault();
+
+                postData();
             }
         });
 

@@ -36,7 +36,7 @@ namespace xDC.Services.App
         public static List<EDW_FID_List> List_CounterParty(kashflowDBEntities db)
         {
             // check for same date and same currency exist
-            var counterPartyList = db.EDW_FID_List.Where(x => x.Type == "COUNTER PARTY").ToList();
+            var counterPartyList = db.EDW_FID_List.Where(x => x.Type == "COUNTERPARTY").ToList();
             return counterPartyList;
         }
     }
