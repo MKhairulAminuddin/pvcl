@@ -402,7 +402,7 @@ namespace xDC_Web.Controllers.Api
                 {
                     var tradeDate = Common.ConvertEpochToDateTime(tradeDateEpoch);
                     tradeDate = tradeDate.Value.Date;
-                    var result = db.EDW_Maturity.Where(x => DbFunctions.TruncateTime(x.Value_Date) == tradeDate).Select(
+                    var result = db.EDW_Maturity.Where(x => DbFunctions.TruncateTime(x.Value_Date) == tradeDate && x.currency == currency).Select(
                         x => new TreasuryDepositGridVm
                         {
                             Dealer = x.Operator,
@@ -629,6 +629,56 @@ namespace xDC_Web.Controllers.Api
 
 
                     return Request.CreateResponse(HttpStatusCode.Created, form.Id);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("Treasury/EdwMaturity/AvailableMaturity")]
+        public HttpResponseMessage Treasury_EdwAvailableMaturity(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.EDW_Maturity.Select(x => new
+                    {
+                        day = x.Value_Date.Value.Day,
+                        month = x.Value_Date.Value.Month,
+                        date = x.Value_Date.Value
+                    }).Distinct().ToList();
+                    
+                    return Request.CreateResponse(HttpStatusCode.OK, result);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("Treasury/EdwMaturity/AvailableMaturity/{tradeDateEpoch}")]
+        public HttpResponseMessage Treasury_EdwAvailableMaturityCurrency(long tradeDateEpoch, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var tradeDate = Common.ConvertEpochToDateTime(tradeDateEpoch);
+                    tradeDate = tradeDate.Value.Date;
+
+                    var result = db.EDW_Maturity.Where(x => DbFunctions.TruncateTime(x.Value_Date.Value) == DbFunctions.TruncateTime(tradeDate)).Select(x => x.currency).Distinct().ToList();
+
+                    return Request.CreateResponse(HttpStatusCode.OK, result);
                 }
 
             }

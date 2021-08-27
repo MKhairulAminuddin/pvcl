@@ -622,6 +622,7 @@
     <Compile Include="Models\MailMerge\SpreadsheetPreviewModel.cs" />
     <Compile Include="Models\Trades.cs" />
     <Compile Include="ViewModels\Fid\EditFcaAccountAssignmentVM.cs" />
+    <Compile Include="ViewModels\Fid\Treasury\TreasuryFormVM.cs" />
     <Compile Include="ViewModels\Fid\Treasury\TreasuryGridVm.cs" />
     <Compile Include="ViewModels\Fid\TenAmCutOffItemVM.cs" />
     <Compile Include="ViewModels\Fid\TenAmCutOffVM.cs" />

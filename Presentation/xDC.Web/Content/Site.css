@@ -1,17 +1,35 @@
+.markDate {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
 body {
     background-color: #ebeef2 !important;
 }
 
-.content-header.content-header {
+.content-header {
     color: #2c3e50;
 }
 
-.content-header.content-header > .title {
-    font-size: 18px;
-    margin: 0;
-    display: inline-block;
-    font-weight: bold;
+.content-header.content-banner {
+    background-color: #f6f7f9;
+    padding-bottom: 15px
 }
+
+.content-header > .title {
+    margin: 0;
+    font-weight: bolder;
+    font-size: 24px;
+    text-transform: uppercase;
+}
+
+.content-header > .subtitle {
+    margin: 0;
+    color: #6c757d;
+    font-weight: bold;
+    font-size: 14px;
+}
+
 
 .content-header.content-alert {
     margin: 0;

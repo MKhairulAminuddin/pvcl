@@ -102,7 +102,42 @@
                 }
             });
         }
+
+        var availableMaturityDates;
         
+        function calendarMarkerTemplate(data) {
+            var cssClass = "";
+            
+            $.each(availableMaturityDates, function (_, item) {
+                if (data.date.getDate() === item.day && data.date.getMonth() === item.month-1) {
+                    cssClass = "markDate";
+                    return false;
+                }
+            });
+            
+            return "<span class='" + cssClass + "'>" + data.text + "</span>";
+        }
+
+        var loadCalendarMarkers = function() {
+            $.ajax({
+                contentType: "application/json",
+                url: window.location.origin + "/api/fid/Treasury/EdwMaturity/AvailableMaturity",
+                method: "get",
+                success: function (response) {
+                    availableMaturityDates = response;
+                    $tradeDate.option("calendarOptions",
+                        {
+                            cellTemplate: calendarMarkerTemplate
+                        });
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                },
+                complete: function(data) {
+
+                }
+            });
+        }
 
         //#endregion
         
@@ -111,7 +146,29 @@
         $tradeDate = $("#tradeDate").dxDateBox({
             type: "date",
             displayFormat: "dd/MM/yyyy",
-            value: new Date()
+            value: new Date(),
+            calendarOptions: {
+                cellTemplate: calendarMarkerTemplate
+            },
+            onValueChanged: function (data) {
+
+                $.ajax({
+                    contentType: "application/json",
+                    url: window.location.origin +
+                        "/api/fid/Treasury/EdwMaturity/AvailableMaturity/" +
+                        moment(data.value).unix(),
+                    method: "get",
+                    success: function(response) {
+                        $currencySelectBox.option("dataSource", response);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                    },
+                    complete: function(data) {
+
+                    }
+                });
+            }
         }).dxDateBox("instance");
 
         $currencySelectBox = $("#currency").dxSelectBox({
@@ -756,7 +813,7 @@
         
         // #endregion Data Grid
  
-        //#region Events
+        //#region Events & Invocations
 
         $tradeDate.on("valueChanged", function (data) {
             populateDwData(data.value, $currencySelectBox.option("value"));
@@ -779,6 +836,8 @@
                 postData();
             }
         });
+
+        loadCalendarMarkers();
 
         //#endregion
     });

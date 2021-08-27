@@ -1,5 +1,11 @@
-﻿<section class="content-header">
-    <h1>
+﻿<section class="content-header content-banner">
+    <h1 class="title">
         @ViewBag.Title
     </h1>
+    @if (@ViewBag.Subtitle != null)
+    {
+        <p class="subtitle">
+            @ViewBag.Subtitle
+        </p>
+    }
 </section>

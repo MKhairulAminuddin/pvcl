@@ -1497,9 +1497,8 @@
         }).dxTabPanel("instance");
 
         $saveChangesBtn = $("#saveChangesBtn").dxButton({
-            text: "Save Changes",
+            text: "Save",
             stylingMode: "contained",
-            //type: "success",
             icon: "save",
             onClick: function (e) {
                 e.event.preventDefault();
@@ -1607,7 +1606,10 @@
                 allowDeleting: false,
                 allowAdding: false
             },
-            showBorders: true
+            showBorders: false,
+            showColumnLines: false,
+            showRowLines: false,
+            showColumnHeaders: false
         }).dxDataGrid("instance");
         
         //#endregion DataGrid

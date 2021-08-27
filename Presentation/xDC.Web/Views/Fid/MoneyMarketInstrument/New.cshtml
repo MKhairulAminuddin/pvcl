@@ -1,5 +1,7 @@
-﻿@{
-    ViewBag.Title = "New";
+﻿@model xDC_Web.ViewModels.Fid.Treasury.TreasuryFormVM
+@{
+    ViewBag.Title = "Treasury";
+    ViewBag.Subtitle = "New";
 }
 
 
@@ -18,114 +20,130 @@
 
 
 <section class="content container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            <form id="tradeSettlementForm">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div style="margin-bottom: 10px;">
-                            <div style="display: inline-block">
-                                @(Html.DevExtreme().Button()
-                                    .Type(ButtonType.Back)
-                                    .StylingMode(ButtonStylingMode.Contained)
-                                    .OnClick(@<text> function(){ window.location = "@Url.Action("Treasury", "Fid")"; } </text>)
-                                    )
-                            </div>
-                            <div style="display: inline-block">
-                                @(Html.DevExtreme().Button()
-                                    .ID("submitForApprovalBtn")
-                                    .Icon("check")
-                                    .Text("Submit")
-                                    .UseSubmitBehavior(true)
-                                    .Type(ButtonType.Default)
-                                    .StylingMode(ButtonStylingMode.Contained)
-                                    )
-                            </div>
-                            <div style="display: inline-block">
-                                @(Html.DevExtreme().Button()
-                                    .ID("saveAsDraftBtn")
-                                    .Icon("save")
-                                    .Text("Save")
-                                    .UseSubmitBehavior(false)
-                                    .Type(ButtonType.Normal)
-                                    .StylingMode(ButtonStylingMode.Contained)
-                                    )
+    <form id="tradeSettlementForm">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-solid">
+                    <div class="box-header">
+                        @(Html.DevExtreme().Button()
+                                        .Type(ButtonType.Back)
+                                        .StylingMode(ButtonStylingMode.Contained)
+                                        .OnClick(@<text> function(){ window.location = "@Url.Action("Treasury", "Fid")"; } </text>)
+                                        )
+                        @(Html.DevExtreme().Button()
+                                        .ID("submitForApprovalBtn")
+                                        .Icon("check")
+                                        .Text("Submit")
+                                        .UseSubmitBehavior(true)
+                                        .Type(ButtonType.Default)
+                                        .StylingMode(ButtonStylingMode.Contained)
+                                        )
+                        @(Html.DevExtreme().Button()
+                                        .ID("saveAsDraftBtn")
+                                        .Icon("save")
+                                        .Text("Save")
+                                        .UseSubmitBehavior(false)
+                                        .Type(ButtonType.Normal)
+                                        .StylingMode(ButtonStylingMode.Contained)
+                                        )
+                    </div>
+                    <div class="box-body">
+                        <div class="dx-fieldset">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">
+                                            <strong>Trade Date</strong>
+                                        </div>
+                                        <div class="dx-field-value">
+                                            <div id="tradeDate"></div>
+                                        </div>
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">
+                                            <strong>Currency</strong>
+                                        </div>
+                                        <div class="dx-field-value">
+                                            <div id="currency"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4"></div>
+                                <div class="col-md-4">
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Status</div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
+                                                        .StylingMode(EditorStylingMode.Filled)
+                                                        .ReadOnly(true))
+                                        </div>
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Preparer</div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
+                                                        .StylingMode(EditorStylingMode.Filled)
+                                                        .ReadOnly(true))
+                                        </div>
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Prepared Date</div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
+                                                        .StylingMode(EditorStylingMode.Filled)
+                                                        .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                                        .ReadOnly(true))
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="box box-solid">
-                            <div class="box-body">
-                                <div class="dx-fieldset">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="dx-field">
-                                                <div class="dx-field-label">Trade Date</div>
-                                                <div class="dx-field-value">
-                                                    <div id="tradeDate"></div>
-                                                </div>
-                                            </div>
-                                            <div class="dx-field">
-                                                <div class="dx-field-label">Currency</div>
-                                                <div class="dx-field-value">
-                                                    <div id="currency"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-8"></div>
+                        <div class="dx-fieldset">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="dx-field">
+                                        <div class="dx-field-label" style="font-weight: bold">FUND INFLOWS</div>
                                     </div>
                                 </div>
-
-                                <div class="dx-fieldset">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="dx-field">
-                                                <div class="dx-field-label" style="font-weight: bold">FUND INFLOWS</div>
-                                            </div>
+                                <div class="col-md-12">
+                                    <div id="inflowTabpanel" style="background-color: white;">
+                                        <div data-options="dxTemplate : { name: 'inflowDepositTab' }" style="padding-top: 10px; overflow: auto">
+                                            <div id="inflowDepositGrid" class="grid-container" style="width: 100%"></div>
                                         </div>
-                                        <div class="col-md-12">
-                                            <div id="inflowTabpanel" style="background-color: white;">
-                                                <div data-options="dxTemplate : { name: 'inflowDepositTab' }" style="padding-top: 10px; overflow: auto">
-                                                    <div id="inflowDepositGrid" class="grid-container" style="width: 100%"></div>
-                                                </div>
-                                                <div data-options="dxTemplate : { name: 'inflowMmiTab' }" style="padding-top: 10px; overflow: auto">
-                                                    <div id="inflowMmiGrid" class="grid-container" style="width: 100%"></div>
-                                                </div>
-                                            </div>
+                                        <div data-options="dxTemplate : { name: 'inflowMmiTab' }" style="padding-top: 10px; overflow: auto">
+                                            <div id="inflowMmiGrid" class="grid-container" style="width: 100%"></div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <div class="dx-fieldset">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="dx-field">
-                                                <div class="dx-field-label" style="font-weight: bold">FUND OUTFLOWS</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div id="outflowTabpanel" style="background-color: white;">
-                                                <div data-options="dxTemplate : { name: 'outflowDepositTab' }" style="padding-top: 10px; overflow: auto">
-                                                    <div id="outflowDepositGrid" class="grid-container" style="width: 100%"></div>
-                                                </div>
-                                                <div data-options="dxTemplate : { name: 'outflowMmiTab' }" style="padding-top: 10px; overflow: auto">
-                                                    <div id="outflowMmiGrid" class="grid-container" style="width: 100%"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
                             </div>
                         </div>
+
+                        <div class="dx-fieldset">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="dx-field">
+                                        <div class="dx-field-label" style="font-weight: bold">FUND OUTFLOWS</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div id="outflowTabpanel" style="background-color: white;">
+                                        <div data-options="dxTemplate : { name: 'outflowDepositTab' }" style="padding-top: 10px; overflow: auto">
+                                            <div id="outflowDepositGrid" class="grid-container" style="width: 100%"></div>
+                                        </div>
+                                        <div data-options="dxTemplate : { name: 'outflowMmiTab' }" style="padding-top: 10px; overflow: auto">
+                                            <div id="outflowMmiGrid" class="grid-container" style="width: 100%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
-    </div>
+    </form>
 </section>
 
 <div id="selectApproverModal" class="modal fade" role="dialog">

@@ -4,7 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using xDC.Infrastructure.Application;
+using xDC.Utils;
 using xDC_Web.ViewModels.Fid;
+using xDC_Web.ViewModels.Fid.Treasury;
 
 namespace xDC_Web.Controllers
 {
@@ -70,7 +72,7 @@ namespace xDC_Web.Controllers
 
         #endregion
 
-        #region Money Market
+        #region Treasury
 
         public ActionResult Treasury()
         {
@@ -79,7 +81,13 @@ namespace xDC_Web.Controllers
 
         public ActionResult TreasuryNew()
         {
-            return View("MoneyMarketInstrument/New");
+            var model = new TreasuryFormVM
+            {
+                FormStatus = Common.FormStatus.Draft,
+                PreparedBy = User.Identity.Name,
+                PreparedDate = DateTime.Now,
+            };
+            return View("MoneyMarketInstrument/New", model);
         }
 
         public ActionResult TreasuryEdit()
