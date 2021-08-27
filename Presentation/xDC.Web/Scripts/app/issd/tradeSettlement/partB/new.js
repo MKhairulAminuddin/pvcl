@@ -441,13 +441,11 @@
             columns: [
                 {
                     dataField: "instrumentCode",
-                    caption: "REPO",
-                    allowEditing: false
+                    caption: "REPO"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    allowEditing: false
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "firstLeg",
@@ -456,8 +454,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "secondLeg",
@@ -466,8 +463,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "remarks",
@@ -504,8 +500,8 @@
             editing: {
                 mode: "batch",
                 allowUpdating: true,
-                allowDeleting: false,
-                allowAdding: false
+                allowDeleting: true,
+                allowAdding: true
             }
         }).dxDataGrid("instance");
 

@@ -32,7 +32,7 @@
         //#endregion
 
         //#region Data Source & Functions
-
+        
         var populateData = function () {
             $.when(
                     tradeSettlement.dsTradeItemConsolidated("equity"),
@@ -132,6 +132,8 @@
             itemTitleTemplate: $("#dxPanelTitle"),
             showNavButtons: true
         });
+
+        $printBtn = $("#printBtn").dxDropDownButton(tradeSettlement.printBtnWidgetSettingConsolidated).dxDropDownButton("instance");
 
         //#endregion
 
@@ -931,6 +933,15 @@
                 {
                     dataField: "amountPlus",
                     caption: "Amount (+)",
+                    dataType: "number",
+                    format: {
+                        type: "fixedPoint",
+                        precision: 2
+                    }
+                },
+                {
+                    dataField: "amountMinus",
+                    caption: "Amount (-)",
                     dataType: "number",
                     format: {
                         type: "fixedPoint",

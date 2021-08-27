@@ -61,7 +61,7 @@ namespace xDC.Services.App
 
         public static bool IsInPendingStatus(string formStatus)
         {
-            return (formStatus.ToUpper() == Common.FormStatusMapping(2).ToUpper());
+            return (formStatus == Common.FormStatus.PendingApproval);
         }
 
         public static bool IsIamThisFormApprover(kashflowDBEntities db, int formId, string currentUsername)

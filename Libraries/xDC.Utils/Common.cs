@@ -101,74 +101,7 @@ namespace xDC.Utils
             }
             return String.Empty;
         }
-
-        /// <summary>
-        /// Get Form Status Mapping
-        /// </summary>
-        /// <param name="value">
-        /// numbers representing the statuses. 0 Draft, 1 Preparation, 2 Pending Approval, 3 Approved, 4 Rejected, 5 Resubmission (used for workflow only)
-        /// </param>
-        /// <returns>string</returns>
-        public static string FormStatusMapping(int value)
-        {
-            switch (value)
-            {
-                case 0:
-                    return "Draft";
-                case 1:
-                    return "Preparation";
-                case 2:
-                    return "Pending Approval";
-                case 3:
-                    return "Approved";
-                case 4:
-                    return "Rejected";
-                case 5:
-                    return "Pending Approval (Resubmission)";
-            }
-            return String.Empty;
-        }
-
-        /// <summary>
-        /// Get Trade Settlement Item Category
-        /// </summary>
-        /// <param name="value">
-        /// 1 EQUITY, 2 BOND, 3 COMMERCIAL PAPER, 4 NOTES AND PAPERS, 5 REPO, 6 COUPON, 7 FEES, 8 PAYMENT/RECEIVED (MTM), 9 FX SETTLEMENT,
-        /// 10 CONTRIBUTION CREDITED, 11 ALTID DISTRIBUTION AND DRAWDOWN, 12 OTHERS
-        /// </param>
-        /// <returns>string</returns>
-        public static string TradeSettlementMapping(int value)
-        {
-            switch (value)
-            {
-                case 1:
-                    return "EQUITY";
-                case 2:
-                    return "BOND";
-                case 3:
-                    return "COMMERCIAL PAPER";
-                case 4:
-                    return "NOTES AND PAPERS";
-                case 5:
-                    return "REPO";
-                case 6:
-                    return "COUPON";
-                case 7:
-                    return "FEES";
-                case 8:
-                    return "PAYMENT/RECEIVED (MTM)";
-                case 9:
-                    return "FX SETTLEMENT";
-                case 10:
-                    return "CONTRIBUTION CREDITED";
-                case 11:
-                    return "ALTID DISTRIBUTION AND DRAWDOWN";
-                case 12:
-                    return "OTHERS";
-            }
-            return String.Empty;
-        }
-
+        
         public static string TradeSettlementUrlParamMapping(string value)
         {
             switch (value)
@@ -199,6 +132,42 @@ namespace xDC.Utils
                     return "OTHERS";
             }
             return String.Empty;
+        }
+
+        public static class TsItemCategory
+        {
+            public const string Equity = "EQUITY";
+            public const string Bond = "BOND";
+            public const string Cp = "COMMERCIAL PAPER";
+            public const string NotesPapers = "NOTES AND PAPERS";
+            public const string Repo = "REPO";
+            public const string Coupon = "COUPON";
+            public const string Fees = "FEES";
+            public const string Mtm = "PAYMENT/RECEIVED (MTM)";
+            public const string Fx = "FX SETTLEMENT";
+            public const string Cn = "CONTRIBUTION CREDITED";
+            public const string Altid = "ALTID DISTRIBUTION AND DRAWDOWN";
+            public const string Others = "OTHERS";
+        }
+
+        public static class FormStatus
+        {
+            public const string Draft = "Draft";
+            public const string PendingApproval = "Pending Approval";
+            public const string PendingApprovalResubmission = "Pending Approval (Resubmission)";
+            public const string Approved = "Approved";
+            public const string Rejected = "Rejected";
+        }
+
+        public static class FormType
+        {
+            public const string AMSD_IF = "Inflow Fund";
+            public const string ISSD_TS = "Trade Settlement";
+            public const string ISSD_TS_A = "Trade Settlement (Part A)";
+            public const string ISSD_TS_B = "Trade Settlement (Part B)";
+            public const string ISSD_TS_C = "Trade Settlement (Part C)";
+            public const string ISSD_TS_D = "Trade Settlement (Part D)";
+            public const string ISSD_TS_E = "Trade Settlement (Part E)";
         }
 
         public static string TsUrlParamInstrumentTypeMapFormType(string value)

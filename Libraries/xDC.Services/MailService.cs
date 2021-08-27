@@ -308,7 +308,7 @@ namespace xDC.Services
 
                         if (getForm != null)
                         {
-                            var contributionItemKey = Common.TradeSettlementMapping(10);
+                            var contributionItemKey = Common.TsItemCategory.Cn;
                             var getContributionItems = db.ISSD_TradeSettlement
                                 .Where(x => x.InstrumentType == contributionItemKey && x.FormId == formId).ToList();
 

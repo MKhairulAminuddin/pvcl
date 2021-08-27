@@ -101,7 +101,13 @@ namespace xDC_Web.Extension.DocGenerator
                         var worflows = new List<Form_Workflow>();
                         foreach (var formId in associatedFormIdParts)
                         {
-                            worflows.AddRange(TradeSettlementService.GetWorkflow(db, formId));
+                            var workflow = db.Form_Workflow.Where(x => (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected) &&
+                                            x.FormId == formId).OrderByDescending(x => x.EndDate).FirstOrDefault();
+                            
+                            if (workflow != null)
+                            {
+                                worflows.Add(workflow);
+                            }
                         }
 
                         var getEquityFormId = getForm.FirstOrDefault(x => x.FormType == "Trade Settlement (Part A)");
@@ -155,33 +161,6 @@ namespace xDC_Web.Extension.DocGenerator
                 if (formHeader.SettlementDate != null)
                     sheet["B2"].Value = formHeader.SettlementDate.Value.ToString("dd/MM/yyyy");
                 sheet["B3"].Value = formHeader.Currency;
-
-                sheet["H2"].Value = formHeader.PreparedBy;
-                if (formHeader.PreparedDate != null)
-                {
-                    sheet["H3"].Value = formHeader.PreparedDate.Value.ToString("dd/MM/yyyy HH:ss");
-                }
-
-                sheet["H5"].Value = formHeader.ApprovedBy;
-                if (formHeader.ApprovedDate != null)
-                {
-                    sheet["H6"].Value = formHeader.ApprovedDate.Value.ToString("dd/MM/yyyy HH:ss");
-                    if (formWorkflow != null)
-                    {
-                        sheet["H7"].Value = formWorkflow.WorkflowNotes;
-                    }
-                }
-
-                /*if (formHeader.AdminEdittedDate != null)
-                {
-                    sheet["D9:E10"].CopyFrom(sheet["D5:E6"]);
-                    sheet["D9"].Value = "Admin Edit";
-                    sheet["E9"].Value = formHeader.AdminEdittedBy;
-                    sheet["D10"].Value = "Admin Edit Date";
-                    sheet["E10"].Value = formHeader.AdminEdittedDate.Value.ToString("dd/MM/yyyy HH:ss");
-                    
-                    startingRownumber += 3;
-                }*/
                 
                 int tradeItemStartRow = 7;
                 // Opening Balance
@@ -205,534 +184,10 @@ namespace xDC_Web.Extension.DocGenerator
                     tradeItemStartRow += 2;
                 }
 
-                sheet["A" + tradeItemStartRow].Value = "Daily Trade Settlement:";
-                sheet["A" + tradeItemStartRow].Font.Bold = true;
-                sheet["A" + tradeItemStartRow + ":B" + tradeItemStartRow].Merge();
-                tradeItemStartRow += 2;
+                Content_TradeItems(workbook, sheet, trades, tradeItemStartRow, out tradeItemStartRow);
 
-                // equity
-                var equity = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(1)).ToList();
-                if (equity.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
+                Content_WorkflowItems(sheet, new List<Form_Workflow>(){ formWorkflow }, tradeItemStartRow, out tradeItemStartRow);
 
-                    sheet["A" + tradeItemStartRow].Value = "Equity";
-                    sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
-                    sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
-                    sheet["D" + tradeItemStartRow].Value = "Sales (+)";
-                    sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
-                    sheet["F" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in equity)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
-                        sheet["C" + tradeItemStartRow].Value = item.Maturity;
-                        sheet["D" + tradeItemStartRow].Value = item.Sales;
-                        sheet["E" + tradeItemStartRow].Value = item.Purchase;
-                        sheet["F" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow],
-                        true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-                    
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[4].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[4].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.ShowTotals = true;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[4].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[4].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[5].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // bond
-                var bond = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(2)).ToList();
-                if (bond.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-                    
-                    sheet["A" + tradeItemStartRow].Value = "Bond";
-                    sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
-                    sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
-                    sheet["D" + tradeItemStartRow].Value = "Sales (+)";
-                    sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
-                    sheet["F" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in bond)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
-                        sheet["C" + tradeItemStartRow].Value = item.Maturity;
-                        sheet["D" + tradeItemStartRow].Value = item.Sales;
-                        sheet["E" + tradeItemStartRow].Value = item.Purchase;
-                        sheet["F" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[4].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[4].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.ShowTotals = true;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[4].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[4].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[5].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // CP
-                var cp = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(3)).ToList();
-                if (cp.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "CP";
-                    sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
-                    sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
-                    sheet["D" + tradeItemStartRow].Value = "Sales (+)";
-                    sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
-                    sheet["F" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in cp)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
-                        sheet["C" + tradeItemStartRow].Value = item.Maturity;
-                        sheet["D" + tradeItemStartRow].Value = item.Sales;
-                        sheet["E" + tradeItemStartRow].Value = item.Purchase;
-                        sheet["F" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow],
-                        true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[4].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[4].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.ShowTotals = true;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[4].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[4].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    
-                    table.Columns[5].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // Notes & Papers
-                var notes = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(4)).ToList();
-                if (notes.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "Notes & Papers";
-                    sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
-                    sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
-                    sheet["D" + tradeItemStartRow].Value = "Sales (+)";
-                    sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
-                    sheet["F" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in notes)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
-                        sheet["C" + tradeItemStartRow].Value = item.Maturity;
-                        sheet["D" + tradeItemStartRow].Value = item.Sales;
-                        sheet["E" + tradeItemStartRow].Value = item.Purchase;
-                        sheet["F" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[4].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[4].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.ShowTotals = true;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[4].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[4].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[5].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // REPO
-                var repo = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(5)).ToList();
-                if (repo.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "Repo";
-                    sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
-                    sheet["C" + tradeItemStartRow].Value = "1st Leg (+)";
-                    sheet["D" + tradeItemStartRow].Value = "2nd Leg (-)";
-                    sheet["E" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in repo)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
-                        sheet["C" + tradeItemStartRow].Value = item.FirstLeg;
-                        sheet["D" + tradeItemStartRow].Value = item.SecondLeg;
-                        sheet["E" + tradeItemStartRow].Value = item.Remarks;
-                    }
-                    
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.ShowTotals = true;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[4].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // Coupon Received
-                var coupon = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(6)).ToList();
-                if (coupon.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "Coupon Received";
-                    sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
-                    sheet["C" + tradeItemStartRow].Value = "Amount (+)";
-                    sheet["D" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in coupon)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
-                        sheet["C" + tradeItemStartRow].Value = item.AmountPlus;
-                        sheet["D" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.ShowTotals = true;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // Fees
-                var fees = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(7)).ToList();
-                if (fees.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "Fees";
-                    sheet["B" + tradeItemStartRow].Value = "Amount (+)";
-                    sheet["C" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in fees)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
-                        sheet["C" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-
-                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.ShowTotals = true;
-                    table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // Payment/ Received (MTM)
-                var mtm = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(8)).ToList();
-                if (mtm.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "Payment/ Receipt (MTM)";
-                    sheet["B" + tradeItemStartRow].Value = "Amount (+)";
-                    sheet["C" + tradeItemStartRow].Value = "Amount (-)";
-                    sheet["D" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in mtm)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
-                        sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
-                        sheet["D" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-
-                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.ShowTotals = true;
-                    table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // FX Settlement
-                var fx = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(9)).ToList();
-                if (fx.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "FX Settlement";
-                    sheet["B" + tradeItemStartRow].Value = "Amount (+)";
-                    sheet["C" + tradeItemStartRow].Value = "Amount (-)";
-                    sheet["D" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in fx)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
-                        sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
-                        sheet["D" + tradeItemStartRow].Value = item.Remarks;
-                    }
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-
-                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.ShowTotals = true;
-                    table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // Contribution credited
-                var contribution = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(10)).ToList();
-                if (contribution.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "Contribution credited";
-                    sheet["B" + tradeItemStartRow].Value = "Amount (+)";
-                    sheet["C" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in contribution)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
-                        sheet["C" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-
-                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.ShowTotals = true;
-                    table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // ALTID Distribution & Drawdown
-                var altid = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(11)).ToList();
-                if (altid.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "ALTID Distribution & Drawdown";
-                    sheet["B" + tradeItemStartRow].Value = "Amount (+)";
-                    sheet["C" + tradeItemStartRow].Value = "Amount (-)";
-                    sheet["D" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in altid)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
-                        sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
-                        sheet["D" + tradeItemStartRow].Value = item.AmountMinus;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-
-                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.ShowTotals = true;
-                    table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // Others
-                var others = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(12)).ToList();
-                if (others.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "Others";
-                    sheet["B" + tradeItemStartRow].Value = "Amount (+)";
-                    sheet["C" + tradeItemStartRow].Value = "Amount (-)";
-                    sheet["D" + tradeItemStartRow].Value = "Remarks";
-                    
-                    foreach (var item in others)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
-                        sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
-                        sheet["D" + tradeItemStartRow].Value = item.Remarks;
-                    }
-                    
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-
-                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.ShowTotals = true;
-                    table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-                
                 var footerRowNumber = tradeItemStartRow + 4;
                 sheet["A" + footerRowNumber + ":G" + footerRowNumber].Merge();
                 sheet["A" + footerRowNumber + ":G" + footerRowNumber].Value = "Generated on " + DateTime.Now.ToString("dd/MM/yyyy HH:ss") + " by "+ HttpContext.Current.User.Identity.Name;
@@ -783,674 +238,12 @@ namespace xDC_Web.Extension.DocGenerator
 
                     tradeItemStartRow += 2;
                 }
-
-                sheet["A" + tradeItemStartRow].Value = "Daily Trade Settlement:";
-                sheet["A" + tradeItemStartRow].Font.Bold = true;
-                sheet["A" + tradeItemStartRow + ":B" + tradeItemStartRow].Merge();
-                tradeItemStartRow += 2;
-
-                // equity
-                var equity = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(1)).ToList();
-                if (equity.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "Equity";
-                    sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
-                    sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
-                    sheet["D" + tradeItemStartRow].Value = "Sales (+)";
-                    sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
-                    sheet["F" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in equity)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
-                        sheet["C" + tradeItemStartRow].Value = item.Maturity;
-                        sheet["D" + tradeItemStartRow].Value = item.Sales;
-                        sheet["E" + tradeItemStartRow].Value = item.Purchase;
-                        sheet["F" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow],
-                        true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-                    table.ShowTableStyleRowStripes = false;
-
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[4].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[4].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    
-                    table.Columns[2].DataRange.FillColor = _inflowColor;
-                    table.Columns[3].DataRange.FillColor = _inflowColor;
-                    table.Columns[4].DataRange.FillColor = _outFlowColor;
-
-                    table.ShowTotals = true;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[4].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[4].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[5].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // bond
-                var bond = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(2)).ToList();
-                if (bond.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "Bond";
-                    sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
-                    sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
-                    sheet["D" + tradeItemStartRow].Value = "Sales (+)";
-                    sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
-                    sheet["F" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in bond)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
-                        sheet["C" + tradeItemStartRow].Value = item.Maturity;
-                        sheet["D" + tradeItemStartRow].Value = item.Sales;
-                        sheet["E" + tradeItemStartRow].Value = item.Purchase;
-                        sheet["F" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-                    table.ShowTableStyleRowStripes = false;
-
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[4].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[4].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[2].DataRange.FillColor = _inflowColor;
-                    table.Columns[3].DataRange.FillColor = _inflowColor;
-                    table.Columns[4].DataRange.FillColor = _outFlowColor;
-
-                    table.ShowTotals = true;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[4].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[4].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[5].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // CP
-                var cp = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(3)).ToList();
-                if (cp.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "CP";
-                    sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
-                    sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
-                    sheet["D" + tradeItemStartRow].Value = "Sales (+)";
-                    sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
-                    sheet["F" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in cp)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
-                        sheet["C" + tradeItemStartRow].Value = item.Maturity;
-                        sheet["D" + tradeItemStartRow].Value = item.Sales;
-                        sheet["E" + tradeItemStartRow].Value = item.Purchase;
-                        sheet["F" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow],
-                        true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-                    table.ShowTableStyleRowStripes = false;
-
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[4].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[4].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[2].DataRange.FillColor = _inflowColor;
-                    table.Columns[3].DataRange.FillColor = _inflowColor;
-                    table.Columns[4].DataRange.FillColor = _outFlowColor;
-
-                    table.ShowTotals = true;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[4].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[4].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[5].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // Notes & Papers
-                var notes = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(4)).ToList();
-                if (notes.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "Notes & Papers";
-                    sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
-                    sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
-                    sheet["D" + tradeItemStartRow].Value = "Sales (+)";
-                    sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
-                    sheet["F" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in notes)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
-                        sheet["C" + tradeItemStartRow].Value = item.Maturity;
-                        sheet["D" + tradeItemStartRow].Value = item.Sales;
-                        sheet["E" + tradeItemStartRow].Value = item.Purchase;
-                        sheet["F" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":F" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-                    table.ShowTableStyleRowStripes = false;
-
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[4].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[4].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[2].DataRange.FillColor = _inflowColor;
-                    table.Columns[3].DataRange.FillColor = _inflowColor;
-                    table.Columns[4].DataRange.FillColor = _outFlowColor;
-
-                    table.ShowTotals = true;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[4].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[4].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[5].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // REPO
-                var repo = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(5)).ToList();
-                if (repo.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "Repo";
-                    sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
-                    sheet["C" + tradeItemStartRow].Value = "1st Leg (+)";
-                    sheet["D" + tradeItemStartRow].Value = "2nd Leg (-)";
-                    sheet["E" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in repo)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
-                        sheet["C" + tradeItemStartRow].Value = item.FirstLeg;
-                        sheet["D" + tradeItemStartRow].Value = item.SecondLeg;
-                        sheet["E" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":E" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-                    table.ShowTableStyleRowStripes = false;
-
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[3].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[2].DataRange.FillColor = _inflowColor;
-                    table.Columns[3].DataRange.FillColor = _outFlowColor;
-
-                    table.ShowTotals = true;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[3].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[4].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // Coupon Received
-                var coupon = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(6)).ToList();
-                if (coupon.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "Coupon Received";
-                    sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
-                    sheet["C" + tradeItemStartRow].Value = "Amount (+)";
-                    sheet["D" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in coupon)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.StockCode;
-                        sheet["C" + tradeItemStartRow].Value = item.AmountPlus;
-                        sheet["D" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-                    table.ShowTableStyleRowStripes = false;
-
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[2].DataRange.FillColor = _inflowColor;
-
-                    table.ShowTotals = true;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // Fees
-                var fees = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(7)).ToList();
-                if (fees.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "Fees";
-                    sheet["B" + tradeItemStartRow].Value = "Amount (+)";
-                    sheet["C" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in fees)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
-                        sheet["C" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-                    table.ShowTableStyleRowStripes = false;
-
-                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[1].DataRange.FillColor = _inflowColor;
-
-                    table.ShowTotals = true;
-                    table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // Payment/ Received (MTM)
-                var mtm = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(8)).ToList();
-                if (mtm.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "Payment/ Receipt (MTM)";
-                    sheet["B" + tradeItemStartRow].Value = "Amount (+)";
-                    sheet["C" + tradeItemStartRow].Value = "Amount (-)";
-                    sheet["D" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in mtm)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
-                        sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
-                        sheet["D" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-                    table.ShowTableStyleRowStripes = false;
-
-                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[1].DataRange.FillColor = _inflowColor;
-                    table.Columns[2].DataRange.FillColor = _outFlowColor;
-
-                    table.ShowTotals = true;
-                    table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // FX Settlement
-                var fx = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(9)).ToList();
-                if (fx.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "FX Settlement";
-                    sheet["B" + tradeItemStartRow].Value = "Amount (+)";
-                    sheet["C" + tradeItemStartRow].Value = "Amount (-)";
-                    sheet["D" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in fx)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
-                        sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
-                        sheet["D" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-                    table.ShowTableStyleRowStripes = false;
-
-                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[1].DataRange.FillColor = _inflowColor;
-                    table.Columns[2].DataRange.FillColor = _outFlowColor;
-
-                    table.ShowTotals = true;
-                    table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // Contribution credited
-                var contribution = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(10)).ToList();
-                if (contribution.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "Contribution credited";
-                    sheet["B" + tradeItemStartRow].Value = "Amount (+)";
-                    sheet["C" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in contribution)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
-                        sheet["C" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":C" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-                    table.ShowTableStyleRowStripes = false;
-
-                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[1].DataRange.FillColor = _inflowColor;
-
-                    table.ShowTotals = true;
-                    table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // ALTID Distribution & Drawdown
-                var altid = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(11)).ToList();
-                if (altid.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "ALTID Distribution & Drawdown";
-                    sheet["B" + tradeItemStartRow].Value = "Amount (+)";
-                    sheet["C" + tradeItemStartRow].Value = "Amount (-)";
-                    sheet["D" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in altid)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
-                        sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
-                        sheet["D" + tradeItemStartRow].Value = item.AmountMinus;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-                    table.ShowTableStyleRowStripes = false;
-
-                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[1].DataRange.FillColor = _inflowColor;
-                    table.Columns[2].DataRange.FillColor = _outFlowColor;
-
-                    table.ShowTotals = true;
-                    table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-                // Others
-                var others = trades.Where(x => x.InstrumentType == Common.TradeSettlementMapping(12)).ToList();
-                if (others.Any())
-                {
-                    var headerStartRow = tradeItemStartRow;
-
-                    sheet["A" + tradeItemStartRow].Value = "Others";
-                    sheet["B" + tradeItemStartRow].Value = "Amount (+)";
-                    sheet["C" + tradeItemStartRow].Value = "Amount (-)";
-                    sheet["D" + tradeItemStartRow].Value = "Remarks";
-
-                    foreach (var item in others)
-                    {
-                        ++tradeItemStartRow;
-                        sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
-                        sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
-                        sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
-                        sheet["D" + tradeItemStartRow].Value = item.Remarks;
-                    }
-
-                    // Insert a table in the worksheet.
-                    Table table = sheet.Tables.Add(sheet["A" + headerStartRow + ":D" + tradeItemStartRow], true);
-                    table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
-                    table.HeaderRowRange.Font.Color = Color.White;
-                    table.ShowTableStyleRowStripes = false;
-
-                    table.Columns[1].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-                    table.Columns[2].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
-
-                    table.Columns[1].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[2].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[1].DataRange.FillColor = _inflowColor;
-                    table.Columns[2].DataRange.FillColor = _outFlowColor;
-
-                    table.ShowTotals = true;
-                    table.Columns[1].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[2].TotalRowFunction = TotalRowFunction.Sum;
-                    table.Columns[1].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    table.Columns[2].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                    table.Columns[3].TotalRowFunction = TotalRowFunction.None;
-
-                    tradeItemStartRow += 3;
-                }
-
-
-                var workflowRowNumber = tradeItemStartRow + 2;
-
-                sheet["A" + workflowRowNumber].Value = "Workflow Approval :";
-                sheet["A" + workflowRowNumber].Font.Bold = true;
-                workflowRowNumber += 2;
-
-                var workflowPartA = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part A)" && x.WorkflowStatus == "Approved");
-                if (workflowPartA != null)
-                {
-                    sheet["A" + workflowRowNumber].Value = "Form Type";
-                    sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part A)";
-                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                    workflowRowNumber += 1;
-                    sheet["A" + workflowRowNumber].Value = "Approver";
-                    sheet["B" + workflowRowNumber].Value = workflowPartA.RequestBy;
-                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                    workflowRowNumber += 1;
-                    sheet["A" + workflowRowNumber].Value = "Approved Date";
-                    sheet["B" + workflowRowNumber].Value = workflowPartA.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
-                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                    workflowRowNumber += 2;
-                }
-                var workflowPartB = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part B)" && x.WorkflowStatus == "Approved");
-                if (workflowPartB != null)
-                {
-                    sheet["A" + workflowRowNumber].Value = "Form Type";
-                    sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part B)";
-                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                    workflowRowNumber += 1;
-                    sheet["A" + workflowRowNumber].Value = "Approver";
-                    sheet["B" + workflowRowNumber].Value = workflowPartB.RequestBy;
-                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                    workflowRowNumber += 1;
-                    sheet["A" + workflowRowNumber].Value = "Approved Date";
-                    sheet["B" + workflowRowNumber].Value = workflowPartB.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
-                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                    workflowRowNumber += 2;
-                }
-                var workflowPartC = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part C)" && x.WorkflowStatus == "Approved");
-                if (workflowPartC != null)
-                {
-                    sheet["A" + workflowRowNumber].Value = "Form Type";
-                    sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part C)";
-                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                    workflowRowNumber += 1;
-                    sheet["A" + workflowRowNumber].Value = "Approver";
-                    sheet["B" + workflowRowNumber].Value = workflowPartC.RequestBy;
-                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                    workflowRowNumber += 1;
-                    sheet["A" + workflowRowNumber].Value = "Approved Date";
-                    sheet["B" + workflowRowNumber].Value = workflowPartC.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
-                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                    workflowRowNumber += 2;
-                }
-                var workflowPartD = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part D)" && x.WorkflowStatus == "Approved");
-                if (workflowPartD != null)
-                {
-                    sheet["A" + workflowRowNumber].Value = "Form Type";
-                    sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part D)";
-                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                    workflowRowNumber += 1;
-                    sheet["A" + workflowRowNumber].Value = "Approver";
-                    sheet["B" + workflowRowNumber].Value = workflowPartD.RequestBy;
-                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                    workflowRowNumber += 1;
-                    sheet["A" + workflowRowNumber].Value = "Approved Date";
-                    sheet["B" + workflowRowNumber].Value = workflowPartD.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
-                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                    workflowRowNumber += 2;
-                }
-                var workflowPartE = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part E)" && x.WorkflowStatus == "Approved");
-                if (workflowPartE != null)
-                {
-                    sheet["A" + workflowRowNumber].Value = "Form Type";
-                    sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part E)";
-                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                    workflowRowNumber += 1;
-                    sheet["A" + workflowRowNumber].Value = "Approver";
-                    sheet["B" + workflowRowNumber].Value = workflowPartE.RequestBy;
-                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                    workflowRowNumber += 1;
-                    sheet["A" + workflowRowNumber].Value = "Approved Date";
-                    sheet["B" + workflowRowNumber].Value = workflowPartE.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
-                    sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                    workflowRowNumber += 2;
-                }
-
-                var footerRowNumber = workflowRowNumber + 4;
+                
+                Content_TradeItems(workbook, sheet, trades, tradeItemStartRow, out tradeItemStartRow);
+                
+                Content_WorkflowItems(sheet, formWorkflow, tradeItemStartRow, out tradeItemStartRow);
+
+                var footerRowNumber = tradeItemStartRow + 4;
                 sheet["A" + footerRowNumber + ":G" + footerRowNumber].Merge();
                 sheet["A" + footerRowNumber + ":G" + footerRowNumber].Value = "Generated on " +
                                                                               DateTime.Now.ToString(
@@ -1477,6 +270,481 @@ namespace xDC_Web.Extension.DocGenerator
             return workbook;
         }
         
+        private void Content_TradeItems(IWorkbook workbook, Worksheet sheet, List<ISSD_TradeSettlement> trades, int tradeItemStartRow, out int currentRowIndex)
+        {
+            sheet["A" + tradeItemStartRow].Value = "Daily Trade Settlement:";
+            sheet["A" + tradeItemStartRow].Font.Bold = true;
+            sheet["A" + tradeItemStartRow + ":B" + tradeItemStartRow].Merge();
+            tradeItemStartRow += 2;
 
+            // equity
+            var equity = trades.Where(x => x.InstrumentType == Common.TsItemCategory.Equity).ToList();
+            if (equity.Any())
+            {
+                var headerStartRow = tradeItemStartRow;
+
+                sheet["A" + tradeItemStartRow].Value = "Equity";
+                sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
+                sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
+                sheet["D" + tradeItemStartRow].Value = "Sales (+)";
+                sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
+                sheet["F" + tradeItemStartRow].Value = "Remarks";
+
+                foreach (var item in equity)
+                {
+                    ++tradeItemStartRow;
+                    sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                    sheet["B" + tradeItemStartRow].Value = item.StockCode;
+                    sheet["C" + tradeItemStartRow].Value = item.Maturity;
+                    sheet["D" + tradeItemStartRow].Value = item.Sales;
+                    sheet["E" + tradeItemStartRow].Value = item.Purchase;
+                    sheet["F" + tradeItemStartRow].Value = item.Remarks;
+                }
+
+                // Insert a table in the worksheet.
+                var tableRange = "A" + headerStartRow + ":F" + tradeItemStartRow;
+                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int> { 2, 3 }, new List<int> { 4 }, new List<int> { 5 });
+
+                tradeItemStartRow += 3;
+            }
+
+            // bond
+            var bond = trades.Where(x => x.InstrumentType == Common.TsItemCategory.Bond).ToList();
+            if (bond.Any())
+            {
+                var headerStartRow = tradeItemStartRow;
+
+                sheet["A" + tradeItemStartRow].Value = "Bond";
+                sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
+                sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
+                sheet["D" + tradeItemStartRow].Value = "Sales (+)";
+                sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
+                sheet["F" + tradeItemStartRow].Value = "Remarks";
+
+                foreach (var item in bond)
+                {
+                    ++tradeItemStartRow;
+                    sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                    sheet["B" + tradeItemStartRow].Value = item.StockCode;
+                    sheet["C" + tradeItemStartRow].Value = item.Maturity;
+                    sheet["D" + tradeItemStartRow].Value = item.Sales;
+                    sheet["E" + tradeItemStartRow].Value = item.Purchase;
+                    sheet["F" + tradeItemStartRow].Value = item.Remarks;
+                }
+
+                // Insert a table in the worksheet.
+                var tableRange = "A" + headerStartRow + ":F" + tradeItemStartRow;
+                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int> { 2, 3 }, new List<int> { 4 }, new List<int> { 5 });
+
+                tradeItemStartRow += 3;
+            }
+
+            // CP
+            var cp = trades.Where(x => x.InstrumentType == Common.TsItemCategory.Cp).ToList();
+            if (cp.Any())
+            {
+                var headerStartRow = tradeItemStartRow;
+
+                sheet["A" + tradeItemStartRow].Value = "CP";
+                sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
+                sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
+                sheet["D" + tradeItemStartRow].Value = "Sales (+)";
+                sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
+                sheet["F" + tradeItemStartRow].Value = "Remarks";
+
+                foreach (var item in cp)
+                {
+                    ++tradeItemStartRow;
+                    sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                    sheet["B" + tradeItemStartRow].Value = item.StockCode;
+                    sheet["C" + tradeItemStartRow].Value = item.Maturity;
+                    sheet["D" + tradeItemStartRow].Value = item.Sales;
+                    sheet["E" + tradeItemStartRow].Value = item.Purchase;
+                    sheet["F" + tradeItemStartRow].Value = item.Remarks;
+                }
+
+                // Insert a table in the worksheet.
+                var tableRange = "A" + headerStartRow + ":F" + tradeItemStartRow;
+                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int> { 2, 3 }, new List<int> { 4 }, new List<int> { 5 });
+
+                tradeItemStartRow += 3;
+            }
+
+            // Notes & Papers
+            var notes = trades.Where(x => x.InstrumentType == Common.TsItemCategory.NotesPapers).ToList();
+            if (notes.Any())
+            {
+                var headerStartRow = tradeItemStartRow;
+
+                sheet["A" + tradeItemStartRow].Value = "Notes & Papers";
+                sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
+                sheet["C" + tradeItemStartRow].Value = "Maturity (+)";
+                sheet["D" + tradeItemStartRow].Value = "Sales (+)";
+                sheet["E" + tradeItemStartRow].Value = "Purchase (-)";
+                sheet["F" + tradeItemStartRow].Value = "Remarks";
+
+                foreach (var item in notes)
+                {
+                    ++tradeItemStartRow;
+                    sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                    sheet["B" + tradeItemStartRow].Value = item.StockCode;
+                    sheet["C" + tradeItemStartRow].Value = item.Maturity;
+                    sheet["D" + tradeItemStartRow].Value = item.Sales;
+                    sheet["E" + tradeItemStartRow].Value = item.Purchase;
+                    sheet["F" + tradeItemStartRow].Value = item.Remarks;
+                }
+
+                // Insert a table in the worksheet.
+                var tableRange = "A" + headerStartRow + ":F" + tradeItemStartRow;
+                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int> { 2,3 }, new List<int> { 4 }, new List<int> { 5 });
+
+                tradeItemStartRow += 3;
+            }
+
+            // REPO
+            var repo = trades.Where(x => x.InstrumentType == Common.TsItemCategory.Repo).ToList();
+            if (repo.Any())
+            {
+                var headerStartRow = tradeItemStartRow;
+
+                sheet["A" + tradeItemStartRow].Value = "Repo";
+                sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
+                sheet["C" + tradeItemStartRow].Value = "1st Leg (+)";
+                sheet["D" + tradeItemStartRow].Value = "2nd Leg (-)";
+                sheet["E" + tradeItemStartRow].Value = "Remarks";
+
+                foreach (var item in repo)
+                {
+                    ++tradeItemStartRow;
+                    sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                    sheet["B" + tradeItemStartRow].Value = item.StockCode;
+                    sheet["C" + tradeItemStartRow].Value = item.FirstLeg;
+                    sheet["D" + tradeItemStartRow].Value = item.SecondLeg;
+                    sheet["E" + tradeItemStartRow].Value = item.Remarks;
+                }
+
+                // Insert a table in the worksheet.
+                var tableRange = "A" + headerStartRow + ":E" + tradeItemStartRow;
+                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int> { 2 }, new List<int> { 3 }, new List<int> { 4 });
+
+                tradeItemStartRow += 3;
+            }
+
+            // Coupon Received
+            var coupon = trades.Where(x => x.InstrumentType == Common.TsItemCategory.Coupon).ToList();
+            if (coupon.Any())
+            {
+                var headerStartRow = tradeItemStartRow;
+
+                sheet["A" + tradeItemStartRow].Value = "Coupon Received";
+                sheet["B" + tradeItemStartRow].Value = "Stock Code/ ISIN";
+                sheet["C" + tradeItemStartRow].Value = "Amount (+)";
+                sheet["D" + tradeItemStartRow].Value = "Remarks";
+
+                foreach (var item in coupon)
+                {
+                    ++tradeItemStartRow;
+                    sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                    sheet["B" + tradeItemStartRow].Value = item.StockCode;
+                    sheet["C" + tradeItemStartRow].Value = item.AmountPlus;
+                    sheet["D" + tradeItemStartRow].Value = item.Remarks;
+                }
+
+
+                // Insert a table in the worksheet.
+                var tableRange = "A" + headerStartRow + ":D" + tradeItemStartRow;
+                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int> { 2 }, new List<int> {  }, new List<int> { 3 });
+
+                tradeItemStartRow += 3;
+            }
+
+            // Fees
+            var fees = trades.Where(x => x.InstrumentType == Common.TsItemCategory.Fees).ToList();
+            if (fees.Any())
+            {
+                var headerStartRow = tradeItemStartRow;
+
+                sheet["A" + tradeItemStartRow].Value = "Fees";
+                sheet["B" + tradeItemStartRow].Value = "Amount (+)";
+                sheet["C" + tradeItemStartRow].Value = "Amount (-)";
+                sheet["D" + tradeItemStartRow].Value = "Remarks";
+
+                foreach (var item in fees)
+                {
+                    ++tradeItemStartRow;
+                    sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                    sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
+                    sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
+                    sheet["D" + tradeItemStartRow].Value = item.Remarks;
+                }
+
+                // Insert a table in the worksheet.
+                var tableRange = "A" + headerStartRow + ":D" + tradeItemStartRow;
+                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int> { 1 }, new List<int> { 2 }, new List<int> { 3 });
+
+                tradeItemStartRow += 3;
+            }
+
+            // Payment/ Received (MTM)
+            var mtm = trades.Where(x => x.InstrumentType == Common.TsItemCategory.Mtm).ToList();
+            if (mtm.Any())
+            {
+                var headerStartRow = tradeItemStartRow;
+
+                sheet["A" + tradeItemStartRow].Value = "Payment/ Receipt (MTM)";
+                sheet["B" + tradeItemStartRow].Value = "Amount (+)";
+                sheet["C" + tradeItemStartRow].Value = "Amount (-)";
+                sheet["D" + tradeItemStartRow].Value = "Remarks";
+
+                foreach (var item in mtm)
+                {
+                    ++tradeItemStartRow;
+                    sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                    sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
+                    sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
+                    sheet["D" + tradeItemStartRow].Value = item.Remarks;
+                }
+
+                // Insert a table in the worksheet.
+                var tableRange = "A" + headerStartRow + ":D" + tradeItemStartRow;
+                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int> { 1 }, new List<int> { 2 }, new List<int> { 3 });
+
+                tradeItemStartRow += 3;
+            }
+
+            // FX Settlement
+            var fx = trades.Where(x => x.InstrumentType == Common.TsItemCategory.Fx).ToList();
+            if (fx.Any())
+            {
+                var headerStartRow = tradeItemStartRow;
+
+                sheet["A" + tradeItemStartRow].Value = "FX Settlement";
+                sheet["B" + tradeItemStartRow].Value = "Amount (+)";
+                sheet["C" + tradeItemStartRow].Value = "Amount (-)";
+                sheet["D" + tradeItemStartRow].Value = "Remarks";
+
+                foreach (var item in fx)
+                {
+                    ++tradeItemStartRow;
+                    sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                    sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
+                    sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
+                    sheet["D" + tradeItemStartRow].Value = item.Remarks;
+                }
+                // Insert a table in the worksheet.
+                var tableRange = "A" + headerStartRow + ":D" + tradeItemStartRow;
+                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int> { 1 }, new List<int> { 2 }, new List<int> { 3 });
+
+                tradeItemStartRow += 3;
+            }
+
+            // Contribution credited
+            var contribution = trades.Where(x => x.InstrumentType == Common.TsItemCategory.Cn).ToList();
+            if (contribution.Any())
+            {
+                var headerStartRow = tradeItemStartRow;
+
+                sheet["A" + tradeItemStartRow].Value = "Contribution credited";
+                sheet["B" + tradeItemStartRow].Value = "Amount (+)";
+                sheet["C" + tradeItemStartRow].Value = "Remarks";
+
+                foreach (var item in contribution)
+                {
+                    ++tradeItemStartRow;
+                    sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                    sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
+                    sheet["C" + tradeItemStartRow].Value = item.Remarks;
+                }
+
+                // Insert a table in the worksheet.
+                var tableRange = "A" + headerStartRow + ":C" + tradeItemStartRow;
+                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int>{1}, new List<int> { }, new List<int> { 2 });
+
+                tradeItemStartRow += 3;
+            }
+
+            // ALTID Distribution & Drawdown
+            var altid = trades.Where(x => x.InstrumentType == Common.TsItemCategory.Altid).ToList();
+            if (altid.Any())
+            {
+                var headerStartRow = tradeItemStartRow;
+
+                sheet["A" + tradeItemStartRow].Value = "ALTID Distribution & Drawdown";
+                sheet["B" + tradeItemStartRow].Value = "Amount (+)";
+                sheet["C" + tradeItemStartRow].Value = "Amount (-)";
+                sheet["D" + tradeItemStartRow].Value = "Remarks";
+
+                foreach (var item in altid)
+                {
+                    ++tradeItemStartRow;
+                    sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                    sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
+                    sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
+                    sheet["D" + tradeItemStartRow].Value = item.AmountMinus;
+                }
+
+                // Insert a table in the worksheet.
+                var tableRange = "A" + headerStartRow + ":D" + tradeItemStartRow;
+                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int> { 1 }, new List<int> { 2 }, new List<int> { 3 });
+
+                tradeItemStartRow += 3;
+            }
+
+            // Others
+            var others = trades.Where(x => x.InstrumentType == Common.TsItemCategory.Others).ToList();
+            if (others.Any())
+            {
+                var headerStartRow = tradeItemStartRow;
+
+                sheet["A" + tradeItemStartRow].Value = "Others";
+                sheet["B" + tradeItemStartRow].Value = "Amount (+)";
+                sheet["C" + tradeItemStartRow].Value = "Amount (-)";
+                sheet["D" + tradeItemStartRow].Value = "Remarks";
+
+                foreach (var item in others)
+                {
+                    ++tradeItemStartRow;
+                    sheet["A" + tradeItemStartRow].Value = item.InstrumentCode;
+                    sheet["B" + tradeItemStartRow].Value = item.AmountPlus;
+                    sheet["C" + tradeItemStartRow].Value = item.AmountMinus;
+                    sheet["D" + tradeItemStartRow].Value = item.Remarks;
+                }
+
+                // Insert a table in the worksheet.
+                var tableRange = "A" + headerStartRow + ":D" + tradeItemStartRow;
+                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int> { 1 }, new List<int> { 2 }, new List<int> { 3 });
+
+                tradeItemStartRow += 3;
+            }
+
+            currentRowIndex = tradeItemStartRow;
+        }
+
+        private Table CommonTradeTableStyle(IWorkbook workbook, Worksheet sheet, string sheetRange, List<int> inflowColumnIndex, List<int> outflowColumnIndex, List<int> nonTotalColumnIndex)
+        {
+            Table table = sheet.Tables.Add(sheet[sheetRange], true);
+            table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
+            table.HeaderRowRange.Font.Color = Color.White;
+            table.AutoFilter.Disable();
+            table.ShowTableStyleRowStripes = false;
+            table.ShowTotals = true;
+
+            foreach (var i in inflowColumnIndex)
+            {
+                table.Columns[i].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+                table.Columns[i].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+                table.Columns[i].TotalRowFunction = TotalRowFunction.Sum;
+                table.Columns[i].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+                table.Columns[i].DataRange.FillColor = _inflowColor;
+            }
+
+            foreach (var i in outflowColumnIndex)
+            {
+                table.Columns[i].Range.Alignment.Horizontal = SpreadsheetHorizontalAlignment.Right;
+                table.Columns[i].DataRange.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+                table.Columns[i].TotalRowFunction = TotalRowFunction.Sum;
+                table.Columns[i].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+                table.Columns[i].DataRange.FillColor = _outFlowColor;
+            }
+
+            foreach (var i in nonTotalColumnIndex)
+            {
+                table.Columns[i].TotalRowFunction = TotalRowFunction.None;
+            }
+
+            return table;
+        }
+
+        private void Content_WorkflowItems(Worksheet sheet, List<Form_Workflow> formWorkflow, int currentRow, out int currentRowIndex)
+        {
+            var workflowRowNumber = currentRow + 2;
+
+            sheet["A" + workflowRowNumber].Value = "Workflow Approval :";
+            sheet["A" + workflowRowNumber].Font.Bold = true;
+            workflowRowNumber += 2;
+
+            var workflowPartA = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part A)" && x.WorkflowStatus == "Approved");
+            if (workflowPartA != null)
+            {
+                sheet["A" + workflowRowNumber].Value = "Form Type";
+                sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part A)";
+                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                workflowRowNumber += 1;
+                sheet["A" + workflowRowNumber].Value = "Approver";
+                sheet["B" + workflowRowNumber].Value = workflowPartA.RequestBy;
+                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                workflowRowNumber += 1;
+                sheet["A" + workflowRowNumber].Value = "Approved Date";
+                sheet["B" + workflowRowNumber].Value = workflowPartA.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
+                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                workflowRowNumber += 2;
+            }
+            var workflowPartB = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part B)" && x.WorkflowStatus == "Approved");
+            if (workflowPartB != null)
+            {
+                sheet["A" + workflowRowNumber].Value = "Form Type";
+                sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part B)";
+                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                workflowRowNumber += 1;
+                sheet["A" + workflowRowNumber].Value = "Approver";
+                sheet["B" + workflowRowNumber].Value = workflowPartB.RequestBy;
+                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                workflowRowNumber += 1;
+                sheet["A" + workflowRowNumber].Value = "Approved Date";
+                sheet["B" + workflowRowNumber].Value = workflowPartB.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
+                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                workflowRowNumber += 2;
+            }
+            var workflowPartC = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part C)" && x.WorkflowStatus == "Approved");
+            if (workflowPartC != null)
+            {
+                sheet["A" + workflowRowNumber].Value = "Form Type";
+                sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part C)";
+                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                workflowRowNumber += 1;
+                sheet["A" + workflowRowNumber].Value = "Approver";
+                sheet["B" + workflowRowNumber].Value = workflowPartC.RequestBy;
+                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                workflowRowNumber += 1;
+                sheet["A" + workflowRowNumber].Value = "Approved Date";
+                sheet["B" + workflowRowNumber].Value = workflowPartC.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
+                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                workflowRowNumber += 2;
+            }
+            var workflowPartD = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part D)" && x.WorkflowStatus == "Approved");
+            if (workflowPartD != null)
+            {
+                sheet["A" + workflowRowNumber].Value = "Form Type";
+                sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part D)";
+                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                workflowRowNumber += 1;
+                sheet["A" + workflowRowNumber].Value = "Approver";
+                sheet["B" + workflowRowNumber].Value = workflowPartD.RequestBy;
+                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                workflowRowNumber += 1;
+                sheet["A" + workflowRowNumber].Value = "Approved Date";
+                sheet["B" + workflowRowNumber].Value = workflowPartD.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
+                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                workflowRowNumber += 2;
+            }
+            var workflowPartE = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part E)" && x.WorkflowStatus == "Approved");
+            if (workflowPartE != null)
+            {
+                sheet["A" + workflowRowNumber].Value = "Form Type";
+                sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part E)";
+                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                workflowRowNumber += 1;
+                sheet["A" + workflowRowNumber].Value = "Approver";
+                sheet["B" + workflowRowNumber].Value = workflowPartE.RequestBy;
+                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                workflowRowNumber += 1;
+                sheet["A" + workflowRowNumber].Value = "Approved Date";
+                sheet["B" + workflowRowNumber].Value = workflowPartE.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
+                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
+                workflowRowNumber += 2;
+            }
+
+            currentRowIndex = workflowRowNumber;
+        }
     }
 }

@@ -103,7 +103,7 @@ namespace xDC_Web.Controllers
             {
                 PreparedBy = User.Identity.Name,
                 PreparedDate = DateTime.Now,
-                FormStatus = Common.FormStatusMapping(0),
+                FormStatus = Common.FormStatus.Draft,
                 EnableDraftButton = true
             };
 
@@ -132,12 +132,12 @@ namespace xDC_Web.Controllers
                             PreparedBy = getForm.PreparedBy,
                             PreparedDate = getForm.PreparedDate,
 
-                            IsApproved = (getForm.FormStatus == Common.FormStatusMapping(3)),
+                            IsApproved = (getForm.FormStatus == Common.FormStatus.Approved),
                             ApprovedBy = getForm.ApprovedBy,
                             ApprovedDate = getForm.ApprovedDate,
 
-                            EnableDraftButton = (getForm.FormStatus == Common.FormStatusMapping(0) ||
-                                              getForm.FormStatus == Common.FormStatusMapping(1)),
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft ||
+                                              getForm.FormStatus == Common.FormStatus.Draft),
 
                             IsAdminEdited = getForm.AdminEditted,
                             AdminEditedBy = getForm.AdminEdittedBy,
@@ -206,11 +206,11 @@ namespace xDC_Web.Controllers
                             AdminEditedBy = getForm.AdminEdittedBy,
                             AdminEditedDate = getForm.AdminEdittedDate,
 
-                            EnableResubmit = (getForm.FormStatus == Common.FormStatusMapping(3) || getForm.FormStatus == Common.FormStatusMapping(4)) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatusMapping(0) || getForm.FormStatus == Common.FormStatusMapping(1)) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableResubmit = (getForm.FormStatus == Common.FormStatus.Approved || getForm.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatus.Draft || getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
 
-                            EnableDraftButton = (getForm.FormStatus == Common.FormStatusMapping(0)) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatusMapping(3)),
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatus.Approved),
 
                         };
 
@@ -243,7 +243,7 @@ namespace xDC_Web.Controllers
             {
                 PreparedBy = User.Identity.Name,
                 PreparedDate = DateTime.Now,
-                FormStatus = Common.FormStatusMapping(0),
+                FormStatus = Common.FormStatus.Draft,
                 EnableDraftButton = true
             };
 
@@ -272,12 +272,12 @@ namespace xDC_Web.Controllers
                             PreparedBy = getForm.PreparedBy,
                             PreparedDate = getForm.PreparedDate,
 
-                            IsApproved = (getForm.FormStatus == Common.FormStatusMapping(3)),
+                            IsApproved = (getForm.FormStatus == Common.FormStatus.Approved),
                             ApprovedBy = getForm.ApprovedBy,
                             ApprovedDate = getForm.ApprovedDate,
 
-                            EnableDraftButton = (getForm.FormStatus == Common.FormStatusMapping(0) ||
-                                              getForm.FormStatus == Common.FormStatusMapping(1)),
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft ||
+                                              getForm.FormStatus == Common.FormStatus.Draft),
 
                             IsAdminEdited = getForm.AdminEditted,
                             AdminEditedBy = getForm.AdminEdittedBy,
@@ -346,11 +346,11 @@ namespace xDC_Web.Controllers
                             AdminEditedBy = getForm.AdminEdittedBy,
                             AdminEditedDate = getForm.AdminEdittedDate,
 
-                            EnableResubmit = (getForm.FormStatus == Common.FormStatusMapping(3) || getForm.FormStatus == Common.FormStatusMapping(4)) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatusMapping(0) || getForm.FormStatus == Common.FormStatusMapping(1)) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableResubmit = (getForm.FormStatus == Common.FormStatus.Approved || getForm.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatus.Draft || getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
 
-                            EnableDraftButton = (getForm.FormStatus == Common.FormStatusMapping(0)) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatusMapping(3)),
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatus.Approved),
 
                         };
 
@@ -383,7 +383,7 @@ namespace xDC_Web.Controllers
             {
                 PreparedBy = User.Identity.Name,
                 PreparedDate = DateTime.Now,
-                FormStatus = Common.FormStatusMapping(0),
+                FormStatus = Common.FormStatus.Draft,
                 EnableDraftButton = true
             };
 
@@ -413,12 +413,12 @@ namespace xDC_Web.Controllers
                             PreparedBy = getForm.PreparedBy,
                             PreparedDate = getForm.PreparedDate,
 
-                            IsApproved = (getForm.FormStatus == Common.FormStatusMapping(3)),
+                            IsApproved = (getForm.FormStatus == Common.FormStatus.Approved),
                             ApprovedBy = getForm.ApprovedBy,
                             ApprovedDate = getForm.ApprovedDate,
 
-                            EnableDraftButton = (getForm.FormStatus == Common.FormStatusMapping(0) ||
-                                              getForm.FormStatus == Common.FormStatusMapping(1)),
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft ||
+                                              getForm.FormStatus == Common.FormStatus.Draft),
 
                             IsAdminEdited = getForm.AdminEditted,
                             AdminEditedBy = getForm.AdminEdittedBy,
@@ -487,11 +487,11 @@ namespace xDC_Web.Controllers
                             AdminEditedBy = getForm.AdminEdittedBy,
                             AdminEditedDate = getForm.AdminEdittedDate,
 
-                            EnableResubmit = (getForm.FormStatus == Common.FormStatusMapping(3) || getForm.FormStatus == Common.FormStatusMapping(4)) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatusMapping(0) || getForm.FormStatus == Common.FormStatusMapping(1)) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableResubmit = (getForm.FormStatus == Common.FormStatus.Approved || getForm.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatus.Draft || getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
 
-                            EnableDraftButton = (getForm.FormStatus == Common.FormStatusMapping(0)) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatusMapping(3)),
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatus.Approved),
 
                         };
 
@@ -524,7 +524,7 @@ namespace xDC_Web.Controllers
             {
                 PreparedBy = User.Identity.Name,
                 PreparedDate = DateTime.Now,
-                FormStatus = Common.FormStatusMapping(0),
+                FormStatus = Common.FormStatus.Draft,
                 EnableDraftButton = true
             };
 
@@ -553,12 +553,12 @@ namespace xDC_Web.Controllers
                             PreparedBy = getForm.PreparedBy,
                             PreparedDate = getForm.PreparedDate,
 
-                            IsApproved = (getForm.FormStatus == Common.FormStatusMapping(3)),
+                            IsApproved = (getForm.FormStatus == Common.FormStatus.Approved),
                             ApprovedBy = getForm.ApprovedBy,
                             ApprovedDate = getForm.ApprovedDate,
 
-                            EnableDraftButton = (getForm.FormStatus == Common.FormStatusMapping(0) ||
-                                              getForm.FormStatus == Common.FormStatusMapping(1)),
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft ||
+                                              getForm.FormStatus == Common.FormStatus.Draft),
 
                             IsAdminEdited = getForm.AdminEditted,
                             AdminEditedBy = getForm.AdminEdittedBy,
@@ -627,11 +627,11 @@ namespace xDC_Web.Controllers
                             AdminEditedBy = getForm.AdminEdittedBy,
                             AdminEditedDate = getForm.AdminEdittedDate,
 
-                            EnableResubmit = (getForm.FormStatus == Common.FormStatusMapping(3) || getForm.FormStatus == Common.FormStatusMapping(4)) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatusMapping(0) || getForm.FormStatus == Common.FormStatusMapping(1)) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableResubmit = (getForm.FormStatus == Common.FormStatus.Approved || getForm.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatus.Draft || getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
 
-                            EnableDraftButton = (getForm.FormStatus == Common.FormStatusMapping(0)) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatusMapping(3)),
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatus.Approved),
 
                         };
 
@@ -664,7 +664,7 @@ namespace xDC_Web.Controllers
             {
                 PreparedBy = User.Identity.Name,
                 PreparedDate = DateTime.Now,
-                FormStatus = Common.FormStatusMapping(0),
+                FormStatus = Common.FormStatus.Draft,
                 EnableDraftButton = true
             };
 
@@ -693,12 +693,12 @@ namespace xDC_Web.Controllers
                             PreparedBy = getForm.PreparedBy,
                             PreparedDate = getForm.PreparedDate,
 
-                            IsApproved = (getForm.FormStatus == Common.FormStatusMapping(3)),
+                            IsApproved = (getForm.FormStatus == Common.FormStatus.Approved),
                             ApprovedBy = getForm.ApprovedBy,
                             ApprovedDate = getForm.ApprovedDate,
 
-                            EnableDraftButton = (getForm.FormStatus == Common.FormStatusMapping(0) ||
-                                              getForm.FormStatus == Common.FormStatusMapping(1)),
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft ||
+                                              getForm.FormStatus == Common.FormStatus.Draft),
 
                             IsAdminEdited = getForm.AdminEditted,
                             AdminEditedBy = getForm.AdminEdittedBy,
@@ -767,11 +767,11 @@ namespace xDC_Web.Controllers
                             AdminEditedBy = getForm.AdminEdittedBy,
                             AdminEditedDate = getForm.AdminEdittedDate,
 
-                            EnableResubmit = (getForm.FormStatus == Common.FormStatusMapping(3) || getForm.FormStatus == Common.FormStatusMapping(4)) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatusMapping(0) || getForm.FormStatus == Common.FormStatusMapping(1)) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableResubmit = (getForm.FormStatus == Common.FormStatus.Approved || getForm.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatus.Draft || getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
 
-                            EnableDraftButton = (getForm.FormStatus == Common.FormStatusMapping(0)) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatusMapping(3)),
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatus.Approved),
 
                         };
 

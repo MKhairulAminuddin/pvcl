@@ -31,16 +31,18 @@ namespace xDC_Web.Controllers.Api
                 {
                     var formTypes = new List<string>()
                     {
-                        Common.FormTypeMapping(3),
-                        Common.FormTypeMapping(4),
-                        Common.FormTypeMapping(5),
-                        Common.FormTypeMapping(6),
-                        Common.FormTypeMapping(7)
+                        Common.FormType.ISSD_TS_A,
+                        Common.FormType.ISSD_TS_B,
+                        Common.FormType.ISSD_TS_C,
+                        Common.FormType.ISSD_TS_D,
+                        Common.FormType.ISSD_TS_E
                     };
 
                     var todayDate = DateTime.Now.Date;
+                    /*var result = db.ISSD_FormHeader
+                        .Where(x => formTypes.Contains(x.FormType) && DbFunctions.TruncateTime(x.SettlementDate) >= todayDate);*/
                     var result = db.ISSD_FormHeader
-                        .Where(x => formTypes.Contains(x.FormType) && DbFunctions.TruncateTime(x.SettlementDate) >= todayDate);
+                        .Where(x => formTypes.Contains(x.FormType));
 
                     var getApprover = db.Config_Approver.Where(x => x.Username == User.Identity.Name);
                     var isMeApprover = getApprover.Any();
@@ -64,17 +66,17 @@ namespace xDC_Web.Controllers.Api
                             AdminEdittedBy = item.AdminEdittedBy,
                             AdminEdittedDate = item.AdminEdittedDate,
 
-                            IsDraft = (item.FormStatus != Common.FormStatusMapping(2)),
+                            IsDraft = (item.FormStatus != Common.FormStatus.PendingApproval),
                             IsMeCanEditDraft = (User.IsInRole(Config.AclIssd) && !isMeApprover),
 
-                            IsPendingApproval = (item.FormStatus == Common.FormStatusMapping(2)),
+                            IsPendingApproval = (item.FormStatus == Common.FormStatus.PendingApproval),
 
-                            IsMyFormRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatusMapping(4)),
-                            IsFormPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatusMapping(2)),
+                            IsMyFormRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatus.Rejected),
+                            IsFormPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
 
 
                             
-                            IsCanAdminEdit = (User.IsInRole(Config.AclPowerUser) && !isMeApprover && item.FormStatus != Common.FormStatusMapping(2)),
+                            IsCanAdminEdit = (User.IsInRole(Config.AclPowerUser) && !isMeApprover && item.FormStatus != Common.FormStatus.PendingApproval),
                             
                         });
                     }
@@ -108,7 +110,7 @@ namespace xDC_Web.Controllers.Api
 
                     var formStatus  = new List<string>()
                     {
-                        Common.FormStatusMapping(3)
+                        Common.FormStatus.Approved
                     };
 
                     var result = db.ISSD_FormHeader
@@ -178,13 +180,13 @@ namespace xDC_Web.Controllers.Api
                             AdminEdittedBy = item.AdminEdittedBy,
                             AdminEdittedDate = item.AdminEdittedDate,
 
-                            IsDraft = (item.FormStatus == Common.FormStatusMapping(0)),
+                            IsDraft = (item.FormStatus == Common.FormStatus.Draft),
 
                             IsMeCanEditDraft = (User.IsInRole(Config.AclIssd) && !isMeApprover),
 
 
-                            IsMyFormRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatusMapping(4)),
-                            IsFormPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatusMapping(2)),
+                            IsMyFormRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatus.Rejected),
+                            IsFormPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
                             IsFormOwner = (User.Identity.Name == item.PreparedBy),
                             IsCanAdminEdit = (User.IsInRole(Config.AclPowerUser)),
                             IsResubmitEnabled = (item.FormStatus == "Rejected" && User.IsInRole(Config.AclAmsd) && User.Identity.Name != item.ApprovedBy)
@@ -230,7 +232,7 @@ namespace xDC_Web.Controllers.Api
                         FormType = Common.FormTypeMapping(inputs.FormType),
                         PreparedBy = User.Identity.Name,
                         PreparedDate = DateTime.Now,
-                        FormStatus = (inputs.IsSaveAsDraft) ? Common.FormStatusMapping(0) : Common.FormStatusMapping(2),
+                        FormStatus = (inputs.IsSaveAsDraft) ? Common.FormStatus.Draft : Common.FormStatus.PendingApproval,
                         SettlementDate = Common.ConvertEpochToDateTime(inputs.SettlementDateEpoch)?.Date,
                         Currency = inputs.Currency,
                         ApprovedBy = (inputs.IsSaveAsDraft) ? null : inputs.Approver
@@ -248,7 +250,7 @@ namespace xDC_Web.Controllers.Api
                             newTrades.Add(new ISSD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
-                                InstrumentType = Common.TradeSettlementMapping(1),
+                                InstrumentType = Common.TsItemCategory.Equity,
                                 InstrumentCode = item.InstrumentCode,
                                 StockCode = item.StockCode,
                                 Maturity = item.Maturity,
@@ -268,7 +270,7 @@ namespace xDC_Web.Controllers.Api
                             newTrades.Add(new ISSD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
-                                InstrumentType = Common.TradeSettlementMapping(2),
+                                InstrumentType = Common.TsItemCategory.Bond,
                                 InstrumentCode = item.InstrumentCode,
                                 StockCode = item.StockCode,
                                 Maturity = item.Maturity,
@@ -288,7 +290,7 @@ namespace xDC_Web.Controllers.Api
                             newTrades.Add(new ISSD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
-                                InstrumentType = Common.TradeSettlementMapping(3),
+                                InstrumentType = Common.TsItemCategory.Cp,
                                 InstrumentCode = item.InstrumentCode,
                                 StockCode = item.StockCode,
                                 Maturity = item.Maturity,
@@ -308,7 +310,7 @@ namespace xDC_Web.Controllers.Api
                             newTrades.Add(new ISSD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
-                                InstrumentType = Common.TradeSettlementMapping(4),
+                                InstrumentType = Common.TsItemCategory.NotesPapers,
                                 InstrumentCode = item.InstrumentCode,
                                 StockCode = item.StockCode,
                                 Maturity = item.Maturity,
@@ -328,7 +330,7 @@ namespace xDC_Web.Controllers.Api
                             newTrades.Add(new ISSD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
-                                InstrumentType = Common.TradeSettlementMapping(5),
+                                InstrumentType = Common.TsItemCategory.Repo,
                                 InstrumentCode = item.InstrumentCode,
                                 StockCode = item.StockCode,
                                 FirstLeg = item.FirstLeg,
@@ -347,7 +349,7 @@ namespace xDC_Web.Controllers.Api
                             newTrades.Add(new ISSD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
-                                InstrumentType = Common.TradeSettlementMapping(6),
+                                InstrumentType = Common.TsItemCategory.Coupon,
                                 InstrumentCode = item.InstrumentCode,
                                 StockCode = item.StockCode,
                                 AmountPlus = item.AmountPlus,
@@ -365,9 +367,10 @@ namespace xDC_Web.Controllers.Api
                             newTrades.Add(new ISSD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
-                                InstrumentType = Common.TradeSettlementMapping(7),
+                                InstrumentType = Common.TsItemCategory.Fees,
                                 InstrumentCode = item.InstrumentCode,
                                 AmountPlus = item.AmountPlus,
+                                AmountMinus = item.AmountMinus,
                                 Remarks = item.Remarks,
                                 ModifiedBy = User.Identity.Name,
                                 ModifiedDate = DateTime.Now
@@ -382,7 +385,7 @@ namespace xDC_Web.Controllers.Api
                             newTrades.Add(new ISSD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
-                                InstrumentType = Common.TradeSettlementMapping(8),
+                                InstrumentType = Common.TsItemCategory.Mtm,
                                 InstrumentCode = item.InstrumentCode,
                                 StockCode = item.StockCode,
                                 AmountPlus = item.AmountPlus,
@@ -401,7 +404,7 @@ namespace xDC_Web.Controllers.Api
                             newTrades.Add(new ISSD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
-                                InstrumentType = Common.TradeSettlementMapping(9),
+                                InstrumentType = Common.TsItemCategory.Fx,
                                 InstrumentCode = item.InstrumentCode,
                                 AmountPlus = item.AmountPlus,
                                 AmountMinus = item.AmountMinus,
@@ -419,7 +422,7 @@ namespace xDC_Web.Controllers.Api
                             newTrades.Add(new ISSD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
-                                InstrumentType = Common.TradeSettlementMapping(10),
+                                InstrumentType = Common.TsItemCategory.Cn,
                                 InstrumentCode = item.InstrumentCode,
                                 AmountPlus = item.AmountPlus,
                                 Remarks = item.Remarks,
@@ -436,7 +439,7 @@ namespace xDC_Web.Controllers.Api
                             newTrades.Add(new ISSD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
-                                InstrumentType = Common.TradeSettlementMapping(11),
+                                InstrumentType = Common.TsItemCategory.Altid,
                                 InstrumentCode = item.InstrumentCode,
                                 AmountPlus = item.AmountPlus,
                                 AmountMinus = item.AmountMinus,
@@ -454,7 +457,7 @@ namespace xDC_Web.Controllers.Api
                             newTrades.Add(new ISSD_TradeSettlement()
                             {
                                 FormId = newFormHeader.Id,
-                                InstrumentType = Common.TradeSettlementMapping(12),
+                                InstrumentType = Common.TsItemCategory.Others,
                                 InstrumentCode = item.InstrumentCode,
                                 AmountPlus = item.AmountPlus,
                                 AmountMinus = item.AmountMinus,
@@ -531,7 +534,7 @@ namespace xDC_Web.Controllers.Api
                     {
                         getForm.ApprovedBy = inputs.Approver;
                         getForm.ApprovedDate = null; // empty the date as this is new submission
-                        getForm.FormStatus = Common.FormStatusMapping(2);
+                        getForm.FormStatus = Common.FormStatus.PendingApproval;
 
                         TradeSettlementService.NotifyApprover(getForm.ApprovedBy, getForm.Id, User.Identity.Name,
                             Common.FormTypeMappingReverse(getForm.FormType), inputs.ApprovalNotes);
@@ -615,12 +618,35 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
-                                if (foundItem.Remarks != item.Remarks)
+                                if (foundItem.InstrumentCode != item.InstrumentCode ||
+                                    foundItem.StockCode != item.StockCode ||
+                                    foundItem.FirstLeg != item.FirstLeg ||
+                                    foundItem.SecondLeg != item.SecondLeg ||
+                                    foundItem.Remarks != item.Remarks)
                                 {
+                                    foundItem.InstrumentCode = item.InstrumentCode;
+                                    foundItem.StockCode = item.StockCode;
+                                    foundItem.FirstLeg = item.FirstLeg;
+                                    foundItem.SecondLeg = item.SecondLeg;
                                     foundItem.Remarks = item.Remarks;
                                     foundItem.ModifiedBy = User.Identity.Name;
                                     foundItem.ModifiedDate = DateTime.Now;
                                 }
+                            }
+                            else
+                            {
+                                db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
+                                {
+                                    FormId = inputs.Id,
+                                    InstrumentType = Common.TsItemCategory.Repo,
+                                    InstrumentCode = item.InstrumentCode,
+                                    StockCode = item.StockCode,
+                                    FirstLeg = item.FirstLeg,
+                                    SecondLeg = item.SecondLeg,
+                                    Remarks = item.Remarks,
+                                    ModifiedBy = User.Identity.Name,
+                                    ModifiedDate = DateTime.Now
+                                });
                             }
                         }
                     }
@@ -650,7 +676,7 @@ namespace xDC_Web.Controllers.Api
                                 db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
                                 {
                                     FormId = inputs.Id,
-                                    InstrumentType = Common.TradeSettlementUrlParamMapping("coupon"),
+                                    InstrumentType = Common.TsItemCategory.Coupon,
                                     InstrumentCode = item.InstrumentCode,
                                     StockCode = item.StockCode,
                                     AmountPlus = item.AmountPlus,
@@ -690,7 +716,7 @@ namespace xDC_Web.Controllers.Api
                                 db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
                                 {
                                     FormId = inputs.Id,
-                                    InstrumentType = Common.TradeSettlementUrlParamMapping("mtm"),
+                                    InstrumentType = Common.TsItemCategory.Mtm,
                                     InstrumentCode = item.InstrumentCode,
                                     StockCode = item.StockCode,
                                     AmountPlus = item.AmountPlus,
@@ -731,7 +757,7 @@ namespace xDC_Web.Controllers.Api
                                 db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
                                 {
                                     FormId = inputs.Id,
-                                    InstrumentType = Common.TradeSettlementUrlParamMapping("fxSettlement"),
+                                    InstrumentType = Common.TsItemCategory.Fx,
                                     InstrumentCode = item.InstrumentCode,
                                     StockCode = item.StockCode,
                                     AmountPlus = item.AmountPlus,
@@ -771,7 +797,7 @@ namespace xDC_Web.Controllers.Api
                                 db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
                                 {
                                     FormId = inputs.Id,
-                                    InstrumentType = Common.TradeSettlementUrlParamMapping("altid"),
+                                    InstrumentType = Common.TsItemCategory.Altid,
                                     InstrumentCode = item.InstrumentCode,
                                     StockCode = item.StockCode,
                                     AmountPlus = item.AmountPlus,
@@ -811,7 +837,7 @@ namespace xDC_Web.Controllers.Api
                                 db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
                                 {
                                     FormId = inputs.Id,
-                                    InstrumentType = Common.TradeSettlementUrlParamMapping("contributionCredited"),
+                                    InstrumentType = Common.TsItemCategory.Cn,
                                     InstrumentCode = item.InstrumentCode,
                                     StockCode = item.StockCode,
                                     AmountPlus = item.AmountPlus,
@@ -834,11 +860,13 @@ namespace xDC_Web.Controllers.Api
                                 if (foundItem.InstrumentCode != item.InstrumentCode ||
                                     foundItem.StockCode != item.StockCode ||
                                     foundItem.AmountPlus != item.AmountPlus ||
+                                    foundItem.AmountMinus != item.AmountMinus ||
                                     foundItem.Remarks != item.Remarks)
                                 {
                                     foundItem.InstrumentCode = item.InstrumentCode;
                                     foundItem.StockCode = item.StockCode;
                                     foundItem.AmountPlus = item.AmountPlus;
+                                    foundItem.AmountMinus = item.AmountMinus;
                                     foundItem.Remarks = item.Remarks;
 
                                     foundItem.ModifiedBy = User.Identity.Name;
@@ -850,10 +878,11 @@ namespace xDC_Web.Controllers.Api
                                 db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
                                 {
                                     FormId = inputs.Id,
-                                    InstrumentType = Common.TradeSettlementUrlParamMapping("fees"),
+                                    InstrumentType = Common.TsItemCategory.Fees,
                                     InstrumentCode = item.InstrumentCode,
                                     StockCode = item.StockCode,
                                     AmountPlus = item.AmountPlus,
+                                    AmountMinus = item.AmountMinus,
                                     Remarks = item.Remarks,
 
                                     ModifiedBy = User.Identity.Name,
@@ -892,7 +921,7 @@ namespace xDC_Web.Controllers.Api
                                 db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
                                 {
                                     FormId = inputs.Id,
-                                    InstrumentType = Common.TradeSettlementUrlParamMapping("others"),
+                                    InstrumentType = Common.TsItemCategory.Others,
                                     InstrumentCode = item.InstrumentCode,
                                     StockCode = item.StockCode,
                                     AmountPlus = item.AmountPlus,
@@ -935,8 +964,8 @@ namespace xDC_Web.Controllers.Api
                         {
                             form.ApprovedDate = DateTime.Now;
                             form.FormStatus = (inputs.ApprovalStatus)
-                                ? Common.FormStatusMapping(3)
-                                : Common.FormStatusMapping(4);
+                                ? Common.FormStatus.Approved
+                                : Common.FormStatus.Rejected;
 
                             db.SaveChanges();
 
@@ -962,7 +991,6 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
         }
-
         
         [HttpDelete]
         [Authorize(Roles = "Administrator, ISSD")]
@@ -1068,204 +1096,7 @@ namespace xDC_Web.Controllers.Api
         }
 
         #endregion
-
-
-        #region Trade Settlement Grid
-
-        [HttpGet]
-        [Route("GetTradeSettlementFromEdw/{type}/{settlementDateEpoch}/{currency}")]
-        public HttpResponseMessage GetTradeSettlementFromEdw(string type, long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
-
-                    if (settlementDate != null)
-                    {
-                        type = type.ToUpper();
-                        settlementDate = settlementDate.Value.Date;
-
-                        var result = db.EDW_TradeItem.AsNoTracking().Where(x =>
-                            x.InstrumentType == type && x.SettlementDate == settlementDate &&
-                            x.Currency == currency);
-
-                        var finalResult = new List<ISSD_TradeSettlement>();
-                        foreach (var item in result)
-                        {
-                            var tradeItem = new ISSD_TradeSettlement
-                            {
-                                InstrumentType = item.InstrumentType,
-                                InstrumentCode = item.InstrumentName,
-                                StockCode = string.IsNullOrEmpty(item.ISIN)?item.StockCode:string.Concat(item.StockCode, " / " + item.ISIN),
-                                Maturity = (decimal?)((item.Type == "M" && item.InstrumentType != Common.TradeSettlementMapping(5)) ? item.Amount : 0),
-                                Sales = (decimal?)((item.Type == "S" && item.InstrumentType != Common.TradeSettlementMapping(5)) ? item.Amount : 0),
-                                Purchase = (decimal?)((item.Type == "P" && item.InstrumentType != Common.TradeSettlementMapping(5)) ? item.Amount : 0),
-                                SecondLeg = (decimal?)((item.InstrumentType == Common.TradeSettlementMapping(5)) ? item.Amount : 0),
-                                AmountPlus = (decimal?)((item.InstrumentType == Common.TradeSettlementMapping(6)) ? item.Amount : 0),
-                            };
-
-                            finalResult.Add(tradeItem);
-                        }
-
-                        return Request.CreateResponse(DataSourceLoader.Load(finalResult, loadOptions));
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Failed convert to actual date");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-        }
         
-        [HttpGet]
-        [Route("TradeSettlement/TradeItem/{formId}/{tradeType}")]
-        public HttpResponseMessage GetTradeItem(string formId, string tradeType, DataSourceLoadOptions loadOptions)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var result = new List<ISSD_TradeSettlement>();
-
-                    if (!string.IsNullOrEmpty(formId))
-                    {
-                        var formIdParsed = Convert.ToInt32(formId);
-                        var instrumentType = Common.TradeSettlementUrlParamMapping(tradeType);
-                        result = db.ISSD_TradeSettlement
-                            .Where(x => x.FormId == formIdParsed && x.InstrumentType == instrumentType).ToList();
-                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-        }
-
-        [HttpGet]
-        [Route("TradeSettlement/TradeItemConsolidated/{tradeType}/{settlementDateEpoch}/{currency}")]
-        public HttpResponseMessage GetTradeItemConsolidated(string tradeType, long settlementDateEpoch, string currency ,DataSourceLoadOptions loadOptions)
-        {
-            try
-            {
-                var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
-                var settlementDateOnly = settlementDate.Value.Date;
-                var formType = Common.TsUrlParamInstrumentTypeMapFormType(tradeType);
-
-                using (var db = new kashflowDBEntities())
-                {
-                    var result = new List<ISSD_TradeSettlement>();
-
-                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x =>
-                        DbFunctions.TruncateTime(x.SettlementDate) == settlementDateOnly && x.Currency == currency &&
-                        x.FormStatus == "Approved" && x.FormType == formType);
-
-                    if (getForm != null)
-                    {
-                        var instrumentType = Common.TradeSettlementUrlParamMapping(tradeType);
-                        result = db.ISSD_TradeSettlement
-                            .Where(x => x.FormId == getForm.Id && x.InstrumentType == instrumentType).ToList();
-                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-        }
-
-
-        [HttpPut]
-        [Route("TradeSettlement/TradeItem/")]
-        public HttpResponseMessage UpdateTradeItem(FormDataCollection form)
-        {
-            using (var db = new kashflowDBEntities())
-            {
-                var key = Convert.ToInt32(form.Get("key"));
-                var values = form.Get("values");
-                var existingRecord = db.ISSD_TradeSettlement.SingleOrDefault(o => o.Id == key);
-
-                JsonConvert.PopulateObject(values, existingRecord);
-
-                if (existingRecord != null)
-                {
-                    existingRecord.ModifiedBy = User.Identity.Name;
-                    existingRecord.ModifiedDate = DateTime.Now;
-                }
-
-                Validate(existingRecord);
-
-                if (!ModelState.IsValid)
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
-
-                db.SaveChanges();
-
-                return Request.CreateResponse(HttpStatusCode.OK);
-            }
-
-        }
-
-        [HttpPost]
-        [Route("TradeSettlement/TradeItem/")]
-        public HttpResponseMessage InsertTradeItem(FormDataCollection form)
-        {
-            using (var db = new kashflowDBEntities())
-            {
-                var values = form.Get("values");
-
-                var newRecord = new AMSD_InflowFund();
-                JsonConvert.PopulateObject(values, newRecord);
-
-                newRecord.CreatedBy = User.Identity.Name;
-                newRecord.CreatedDate = DateTime.Now;
-
-                Validate(newRecord);
-
-                if (!ModelState.IsValid)
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
-
-                db.AMSD_InflowFund.Add(newRecord);
-                db.SaveChanges();
-
-                return Request.CreateResponse(HttpStatusCode.Created, newRecord);
-            }
-        }
-
-        [HttpDelete]
-        [Route("TradeSettlement/TradeItem/")]
-        public HttpResponseMessage DeleteTradeItem(FormDataCollection form)
-        {
-            using (var db = new kashflowDBEntities())
-            {
-                var key = Convert.ToInt32(form.Get("key"));
-                var foundRecord = db.AMSD_InflowFund.First(x => x.Id == key);
-
-                db.AMSD_InflowFund.Remove(foundRecord);
-                db.SaveChanges();
-
-                return Request.CreateResponse(HttpStatusCode.OK);
-            }
-        }
-
-        #endregion
-
-
         [HttpGet]
         [Route("TradeItemDW/{type}/{settlementDateEpoch}")]
         public HttpResponseMessage TradeItemDW(string type, long settlementDateEpoch, DataSourceLoadOptions loadOptions)
@@ -1337,6 +1168,161 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
         }
+
+
+
+        #region Trade Settlement Grid
+
+        [HttpGet]
+        [Route("GetTradeSettlementFromEdw/{type}/{settlementDateEpoch}/{currency}")]
+        public HttpResponseMessage GetTradeSettlementFromEdw(string type, long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+
+                    if (settlementDate != null)
+                    {
+                        type = type.ToUpper();
+                        settlementDate = settlementDate.Value.Date;
+
+                        var result = db.EDW_TradeItem.AsNoTracking().Where(x =>
+                            x.InstrumentType == type && x.SettlementDate == settlementDate &&
+                            x.Currency == currency);
+
+                        var finalResult = new List<ISSD_TradeSettlement>();
+                        foreach (var item in result)
+                        {
+                            var tradeItem = new ISSD_TradeSettlement
+                            {
+                                InstrumentType = item.InstrumentType,
+                                InstrumentCode = item.InstrumentName,
+                                StockCode = string.IsNullOrEmpty(item.ISIN) ? item.StockCode : string.Concat(item.StockCode, " / " + item.ISIN),
+                                Maturity = (decimal?)((item.Type == "M" && item.InstrumentType != Common.TsItemCategory.Repo) ? item.Amount : 0),
+                                Sales = (decimal?)((item.Type == "S" && item.InstrumentType != Common.TsItemCategory.Repo) ? item.Amount : 0),
+                                Purchase = (decimal?)((item.Type == "P" && item.InstrumentType != Common.TsItemCategory.Repo) ? item.Amount : 0),
+                                SecondLeg = (decimal?)((item.InstrumentType == Common.TsItemCategory.Repo) ? item.Amount : 0),
+                                AmountPlus = (decimal?)((item.InstrumentType == Common.TsItemCategory.Coupon) ? item.Amount : 0),
+                            };
+
+                            finalResult.Add(tradeItem);
+                        }
+
+                        return Request.CreateResponse(DataSourceLoader.Load(finalResult, loadOptions));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Failed convert to actual date");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("TradeSettlement/TradeItem/{formId}/{tradeType}")]
+        public HttpResponseMessage GetTradeItem(string formId, string tradeType, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = new List<ISSD_TradeSettlement>();
+
+                    if (!string.IsNullOrEmpty(formId))
+                    {
+                        var formIdParsed = Convert.ToInt32(formId);
+                        var instrumentType = Common.TradeSettlementUrlParamMapping(tradeType);
+                        result = db.ISSD_TradeSettlement
+                            .Where(x => x.FormId == formIdParsed && x.InstrumentType == instrumentType).ToList();
+                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("TradeSettlement/TradeItemConsolidated/{tradeType}/{settlementDateEpoch}/{currency}")]
+        public HttpResponseMessage GetTradeItemConsolidated(string tradeType, long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+                var settlementDateOnly = settlementDate.Value.Date;
+                var formType = Common.TsUrlParamInstrumentTypeMapFormType(tradeType);
+
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = new List<ISSD_TradeSettlement>();
+
+                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x =>
+                        DbFunctions.TruncateTime(x.SettlementDate) == settlementDateOnly && x.Currency == currency &&
+                        x.FormStatus == "Approved" && x.FormType == formType);
+
+                    if (getForm != null)
+                    {
+                        var instrumentType = Common.TradeSettlementUrlParamMapping(tradeType);
+                        result = db.ISSD_TradeSettlement
+                            .Where(x => x.FormId == getForm.Id && x.InstrumentType == instrumentType).ToList();
+                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+
+        [HttpPut]
+        [Route("TradeSettlement/TradeItem/")]
+        public HttpResponseMessage UpdateTradeItem(FormDataCollection form)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var key = Convert.ToInt32(form.Get("key"));
+                var values = form.Get("values");
+                var existingRecord = db.ISSD_TradeSettlement.SingleOrDefault(o => o.Id == key);
+
+                JsonConvert.PopulateObject(values, existingRecord);
+
+                if (existingRecord != null)
+                {
+                    existingRecord.ModifiedBy = User.Identity.Name;
+                    existingRecord.ModifiedDate = DateTime.Now;
+                }
+
+                Validate(existingRecord);
+
+                if (!ModelState.IsValid)
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+
+                db.SaveChanges();
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+
+        }
+        
+        #endregion
 
     }
 }

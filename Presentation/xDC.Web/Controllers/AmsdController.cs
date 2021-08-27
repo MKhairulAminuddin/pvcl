@@ -60,7 +60,7 @@ namespace xDC_Web.Controllers
                     {
                         PreparedBy = User.Identity.Name,
                         PreparedDate = DateTime.Now,
-                        FormStatus = Common.FormStatusMapping(1),
+                        FormStatus = Common.FormStatus.Draft,
                         IsDraftEnabled = true
                     };
 
@@ -87,7 +87,7 @@ namespace xDC_Web.Controllers
                     if (getForm != null)
                     {
                         if (!User.IsInRole(Config.AclPowerUser) &&
-                            (getForm.FormStatus == Common.FormStatusMapping(2) || getForm.FormStatus == Common.FormStatusMapping(3)))
+                            (getForm.FormStatus == Common.FormStatus.PendingApproval || getForm.FormStatus == Common.FormStatus.Approved))
                         {
                             TempData["ErrorMessage"] = "Hey! You cannot amend form that in Pending Approval or Approved status!";
                             return View("Error");
@@ -105,12 +105,11 @@ namespace xDC_Web.Controllers
                             PreparedDate = getForm.PreparedDate,
                             FormStatus = getForm.FormStatus,
 
-                            IsApproved = (getForm.FormStatus == Common.FormStatusMapping(3)),
+                            IsApproved = (getForm.FormStatus == Common.FormStatus.Approved),
                             ApprovedBy = getForm.ApprovedBy,
                             ApprovedDate = getForm.ApprovedDate,
 
-                            IsDraftEnabled = (getForm.FormStatus == Common.FormStatusMapping(0) ||
-                                              getForm.FormStatus == Common.FormStatusMapping(1)),
+                            IsDraftEnabled = (getForm.FormStatus == Common.FormStatus.Draft),
 
                             IsAdminEdited = getForm.AdminEditted,
                             AdminEditedBy = getForm.AdminEdittedBy,
@@ -151,8 +150,8 @@ namespace xDC_Web.Controllers
 
                     if (getForm != null)
                     {
-                        var isApprovedOrRejected = (getForm.FormStatus == Common.FormStatusMapping(3) ||
-                                                    getForm.FormStatus == Common.FormStatusMapping(4));
+                        var isApprovedOrRejected = (getForm.FormStatus == Common.FormStatus.Approved ||
+                                                    getForm.FormStatus == Common.FormStatus.Rejected);
                         var getFormWorkflow = db.Form_Workflow
                             .Where(x => (x.WorkflowStatus == "Approved" || x.WorkflowStatus == "Rejected") &&
                                         x.FormId == getForm.Id).OrderByDescending(x => x.EndDate)

@@ -47,7 +47,7 @@ namespace xDC.Services
                             RequestBy = form.PreparedBy,
                             StartDate = form.PreparedDate,
                             RequestTo = form.ApprovedBy,
-                            WorkflowStatus = Common.FormStatusMapping(2),
+                            WorkflowStatus = Common.FormStatus.PendingApproval,
                             WorkflowNotes = notes
                         };
                     }
@@ -61,7 +61,7 @@ namespace xDC.Services
                             RequestBy = form.PreparedBy,
                             StartDate = form.PreparedDate,
                             RequestTo = form.ApprovedBy,
-                            WorkflowStatus = Common.FormStatusMapping(2),
+                            WorkflowStatus = Common.FormStatus.PendingApproval,
                             WorkflowNotes = notes
                         };
                     }
@@ -98,7 +98,7 @@ namespace xDC.Services
                         StartDate = DateTime.Now,
                         RequestTo = currentFormWorkflow.RequestBy,
                         EndDate = DateTime.Now,
-                        WorkflowStatus = isApproved ? Common.FormStatusMapping(3) : Common.FormStatusMapping(4),
+                        WorkflowStatus = isApproved ? Common.FormStatus.Approved : Common.FormStatus.Rejected,
                         WorkflowNotes = notes
                     };
 

@@ -3,32 +3,30 @@
     ViewBag.Title = "View: Approved Trade Settlement";
 }
 
-
-<section class="content-header content-toolbar">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="left-container">
-                <div>
-                    @(Html.DevExtreme().Button()
-                        .Type(ButtonType.Back)
-                        .StylingMode(ButtonStylingMode.Contained)
-                        .OnClick(@<text> function(){ window.location = "@Url.Action("TradeSettlement", "Issd")"; } </text>)
-                        )
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div id="right-toolbar-container" class="right-container">
-
-            </div>
-        </div>
-    </div>
-</section>
-
 <section class="content container-fluid">
     <div class="row">
         <div class="col-md-12">
             <div class="box box-solid">
+                <div class="box-header">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="left-container">
+                                @(Html.DevExtreme().Button()
+                                    .Type(ButtonType.Back)
+                                    .StylingMode(ButtonStylingMode.Contained)
+                                    .OnClick(@<text> function(){ window.location = "@Url.Action("TradeSettlement", "Issd")"; } </text>)
+                                    )
+
+                                <div id="printBtn"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="right-toolbar-container" class="right-container">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="box-body">
                     <div class="dx-fieldset">
                         <div class="row">
@@ -37,19 +35,19 @@
                                     <div class="dx-field-label">Settlement Date</div>
                                     <div class="dx-field-value">
                                         @(Html.DevExtreme().DateBoxFor(m => m.SettlementDate)
-                                                .ID("tradesettlementDateBox")
-                                                .StylingMode(EditorStylingMode.Filled)
-                                                .DisplayFormat("dd/MM/yyyy")
-                                                .ReadOnly(true))
+                                            .ID("tradesettlementDateBox")
+                                            .StylingMode(EditorStylingMode.Filled)
+                                            .DisplayFormat("dd/MM/yyyy")
+                                            .ReadOnly(true))
                                     </div>
                                 </div>
                                 <div class="dx-field">
                                     <div class="dx-field-label">Currency</div>
                                     <div class="dx-field-value">
-                                        @(Html.DevExtreme().TextBoxFor(m=> m.Currency)
-                                                .ID("currencySelectBox")
-                                                .StylingMode(EditorStylingMode.Filled)
-                                                .ReadOnly(true))
+                                        @(Html.DevExtreme().TextBoxFor(m => m.Currency)
+                                            .ID("currencySelectBox")
+                                            .StylingMode(EditorStylingMode.Filled)
+                                            .ReadOnly(true))
                                     </div>
                                 </div>
                             </div>

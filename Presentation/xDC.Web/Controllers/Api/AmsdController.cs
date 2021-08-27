@@ -57,8 +57,8 @@ namespace xDC_Web.Controllers.Api
                             AdminEdittedBy = item.AdminEdittedBy,
                             AdminEdittedDate = item.AdminEdittedDate,
 
-                            IsMyFormRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatusMapping(4)),
-                            IsFormPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatusMapping(2)),
+                            IsMyFormRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatus.Rejected),
+                            IsFormPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
                             IsFormOwner = (User.Identity.Name == item.PreparedBy),
                             IsCanAdminEdit = (User.IsInRole(Config.AclPowerUser)),
                             IsResubmitEnabled = (item.FormStatus == "Rejected" && User.IsInRole(Config.AclAmsd) && User.Identity.Name != item.ApprovedBy)
@@ -170,7 +170,7 @@ namespace xDC_Web.Controllers.Api
 
                         existingForm.PreparedBy = User.Identity.Name;
                         existingForm.PreparedDate = DateTime.Now;
-                        existingForm.FormStatus = Common.FormStatusMapping(2);
+                        existingForm.FormStatus = Common.FormStatus.PendingApproval;
                         existingForm.ApprovedBy = inputs.Approver;
                         existingForm.ApprovedDate = null;
                         existingForm.AdminEditted = false;
@@ -193,7 +193,7 @@ namespace xDC_Web.Controllers.Api
                             FormType = Common.FormTypeMapping(1),
                             PreparedBy = User.Identity.Name,
                             PreparedDate = DateTime.Now,
-                            FormStatus = Common.FormStatusMapping(2),
+                            FormStatus = Common.FormStatus.PendingApproval,
                             ApprovedBy = inputs.Approver,
                             Currency = Common.FormCurrencyMapping(1)
                         };
@@ -268,7 +268,7 @@ namespace xDC_Web.Controllers.Api
                             FormType = isExistingDraft.FormType,
                             PreparedBy = User.Identity.Name,
                             PreparedDate = DateTime.Now,
-                            FormStatus = Common.FormStatusMapping(0)
+                            FormStatus = Common.FormStatus.Draft
                         };
 
                         Validate(newRecord);
@@ -285,7 +285,7 @@ namespace xDC_Web.Controllers.Api
                             FormType = Common.FormTypeMapping(1),
                             PreparedBy = User.Identity.Name,
                             PreparedDate = DateTime.Now,
-                            FormStatus = Common.FormStatusMapping(0)
+                            FormStatus = Common.FormStatus.Draft
                         };
 
                         Validate(newRecord);
@@ -388,8 +388,8 @@ namespace xDC_Web.Controllers.Api
                         {
                             form.ApprovedDate = DateTime.Now;
                             form.FormStatus = (inputs.ApprovalStatus)
-                                ? Common.FormStatusMapping(3)
-                                : Common.FormStatusMapping(4);
+                                ? Common.FormStatus.Approved
+                                : Common.FormStatus.Rejected;
                             
                             db.SaveChanges();
 

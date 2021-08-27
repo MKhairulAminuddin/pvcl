@@ -212,6 +212,66 @@
         }
     }
 
+    _tradeSettlement.printBtnWidgetSettingConsolidated = {
+        dataSource: [
+            "Excel", "PDF"
+        ],
+        icon: "print",
+        type: "normal",
+        stylingMode: "contained",
+        onItemClick: function (e) {
+            if (e.itemData == "Excel") {
+                var request = {
+                    settlementDate: app.getUrlParameter("settlementDateEpoch"),
+                    currency: app.getUrlParameter("currency"),
+                    isExportAsExcel: true
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/issd/PrintConsolidated",
+                    data: request,
+                    dataType: "text",
+                    success: function (data) {
+                        var url = "/issd/ViewPrinted/" + data;
+                        window.location = url;
+                    },
+                    fail: function (jqXHR, textStatus, errorThrown) {
+                        $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                    },
+                    complete: function (data) {
+
+                    }
+                });
+                e.event.preventDefault();
+            } else {
+                var request = {
+                    settlementDate: app.getUrlParameter("settlementDateEpoch"),
+                    currency: app.getUrlParameter("currency"),
+                    isExportAsExcel: false
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/issd/PrintConsolidated",
+                    data: request,
+                    dataType: "text",
+                    success: function (data) {
+                        var url = "/issd/ViewPrinted/" + data;
+                        window.location = url;
+                    },
+                    fail: function (jqXHR, textStatus, errorThrown) {
+                        $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                    },
+                    complete: function (data) {
+
+                    }
+                });
+                e.event.preventDefault();
+            }
+        }
+    };
+
     _tradeSettlement.printBtnWidgetSetting = {
         text: "Print",
         icon: "print",
@@ -234,8 +294,7 @@
             }
         }
     };
-
-
+    
     _tradeSettlement.setSideMenuItemActive = function(url) {
         $("ul.treeview-menu a[href='" + url + "']").parentsUntil(".sidebar-menu > .treeview-menu")
             .addClass('active');

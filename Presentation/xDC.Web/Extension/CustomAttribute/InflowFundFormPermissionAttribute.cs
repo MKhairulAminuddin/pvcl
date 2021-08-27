@@ -21,8 +21,6 @@ namespace xDC_Web.Extension.CustomAttribute
             if (!(HttpContext.Current.User.IsInRole(Config.AclPowerUser) || HttpContext.Current.User.IsInRole(Config.AclAmsd) || HttpContext.Current.User.IsInRole(Config.AclAdministrator)))
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized));
-
-                base.OnActionExecuting(actionContext);
             }
         }
     }
