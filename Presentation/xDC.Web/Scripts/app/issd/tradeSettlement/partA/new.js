@@ -140,7 +140,7 @@
             showColumnLines: false,
             columns: [
                 {
-                    dataField: "instrumentType",
+                    dataField: "balanceCategory",
                     caption: "Opening Balance"
                 },
                 {

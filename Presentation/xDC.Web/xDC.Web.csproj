@@ -565,6 +565,10 @@
     <Content Include="Views\Fid\MoneyMarketInstrument\New.cshtml" />
     <Content Include="Views\Fid\MoneyMarketInstrument\Edit.cshtml" />
     <Content Include="Views\Fid\MoneyMarketInstrument\View.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\_TsApprovalModal.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\_TsRejectionModal.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\_TsWorkflowInfoModal.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\_TsSelectApproverModal.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

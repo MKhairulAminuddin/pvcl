@@ -119,7 +119,7 @@
                     visible: false
                 },
                 {
-                    dataField: "instrumentType",
+                    dataField: "balanceCategory",
                     caption: "Opening Balance"
                 },
                 {

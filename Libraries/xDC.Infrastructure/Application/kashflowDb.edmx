@@ -174,6 +174,7 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_Maturity' does not have a prima
           <Property Name="Rate" Type="decimal" Precision="10" Scale="4" />
           <Property Name="Asset_Type" Type="varchar" MaxLength="256" />
           <Property Name="bank_code" Type="varchar" MaxLength="256" />
+          <Property Name="currency" Type="varchar" MaxLength="10" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -473,7 +474,8 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
     [EDW_Maturity].[Tenor] AS [Tenor], 
     [EDW_Maturity].[Rate] AS [Rate], 
     [EDW_Maturity].[Asset_Type] AS [Asset_Type], 
-    [EDW_Maturity].[bank_code] AS [bank_code]
+    [EDW_Maturity].[bank_code] AS [bank_code], 
+    [EDW_Maturity].[currency] AS [currency]
     FROM [dbo].[EDW_Maturity] AS [EDW_Maturity]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="EDW_TradeItem" EntityType="Self.EDW_TradeItem" store:Type="Tables" store:Schema="dbo">
@@ -520,8 +522,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="App_Notification" EntityType="kashflowDbModel.App_Notification" />
           <EntitySet Name="Form_Header" EntityType="kashflowDbModel.Form_Header" />
           <EntitySet Name="AMSD_InflowFund" EntityType="kashflowDbModel.AMSD_InflowFund" />
-          <EntitySet Name="EDW_TradeItem" EntityType="kashflowDbModel.EDW_TradeItem" />
-          <EntitySet Name="EDW_BankBalance" EntityType="kashflowDbModel.EDW_BankBalance" />
           <EntitySet Name="ISSD_Balance" EntityType="kashflowDbModel.ISSD_Balance" />
           <EntitySet Name="ISSD_FormHeader" EntityType="kashflowDbModel.ISSD_FormHeader" />
           <EntitySet Name="ISSD_TradeSettlement" EntityType="kashflowDbModel.ISSD_TradeSettlement" />
@@ -531,11 +531,13 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="FID_TS10_TradeItem" EntityType="kashflowDbModel.FID_TS10_TradeItem" />
           <EntitySet Name="FID_TS10_Approval" EntityType="kashflowDbModel.FID_TS10_Approval" />
           <EntitySet Name="FID_TS10_OpeningBalance" EntityType="kashflowDbModel.FID_TS10_OpeningBalance" />
-          <EntitySet Name="EDW_FID_List" EntityType="kashflowDbModel.EDW_FID_List" />
-          <EntitySet Name="EDW_Maturity" EntityType="kashflowDbModel.EDW_Maturity" />
           <EntitySet Name="FID_Treasury" EntityType="kashflowDbModel.FID_Treasury" />
           <EntitySet Name="FID_Treasury_Deposit" EntityType="kashflowDbModel.FID_Treasury_Deposit" />
           <EntitySet Name="FID_Treasury_Item" EntityType="kashflowDbModel.FID_Treasury_Item" />
+          <EntitySet Name="EDW_FID_List" EntityType="kashflowDbModel.EDW_FID_List" />
+          <EntitySet Name="EDW_BankBalance" EntityType="kashflowDbModel.EDW_BankBalance" />
+          <EntitySet Name="EDW_Maturity" EntityType="kashflowDbModel.EDW_Maturity" />
+          <EntitySet Name="EDW_TradeItem" EntityType="kashflowDbModel.EDW_TradeItem" />
           </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -663,42 +665,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
-        </EntityType>
-        <EntityType Name="EDW_TradeItem">
-          <Key>
-            <PropertyRef Name="CreatedDate" />
-          </Key>
-          <Property Name="InstrumentType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="InstrumentName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="StockCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="ISIN" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Type" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="Amount" Type="Double" />
-          <Property Name="TradeDate" Type="DateTime" Precision="0" />
-          <Property Name="SettlementDate" Type="DateTime" Precision="0" />
-          <Property Name="Currency" Type="String" MaxLength="3" FixedLength="false" Unicode="false" />
-          <Property Name="CreatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="UpdatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
-        </EntityType>
-        <EntityType Name="EDW_BankBalance">
-          <Key>
-            <PropertyRef Name="CreatedDate" />
-          </Key>
-          <Property Name="InstrumentType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="InstrumentName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="StockCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="ISIN" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Type" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="Amount" Type="Double" />
-          <Property Name="TradeDate" Type="DateTime" Precision="0" />
-          <Property Name="SettlementDate" Type="DateTime" Precision="0" />
-          <Property Name="Currency" Type="String" MaxLength="3" FixedLength="false" Unicode="false" />
-          <Property Name="CreatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="UpdatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="ISSD_Balance">
@@ -838,29 +804,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="AssignedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="AssignedDate" Type="DateTime" Precision="3" />
         </EntityType>
-        <EntityType Name="EDW_FID_List">
-          <Key>
-            <PropertyRef Name="Reference" />
-            <PropertyRef Name="Type" />
-          </Key>
-          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="Reference" Type="String" Nullable="false" MaxLength="24" FixedLength="false" Unicode="false" />
-          <Property Name="Type" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <EntityType Name="EDW_Maturity">
-          <Key>
-            <PropertyRef Name="Maturity_Date" />
-          </Key>
-          <Property Name="Operator" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
-          <Property Name="Bank" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
-          <Property Name="Value_Date" Type="DateTime" Precision="3" />
-          <Property Name="Maturity_Date" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Principle" Type="Double" />
-          <Property Name="Tenor" Type="Int32" />
-          <Property Name="Rate" Type="Decimal" Precision="10" Scale="4" />
-          <Property Name="Asset_Type" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
-          <Property Name="bank_code" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
-        </EntityType>
         <EntityType Name="FID_Treasury">
           <Key>
             <PropertyRef Name="Id" />
@@ -917,6 +860,66 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="CertNoStockCode" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="EDW_FID_List">
+          <Key>
+            <PropertyRef Name="Reference" />
+            <PropertyRef Name="Type" />
+          </Key>
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Reference" Type="String" Nullable="false" MaxLength="24" FixedLength="false" Unicode="false" />
+          <Property Name="Type" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="EDW_BankBalance">
+          <Key>
+            <PropertyRef Name="CreatedDate" />
+          </Key>
+          <Property Name="InstrumentType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="InstrumentName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="StockCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ISIN" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Type" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Amount" Type="Double" />
+          <Property Name="TradeDate" Type="DateTime" Precision="0" />
+          <Property Name="SettlementDate" Type="DateTime" Precision="0" />
+          <Property Name="Currency" Type="String" MaxLength="3" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="EDW_Maturity">
+          <Key>
+            <PropertyRef Name="Maturity_Date" />
+          </Key>
+          <Property Name="Operator" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="Bank" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="Value_Date" Type="DateTime" Precision="3" />
+          <Property Name="Maturity_Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Principle" Type="Double" />
+          <Property Name="Tenor" Type="Int32" />
+          <Property Name="Rate" Type="Decimal" Precision="10" Scale="4" />
+          <Property Name="Asset_Type" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="bank_code" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="currency" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="EDW_TradeItem">
+          <Key>
+            <PropertyRef Name="CreatedDate" />
+          </Key>
+          <Property Name="InstrumentType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="InstrumentName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="StockCode" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ISIN" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Type" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Amount" Type="Double" />
+          <Property Name="TradeDate" Type="DateTime" Precision="0" />
+          <Property Name="SettlementDate" Type="DateTime" Precision="0" />
+          <Property Name="Currency" Type="String" MaxLength="3" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -1060,44 +1063,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
                 <ScalarProperty Name="FundType" ColumnName="FundType" />
                 <ScalarProperty Name="FormId" ColumnName="FormId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="EDW_TradeItem">
-            <EntityTypeMapping TypeName="kashflowDbModel.EDW_TradeItem">
-              <MappingFragment StoreEntitySet="EDW_TradeItem">
-                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
-                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="Currency" ColumnName="Currency" />
-                <ScalarProperty Name="SettlementDate" ColumnName="SettlementDate" />
-                <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
-                <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="ISIN" ColumnName="ISIN" />
-                <ScalarProperty Name="StockCode" ColumnName="StockCode" />
-                <ScalarProperty Name="InstrumentName" ColumnName="InstrumentName" />
-                <ScalarProperty Name="InstrumentType" ColumnName="InstrumentType" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="EDW_BankBalance">
-            <EntityTypeMapping TypeName="kashflowDbModel.EDW_BankBalance">
-              <MappingFragment StoreEntitySet="EDW_BankBalance">
-                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
-                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="Currency" ColumnName="Currency" />
-                <ScalarProperty Name="SettlementDate" ColumnName="SettlementDate" />
-                <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
-                <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="ISIN" ColumnName="ISIN" />
-                <ScalarProperty Name="StockCode" ColumnName="StockCode" />
-                <ScalarProperty Name="InstrumentName" ColumnName="InstrumentName" />
-                <ScalarProperty Name="InstrumentType" ColumnName="InstrumentType" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1247,30 +1212,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="EDW_FID_List">
-            <EntityTypeMapping TypeName="kashflowDbModel.EDW_FID_List">
-              <MappingFragment StoreEntitySet="EDW_FID_List">
-                <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="Reference" ColumnName="Reference" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="EDW_Maturity">
-            <EntityTypeMapping TypeName="kashflowDbModel.EDW_Maturity">
-              <MappingFragment StoreEntitySet="EDW_Maturity">
-                <ScalarProperty Name="bank_code" ColumnName="bank_code" />
-                <ScalarProperty Name="Asset_Type" ColumnName="Asset_Type" />
-                <ScalarProperty Name="Rate" ColumnName="Rate" />
-                <ScalarProperty Name="Tenor" ColumnName="Tenor" />
-                <ScalarProperty Name="Principle" ColumnName="Principle" />
-                <ScalarProperty Name="Maturity_Date" ColumnName="Maturity_Date" />
-                <ScalarProperty Name="Value_Date" ColumnName="Value_Date" />
-                <ScalarProperty Name="Bank" ColumnName="Bank" />
-                <ScalarProperty Name="Operator" ColumnName="Operator" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="FID_Treasury">
             <EntityTypeMapping TypeName="kashflowDbModel.FID_Treasury">
               <MappingFragment StoreEntitySet="FID_Treasury">
@@ -1328,6 +1269,69 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
                 <ScalarProperty Name="Dealer" ColumnName="Dealer" />
                 <ScalarProperty Name="CashflowType" ColumnName="CashflowType" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EDW_FID_List">
+            <EntityTypeMapping TypeName="kashflowDbModel.EDW_FID_List">
+              <MappingFragment StoreEntitySet="EDW_FID_List">
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Reference" ColumnName="Reference" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EDW_BankBalance">
+            <EntityTypeMapping TypeName="kashflowDbModel.EDW_BankBalance">
+              <MappingFragment StoreEntitySet="EDW_BankBalance">
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="Currency" ColumnName="Currency" />
+                <ScalarProperty Name="SettlementDate" ColumnName="SettlementDate" />
+                <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="ISIN" ColumnName="ISIN" />
+                <ScalarProperty Name="StockCode" ColumnName="StockCode" />
+                <ScalarProperty Name="InstrumentName" ColumnName="InstrumentName" />
+                <ScalarProperty Name="InstrumentType" ColumnName="InstrumentType" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EDW_Maturity">
+            <EntityTypeMapping TypeName="kashflowDbModel.EDW_Maturity">
+              <MappingFragment StoreEntitySet="EDW_Maturity">
+                <ScalarProperty Name="currency" ColumnName="currency" />
+                <ScalarProperty Name="bank_code" ColumnName="bank_code" />
+                <ScalarProperty Name="Asset_Type" ColumnName="Asset_Type" />
+                <ScalarProperty Name="Rate" ColumnName="Rate" />
+                <ScalarProperty Name="Tenor" ColumnName="Tenor" />
+                <ScalarProperty Name="Principle" ColumnName="Principle" />
+                <ScalarProperty Name="Maturity_Date" ColumnName="Maturity_Date" />
+                <ScalarProperty Name="Value_Date" ColumnName="Value_Date" />
+                <ScalarProperty Name="Bank" ColumnName="Bank" />
+                <ScalarProperty Name="Operator" ColumnName="Operator" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EDW_TradeItem">
+            <EntityTypeMapping TypeName="kashflowDbModel.EDW_TradeItem">
+              <MappingFragment StoreEntitySet="EDW_TradeItem">
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="Currency" ColumnName="Currency" />
+                <ScalarProperty Name="SettlementDate" ColumnName="SettlementDate" />
+                <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="ISIN" ColumnName="ISIN" />
+                <ScalarProperty Name="StockCode" ColumnName="StockCode" />
+                <ScalarProperty Name="InstrumentName" ColumnName="InstrumentName" />
+                <ScalarProperty Name="InstrumentType" ColumnName="InstrumentType" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

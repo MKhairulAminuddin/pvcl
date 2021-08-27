@@ -23,5 +23,6 @@ namespace xDC.Infrastructure.Application
         public Nullable<decimal> Rate { get; set; }
         public string Asset_Type { get; set; }
         public string bank_code { get; set; }
+        public string currency { get; set; }
     }
 }

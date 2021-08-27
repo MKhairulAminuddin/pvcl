@@ -1,3 +1,7 @@
+body {
+    background-color: #ebeef2 !important;
+}
+
 .content-header.content-header {
     color: #2c3e50;
 }
