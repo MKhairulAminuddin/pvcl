@@ -73,9 +73,44 @@ namespace xDC_Web.Controllers
                             Id = getForm.Id,
                             FormStatus = getForm.FormStatus,
                             SettlementDate = getForm.SettlementDate,
-                            Currency = getForm.Currency
+                            Currency = getForm.Currency,
+                            OpeningBalance = new List<OpeningBalanceTsFormVM>()
                         };
 
+                        var ob = db.EDW_BankBalance.AsNoTracking().Where(x =>
+                                DbFunctions.TruncateTime(x.SettlementDate) ==
+                                DbFunctions.TruncateTime(settlementDateOnly) && x.Currency == currency)
+                            .GroupBy(x => new { x.SettlementDate, x.InstrumentType })
+                            .Select(x => new
+                            {
+                                account = x.Key.InstrumentType,
+                                total = x.Sum(y => y.Amount)
+                            });
+
+                        foreach (var item in ob)
+                        {
+                            formObj.OpeningBalance.Add(new OpeningBalanceTsFormVM()
+                            {
+                                Account = item.account,
+                                Amount = (item.total ?? 0)
+                            });
+                        }
+
+                        var totalOb = ob.Sum(x => x.total);
+
+                        var totalFlow = db.ISSD_TradeSettlement.Where(x => x.FormId == getForm.Id)
+                            .GroupBy(x => x.FormId)
+                            .Select(x => new
+                            {
+                                inflow = x.Sum(y => y.Maturity + y.Sales + y.FirstLeg + y.AmountPlus),
+                                outflow = x.Sum(y => y.Purchase + y.SecondLeg + y.AmountMinus)
+                            })
+                            .FirstOrDefault();
+                        
+                        var cb = (decimal) (totalOb ?? 0) + (totalFlow?.inflow ?? 0) - (totalFlow?.outflow ?? 0);
+
+                        formObj.ClosingBalance = cb;
+                        
                         return View("TradeSettlement/View", formObj);
                     }
                     else
