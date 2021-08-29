@@ -182,7 +182,7 @@ namespace xDC_Web.Controllers.Api
 
                         new NotificationService().PushSubmitForApprovalNotification(existingForm.Id);
                         new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(existingForm.Id);
-                        new WorkflowService().SubmitForApprovalWorkflow(existingForm.Id, 1, "");
+                        new WorkflowService().SubmitForApprovalWorkflow(existingForm.Id, existingForm.FormType, "");
 
                         return Request.CreateResponse(HttpStatusCode.Created, existingForm.Id);
                     }
@@ -190,12 +190,12 @@ namespace xDC_Web.Controllers.Api
                     {
                         var newRecord = new Form_Header
                         {
-                            FormType = Common.FormTypeMapping(1),
+                            FormType = Common.FormType.AMSD_IF,
                             PreparedBy = User.Identity.Name,
                             PreparedDate = DateTime.Now,
                             FormStatus = Common.FormStatus.PendingApproval,
                             ApprovedBy = inputs.Approver,
-                            Currency = Common.FormCurrencyMapping(1)
+                            Currency = "MYR"
                         };
 
                         Validate(newRecord);
@@ -231,7 +231,7 @@ namespace xDC_Web.Controllers.Api
 
                         new NotificationService().PushSubmitForApprovalNotification(newRecord.Id);
                         new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(newRecord.Id);
-                        new WorkflowService().SubmitForApprovalWorkflow(newRecord.Id, 1, "");
+                        new WorkflowService().SubmitForApprovalWorkflow(newRecord.Id, newRecord.FormType, "");
 
                         return Request.CreateResponse(HttpStatusCode.Created, newRecord.Id);
                     }
@@ -395,7 +395,7 @@ namespace xDC_Web.Controllers.Api
 
                             new NotificationService().PushApprovalStatusNotification(formId);
                             new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(formId);
-                            new WorkflowService().ApprovalFeedbackWorkflow(formId, inputs.ApprovalStatus, inputs.ApprovalNote, 1);
+                            new WorkflowService().ApprovalFeedbackWorkflow(formId, inputs.ApprovalStatus, inputs.ApprovalNote, form.FormType);
 
                             return Request.CreateResponse(HttpStatusCode.Accepted, formId);
                         }

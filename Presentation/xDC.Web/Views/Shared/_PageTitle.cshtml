@@ -1,7 +1,25 @@
 ﻿<section class="content-header content-banner">
-    <h1 class="title">
-        @ViewBag.Title
-    </h1>
+    @if (@ViewBag.Title != null)
+    {
+        <h1 class="title">
+           @ViewBag.Title
+        </h1>
+    }
+    
+    @if (@ViewBag.NewTitle != null)
+    {
+        <h1 class="title">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i>  @ViewBag.NewTitle
+        </h1>
+    }
+
+    @if (@ViewBag.EditTitle != null)
+    {
+        <h1 class="title">
+           <i class="fa fa-edit" aria-hidden="true"></i>  @ViewBag.EditTitle
+        </h1>
+    }
+
     @if (@ViewBag.Subtitle != null)
     {
         <p class="subtitle">

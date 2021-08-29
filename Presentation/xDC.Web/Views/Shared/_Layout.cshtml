@@ -194,12 +194,8 @@
         </aside>
         
         <div id="pageContent" class="content-wrapper">
-
-
-            @if (!string.IsNullOrEmpty(@ViewBag.Title))
-            {
-                @Html.Partial("_PageTitle")
-            }
+            
+            @Html.Partial("_PageTitle")
 
             <section class="content-header content-alert">
                 <div id="error_container"></div>

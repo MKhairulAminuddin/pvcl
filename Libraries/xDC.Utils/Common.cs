@@ -10,130 +10,6 @@ namespace xDC.Utils
 {
     public static class Common
     {
-        public static DocumentFormat ConvertIndexToFormat(int value)
-        {
-            switch (value)
-            {
-                case 1:
-                    return DocumentFormat.Xlsx;
-                case 2:
-                    return DocumentFormat.Xlsm;
-                case 3:
-                    return DocumentFormat.Xlsb;
-                case 4:
-                    return DocumentFormat.Xls;
-                case 5:
-                    return DocumentFormat.Xltx;
-                case 6:
-                    return DocumentFormat.Xltm;
-                case 7:
-                    return DocumentFormat.Xlt;
-                case 8:
-                    return DocumentFormat.XmlSpreadsheet2003;
-                case 9:
-                    return DocumentFormat.Csv;
-                case 10:
-                    return DocumentFormat.Text;
-            }
-            return DocumentFormat.Undefined;
-        }
-
-        public static string ConvertIndexToContentType(int value)
-        {
-            switch (value)
-            {
-                case 1:
-                    return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                case 2:
-                    return "application/vnd.ms-excel.sheet.macroEnabled.12";
-                case 3:
-                    return "application/vnd.ms-excel.sheet.binary.macroEnabled.12";
-                case 4:
-                    return "application/vnd.ms-excel";
-                case 5:
-                    return "application/vnd.openxmlformats-officedocument.spreadsheetml.template";
-                case 6:
-                    return "application/vnd.ms-excel.template.macroEnabled.12";
-                case 7:
-                    return "application/vnd.ms-excel";
-                case 8:
-                    return "text/xml";
-                case 9:
-                    return "text/comma-separated-values";
-                case 10:
-                    return "text/plain";
-                case 11:
-                    return "application/pdf";
-                case 12:
-                    return "text/html";
-            }
-            return String.Empty;
-        }
-
-        public static string ConvertIndexToFileExtension(int value)
-        {
-            switch (value)
-            {
-                case 1:
-                    return "xlsx";
-                case 2:
-                    return "xlsm";
-                case 3:
-                    return "xlsb";
-                case 4:
-                    return "xls";
-                case 5:
-                    return "xltx";
-                case 6:
-                    return "xltm";
-                case 7:
-                    return "xlt";
-                case 8:
-                    return "xml";
-                case 9:
-                    return "csv";
-                case 10:
-                    return "txt";
-                case 11:
-                    return "pdf";
-                case 12:
-                    return "html";
-            }
-            return String.Empty;
-        }
-        
-        public static string TradeSettlementUrlParamMapping(string value)
-        {
-            switch (value)
-            {
-                case "equity":
-                    return "EQUITY";
-                case "bond":
-                    return "BOND";
-                case "cp":
-                    return "COMMERCIAL PAPER";
-                case "notesPaper":
-                    return "NOTES AND PAPERS";
-                case "repo":
-                    return "REPO";
-                case "coupon":
-                    return "COUPON";
-                case "fees":
-                    return "FEES";
-                case "mtm":
-                    return "PAYMENT/RECEIVED (MTM)";
-                case "fxSettlement":
-                    return "FX SETTLEMENT";
-                case "contributionCredited":
-                    return "CONTRIBUTION CREDITED";
-                case "altid":
-                    return "ALTID DISTRIBUTION AND DRAWDOWN";
-                case "others":
-                    return "OTHERS";
-            }
-            return String.Empty;
-        }
-
         public static class TsItemCategory
         {
             public const string Equity = "EQUITY";
@@ -169,33 +45,98 @@ namespace xDC.Utils
             public const string ISSD_TS_D = "Trade Settlement (Part D)";
             public const string ISSD_TS_E = "Trade Settlement (Part E)";
         }
+        
+        public static string ConvertIndexToContentType(int value)
+        {
+            switch (value)
+            {
+                case 1:
+                    return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                case 2:
+                    return "application/vnd.ms-excel.sheet.macroEnabled.12";
+                case 3:
+                    return "application/vnd.ms-excel.sheet.binary.macroEnabled.12";
+                case 4:
+                    return "application/vnd.ms-excel";
+                case 5:
+                    return "application/vnd.openxmlformats-officedocument.spreadsheetml.template";
+                case 6:
+                    return "application/vnd.ms-excel.template.macroEnabled.12";
+                case 7:
+                    return "application/vnd.ms-excel";
+                case 8:
+                    return "text/xml";
+                case 9:
+                    return "text/comma-separated-values";
+                case 10:
+                    return "text/plain";
+                case 11:
+                    return "application/pdf";
+                case 12:
+                    return "text/html";
+            }
+            return String.Empty;
+        }
+        
+        public static string TsCategoryUrlParamMapping(string value)
+        {
+            switch (value)
+            {
+                case "equity":
+                    return TsItemCategory.Equity;
+                case "bond":
+                    return TsItemCategory.Bond;
+                case "cp":
+                    return TsItemCategory.Cp;
+                case "notesPaper":
+                    return TsItemCategory.NotesPapers;
+                case "repo":
+                    return TsItemCategory.Repo;
+                case "coupon":
+                    return TsItemCategory.Coupon;
+                case "fees":
+                    return TsItemCategory.Fees;
+                case "mtm":
+                    return TsItemCategory.Mtm;
+                case "fxSettlement":
+                    return TsItemCategory.Fx;
+                case "contributionCredited":
+                    return TsItemCategory.Cn;
+                case "altid":
+                    return TsItemCategory.Altid;
+                case "others":
+                    return TsItemCategory.Others;
+            }
+            return String.Empty;
+        }
 
+        
         public static string TsUrlParamInstrumentTypeMapFormType(string value)
         {
             var finalValue = string.Empty;
             switch (value)
             {
                 case "equity":
-                    finalValue = "Trade Settlement (Part A)";
+                    finalValue = FormType.ISSD_TS_A;
                     break;
                 case "bond":
                 case "cp":
                 case "notesPaper":
                 case "repo":
                 case "coupon":
-                    finalValue = "Trade Settlement (Part B)";
+                    finalValue = FormType.ISSD_TS_B;
                     break;
                 case "mtm":
                 case "fxSettlement":
-                    finalValue = "Trade Settlement (Part C)";
+                    finalValue = FormType.ISSD_TS_C;
                     break;
                 case "altid":
-                    finalValue = "Trade Settlement (Part D)";
+                    finalValue = FormType.ISSD_TS_D;
                     break;
                 case "fees":
                 case "contributionCredited":
                 case "others":
-                    finalValue = "Trade Settlement (Part E)";
+                    finalValue = FormType.ISSD_TS_E;
                     break;
             }
             return finalValue;
@@ -213,52 +154,23 @@ namespace xDC.Utils
             switch (value)
             {
                 case 1:
-                    return "Inflow Funds";
+                    return FormType.AMSD_IF;
                 case 2:
-                    return "Trade Settlement";
+                    return FormType.ISSD_TS;
                 case 3:
-                    return "Trade Settlement (Part A)";
+                    return FormType.ISSD_TS_A;
                 case 4:
-                    return "Trade Settlement (Part B)";
+                    return FormType.ISSD_TS_B;
                 case 5:
-                    return "Trade Settlement (Part C)";
+                    return FormType.ISSD_TS_C;
                 case 6:
-                    return "Trade Settlement (Part D)";
+                    return FormType.ISSD_TS_D;
                 case 7:
-                    return "Trade Settlement (Part E)";
+                    return FormType.ISSD_TS_E;
             }
             return String.Empty;
         }
-
-        /// <summary>
-        /// Get form type id
-        /// </summary>
-        /// <param name="value">
-        /// 1 Inflow Funds 2 Trade Settlement
-        /// </param>
-        /// <returns></returns>
-        public static int FormTypeMappingReverse(string value)
-        {
-            switch (value)
-            {
-                case "Inflow Funds":
-                    return 1;
-                case "Trade Settlement":
-                    return 2;
-                case "Trade Settlement (Part A)":
-                    return 3;
-                case "Trade Settlement (Part B)":
-                    return 4;
-                case "Trade Settlement (Part C)":
-                    return 5;
-                case "Trade Settlement (Part D)":
-                    return 6;
-                case "Trade Settlement (Part E)":
-                    return 7;
-                default:
-                    return 0;
-            }
-        }
+        
 
         public static string FormCurrencyMapping(int value)
         {

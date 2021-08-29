@@ -144,7 +144,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var tradeItemType = Common.TradeSettlementUrlParamMapping(tradeType);
+                    var tradeItemType = Common.TsCategoryUrlParamMapping(tradeType);
                     if (string.IsNullOrEmpty(tradeItemType))
                     {
                         return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid Trade Item Type");

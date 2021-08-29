@@ -5,8 +5,9 @@
         var $amsdGrid, $newInflowFundBtn, $loadPanel;
 
         $newInflowFundBtn = $("#newInflowFundBtn").dxButton({
-            text: "New Inflow Funds",
+            text: "New Inflow Fund",
             type: "default",
+            icon: "plus",
             stylingMode: "contained",
             onClick: function(e) {
                 $.ajax({

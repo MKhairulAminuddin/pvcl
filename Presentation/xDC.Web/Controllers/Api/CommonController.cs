@@ -327,26 +327,17 @@ namespace xDC_Web.Controllers.Api
         #region Workflow Information
 
         [HttpGet]
-        [Route("GetWorkflow/{id}/{formType}")]
-        public HttpResponseMessage GetWorkflow(string id, int formType, DataSourceLoadOptions loadOptions)
+        [Route("GetWorkflow/{formTypeId}/{formId}")]
+        public HttpResponseMessage GetWorkflow(int formTypeId, int formId, DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var formId = Convert.ToInt32(id);
-                    var formTypeParsed = Common.FormTypeMapping(formType);
-
-                    List<Form_Workflow> result;
-
-                    if (formType == 1)
-                    {
-                        result = db.Form_Workflow.Where(x => x.FormId == formId).OrderByDescending(x => x.Id).ToList();
-                    }
-                    else
-                    {
-                        result = db.Form_Workflow.Where(x => x.FormId == formId && x.FormType == formTypeParsed).OrderByDescending(x => x.Id).ToList();
-                    }
+                    var formTypeParsed = Common.FormTypeMapping(formTypeId);
+                    
+                    var result = db.Form_Workflow.Where(x => x.FormId == formId && x.FormType == formTypeParsed).OrderByDescending(x => x.Id).ToList();
+                    
                     
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }

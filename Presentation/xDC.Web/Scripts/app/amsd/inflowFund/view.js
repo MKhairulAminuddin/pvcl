@@ -250,16 +250,7 @@
                 e.preventDefault();
             }
         });
-
-        $loadPanel = $("#loadpanel").dxLoadPanel({
-            shadingColor: "rgba(0,0,0,0.4)",
-            visible: false,
-            showIndicator: true,
-            showPane: true,
-            shading: true,
-            closeOnOutsideClick: false
-        }).dxLoadPanel("instance");
-
+        
         function cutOffTimeChecker() {
             $.ajax({
                 dataType: 'json',

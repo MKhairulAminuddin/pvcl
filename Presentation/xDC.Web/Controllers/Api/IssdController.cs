@@ -489,7 +489,7 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.Approver != null)
                     {
-                        TradeSettlementService.NotifyApprover(inputs.Approver, newFormHeader.Id, User.Identity.Name, inputs.FormType, inputs.ApprovalNotes);
+                        TradeSettlementService.NotifyApprover(inputs.Approver, newFormHeader.Id, User.Identity.Name, newFormHeader.FormType, inputs.ApprovalNotes);
                     }
                     
                     return Request.CreateResponse(HttpStatusCode.Created, newFormHeader.Id);
@@ -537,7 +537,7 @@ namespace xDC_Web.Controllers.Api
                         getForm.FormStatus = Common.FormStatus.PendingApproval;
 
                         TradeSettlementService.NotifyApprover(getForm.ApprovedBy, getForm.Id, User.Identity.Name,
-                            Common.FormTypeMappingReverse(getForm.FormType), inputs.ApprovalNotes);
+                            getForm.FormType, inputs.ApprovalNotes);
                     }
                     
                     var getTradeItems = db.ISSD_TradeSettlement.Where(x =>
@@ -969,8 +969,7 @@ namespace xDC_Web.Controllers.Api
 
                             db.SaveChanges();
 
-                            TradeSettlementService.NotifyPreparer(form.PreparedBy, form.Id, User.Identity.Name,
-                                Common.FormTypeMappingReverse(form.FormType), inputs.ApprovalStatus,
+                            TradeSettlementService.NotifyPreparer(form.PreparedBy, form.Id, User.Identity.Name, form.FormType, inputs.ApprovalStatus,
                                 inputs.ApprovalNote);
 
                             return Request.CreateResponse(HttpStatusCode.Accepted, formId);
@@ -1237,7 +1236,7 @@ namespace xDC_Web.Controllers.Api
                     if (!string.IsNullOrEmpty(formId))
                     {
                         var formIdParsed = Convert.ToInt32(formId);
-                        var instrumentType = Common.TradeSettlementUrlParamMapping(tradeType);
+                        var instrumentType = Common.TsCategoryUrlParamMapping(tradeType);
                         result = db.ISSD_TradeSettlement
                             .Where(x => x.FormId == formIdParsed && x.InstrumentType == instrumentType).ToList();
                         return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
@@ -1274,7 +1273,7 @@ namespace xDC_Web.Controllers.Api
 
                     if (getForm != null)
                     {
-                        var instrumentType = Common.TradeSettlementUrlParamMapping(tradeType);
+                        var instrumentType = Common.TsCategoryUrlParamMapping(tradeType);
                         result = db.ISSD_TradeSettlement
                             .Where(x => x.FormId == getForm.Id && x.InstrumentType == instrumentType).ToList();
                         return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
