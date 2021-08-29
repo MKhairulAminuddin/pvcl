@@ -2,7 +2,17 @@
 
     $(function () {
 
-        var $issdGrid, $newFormBtn, $consolidatedTradeSettlementGrid;
+        var $issdGrid, $issdGridFilterBtn, $newFormBtn, $consolidatedTradeSettlementGrid;
+
+        var statuses = [
+            "All",
+            "Trade Settlement (Part A)",
+            "Trade Settlement (Part B)",
+            "Trade Settlement (Part C)",
+            "Trade Settlement (Part D)",
+            "Trade Settlement (Part E)",
+            "Trade Settlement (Part F)"
+        ];
         
         $issdGrid = $("#issdGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
@@ -90,6 +100,9 @@
                                     case "Trade Settlement (Part E)":
                                         window.location.href = window.location.origin + "/issd/TradeSettlement/PartE/Edit/" + e.row.data.id;
                                         return;
+                                    case "Trade Settlement (Part F)":
+                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartF/Edit/" + e.row.data.id;
+                                        return;
                                     
                                     default:
                                         alert("Invalid selection!");
@@ -146,6 +159,9 @@
                                     return;
                                 case "Trade Settlement (Part E)":
                                         window.location.href = window.location.origin + "/issd/TradeSettlement/PartE/View/" + e.row.data.id;
+                                        return;
+                                case "Trade Settlement (Part F)":
+                                    window.location.href = window.location.origin + "/issd/TradeSettlement/PartF/View/" + e.row.data.id;
                                     return;
 
                                 default:
@@ -240,6 +256,17 @@
             }
         }).dxDataGrid("instance");
 
+        $issdGridFilterBtn = $("#filterformBtn").dxSelectBox({
+            dataSource: statuses,
+            value: statuses[0],
+            onValueChanged: function (data) {
+                if (data.value == "All")
+                    $issdGrid.clearFilter();
+                else
+                    $issdGrid.filter(["formType", "=", data.value]);
+            }
+        });
+
         $newFormBtn = $("#newFormBtn").dxDropDownButton({
             text: "New Trade Settlement",
             icon: "plus",
@@ -249,15 +276,16 @@
                 width: 230
             },
             items: [
-                "Part A (Opening Balance, Equity)",
-                "Part B (Bond, CP, Notes and Papers, REPO, Coupon)",
+                "Part A (Equity)",
+                "Part B (Bond, CP, Notes and Papers, Coupon)",
                 "Part C (MTM, FX)",
                 "Part D (ALTID)",
-                "Part E (Fees, Contribution, Others)"
+                "Part E (Fees, Contribution, Others)",
+                "Part F (REPO)",
             ],
             onItemClick: function (e) {
                 switch (e.itemData) {
-                    case "Part A (Opening Balance, Equity)":
+                    case "Part A (Equity)":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartA/New";
                         return;
                     case "Part B (Bond, CP, Notes and Papers, REPO, Coupon)":
@@ -271,6 +299,9 @@
                         return;
                     case "Part E (Fees, Contribution, Others)":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartE/New";
+                        return;
+                    case "Part F (REPO)":
+                        window.location = window.location.origin + "/issd/TradeSettlement/PartF/New";
                         return;
                     default:
                         alert("Invalid Selection");

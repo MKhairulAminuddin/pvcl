@@ -44,6 +44,7 @@ namespace xDC.Utils
             public const string ISSD_TS_C = "Trade Settlement (Part C)";
             public const string ISSD_TS_D = "Trade Settlement (Part D)";
             public const string ISSD_TS_E = "Trade Settlement (Part E)";
+            public const string ISSD_TS_F = "Trade Settlement (Part F)";
         }
         
         public static string ConvertIndexToContentType(int value)
@@ -167,6 +168,8 @@ namespace xDC.Utils
                     return FormType.ISSD_TS_D;
                 case 7:
                     return FormType.ISSD_TS_E;
+                case 8:
+                    return FormType.ISSD_TS_F;
             }
             return String.Empty;
         }
@@ -208,6 +211,8 @@ namespace xDC.Utils
                     return "../issd/TradeSettlement/PartD/View/";
                 case "Trade Settlement (Part E)":
                     return "../issd/TradeSettlement/PartE/View/";
+                case "Trade Settlement (Part F)":
+                    return "../issd/TradeSettlement/PartF/View/";
             }
             return String.Empty;
         }
@@ -236,6 +241,8 @@ namespace xDC.Utils
                     return "/issd/TradeSettlement/PartD/View/";
                 case "Trade Settlement (Part E)":
                     return "/issd/TradeSettlement/PartE/View/";
+                case "Trade Settlement (Part F)":
+                    return "/issd/TradeSettlement/PartF/View/";
             }
             return String.Empty;
         }

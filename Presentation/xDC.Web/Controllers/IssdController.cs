@@ -794,6 +794,146 @@ namespace xDC_Web.Controllers
 
         #endregion
 
+        #region Trade Settlement Form Part F (REPO)
+
+        [Authorize(Roles = "ISSD")]
+        [Route("TradeSettlement/PartF/New")]
+        public ActionResult NewPartF()
+        {
+            var model = new ViewTradeSettlementFormViewModel()
+            {
+                PreparedBy = User.Identity.Name,
+                PreparedDate = DateTime.Now,
+                FormStatus = Common.FormStatus.Draft,
+                EnableDraftButton = true
+            };
+
+            return View("TradeSettlement/PartF/New", model);
+        }
+
+        [Route("TradeSettlement/PartB/View/{id}")]
+        public ActionResult ViewPartF(string id)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formId = Convert.ToInt32(id);
+                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
+
+                    if (getForm != null)
+                    {
+                        var formObj = new ViewTradeSettlementFormViewModel()
+                        {
+                            Id = getForm.Id,
+                            FormStatus = getForm.FormStatus,
+                            SettlementDate = getForm.SettlementDate,
+                            Currency = getForm.Currency,
+
+                            PreparedBy = getForm.PreparedBy,
+                            PreparedDate = getForm.PreparedDate,
+
+                            IsApproved = (getForm.FormStatus == Common.FormStatus.Approved),
+                            ApprovedBy = getForm.ApprovedBy,
+                            ApprovedDate = getForm.ApprovedDate,
+
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft ||
+                                              getForm.FormStatus == Common.FormStatus.Draft),
+
+                            IsAdminEdited = getForm.AdminEditted,
+                            AdminEditedBy = getForm.AdminEdittedBy,
+                            AdminEditedDate = getForm.AdminEdittedDate,
+
+                            ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
+                            AdminEditPermission = User.IsInRole(Config.AclPowerUser)
+                        };
+
+                        return View("TradeSettlement/PartF/View", formObj);
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Form Not found";
+                        return View("Error");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Error");
+            }
+        }
+
+
+        [Authorize(Roles = "Power User, ISSD")]
+        [Route("TradeSettlement/PartF/Edit/{formId}")]
+        public ActionResult EditPartF(string formId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formIdParsed = Convert.ToInt32(formId);
+                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formIdParsed);
+
+                    if (getForm != null)
+                    {
+                        if (TradeSettlementService.IsIamThisFormApprover(db, getForm.Id, User.Identity.Name))
+                        {
+                            TempData["ErrorMessage"] = "You are this form Approver. Then you cannot edit it.";
+                            return View("Error");
+                        }
+
+                        if (TradeSettlementService.IsInPendingStatus(getForm.FormStatus))
+                        {
+                            TempData["ErrorMessage"] = "Form is still in Pending Approval status.";
+                            return View("Error");
+                        }
+
+                        var formObj = new EditTradeSettlementFormViewModel()
+                        {
+                            Id = getForm.Id,
+                            FormStatus = getForm.FormStatus,
+                            SettlementDate = getForm.SettlementDate,
+                            Currency = getForm.Currency,
+
+                            PreparedBy = getForm.PreparedBy,
+                            PreparedDate = getForm.PreparedDate,
+                            ApprovedBy = getForm.ApprovedBy,
+                            ApprovedDate = getForm.ApprovedDate,
+
+                            IsAdminEdited = getForm.AdminEditted,
+                            AdminEditedBy = getForm.AdminEdittedBy,
+                            AdminEditedDate = getForm.AdminEdittedDate,
+
+                            EnableResubmit = (getForm.FormStatus == Common.FormStatus.Approved || getForm.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatus.Draft || getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
+
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatus.Approved),
+
+                        };
+
+                        return View("TradeSettlement/PartF/Edit", formObj);
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Form Not found";
+                        return View("Error");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Error");
+            }
+        }
+
+        #endregion
+
         #region Print Form
 
         [HttpPost]

@@ -308,6 +308,9 @@
     <Content Include="Scripts\app\issd\tradeSettlement\partE\edit.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partE\new.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partE\view.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partF\edit.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partF\new.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partF\view.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\view.js" />
     <Content Include="Scripts\app\setting\approverManagement.js" />
     <Content Include="Scripts\app\setting\dropdownConfig.js" />
@@ -569,6 +572,9 @@
     <Content Include="Views\Issd\TradeSettlement\_TsRejectionModal.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\_TsWorkflowInfoModal.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\_TsSelectApproverModal.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartF\Edit.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartF\New.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartF\View.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
