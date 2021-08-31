@@ -32,7 +32,7 @@
         //#endregion
 
         //#region Data Source & Functions
-        
+
         var populateData = function () {
             $.when(
                     tradeSettlement.dsTradeItemConsolidated("equity"),
@@ -105,9 +105,7 @@
         //#endregion
 
         //#region Other Widgets
-
-        $printBtn = $("#printBtn").dxDropDownButton(tradeSettlement.printBtnWidgetSetting).dxDropDownButton("instance");
-
+        
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
                 { titleId: "titleBadge1", title: "Equity", template: "equityTab" },

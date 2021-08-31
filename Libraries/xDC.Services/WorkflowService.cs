@@ -33,35 +33,32 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    Form_Workflow formWorkflow;
+                    var formWorkflow = new Form_Workflow()
+                    {
+                        FormId = formId,
+                        FormType = formType,
+                        WorkflowStatus = Common.FormStatus.PendingApproval,
+                        WorkflowNotes = notes,
+                        StartDate = DateTime.Now
+                    };
 
-                    if (formId == 1)
+                    if (formType == Common.FormType.AMSD_IF)
                     {
                         var form = db.Form_Header.FirstOrDefault(x => x.Id == formId);
-                        formWorkflow = new Form_Workflow()
-                        {
-                            FormId = formId,
-                            FormType =formType,
-                            RequestBy = form.PreparedBy,
-                            StartDate = form.PreparedDate,
-                            RequestTo = form.ApprovedBy,
-                            WorkflowStatus = Common.FormStatus.PendingApproval,
-                            WorkflowNotes = notes
-                        };
+                        formWorkflow.RequestBy = form.PreparedBy;
+                        formWorkflow.RequestTo = form.ApprovedBy;
+                    }
+                    else if (formType == Common.FormType.FID_TREASURY)
+                    {
+                        var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
+                        formWorkflow.RequestBy = form.PreparedBy;
+                        formWorkflow.RequestTo = form.ApprovedBy;
                     }
                     else
                     {
                         var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId && x.FormType == formType);
-                        formWorkflow = new Form_Workflow()
-                        {
-                            FormId = formId,
-                            FormType = formType,
-                            RequestBy = form.PreparedBy,
-                            StartDate = form.PreparedDate,
-                            RequestTo = form.ApprovedBy,
-                            WorkflowStatus = Common.FormStatus.PendingApproval,
-                            WorkflowNotes = notes
-                        };
+                        formWorkflow.RequestBy = form.PreparedBy;
+                        formWorkflow.RequestTo = form.ApprovedBy;
                     }
                     
                     db.Form_Workflow.Add(formWorkflow);

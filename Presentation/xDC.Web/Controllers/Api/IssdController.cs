@@ -14,6 +14,7 @@ using xDC.Logging;
 using xDC.Services.App;
 using xDC.Utils;
 using xDC_Web.Models;
+using xDC_Web.ViewModels.Iisd;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -143,6 +144,48 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
 
+        }
+
+        [HttpGet]
+        [Route("ts/approvedTrades/{settlementDateEpoch}/{currency}")]
+        public HttpResponseMessage TS_ApprovedTrades(long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+                    
+                    var trades = TradeSettlementService.GetTradeSettlement(db, settlementDate.Value.Date, currency);
+                    
+                    var result = trades.GroupBy(x => new { x.FormId }).Select(x => new TS_ApprovedTradeVM()
+                    {
+                        SettlementDate = settlementDate.Value,
+                        Currency = currency,
+
+                        TotalEquity = x.Count(y => y.InstrumentType == Common.TsItemCategory.Equity),
+                        TotalBond = x.Count(y => y.InstrumentType == Common.TsItemCategory.Bond),
+                        TotalCp = x.Count(y => y.InstrumentType == Common.TsItemCategory.Cp),
+                        TotalNotesPapers = x.Count(y => y.InstrumentType == Common.TsItemCategory.NotesPapers),
+                        TotalRepo = x.Count(y => y.InstrumentType == Common.TsItemCategory.Repo),
+                        TotalCoupon = x.Count(y => y.InstrumentType == Common.TsItemCategory.Coupon),
+                        TotalFees = x.Count(y => y.InstrumentType == Common.TsItemCategory.Fees),
+                        TotalMtm = x.Count(y => y.InstrumentType == Common.TsItemCategory.Mtm),
+                        TotalFx = x.Count(y => y.InstrumentType == Common.TsItemCategory.Fx),
+                        TotalContribution = x.Count(y => y.InstrumentType == Common.TsItemCategory.Cn),
+                        TotalAltid = x.Count(y => y.InstrumentType == Common.TsItemCategory.Altid),
+                        TotalOthers = x.Count(y => y.InstrumentType == Common.TsItemCategory.Others),
+                        
+                    }).ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
         }
 
         [HttpGet]

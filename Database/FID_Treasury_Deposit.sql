@@ -1,0 +1,22 @@
+﻿CREATE TABLE [dbo].[FID_Treasury_Deposit](
+	[Id] INT NOT NULL Identity(1,1) PRIMARY KEY, 
+	[FormId] INT NOT NULL, 
+
+    [CashflowType] NVARCHAR(50), -- inflow/outflow
+
+    [Dealer] NVARCHAR(50), 
+	[Bank] NVARCHAR(250), 
+    [ValueDate] DATE, 
+    [MaturityDate] DATE, 
+    [Tenor] INT,
+    [RatePercent] DECIMAL(18,4),
+    [IntProfitReceivable] DECIMAL(18,4),
+    [PrincipalIntProfitReceivable] DECIMAL(18,4),
+    [AssetType] NVARCHAR(50),
+    [RepoTag] NVARCHAR(50),
+    [ContactPerson] NVARCHAR(100),
+    [Notes] NVARCHAR(50),
+
+    [ModifiedBy] NVARCHAR(150), 
+    [ModifiedDate] DATETIME
+);

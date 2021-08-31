@@ -15,6 +15,7 @@ namespace xDC.Infrastructure.Application
     public partial class FID_Treasury_Deposit
     {
         public int Id { get; set; }
+        public int FormId { get; set; }
         public string CashflowType { get; set; }
         public string Dealer { get; set; }
         public string Bank { get; set; }

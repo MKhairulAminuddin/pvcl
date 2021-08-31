@@ -319,6 +319,10 @@ div .validation-summary-errors.text-danger {
     background-color: #f6f7f9;
 }
 
+.box-header>div {
+    display: inline-block;
+}
+
 .info-box-custom {
     display: block;
     min-height: 90px;

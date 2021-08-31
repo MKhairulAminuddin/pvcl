@@ -45,8 +45,15 @@ namespace xDC.Utils
             public const string ISSD_TS_D = "Trade Settlement (Part D)";
             public const string ISSD_TS_E = "Trade Settlement (Part E)";
             public const string ISSD_TS_F = "Trade Settlement (Part F)";
+            public const string FID_TREASURY = "Treasury";
         }
-        
+
+        public static class Cashflow
+        {
+            public const string Inflow = "INFLOW";
+            public const string Outflow = "OUTFLOW";
+        }
+
         public static string ConvertIndexToContentType(int value)
         {
             switch (value)
@@ -170,6 +177,8 @@ namespace xDC.Utils
                     return FormType.ISSD_TS_E;
                 case 8:
                     return FormType.ISSD_TS_F;
+                case 9:
+                    return FormType.FID_TREASURY;
             }
             return String.Empty;
         }
@@ -198,7 +207,7 @@ namespace xDC.Utils
         {
             switch (formType)
             {
-                case "Inflow Funds":
+                case "Inflow Fund":
                     return "../amsd/InflowFundsFormStatus?id=";
 
                 case "Trade Settlement (Part A)":
@@ -228,7 +237,7 @@ namespace xDC.Utils
         {
             switch (formType)
             {
-                case "Inflow Funds":
+                case "Inflow Fund":
                     return "/amsd/InflowFundsFormStatus?id=";
 
                 case "Trade Settlement (Part A)":

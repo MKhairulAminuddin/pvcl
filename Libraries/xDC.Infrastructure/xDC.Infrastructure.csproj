@@ -95,7 +95,7 @@
     <Compile Include="Application\FID_Treasury_Deposit.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Application\FID_Treasury_Item.cs">
+    <Compile Include="Application\FID_Treasury_MMI.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
     <Compile Include="Application\FID_TS10.cs">

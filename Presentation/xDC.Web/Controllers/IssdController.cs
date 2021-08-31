@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using xDC.Domain.ISSD_TS;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services.App;
@@ -63,55 +64,28 @@ namespace xDC_Web.Controllers
                     var settlementDate = Common.ConvertEpochToDateTime(Convert.ToInt64(settlementDateEpoch));
                     var settlementDateOnly = settlementDate.Value.Date;
 
-                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x =>
+                    var getForm = db.ISSD_FormHeader.Where(x =>
                         DbFunctions.TruncateTime(x.SettlementDate) == settlementDateOnly && x.Currency == currency);
 
-                    if (getForm != null)
+                    if (getForm.Any())
                     {
-                        var formObj = new ViewTradeSettlementFormViewModel()
+                        var vm = new ViewTradeSettlementFormViewModel()
                         {
-                            Id = getForm.Id,
-                            FormStatus = getForm.FormStatus,
-                            SettlementDate = getForm.SettlementDate,
-                            Currency = getForm.Currency,
-                            OpeningBalance = new List<OpeningBalanceTsFormVM>()
+                            FormStatus = getForm.First().FormStatus,
+                            SettlementDate = getForm.First().SettlementDate,
+                            Currency = getForm.First().Currency,
+                            OpeningBalance = new List<TS_OpeningBalance>()
                         };
 
-                        var ob = db.EDW_BankBalance.AsNoTracking().Where(x =>
-                                DbFunctions.TruncateTime(x.SettlementDate) ==
-                                DbFunctions.TruncateTime(settlementDateOnly) && x.Currency == currency)
-                            .GroupBy(x => new { x.SettlementDate, x.InstrumentType })
-                            .Select(x => new
-                            {
-                                account = x.Key.InstrumentType,
-                                total = x.Sum(y => y.Amount)
-                            });
+                        var ob = TradeSettlementService.GetOpeningBalance(db, settlementDateOnly, currency);
+                        vm.OpeningBalance.AddRange(ob);
+                        var totalOb = vm.OpeningBalance.Sum(x => x.Amount);
 
-                        foreach (var item in ob)
-                        {
-                            formObj.OpeningBalance.Add(new OpeningBalanceTsFormVM()
-                            {
-                                Account = item.account,
-                                Amount = (item.total ?? 0)
-                            });
-                        }
+                        var totalFlow = TradeSettlementService.GetTotalFlow(db, getForm.Select(x => x.Id).ToList(), settlementDateOnly, currency);
 
-                        var totalOb = ob.Sum(x => x.total);
-
-                        var totalFlow = db.ISSD_TradeSettlement.Where(x => x.FormId == getForm.Id)
-                            .GroupBy(x => x.FormId)
-                            .Select(x => new
-                            {
-                                inflow = x.Sum(y => y.Maturity + y.Sales + y.FirstLeg + y.AmountPlus),
-                                outflow = x.Sum(y => y.Purchase + y.SecondLeg + y.AmountMinus)
-                            })
-                            .FirstOrDefault();
+                        vm.ClosingBalance = totalOb + totalFlow.Inflow - totalFlow.Outflow;
                         
-                        var cb = (decimal) (totalOb ?? 0) + (totalFlow?.inflow ?? 0) - (totalFlow?.outflow ?? 0);
-
-                        formObj.ClosingBalance = cb;
-                        
-                        return View("TradeSettlement/View", formObj);
+                        return View("TradeSettlement/View", vm);
                     }
                     else
                     {
@@ -846,7 +820,7 @@ namespace xDC_Web.Controllers
             return View("TradeSettlement/PartF/New", model);
         }
 
-        [Route("TradeSettlement/PartB/View/{id}")]
+        [Route("TradeSettlement/PartF/View/{id}")]
         public ActionResult ViewPartF(string id)
         {
             try

@@ -121,5 +121,55 @@ var app = (function() {
         return false;
     };
 
+    _app.saveAllGrids = function () {
+        for (var i = 0; i < arguments.length; i++) {
+            arguments[i].saveEditData();
+        }
+    };
+
+    _app.clearAllGrid = function() {
+        for (var i = 0; i < arguments.length; i++) {
+            arguments[i].option("dataSource", []);
+        }
+    }
+
+    var alertTag = $("#error_container");
+    _app.alertError = function (message, title) {
+        var cls = 'alert-danger';
+        var html = '<div class="alert ' + cls + ' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
+        if (typeof title === 'undefined' || title === '') {
+            title = "<i class='fa fa-ban' aria-hidden='true'></i>";
+        }
+        html += title + ' <span>' + message + '</span></div>';
+        alertTag.html(html);
+    }
+    _app.alertWarning = function (message, title) {
+        var cls = 'alert-warning';
+        var html = '<div class="alert ' + cls + ' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
+        if (typeof title === 'undefined' || title === '') {
+            title = "<i class='fa fa-exclamation-triangle' aria-hidden='true'></i>";
+        }
+        html += title + ' <span>' + message + '</span></div>';
+        alertTag.html(html);
+    }
+    _app.alertInfo = function (message, title) {
+        var cls = 'alert-info';
+        var html = '<div class="alert ' + cls + ' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
+        if (typeof title === 'undefined' || title === '') {
+            title = "<i class='fa fa-info-circle' aria-hidden='true'></i>";
+        }
+        html += title + ' <span>' + message + '</span></div>';
+        alertTag.html(html);
+    }
+    _app.alertSuccess = function (message, title) {
+        var cls = 'alert-success';
+        var html = '<div class="alert ' + cls + ' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
+        if (typeof title === 'undefined' || title === '') {
+            title = "<i class='fa fa-check-circle-o' aria-hidden='true'></i>";
+        }
+        html += title + ' <span>' + message + '</span></div>';
+        alertTag.html(html);
+    }
+
     return _app;
 }());

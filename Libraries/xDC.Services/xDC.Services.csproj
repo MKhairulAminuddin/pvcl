@@ -74,6 +74,10 @@
     <Compile Include="WorkflowService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\xDC.Domain\xDC.Domain.csproj">
+      <Project>{efef74c6-2d1f-4d4b-a185-95290133c42d}</Project>
+      <Name>xDC.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\xDC.Infrastructure\xDC.Infrastructure.csproj">
       <Project>{2672ed98-2d96-458e-b2ce-0488e163eb98}</Project>
       <Name>xDC.Infrastructure</Name>

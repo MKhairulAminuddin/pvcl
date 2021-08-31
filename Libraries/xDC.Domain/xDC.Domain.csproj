@@ -45,10 +45,10 @@
     <Compile Include="Auth\AspNetUserRoles.cs" />
     <Compile Include="Auth\AspNetUsers.cs" />
     <Compile Include="Auth\AspNetUsersWithRole.cs" />
+    <Compile Include="ISSD_TS\TS_OpeningBalance.cs" />
+    <Compile Include="ISSD_TS\TS_TotalFlow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Service\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

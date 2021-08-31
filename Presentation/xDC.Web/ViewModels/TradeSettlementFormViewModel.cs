@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DevExpress.Office.Utils;
+using xDC.Domain.ISSD_TS;
 
 namespace xDC_Web.ViewModels
 {
@@ -11,7 +12,7 @@ namespace xDC_Web.ViewModels
         public DateTime? SettlementDate { get; set; }
         public string Currency { get; set; }
 
-        public List<OpeningBalanceTsFormVM> OpeningBalance { get; set; }
+        public List<TS_OpeningBalance> OpeningBalance { get; set; }
         public decimal ClosingBalance { get; set; }
 
         public string PreparedBy { get; set; }
@@ -35,12 +36,6 @@ namespace xDC_Web.ViewModels
         public bool IsAdminEdited { get; set; }
         public bool ApprovePermission { get; set; }
         public bool AdminEditPermission { get; set; }
-    }
-
-    public class OpeningBalanceTsFormVM
-    {
-        public string Account { get; set; }
-        public double Amount { get; set; }
     }
 
     public class EditTradeSettlementFormViewModel

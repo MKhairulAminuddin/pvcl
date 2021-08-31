@@ -12,11 +12,13 @@ using DevExtreme.AspNet.Mvc;
 using Newtonsoft.Json;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Services;
 using xDC.Services.App;
 using xDC.Utils;
 using xDC_Web.Models;
 using xDC_Web.ViewModels.Fid;
 using xDC_Web.ViewModels.Fid.Treasury;
+using TreasuryFormVM = xDC_Web.Models.TreasuryFormVM;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -479,10 +481,29 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [HttpGet]
+        [Route("Treasury/inflow/deposit")]
+        public HttpResponseMessage Treasury_Inflow_Deposit(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = FidService.List_Issuer(db);
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
 
         [HttpPost]
         [Route("Treasury/New")]
-        public HttpResponseMessage Treasury_FormNew([FromBody] TreasuryFormModel input)
+        public HttpResponseMessage Treasury_FormNew([FromBody] TreasuryFormVM input)
         {
             try
             {
@@ -493,12 +514,14 @@ namespace xDC_Web.Controllers.Api
 
                     var form = new FID_Treasury
                     {
-                        FormType = "Treasury",
-                        FormStatus = "Pending Approval",
+                        FormType = Common.FormType.FID_TREASURY,
+                        FormStatus = !string.IsNullOrEmpty(input.Approver) ? Common.FormStatus.PendingApproval : Common.FormStatus.Draft,
                         Currency = input.Currency,
                         TradeDate = tradeDateConverted,
                         PreparedBy = User.Identity.Name,
-                        PreparedDate = DateTime.Now
+                        PreparedDate = DateTime.Now,
+
+                        ApprovedBy = !string.IsNullOrEmpty(input.Approver) ? input.Approver : null
                     };
                     db.FID_Treasury.Add(form);
                     db.SaveChanges();
@@ -510,9 +533,8 @@ namespace xDC_Web.Controllers.Api
                         {
                             inflowDeposit.Add(new FID_Treasury_Deposit
                             {
-                                Id = 0,
-                                // form id mana
-                                CashflowType = "INFLOW",
+                                FormId = form.Id,
+                                CashflowType = Common.Cashflow.Inflow,
                                 Dealer = item.Dealer,
                                 Bank = item.Bank,
                                 ValueDate = item.ValueDate,
@@ -540,9 +562,8 @@ namespace xDC_Web.Controllers.Api
                         {
                             inflowDeposit.Add(new FID_Treasury_Deposit
                             {
-                                Id = 0,
-                                // form id mana
-                                CashflowType = "OUTFLOW",
+                                FormId = form.Id,
+                                CashflowType = Common.Cashflow.Outflow,
                                 Dealer = item.Dealer,
                                 Bank = item.Bank,
                                 ValueDate = item.ValueDate,
@@ -555,6 +576,7 @@ namespace xDC_Web.Controllers.Api
                                 RepoTag = item.RepoTag,
                                 ContactPerson = item.ContactPerson,
                                 Notes = item.Notes,
+
                                 ModifiedBy = User.Identity.Name,
                                 ModifiedDate = DateTime.Now
                             });
@@ -563,16 +585,15 @@ namespace xDC_Web.Controllers.Api
                     db.FID_Treasury_Deposit.AddRange(outflowDeposit);
                     db.SaveChanges();
 
-                    var inflowMoneyMarket = new List<FID_Treasury_Item>();
+                    var inflowMoneyMarket = new List<FID_Treasury_MMI>();
                     if (input.InflowMoneyMarket.Any())
                     {
                         foreach (var item in input.InflowMoneyMarket)
                         {
-                            inflowMoneyMarket.Add(new FID_Treasury_Item
+                            inflowMoneyMarket.Add(new FID_Treasury_MMI
                             {
-                                Id = 0,
-                                // form id mana
-                                CashflowType = "INFLOW",
+                                FormId = form.Id,
+                                CashflowType = Common.Cashflow.Inflow,
                                 Dealer = item.Dealer,
                                 Issuer = item.Issuer,
                                 ProductType = item.ProductType,
@@ -585,6 +606,7 @@ namespace xDC_Web.Controllers.Api
                                 Price = item.Price,
                                 IntDividendReceivable = item.IntDividendReceivable,
                                 Proceeds = item.Proceeds,
+                                PurchaseProceeds = item.PurchaseProceeds,
                                 CertNoStockCode = item.CertNoStockCode,
 
                                 ModifiedBy = User.Identity.Name,
@@ -592,19 +614,18 @@ namespace xDC_Web.Controllers.Api
                             });
                         }
                     }
-                    db.FID_Treasury_Item.AddRange(inflowMoneyMarket);
+                    db.FID_Treasury_MMI.AddRange(inflowMoneyMarket);
                     db.SaveChanges();
 
-                    var outflowMoneyMarket = new List<FID_Treasury_Item>();
+                    var outflowMoneyMarket = new List<FID_Treasury_MMI>();
                     if (input.OutflowMoneyMarket.Any())
                     {
                         foreach (var item in input.OutflowMoneyMarket)
                         {
-                            outflowMoneyMarket.Add(new FID_Treasury_Item
+                            outflowMoneyMarket.Add(new FID_Treasury_MMI
                             {
-                                Id = 0,
-                                // form id mana
-                                CashflowType = "INFLOW",
+                                FormId = form.Id,
+                                CashflowType = Common.Cashflow.Outflow,
                                 Dealer = item.Dealer,
                                 Issuer = item.Issuer,
                                 ProductType = item.ProductType,
@@ -617,6 +638,7 @@ namespace xDC_Web.Controllers.Api
                                 Price = item.Price,
                                 IntDividendReceivable = item.IntDividendReceivable,
                                 Proceeds = item.Proceeds,
+                                PurchaseProceeds = item.PurchaseProceeds,
                                 CertNoStockCode = item.CertNoStockCode,
 
                                 ModifiedBy = User.Identity.Name,
@@ -624,10 +646,14 @@ namespace xDC_Web.Controllers.Api
                             });
                         }
                     }
-                    db.FID_Treasury_Item.AddRange(outflowMoneyMarket);
+                    db.FID_Treasury_MMI.AddRange(outflowMoneyMarket);
                     db.SaveChanges();
 
-
+                    if (form.FormStatus == Common.FormStatus.PendingApproval)
+                    {
+                        new WorkflowService().SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
+                    }
+                    
                     return Request.CreateResponse(HttpStatusCode.Created, form.Id);
                 }
 

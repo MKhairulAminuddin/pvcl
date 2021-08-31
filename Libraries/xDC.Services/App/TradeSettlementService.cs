@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using xDC.Domain.ISSD_TS;
 using xDC.Infrastructure.Application;
 using xDC.Utils;
 
@@ -55,6 +56,102 @@ namespace xDC.Services.App
             var result = db.ISSD_TradeSettlement
                 .Where(x => x.FormId == formId)
                 .ToList();
+
+            return result;
+        }
+
+        public static List<ISSD_TradeSettlement> GetTradeSettlement(kashflowDBEntities db, DateTime settlementDate, string currency)
+        {
+            var forms = db.ISSD_FormHeader.Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate) && x.Currency == currency);
+            
+            var trades = new List<ISSD_TradeSettlement>();
+
+            if (forms.Any())
+            {
+                foreach (var id in forms.Select(x => x.Id).ToList())
+                {
+                    var tradesFromId = db.ISSD_TradeSettlement.Where(x => x.FormId == id).ToList();
+                    if (tradesFromId.Any())
+                    {
+                        trades.AddRange(tradesFromId);
+                    }
+                }
+                
+            }
+
+            return trades;
+        }
+
+        public static List<TS_OpeningBalance> GetOpeningBalance(kashflowDBEntities db, DateTime settlementDate, string currency)
+        {
+            var result = new List<TS_OpeningBalance>();
+
+            var ob = db.EDW_BankBalance.AsNoTracking().Where(x =>
+                    DbFunctions.TruncateTime(x.SettlementDate) ==
+                    DbFunctions.TruncateTime(settlementDate) && x.Currency == currency)
+                .GroupBy(x => new { x.SettlementDate, x.InstrumentType })
+                .Select(x => new
+                {
+                    account = x.Key.InstrumentType,
+                    total = x.Sum(y => y.Amount ?? 0)
+                });
+
+            foreach (var item in ob)
+            {
+                result.Add(new TS_OpeningBalance()
+                {
+                    Account = item.account,
+                    Amount = (decimal)item.total
+                });
+            }
+
+            return result;
+        }
+
+        public static TS_TotalFlow GetTotalFlow(kashflowDBEntities db, List<int> formId, DateTime settlementDate, string currency)
+        {
+            var trades = new List<ISSD_TradeSettlement>();
+
+            foreach (var id in formId)
+            {
+                var tradesFromId = db.ISSD_TradeSettlement.Where(x => x.FormId == id).ToList();
+                if (tradesFromId.Any())
+                {
+                    trades.AddRange(tradesFromId);
+                }
+            }
+
+            var totalFlow = trades.GroupBy(x => x.FormId)
+                .Select(x => new
+                {
+                    totalMaturity = x.Sum(y => y.Maturity??0),
+                    totalSales = x.Sum(y => y.Sales ?? 0),
+                    totalFirstLeg = x.Sum(y => y.FirstLeg ?? 0),
+                    totalAmountPlus = x.Sum(y => y.AmountPlus ?? 0),
+
+                    totalPurchase = x.Sum(y => y.Purchase ?? 0),
+                    totalSecondLeg = x.Sum(y => y.SecondLeg ?? 0),
+                    totalAmountMinus = x.Sum(y => y.AmountMinus ?? 0)
+                })
+                .FirstOrDefault();
+
+            decimal cbInflow = 0;
+            decimal cbOutflow = 0;
+
+            if (totalFlow != null)
+            {
+                cbInflow = totalFlow.totalMaturity + totalFlow.totalSales + totalFlow.totalFirstLeg +
+                           totalFlow.totalAmountPlus;
+                cbOutflow = totalFlow.totalPurchase + totalFlow.totalSecondLeg + totalFlow.totalAmountMinus;
+            }
+             
+            var result = new TS_TotalFlow()
+            {
+                Currency = currency,
+                SettlementDate = settlementDate,
+                Inflow = cbInflow,
+                Outflow = cbOutflow
+            };
 
             return result;
         }

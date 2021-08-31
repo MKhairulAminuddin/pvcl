@@ -11,16 +11,26 @@
             $outflowDepositGrid,
             $outflowMmiGrid,
 
+            $treasuryForm,
+            $selectApproverModal = $('#selectApproverModal'),
+            $submitForApprovalModalBtn,
+            
             $currencySelectBox,
-            $tradeDate;
+            $tradeDate,
+            $approverDropdown,
+            $approvalNotes,
+
+            isSaveAsDraft = false;
 
         var referenceUrl = {
             dsMaturity: window.location.origin + "/api/fid/Treasury/EdwMaturity/",
             dsBankCounterParty: window.location.origin + "/api/fid/Treasury/EdwBankCounterParty/",
             dsIssuer: window.location.origin + "/api/fid/Treasury/EdwIssuer/",
 
+            dsApproverList: window.location.origin + "/api/common/approverList/treasury",
+
             postNewFormRequest: window.location.origin + "/api/fid/Treasury/New",
-            postNewFormResponse: window.location.origin + "/fid/Treasury",
+            postNewFormResponse: window.location.origin + "/fid/Treasury/View/"
         };
         
         //#endregion
@@ -73,7 +83,7 @@
             }
         }
 
-        function postData() {
+        function postData(isDraft) {
             var data = {
                 currency: $currencySelectBox.option("value"),
                 tradeDate: moment($tradeDate.option("value")).unix(),
@@ -83,7 +93,9 @@
 
                 inflowMoneyMarket: $inflowMmiGrid.getDataSource().items(),
                 outflowMoneyMarket: $outflowMmiGrid.getDataSource().items(),
-                
+
+                approver: (isDraft) ? null : $approverDropdown.option("value"),
+                approvalNotes: (isDraft) ? null : $approvalNotes.option("value")
             };
 
             return $.ajax({
@@ -95,7 +107,7 @@
                     window.location.href = referenceUrl.postNewFormResponse + response;
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
                 },
                 complete: function (data) {
                     
@@ -195,6 +207,35 @@
             itemTitleTemplate: $("#dxPanelTitle"),
             showNavButtons: true
         });
+
+        $approverDropdown = $("#approverDropdown").dxSelectBox({
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: referenceUrl.dsApproverList
+            }),
+            displayExpr: "displayName",
+            valueExpr: "username",
+            searchEnabled: true,
+            itemTemplate: function(data) {
+                return "<div class='active-directory-dropdown'>" +
+                    "<p class='active-directory-title'>" +
+                    data.displayName +
+                    "</p>" +
+                    "<p class='active-directory-subtitle'>" +
+                    data.title +
+                    ", " +
+                    data.department +
+                    "</p>" +
+                    "<p class='active-directory-subtitle'>" +
+                    data.email +
+                    "</p>" +
+                    "</div>";
+            }
+        }).dxSelectBox("instance");
+
+        $approvalNotes = $("#approvalNotes").dxTextArea({
+            height: 90
+        }).dxTextArea("instance");
         
         //#endregion
         
@@ -558,6 +599,9 @@
                         type: "fixedPoint",
                         precision: 0
                     },
+                    calculateCellValue: function (rowData) {
+                        return formula.tenor(rowData.maturityDate, rowData.valueDate);
+                    },
                     allowEditing: false
                 },
                 {
@@ -567,8 +611,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "sellPurchaseRatePercent",
@@ -584,7 +627,26 @@
                         type: "fixedPoint",
                         precision: 2
                     },
+                    calculateCellValue: function (rowData) {
+                        return formula.inflow_price(
+                            rowData.productType,
+                            rowData.maturityDate,
+                            rowData.valueDate,
+                            rowData.nominal,
+                            rowData.sellPurchaseRatePercent,
+                            rowData.purchaseProceeds
+                        );
+                    },
                     allowEditing: false
+                },
+                {
+                    dataField: "purchaseProceeds",
+                    caption: "Purchase Proceeds",
+                    dataType: "number",
+                    format: {
+                        type: "fixedPoint",
+                        precision: 2
+                    }
                 },
                 {
                     dataField: "intDividendReceivable",
@@ -593,6 +655,16 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
+                    },
+                    calculateCellValue: function (rowData) {
+                        return formula.inflow_intDividendReceivable(
+                            rowData.productType,
+                            rowData.maturityDate,
+                            rowData.valueDate,
+                            rowData.nominal,
+                            rowData.sellPurchaseRatePercent,
+                            rowData.purchaseProceeds
+                        );
                     },
                     allowEditing: false
                 },
@@ -603,6 +675,16 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
+                    },
+                    calculateCellValue: function (rowData) {
+                        return formula.inflow_proceeds(
+                            rowData.productType,
+                            rowData.maturityDate,
+                            rowData.valueDate,
+                            rowData.nominal,
+                            rowData.sellPurchaseRatePercent,
+                            rowData.purchaseProceeds
+                        );
                     },
                     allowEditing: false
                 },
@@ -716,7 +798,7 @@
                         precision: 0
                     },
                     calculateCellValue: function (rowData) {
-                        return moment(rowData.maturityDate).diff(rowData.valueDate, "days");
+                        return formula.tenor(rowData.maturityDate, rowData.valueDate);
                     },
                     allowEditing: false
                 },
@@ -742,6 +824,26 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
+                    },
+                    calculateCellValue: function (rowData) {
+                        return formula.outflow_price(
+                            rowData.productType,
+                            rowData.maturityDate,
+                            rowData.valueDate,
+                            rowData.nominal,
+                            rowData.sellPurchaseRatePercent,
+                            rowData.purchaseProceeds
+                        );
+                    },
+                    allowEditing: false
+                },
+                {
+                    dataField: "purchaseProceeds",
+                    caption: "Purchase Proceeds",
+                    dataType: "number",
+                    format: {
+                        type: "fixedPoint",
+                        precision: 2
                     }
                 },
                 {
@@ -752,6 +854,16 @@
                         type: "fixedPoint",
                         precision: 2
                     },
+                    calculateCellValue: function (rowData) {
+                        return formula.outflow_intDividendReceivable(
+                            rowData.productType,
+                            rowData.maturityDate,
+                            rowData.valueDate,
+                            rowData.nominal,
+                            rowData.sellPurchaseRatePercent,
+                            rowData.purchaseProceeds
+                        );
+                    },
                     allowEditing: false
                 },
                 {
@@ -761,7 +873,18 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    calculateCellValue: function (rowData) {
+                        return formula.outflow_proceeds(
+                            rowData.productType,
+                            rowData.maturityDate,
+                            rowData.valueDate,
+                            rowData.nominal,
+                            rowData.sellPurchaseRatePercent,
+                            rowData.purchaseProceeds
+                        );
+                    },
+                    allowEditing: false
                 },
                 {
                     dataField: "certNoStockCode",
@@ -824,19 +947,43 @@
         });
 
         $("#saveAsDraftBtn").dxButton({
-            onClick: function(e) {
-                alert("hehe clicked!");
-            }
-        });
-
-        $("#submitForApprovalBtn").dxButton({
             onClick: function (e) {
-                e.event.preventDefault();
+                app.saveAllGrids($inflowDepositGrid, $outflowDepositGrid, $inflowMmiGrid, $outflowMmiGrid);
 
-                postData();
+                setTimeout(function () {
+                    postData(true);
+                }, 1000);
             }
         });
 
+        $treasuryForm = $("#treasuryForm").on("submit",
+            function (e) {
+                e.preventDefault();
+
+                app.saveAllGrids($inflowDepositGrid, $outflowDepositGrid, $inflowMmiGrid, $outflowMmiGrid);
+
+                /*if (moment().subtract(1, "days").isAfter($tradeDate.option("value"))) {
+                    alert("T-n only available for viewing..");
+                }
+                else {
+                    $selectApproverModal.modal('show');
+                }*/
+
+                $selectApproverModal.modal('show');
+                
+            });
+
+        $submitForApprovalModalBtn = $("#submitForApprovalModalBtn").on({
+            "click": function (e) {
+                app.saveAllGrids($inflowDepositGrid, $outflowDepositGrid, $inflowMmiGrid, $outflowMmiGrid);
+
+                setTimeout(function () {
+                    postData(false);
+                }, 1000);
+                e.preventDefault();
+            }
+        });
+        
         loadCalendarMarkers();
 
         //#endregion

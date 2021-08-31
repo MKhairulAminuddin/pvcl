@@ -38,6 +38,20 @@
         loadOpeningBalance: function () {
             return window.location.origin + "/api/issd/GetBalance/" + _getIdFromQueryString;
         },
+
+        loadApprovedTrades: function () {
+            return window.location.origin + "/api/issd/ts/approvedTrades/" +
+                app.getUrlParameter("settlementDateEpoch") +
+                "/" +
+                app.getUrlParameter("currency");
+        },
+        loadApprovedTradeItems: function (formId, instrumentType) {
+            return window.location.origin +
+                "/api/issd/TradeSettlement/TradeItem/" +
+                formId +
+                "/" +
+                instrumentType;
+        },
         loadTradeItemConsolidated: function (instrumentType) {
             return window.location.origin +
                 "/api/issd/TradeSettlement/TradeItemConsolidated/" +
@@ -213,14 +227,19 @@
     }
 
     _tradeSettlement.printBtnWidgetSettingConsolidated = {
-        dataSource: [
-            "Excel", "PDF"
-        ],
+        text: "Print",
         icon: "print",
         type: "normal",
         stylingMode: "contained",
+        dropDownOptions: {
+            width: 230
+        },
+        items: [
+            "Excel Workbook",
+            "PDF"
+        ],
         onItemClick: function (e) {
-            if (e.itemData == "Excel") {
+            if (e.itemData == "Excel Workbook") {
                 var request = {
                     settlementDate: app.getUrlParameter("settlementDateEpoch"),
                     currency: app.getUrlParameter("currency"),

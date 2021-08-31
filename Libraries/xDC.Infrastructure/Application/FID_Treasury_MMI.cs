@@ -12,9 +12,10 @@ namespace xDC.Infrastructure.Application
     using System;
     using System.Collections.Generic;
     
-    public partial class FID_Treasury_Item
+    public partial class FID_Treasury_MMI
     {
         public int Id { get; set; }
+        public int FormId { get; set; }
         public string CashflowType { get; set; }
         public string Dealer { get; set; }
         public string Issuer { get; set; }
@@ -28,7 +29,8 @@ namespace xDC.Infrastructure.Application
         public Nullable<decimal> Price { get; set; }
         public Nullable<decimal> IntDividendReceivable { get; set; }
         public Nullable<decimal> Proceeds { get; set; }
-        public Nullable<decimal> CertNoStockCode { get; set; }
+        public Nullable<decimal> PurchaseProceeds { get; set; }
+        public string CertNoStockCode { get; set; }
         public string ModifiedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
     }

@@ -247,6 +247,27 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [HttpGet]
+        [Route("approverList/treasury")]
+        public HttpResponseMessage ApproverList_Treasury(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.Config_Approver
+                        .Where(x => x.FormType == Common.FormType.FID_TREASURY && x.Username != User.Identity.Name)
+                        .OrderBy(x => x.DisplayName).ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
 
 
         #endregion

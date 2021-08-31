@@ -6,11 +6,14 @@
 
     var formTypes = [
         {
-            "id": "Inflow Funds",
-            "name": "AMSD Inflow Funds"
+            "id": "Inflow Fund",
+            "name": "AMSD Inflow Fund"
         }, {
             "id": "Trade Settlement",
             "name": "ISSD Trade Settlement"
+        }, {
+            "id": "Treasury",
+            "name": "FID Treasury"
         }
     ];
 

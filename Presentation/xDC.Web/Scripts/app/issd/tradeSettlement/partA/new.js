@@ -73,7 +73,7 @@
                 equity: $equityGrid.getDataSource().items(),
 
                 approver: (isDraft) ? null : $approverDropdown.option("value"),
-                approvalNotes: (isDraft) ? null : $approvalNotes.option("value"),
+                approvalNotes: (isDraft) ? null : $approvalNotes.option("value")
             };
 
             return $.ajax({

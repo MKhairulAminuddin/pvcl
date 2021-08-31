@@ -1,0 +1,210 @@
+﻿@model xDC_Web.ViewModels.Fid.Treasury.TreasuryFormVM
+@{
+    ViewBag.Title = "Treasury";
+    ViewBag.Subtitle = "View";
+}
+
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <form id="treasuryForm">
+                <div class="box box-solid">
+                    <div class="box-header">
+                        @(Html.DevExtreme().Button()
+                            .Type(ButtonType.Back)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .OnClick(@<text> function(){ window.location = "@Url.Action("Treasury", "Fid")"; } </text>)
+                            )
+
+                        @if (Model.EnableApproveBtn)
+                        {
+                            @(Html.DevExtreme().Button()
+                                .ID("approveBtn")
+                                .Text("Approve")
+                                .Icon("check")
+                                .Type(ButtonType.Success)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                )
+                        }
+                        @if (Model.EnableRejectBtn)
+                        {
+                            @(Html.DevExtreme().Button()
+                                .ID("rejectBtn")
+                                .Text("Reject")
+                                .Icon("remove")
+                                .Type(ButtonType.Normal)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                )
+                        }
+
+                        <div id="printBtn"></div>
+
+                        @(Html.DevExtreme().Button()
+                            .ID("viewWorkflowBtn")
+                            .Text("Workflow")
+                            .Icon("fa fa-cog")
+                            .Type(ButtonType.Normal)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
+                    </div>
+                    <div class="box-body">
+                        <div class="dx-fieldset">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">
+                                            <strong>Trade Date</strong>
+                                        </div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().DateBoxFor(m => m.TradeDate)
+                                                .ID("tradeDateDateBox")
+                                                .StylingMode(EditorStylingMode.Filled)
+                                                .DisplayFormat("dd/MM/yyyy")
+                                                .ReadOnly(true)
+                                                )
+                                        </div>
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">
+                                            <strong>Currency</strong>
+                                        </div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().TextBoxFor(m => m.Currency)
+                                                .ID("currencySelectBox")
+                                                .StylingMode(EditorStylingMode.Filled)
+                                                .ReadOnly(true))
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4"></div>
+                                <div class="col-md-4">
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">
+                                            <strong>Status</strong>
+                                        </div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
+                                                .StylingMode(EditorStylingMode.Filled)
+                                                .ReadOnly(true))
+                                        </div>
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">
+                                            <strong>Preparer</strong>
+                                        </div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
+                                                .StylingMode(EditorStylingMode.Filled)
+                                                .ReadOnly(true))
+                                        </div>
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">
+                                            <strong>Prepared Date</strong>
+                                        </div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
+                                                .StylingMode(EditorStylingMode.Filled)
+                                                .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                                .ReadOnly(true))
+                                        </div>
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">
+                                            <strong>Approver</strong>
+                                        </div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().TextBoxFor(m => m.ApprovedBy)
+                                                .StylingMode(EditorStylingMode.Filled)
+                                                .ReadOnly(true))
+                                        </div>
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">
+                                            <strong>Approved Date</strong>
+                                        </div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().DateBoxFor(m => m.ApprovedDate)
+                                                .StylingMode(EditorStylingMode.Filled)
+                                                .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                                .ReadOnly(true))
+                                        </div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Model.ApprovalNotes))
+                                    {
+                                        <div class="dx-field">
+                                            <div class="dx-field-label">
+                                                <strong>Approval/Rejection Notes</strong>
+                                            </div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().TextAreaFor(m => m.ApprovalNotes)
+                                                    .StylingMode(EditorStylingMode.Filled)
+                                                    .Height(6)
+                                                    .ReadOnly(true))
+                                            </div>
+                                        </div>
+                                    }
+                                    
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dx-fieldset">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="dx-field">
+                                        <div class="dx-field-label" style="font-weight: bold">FUND INFLOWS</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div id="inflowTabpanel" style="background-color: white;">
+                                        <div data-options="dxTemplate : { name: 'inflowDepositTab' }" style="padding-top: 10px; overflow: auto">
+                                            <div id="inflowDepositGrid" class="grid-container" style="width: 100%"></div>
+                                        </div>
+                                        <div data-options="dxTemplate : { name: 'inflowMmiTab' }" style="padding-top: 10px; overflow: auto">
+                                            <div id="inflowMmiGrid" class="grid-container" style="width: 100%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dx-fieldset">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="dx-field">
+                                        <div class="dx-field-label" style="font-weight: bold">FUND OUTFLOWS</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div id="outflowTabpanel" style="background-color: white;">
+                                        <div data-options="dxTemplate : { name: 'outflowDepositTab' }" style="padding-top: 10px; overflow: auto">
+                                            <div id="outflowDepositGrid" class="grid-container" style="width: 100%"></div>
+                                        </div>
+                                        <div data-options="dxTemplate : { name: 'outflowMmiTab' }" style="padding-top: 10px; overflow: auto">
+                                            <div id="outflowMmiGrid" class="grid-container" style="width: 100%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</section>
+
+<script type="text/html" id="dxPanelTitle">
+    <div style="margin: 4px 0">
+        <span style="font-size: small"><%= title %></span><span id="<%= titleId %>" style="float: right;"></span>
+    </div>
+</script>
+
+@section scripts
+{
+    <script src="~/Scripts/app/fid/treasury/view.js"></script>
+}
