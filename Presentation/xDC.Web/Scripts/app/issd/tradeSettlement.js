@@ -99,6 +99,13 @@
         });
     }
 
+    _tradeSettlement.dsApprovedTradeItems = function (formId, instrumentType) {
+        return DevExpress.data.AspNet.createStore({
+            key: "id",
+            loadUrl: _tradeSettlement.api.loadApprovedTradeItems(formId, instrumentType)
+        });
+    }
+
     _tradeSettlement.dsTradeItemConsolidated = function (instrumentType) {
         return $.ajax({
             url: _tradeSettlement.api.loadTradeItemConsolidated(instrumentType),
@@ -349,6 +356,13 @@
         }
     };
 
+    _tradeSettlement.val_isTMinus1 = function(settlementDate) {
+        if (moment().subtract(1, "days").isAfter(settlementDate)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     _tradeSettlement.getIdFromQueryString = _getIdFromQueryString;
 

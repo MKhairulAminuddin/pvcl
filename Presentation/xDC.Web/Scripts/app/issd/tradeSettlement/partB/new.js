@@ -590,7 +590,7 @@
             function (e) {
                 tradeSettlement.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid);
 
-                if (moment().subtract(1, "days").isAfter($settlementDateBox.option("value"))) {
+                if (tradeSettlement.val_isTMinus1($settlementDateBox.option("value"))) {
                     alert("T-n only available for viewing..");
                 }
                 else {

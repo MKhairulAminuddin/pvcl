@@ -22,10 +22,13 @@ namespace xDC.Utils
 
         public static string UrlAmsdInflowFundsStatus => ConfigurationManager.AppSettings["Url.AMSD.InflowFundsFormStatus"];
 
-        public static string AclAdministrator = "Administrator";
-        public static string AclPowerUser = "Power User";
-        public static string AclAmsd = "AMSD";
-        public static string AclIssd = "ISSD";
-        public static string AclFid = "FID";
+        public static class Acl
+        {
+            public const  string Administrator = "Administrator";
+            public const string PowerUser = "Power User";
+            public const string Amsd = "AMSD";
+            public const string Issd = "ISSD";
+            public const string Fid = "FID";
+        }
     }
 }

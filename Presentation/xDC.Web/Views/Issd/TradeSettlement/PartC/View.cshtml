@@ -5,44 +5,40 @@
     ViewBag.Subtitle = "Part C - Payment/Receipt MTM, FX Settlement";
 }
 
-<section class="content-header content-toolbar">
+<section class="content container-fluid">
     <div class="row">
-        <div class="col-md-6">
-            <div class="left-container">
-                <div>
+        <div class="col-md-12">
+            @xDC_HtmlHelper.WorkflowStepper(Model.FormStatus)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-solid">
+                <div class="box-header">
                     @(Html.DevExtreme().Button()
                         .Type(ButtonType.Back)
                         .StylingMode(ButtonStylingMode.Contained)
                         .OnClick(@<text> function(){ window.location = "@Url.Action("TradeSettlement", "Issd")"; } </text>)
                         )
-                </div>
-                @if (Model.ApprovePermission && (Model.FormStatus != "Approved" || Model.FormStatus != "Rejected"))
-                {
-                    if (Model.FormStatus != "Approved" && Model.FormStatus != "Rejected")
+                    @if (Model.EnableApproveRejectBtn)
                     {
-                        <div>
-                            @(Html.DevExtreme().Button()
-                                .ID("approveBtn")
-                                .Text("Approve")
-                                .Icon("check")
-                                .Type(ButtonType.Success)
-                                .StylingMode(ButtonStylingMode.Contained)
-                                )
-                        </div>
-                        <div>
-                            @(Html.DevExtreme().Button()
-                                .ID("rejectBtn")
-                                .Text("Reject")
-                                .Icon("remove")
-                                .Type(ButtonType.Normal)
-                                .StylingMode(ButtonStylingMode.Contained)
-                                )
-                        </div>
+                        @(Html.DevExtreme().Button()
+                            .ID("approveBtn")
+                            .Text("Approve")
+                            .Icon("check")
+                            .Type(ButtonType.Success)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("rejectBtn")
+                            .Text("Reject")
+                            .Icon("remove")
+                            .Type(ButtonType.Normal)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
                     }
-                }
-                @if (Model.AdminEditPermission)
-                {
-                    <div>
+                    @if (Model.AdminEditPermission)
+                    {
                         @(Html.DevExtreme().Button()
                             .ID("adminEditBtn")
                             .Text("Admin Edit")
@@ -50,12 +46,8 @@
                             .Type(ButtonType.Default)
                             .StylingMode(ButtonStylingMode.Contained)
                             )
-                    </div>
-                }
-                <div>
+                    }
                     <div id="printBtn"></div>
-                </div>
-                <div>
                     @(Html.DevExtreme().Button()
                         .ID("viewWorkflowBtn")
                         .Text("Workflow Information")
@@ -64,31 +56,14 @@
                         .StylingMode(ButtonStylingMode.Contained)
                         )
                 </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div id="right-toolbar-container" class="right-container">
-
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="content container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            @xDC_HtmlHelper.WorkflowStepper(Model.FormStatus)
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-8">
-            <div class="box box-solid">
                 <div class="box-body">
                     <div class="dx-fieldset">
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="dx-field">
-                                    <div class="dx-field-label">Settlement Date</div>
+                                    <div class="dx-field-label">
+                                        <strong>Settlement Date</strong>
+                                    </div>
                                     <div class="dx-field-value">
                                         @(Html.DevExtreme().DateBoxFor(m => m.SettlementDate)
                                             .ID("tradesettlementDateBox")
@@ -98,16 +73,84 @@
                                     </div>
                                 </div>
                                 <div class="dx-field">
-                                    <div class="dx-field-label">Currency</div>
+                                    <div class="dx-field-label">
+                                        <strong>Currency</strong>
+                                    </div>
                                     <div class="dx-field-value">
-                                        @(Html.DevExtreme().TextBoxFor(m=> m.Currency)
+                                        @(Html.DevExtreme().TextBoxFor(m => m.Currency)
                                             .ID("currencySelectBox")
                                             .StylingMode(EditorStylingMode.Filled)
                                             .ReadOnly(true))
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-8"></div>
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4">
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Status</div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
+                                            .StylingMode(EditorStylingMode.Filled)
+                                            .ReadOnly(true))
+                                    </div>
+                                </div>
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Preparer</div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
+                                            .StylingMode(EditorStylingMode.Filled)
+                                            .ReadOnly(true))
+                                    </div>
+                                </div>
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Prepared Date</div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
+                                            .StylingMode(EditorStylingMode.Filled)
+                                            .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                            .ReadOnly(true))
+                                    </div>
+                                </div>
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Approver</div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().TextBoxFor(m => m.ApprovedBy)
+                                            .StylingMode(EditorStylingMode.Filled)
+                                            .ReadOnly(true))
+                                    </div>
+                                </div>
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Approved Date</div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().DateBoxFor(m => m.ApprovedDate)
+                                            .StylingMode(EditorStylingMode.Filled)
+                                            .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                            .ReadOnly(true))
+                                    </div>
+                                </div>
+                                @if (Model.IsAdminEdited)
+                                {
+                                    <div style="background: #FFEBEE; padding: 5px 0">
+                                        <div class="dx-field">
+                                            <div class="dx-field-label text-red">Admin Edited By</div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().TextBoxFor(m => m.AdminEditedBy)
+                                                    .StylingMode(EditorStylingMode.Filled)
+                                                    .ReadOnly(true))
+                                            </div>
+                                        </div>
+                                        <div class="dx-field">
+                                            <div class="dx-field-label text-red">Admin Edited Date</div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().DateBoxFor(m => m.AdminEditedDate)
+                                                    .StylingMode(EditorStylingMode.Filled)
+                                                    .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                                    .ReadOnly(true))
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </div>
 
@@ -120,11 +163,9 @@
 
                                 <div id="tabpanel-container" style="background-color: white;">
                                     <div data-options="dxTemplate : { name: 'mtmTab' }" style="padding-top: 10px; overflow: auto">
-
                                         <div id="mtmGrid" class="grid-container" style="width: 100%"></div>
                                     </div>
                                     <div data-options="dxTemplate : { name: 'fxSettlementTab' }" style="padding-top: 10px; overflow: auto">
-
                                         <div id="fxSettlementGrid" class="grid-container" style="width: 100%"></div>
                                     </div>
                                 </div>
@@ -133,92 +174,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="box box-solid">
-                <div class="box-body">
-                    <div class="dx-fieldset">
-                        <div class="dx-field">
-                            <div class="dx-field-label">Form ID</div>
-                            <div class="dx-field-value">
-                                @(Html.DevExtreme().TextBoxFor(m => m.Id)
-                                    .StylingMode(EditorStylingMode.Underlined)
-                                    .ReadOnly(true))
-                            </div>
-                        </div>
-                        <div class="dx-field">
-                            <div class="dx-field-label">Status</div>
-                            <div class="dx-field-value">
-                                @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
-                                    .StylingMode(EditorStylingMode.Underlined)
-                                    .ReadOnly(true))
-                            </div>
-                        </div>
-                        <div class="dx-field">
-                            <div class="dx-field-label">Preparer</div>
-                            <div class="dx-field-value">
-                                @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
-                                    .StylingMode(EditorStylingMode.Underlined)
-                                    .ReadOnly(true))
-                            </div>
-                        </div>
-                        <div class="dx-field">
-                            <div class="dx-field-label">Prepared Date</div>
-                            <div class="dx-field-value">
-                                @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
-                                    .StylingMode(EditorStylingMode.Underlined)
-                                    .DisplayFormat("dd/MM/yyyy hh:mm a")
-                                    .ReadOnly(true))
-                            </div>
-                        </div>
-                        <div class="dx-field">
-                            <div class="dx-field-label">Approver</div>
-                            <div class="dx-field-value">
-                                @(Html.DevExtreme().TextBoxFor(m => m.ApprovedBy)
-                                    .StylingMode(EditorStylingMode.Underlined)
-                                    .ReadOnly(true))
-                            </div>
-                        </div>
-                        <div class="dx-field">
-                            <div class="dx-field-label">Approved Date</div>
-                            <div class="dx-field-value">
-                                @(Html.DevExtreme().DateBoxFor(m => m.ApprovedDate)
-                                    .StylingMode(EditorStylingMode.Underlined)
-                                    .DisplayFormat("dd/MM/yyyy hh:mm a")
-                                    .ReadOnly(true))
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            @if (Model.IsAdminEdited)
-            {
-                <div class="box box-solid" style="background: #FFEBEE">
-                    <div class="box-body">
-                        <div class="dx-fieldset">
-                            <div class="dx-field">
-                                <div class="dx-field-label text-red">Admin Edited By</div>
-                                <div class="dx-field-value">
-                                    @(Html.DevExtreme().TextBoxFor(m => m.AdminEditedBy)
-                                        .StylingMode(EditorStylingMode.Underlined)
-                                        .ReadOnly(true))
-                                </div>
-                            </div>
-                            <div class="dx-field">
-                                <div class="dx-field-label text-red">Admin Edited Date</div>
-                                <div class="dx-field-value">
-                                    @(Html.DevExtreme().DateBoxFor(m => m.AdminEditedDate)
-                                        .StylingMode(EditorStylingMode.Underlined)
-                                        .DisplayFormat("dd/MM/yyyy hh:mm a")
-                                        .ReadOnly(true))
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
         </div>
     </div>
 </section>

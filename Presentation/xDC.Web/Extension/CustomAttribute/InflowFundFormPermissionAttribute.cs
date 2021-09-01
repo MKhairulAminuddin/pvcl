@@ -18,7 +18,7 @@ namespace xDC_Web.Extension.CustomAttribute
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
             var user = HttpContext.Current.User.Identity.Name;
-            if (!(HttpContext.Current.User.IsInRole(Config.AclPowerUser) || HttpContext.Current.User.IsInRole(Config.AclAmsd) || HttpContext.Current.User.IsInRole(Config.AclAdministrator)))
+            if (!(HttpContext.Current.User.IsInRole(Config.Acl.PowerUser) || HttpContext.Current.User.IsInRole(Config.Acl.Amsd) || HttpContext.Current.User.IsInRole(Config.Acl.Administrator)))
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized));
             }

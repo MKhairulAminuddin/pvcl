@@ -15,64 +15,50 @@
         <div class="col-md-12">
             <div class="box box-solid">
                 <div class="box-header">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <div class="left-container">
-                                @(Html.DevExtreme().Button()
-                                    .Type(ButtonType.Back)
-                                    .StylingMode(ButtonStylingMode.Contained)
-                                    .OnClick(@<text> function(){ window.location = "@Url.Action("TradeSettlement", "Issd")"; } </text>)
-                                    )
+                        @(Html.DevExtreme().Button()
+                            .Type(ButtonType.Back)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .OnClick(@<text> function(){ window.location = "@Url.Action("TradeSettlement", "Issd")"; } </text>)
+                            )
 
-                                @if (Model.ApprovePermission && (Model.FormStatus != "Approved" || Model.FormStatus != "Rejected"))
-                                {
-                                    if (Model.FormStatus != "Approved" && Model.FormStatus != "Rejected")
-                                    {
-                                        @(Html.DevExtreme().Button()
-                                            .ID("approveBtn")
-                                            .Text("Approve")
-                                            .Icon("check")
-                                            .Type(ButtonType.Success)
-                                            .StylingMode(ButtonStylingMode.Contained)
-                                            )
+                        @if (Model.EnableApproveRejectBtn)
+                        {
+                            @(Html.DevExtreme().Button()
+                                .ID("approveBtn")
+                                .Text("Approve")
+                                .Icon("check")
+                                .Type(ButtonType.Success)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                )
 
-                                        @(Html.DevExtreme().Button()
-                                            .ID("rejectBtn")
-                                            .Text("Reject")
-                                            .Icon("remove")
-                                            .Type(ButtonType.Normal)
-                                            .StylingMode(ButtonStylingMode.Contained)
-                                            )
-                                    }
-                                }
-                                @if (Model.AdminEditPermission)
-                                {
-                                    @(Html.DevExtreme().Button()
-                                        .ID("adminEditBtn")
-                                        .Text("Admin Edit")
-                                        .Icon("edit")
-                                        .Type(ButtonType.Default)
-                                        .StylingMode(ButtonStylingMode.Contained)
-                                        )
-                                }
+                            @(Html.DevExtreme().Button()
+                                .ID("rejectBtn")
+                                .Text("Reject")
+                                .Icon("remove")
+                                .Type(ButtonType.Normal)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                )
+                        }
+                        @if (Model.AdminEditPermission)
+                        {
+                            @(Html.DevExtreme().Button()
+                                .ID("adminEditBtn")
+                                .Text("Admin Edit")
+                                .Icon("edit")
+                                .Type(ButtonType.Default)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                )
+                        }
 
-                                <div id="printBtn"></div>
+                        <div id="printBtn"></div>
 
-                                @(Html.DevExtreme().Button()
-                                    .ID("viewWorkflowBtn")
-                                    .Text("Workflow Information")
-                                    .Icon("detailslayout")
-                                    .Type(ButtonType.Normal)
-                                    .StylingMode(ButtonStylingMode.Contained)
-                                    )
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div id="right-toolbar-container" class="right-container">
-
-                            </div>
-                        </div>
-                    </div>
+                        @(Html.DevExtreme().Button()
+                            .ID("viewWorkflowBtn")
+                            .Text("Workflow Information")
+                            .Icon("detailslayout")
+                            .Type(ButtonType.Normal)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
                 </div>
                 <div class="box-body">
                     <div class="row">
@@ -150,7 +136,7 @@
                             </div>
                             @if (Model.IsAdminEdited)
                             {
-                                <div class="" style="background-color: #FFEBEE;padding: 5px 0">
+                                <div class="" style="background-color: #FFEBEE; padding: 5px 0">
                                     <div class="dx-fieldset">
                                         <div class="dx-field">
                                             <div class="dx-field-label text-red">Admin Edited By</div>

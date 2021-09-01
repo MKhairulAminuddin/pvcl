@@ -68,7 +68,7 @@ namespace xDC_Web.Controllers.Api
                             AdminEdittedDate = item.AdminEdittedDate,
 
                             IsDraft = (item.FormStatus != Common.FormStatus.PendingApproval),
-                            IsMeCanEditDraft = (User.IsInRole(Config.AclIssd) && !isMeApprover),
+                            IsMeCanEditDraft = (User.IsInRole(Config.Acl.Issd) && !isMeApprover),
 
                             IsPendingApproval = (item.FormStatus == Common.FormStatus.PendingApproval),
 
@@ -77,7 +77,7 @@ namespace xDC_Web.Controllers.Api
 
 
                             
-                            IsCanAdminEdit = (User.IsInRole(Config.AclPowerUser) && !isMeApprover && item.FormStatus != Common.FormStatus.PendingApproval),
+                            IsCanAdminEdit = (User.IsInRole(Config.Acl.PowerUser) && !isMeApprover && item.FormStatus != Common.FormStatus.PendingApproval),
                             
                         });
                     }
@@ -157,26 +157,41 @@ namespace xDC_Web.Controllers.Api
                     var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
                     
                     var trades = TradeSettlementService.GetTradeSettlement(db, settlementDate.Value.Date, currency);
-                    
-                    var result = trades.GroupBy(x => new { x.FormId }).Select(x => new TS_ApprovedTradeVM()
-                    {
-                        SettlementDate = settlementDate.Value,
-                        Currency = currency,
 
-                        TotalEquity = x.Count(y => y.InstrumentType == Common.TsItemCategory.Equity),
-                        TotalBond = x.Count(y => y.InstrumentType == Common.TsItemCategory.Bond),
-                        TotalCp = x.Count(y => y.InstrumentType == Common.TsItemCategory.Cp),
-                        TotalNotesPapers = x.Count(y => y.InstrumentType == Common.TsItemCategory.NotesPapers),
-                        TotalRepo = x.Count(y => y.InstrumentType == Common.TsItemCategory.Repo),
-                        TotalCoupon = x.Count(y => y.InstrumentType == Common.TsItemCategory.Coupon),
-                        TotalFees = x.Count(y => y.InstrumentType == Common.TsItemCategory.Fees),
-                        TotalMtm = x.Count(y => y.InstrumentType == Common.TsItemCategory.Mtm),
-                        TotalFx = x.Count(y => y.InstrumentType == Common.TsItemCategory.Fx),
-                        TotalContribution = x.Count(y => y.InstrumentType == Common.TsItemCategory.Cn),
-                        TotalAltid = x.Count(y => y.InstrumentType == Common.TsItemCategory.Altid),
-                        TotalOthers = x.Count(y => y.InstrumentType == Common.TsItemCategory.Others),
-                        
-                    }).ToList();
+                    var result = trades
+                        .GroupBy(i => 1)
+                        .Select(x => new TS_ApprovedTradeVM()
+                        {
+                            SettlementDate = settlementDate.Value,
+                            Currency = currency,
+
+                            TotalEquity = x.Count(y => y.InstrumentType == Common.TsItemCategory.Equity),
+                            TotalBond = x.Count(y => y.InstrumentType == Common.TsItemCategory.Bond),
+                            TotalCp = x.Count(y => y.InstrumentType == Common.TsItemCategory.Cp),
+                            TotalNotesPapers = x.Count(y => y.InstrumentType == Common.TsItemCategory.NotesPapers),
+                            TotalRepo = x.Count(y => y.InstrumentType == Common.TsItemCategory.Repo),
+                            TotalCoupon = x.Count(y => y.InstrumentType == Common.TsItemCategory.Coupon),
+                            TotalFees = x.Count(y => y.InstrumentType == Common.TsItemCategory.Fees),
+                            TotalMtm = x.Count(y => y.InstrumentType == Common.TsItemCategory.Mtm),
+                            TotalFx = x.Count(y => y.InstrumentType == Common.TsItemCategory.Fx),
+                            TotalCn = x.Count(y => y.InstrumentType == Common.TsItemCategory.Cn),
+                            TotalAltid = x.Count(y => y.InstrumentType == Common.TsItemCategory.Altid),
+                            TotalOthers = x.Count(y => y.InstrumentType == Common.TsItemCategory.Others),
+
+                            FormIdEquity = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Equity)?.FormId,
+                            FormIdBond = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Bond)?.FormId,
+                            FormIdCp = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Cp)?.FormId,
+                            FormIdNotesPapers = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.NotesPapers)?.FormId,
+                            FormIdRepo = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Repo)?.FormId,
+                            FormIdCoupon = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Coupon)?.FormId,
+                            FormIdFees = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Fees)?.FormId,
+                            FormIdMtm = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Mtm)?.FormId,
+                            FormIdFx = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Fx)?.FormId,
+                            FormIdCn = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Cn)?.FormId,
+                            FormIdAltid = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Altid)?.FormId,
+                            FormIdOthers = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Others)?.FormId,
+
+                        }).ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -186,6 +201,36 @@ namespace xDC_Web.Controllers.Api
                 Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
+        }
+
+        [HttpGet]
+        [Route("ts/approvedTradeItems/{formId}/{instrumentType}")]
+        public HttpResponseMessage TS_ApprovedTradeItems(int formId, string instrumentType, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var tradeCategory = Common.TsCategoryUrlParamMapping(instrumentType);
+
+                    if (tradeCategory != null)
+                    {
+                        var result = db.ISSD_TradeSettlement.AsNoTracking()
+                            .Where(x => x.InstrumentType == tradeCategory && x.FormId == formId).ToList();
+
+                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Failed convert to actual date");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+
         }
 
         [HttpGet]
@@ -225,14 +270,14 @@ namespace xDC_Web.Controllers.Api
 
                             IsDraft = (item.FormStatus == Common.FormStatus.Draft),
 
-                            IsMeCanEditDraft = (User.IsInRole(Config.AclIssd) && !isMeApprover),
+                            IsMeCanEditDraft = (User.IsInRole(Config.Acl.Issd) && !isMeApprover),
 
 
                             IsMyFormRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatus.Rejected),
                             IsFormPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
                             IsFormOwner = (User.Identity.Name == item.PreparedBy),
-                            IsCanAdminEdit = (User.IsInRole(Config.AclPowerUser)),
-                            IsResubmitEnabled = (item.FormStatus == "Rejected" && User.IsInRole(Config.AclAmsd) && User.Identity.Name != item.ApprovedBy)
+                            IsCanAdminEdit = (User.IsInRole(Config.Acl.PowerUser)),
+                            IsResubmitEnabled = (item.FormStatus == "Rejected" && User.IsInRole(Config.Acl.Amsd) && User.Identity.Name != item.ApprovedBy)
                         });
                     }
 
@@ -265,10 +310,10 @@ namespace xDC_Web.Controllers.Api
                         return Request.CreateResponse(HttpStatusCode.BadRequest, "Similar form has been created. Use that instead.");
                     }
 
-                    if (TradeSettlementService.IsTMinus(settlementDateConverted.Value.Date))
+                    /*if (TradeSettlementService.IsTMinus(settlementDateConverted.Value.Date))
                     {
                         return Request.CreateResponse(HttpStatusCode.BadRequest, "Submission for Settlement Date T-n is not allowed");
-                    }
+                    }*/
 
                     var newFormHeader = new ISSD_FormHeader()
                     {

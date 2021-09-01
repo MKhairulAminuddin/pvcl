@@ -79,25 +79,25 @@
     var username = HttpContext.Current.User.Identity.Name;
     var role = "Anonymous";
 
-    if (HttpContext.Current.User.IsInRole(Config.AclAdministrator))
+    if (HttpContext.Current.User.IsInRole(Config.Acl.Administrator))
     {
-        role = Config.AclAdministrator;
+        role = Config.Acl.Administrator;
     }
-    else if (HttpContext.Current.User.IsInRole(Config.AclPowerUser))
+    else if (HttpContext.Current.User.IsInRole(Config.Acl.PowerUser))
     {
-        role = Config.AclPowerUser;
+        role = Config.Acl.PowerUser;
     }
-    else if (HttpContext.Current.User.IsInRole(Config.AclAmsd))
+    else if (HttpContext.Current.User.IsInRole(Config.Acl.Amsd))
     {
-        role = Config.AclAmsd;
+        role = Config.Acl.Amsd;
     }
-    else if (HttpContext.Current.User.IsInRole(Config.AclFid))
+    else if (HttpContext.Current.User.IsInRole(Config.Acl.Fid))
     {
-        role = Config.AclFid;
+        role = Config.Acl.Fid;
     }
-    else if (HttpContext.Current.User.IsInRole(Config.AclIssd))
+    else if (HttpContext.Current.User.IsInRole(Config.Acl.Issd))
     {
-        role = Config.AclIssd;
+        role = Config.Acl.Issd;
     }
     else
     {

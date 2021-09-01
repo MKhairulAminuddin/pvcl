@@ -62,15 +62,17 @@ namespace xDC.Services.App
 
         public static List<ISSD_TradeSettlement> GetTradeSettlement(kashflowDBEntities db, DateTime settlementDate, string currency)
         {
-            var forms = db.ISSD_FormHeader.Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate) && x.Currency == currency);
+            var forms = db.ISSD_FormHeader.Where(x =>
+                DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate) &&
+                x.Currency == currency);
             
             var trades = new List<ISSD_TradeSettlement>();
 
             if (forms.Any())
             {
-                foreach (var id in forms.Select(x => x.Id).ToList())
+                foreach (var formId in forms.Select(x => x.Id).ToList())
                 {
-                    var tradesFromId = db.ISSD_TradeSettlement.Where(x => x.FormId == id).ToList();
+                    var tradesFromId = db.ISSD_TradeSettlement.Where(x => x.FormId == formId).ToList();
                     if (tradesFromId.Any())
                     {
                         trades.AddRange(tradesFromId);
@@ -121,7 +123,7 @@ namespace xDC.Services.App
                 }
             }
 
-            var totalFlow = trades.GroupBy(x => x.FormId)
+            var totalFlow = trades.GroupBy(x => 1)
                 .Select(x => new
                 {
                     totalMaturity = x.Sum(y => y.Maturity??0),

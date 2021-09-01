@@ -24,7 +24,7 @@ namespace xDC_Web.Controllers
             using (var db = new kashflowDBEntities())
             {
                 var isApprover = db.Config_Approver.Any(x => x.Username == User.Identity.Name);
-                var isIssdUser = User.IsInRole(Config.AclIssd);
+                var isIssdUser = User.IsInRole(Config.Acl.Issd);
 
                 var model = new ISSDLandingPageViewModel()
                 {
@@ -41,7 +41,7 @@ namespace xDC_Web.Controllers
             using (var db = new kashflowDBEntities())
             {
                 var isApprover = db.Config_Approver.Any(x => x.Username == User.Identity.Name);
-                var isIssdUser = User.IsInRole(Config.AclIssd);
+                var isIssdUser = User.IsInRole(Config.Acl.Issd);
 
                 var model = new ISSDLandingPageViewModel()
                 {
@@ -153,7 +153,7 @@ namespace xDC_Web.Controllers
                             AdminEditedDate = getForm.AdminEdittedDate,
 
                             ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
-                            AdminEditPermission = User.IsInRole(Config.AclPowerUser)
+                            AdminEditPermission = User.IsInRole(Config.Acl.PowerUser)
                         };
 
                         return View("TradeSettlement/PartA/View", formObj);
@@ -183,44 +183,44 @@ namespace xDC_Web.Controllers
                 using (var db = new kashflowDBEntities())
                 {
                     var formIdParsed = Convert.ToInt32(formId);
-                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formIdParsed);
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formIdParsed);
                     
-                    if (getForm != null)
+                    if (form != null)
                     {
-                        if (TradeSettlementService.IsIamThisFormApprover(db, getForm.Id, User.Identity.Name))
+                        if (TradeSettlementService.IsIamThisFormApprover(db, form.Id, User.Identity.Name))
                         {
                             TempData["ErrorMessage"] = "You are this form Approver. Then you cannot edit it.";
                             return View("Error");
                         }
 
-                        if (TradeSettlementService.IsInPendingStatus(getForm.FormStatus))
+                        if (TradeSettlementService.IsInPendingStatus(form.FormStatus))
                         {
                             TempData["ErrorMessage"] = "Form is still in Pending Approval status.";
                             return View("Error");
                         }
 
-                        var formObj = new EditTradeSettlementFormViewModel()
+                        var formObj = new ViewTradeSettlementFormViewModel()
                         {
-                            Id = getForm.Id,
-                            FormStatus = getForm.FormStatus,
-                            SettlementDate = getForm.SettlementDate,
-                            Currency = getForm.Currency,
+                            Id = form.Id,
+                            FormStatus = form.FormStatus,
+                            SettlementDate = form.SettlementDate,
+                            Currency = form.Currency,
 
-                            PreparedBy = getForm.PreparedBy,
-                            PreparedDate = getForm.PreparedDate,
-                            ApprovedBy = getForm.ApprovedBy,
-                            ApprovedDate = getForm.ApprovedDate,
+                            PreparedBy = form.PreparedBy,
+                            PreparedDate = form.PreparedDate,
+                            ApprovedBy = form.ApprovedBy,
+                            ApprovedDate = form.ApprovedDate,
 
-                            IsAdminEdited = getForm.AdminEditted,
-                            AdminEditedBy = getForm.AdminEdittedBy,
-                            AdminEditedDate = getForm.AdminEdittedDate,
+                            IsAdminEdited = form.AdminEditted,
+                            AdminEditedBy = form.AdminEdittedBy,
+                            AdminEditedDate = form.AdminEdittedDate,
 
-                            EnableResubmit = (getForm.FormStatus == Common.FormStatus.Approved || getForm.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatus.Draft || getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableResubmit = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.Acl.PowerUser)),
+                            EnableSubmitForApproval = (form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
 
-                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatus.Approved),
-
+                            EnableDraftButton = (form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
+                            EnableSaveAdminChanges = User.IsInRole(Config.Acl.PowerUser) && (form.FormStatus == Common.FormStatus.Approved),
+                            EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Issd) && form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval)
                         };
 
                         return View("TradeSettlement/PartA/Edit", formObj);
@@ -293,7 +293,7 @@ namespace xDC_Web.Controllers
                             AdminEditedDate = getForm.AdminEdittedDate,
 
                             ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
-                            AdminEditPermission = User.IsInRole(Config.AclPowerUser)
+                            AdminEditPermission = User.IsInRole(Config.Acl.PowerUser)
                         };
 
                         return View("TradeSettlement/PartB/View", formObj);
@@ -323,43 +323,44 @@ namespace xDC_Web.Controllers
                 using (var db = new kashflowDBEntities())
                 {
                     var formIdParsed = Convert.ToInt32(formId);
-                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formIdParsed);
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formIdParsed);
                     
-                    if (getForm != null)
+                    if (form != null)
                     {
-                        if (TradeSettlementService.IsIamThisFormApprover(db, getForm.Id, User.Identity.Name))
+                        if (TradeSettlementService.IsIamThisFormApprover(db, form.Id, User.Identity.Name))
                         {
                             TempData["ErrorMessage"] = "You are this form Approver. Then you cannot edit it.";
                             return View("Error");
                         }
 
-                        if (TradeSettlementService.IsInPendingStatus(getForm.FormStatus))
+                        if (TradeSettlementService.IsInPendingStatus(form.FormStatus))
                         {
                             TempData["ErrorMessage"] = "Form is still in Pending Approval status.";
                             return View("Error");
                         }
 
-                        var formObj = new EditTradeSettlementFormViewModel()
+                        var formObj = new ViewTradeSettlementFormViewModel()
                         {
-                            Id = getForm.Id,
-                            FormStatus = getForm.FormStatus,
-                            SettlementDate = getForm.SettlementDate,
-                            Currency = getForm.Currency,
+                            Id = form.Id,
+                            FormStatus = form.FormStatus,
+                            SettlementDate = form.SettlementDate,
+                            Currency = form.Currency,
 
-                            PreparedBy = getForm.PreparedBy,
-                            PreparedDate = getForm.PreparedDate,
-                            ApprovedBy = getForm.ApprovedBy,
-                            ApprovedDate = getForm.ApprovedDate,
+                            PreparedBy = form.PreparedBy,
+                            PreparedDate = form.PreparedDate,
+                            ApprovedBy = form.ApprovedBy,
+                            ApprovedDate = form.ApprovedDate,
 
-                            IsAdminEdited = getForm.AdminEditted,
-                            AdminEditedBy = getForm.AdminEdittedBy,
-                            AdminEditedDate = getForm.AdminEdittedDate,
+                            IsAdminEdited = form.AdminEditted,
+                            AdminEditedBy = form.AdminEdittedBy,
+                            AdminEditedDate = form.AdminEdittedDate,
 
-                            EnableResubmit = (getForm.FormStatus == Common.FormStatus.Approved || getForm.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatus.Draft || getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableResubmit = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.Acl.PowerUser)),
+                            EnableSubmitForApproval = (form.FormStatus == Common.FormStatus.Draft || form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
 
-                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatus.Approved),
+                            EnableDraftButton = (form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
+                            EnableSaveAdminChanges = User.IsInRole(Config.Acl.PowerUser) && (form.FormStatus == Common.FormStatus.Approved),
+                            EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Issd) && form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval)
 
                         };
 
@@ -434,7 +435,7 @@ namespace xDC_Web.Controllers
                             AdminEditedDate = getForm.AdminEdittedDate,
 
                             ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
-                            AdminEditPermission = User.IsInRole(Config.AclPowerUser)
+                            AdminEditPermission = User.IsInRole(Config.Acl.PowerUser)
                         };
 
                         return View("TradeSettlement/PartC/View", formObj);
@@ -464,43 +465,44 @@ namespace xDC_Web.Controllers
                 using (var db = new kashflowDBEntities())
                 {
                     var formIdParsed = Convert.ToInt32(formId);
-                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formIdParsed);
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formIdParsed);
                     
-                    if (getForm != null)
+                    if (form != null)
                     {
-                        if (TradeSettlementService.IsIamThisFormApprover(db, getForm.Id, User.Identity.Name))
+                        if (TradeSettlementService.IsIamThisFormApprover(db, form.Id, User.Identity.Name))
                         {
                             TempData["ErrorMessage"] = "You are this form Approver. Then you cannot edit it.";
                             return View("Error");
                         }
 
-                        if (TradeSettlementService.IsInPendingStatus(getForm.FormStatus))
+                        if (TradeSettlementService.IsInPendingStatus(form.FormStatus))
                         {
                             TempData["ErrorMessage"] = "Form is still in Pending Approval status.";
                             return View("Error");
                         }
 
-                        var formObj = new EditTradeSettlementFormViewModel()
+                        var formObj = new ViewTradeSettlementFormViewModel()
                         {
-                            Id = getForm.Id,
-                            FormStatus = getForm.FormStatus,
-                            SettlementDate = getForm.SettlementDate,
-                            Currency = getForm.Currency,
+                            Id = form.Id,
+                            FormStatus = form.FormStatus,
+                            SettlementDate = form.SettlementDate,
+                            Currency = form.Currency,
 
-                            PreparedBy = getForm.PreparedBy,
-                            PreparedDate = getForm.PreparedDate,
-                            ApprovedBy = getForm.ApprovedBy,
-                            ApprovedDate = getForm.ApprovedDate,
+                            PreparedBy = form.PreparedBy,
+                            PreparedDate = form.PreparedDate,
+                            ApprovedBy = form.ApprovedBy,
+                            ApprovedDate = form.ApprovedDate,
 
-                            IsAdminEdited = getForm.AdminEditted,
-                            AdminEditedBy = getForm.AdminEdittedBy,
-                            AdminEditedDate = getForm.AdminEdittedDate,
+                            IsAdminEdited = form.AdminEditted,
+                            AdminEditedBy = form.AdminEdittedBy,
+                            AdminEditedDate = form.AdminEdittedDate,
 
-                            EnableResubmit = (getForm.FormStatus == Common.FormStatus.Approved || getForm.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatus.Draft || getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableResubmit = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.Acl.PowerUser)),
+                            EnableSubmitForApproval = (form.FormStatus == Common.FormStatus.Draft || form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
 
-                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatus.Approved),
+                            EnableDraftButton = (form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
+                            EnableSaveAdminChanges = User.IsInRole(Config.Acl.PowerUser) && (form.FormStatus == Common.FormStatus.Approved),
+                            EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Issd) && form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval)
 
                         };
 
@@ -574,7 +576,7 @@ namespace xDC_Web.Controllers
                             AdminEditedDate = getForm.AdminEdittedDate,
 
                             ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
-                            AdminEditPermission = User.IsInRole(Config.AclPowerUser)
+                            AdminEditPermission = User.IsInRole(Config.Acl.PowerUser)
                         };
 
                         return View("TradeSettlement/PartD/View", formObj);
@@ -604,43 +606,44 @@ namespace xDC_Web.Controllers
                 using (var db = new kashflowDBEntities())
                 {
                     var formIdParsed = Convert.ToInt32(formId);
-                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formIdParsed);
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formIdParsed);
                     
-                    if (getForm != null)
+                    if (form != null)
                     {
-                        if (TradeSettlementService.IsIamThisFormApprover(db, getForm.Id, User.Identity.Name))
+                        if (TradeSettlementService.IsIamThisFormApprover(db, form.Id, User.Identity.Name))
                         {
                             TempData["ErrorMessage"] = "You are this form Approver. Then you cannot edit it.";
                             return View("Error");
                         }
 
-                        if (TradeSettlementService.IsInPendingStatus(getForm.FormStatus))
+                        if (TradeSettlementService.IsInPendingStatus(form.FormStatus))
                         {
                             TempData["ErrorMessage"] = "Form is still in Pending Approval status.";
                             return View("Error");
                         }
 
-                        var formObj = new EditTradeSettlementFormViewModel()
+                        var formObj = new ViewTradeSettlementFormViewModel()
                         {
-                            Id = getForm.Id,
-                            FormStatus = getForm.FormStatus,
-                            SettlementDate = getForm.SettlementDate,
-                            Currency = getForm.Currency,
+                            Id = form.Id,
+                            FormStatus = form.FormStatus,
+                            SettlementDate = form.SettlementDate,
+                            Currency = form.Currency,
 
-                            PreparedBy = getForm.PreparedBy,
-                            PreparedDate = getForm.PreparedDate,
-                            ApprovedBy = getForm.ApprovedBy,
-                            ApprovedDate = getForm.ApprovedDate,
+                            PreparedBy = form.PreparedBy,
+                            PreparedDate = form.PreparedDate,
+                            ApprovedBy = form.ApprovedBy,
+                            ApprovedDate = form.ApprovedDate,
 
-                            IsAdminEdited = getForm.AdminEditted,
-                            AdminEditedBy = getForm.AdminEdittedBy,
-                            AdminEditedDate = getForm.AdminEdittedDate,
+                            IsAdminEdited = form.AdminEditted,
+                            AdminEditedBy = form.AdminEdittedBy,
+                            AdminEditedDate = form.AdminEdittedDate,
 
-                            EnableResubmit = (getForm.FormStatus == Common.FormStatus.Approved || getForm.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatus.Draft || getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableResubmit = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.Acl.PowerUser)),
+                            EnableSubmitForApproval = (form.FormStatus == Common.FormStatus.Draft || form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
 
-                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatus.Approved),
+                            EnableDraftButton = (form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
+                            EnableSaveAdminChanges = User.IsInRole(Config.Acl.PowerUser) && (form.FormStatus == Common.FormStatus.Approved),
+                            EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Issd) && form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval)
 
                         };
 
@@ -714,7 +717,7 @@ namespace xDC_Web.Controllers
                             AdminEditedDate = getForm.AdminEdittedDate,
 
                             ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
-                            AdminEditPermission = User.IsInRole(Config.AclPowerUser)
+                            AdminEditPermission = User.IsInRole(Config.Acl.PowerUser)
                         };
 
                         return View("TradeSettlement/PartE/View", formObj);
@@ -744,43 +747,44 @@ namespace xDC_Web.Controllers
                 using (var db = new kashflowDBEntities())
                 {
                     var formIdParsed = Convert.ToInt32(formId);
-                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formIdParsed);
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formIdParsed);
                     
-                    if (getForm != null)
+                    if (form != null)
                     {
-                        if (TradeSettlementService.IsIamThisFormApprover(db, getForm.Id, User.Identity.Name))
+                        if (TradeSettlementService.IsIamThisFormApprover(db, form.Id, User.Identity.Name))
                         {
                             TempData["ErrorMessage"] = "You are this form Approver. Then you cannot edit it.";
                             return View("Error");
                         }
 
-                        if (TradeSettlementService.IsInPendingStatus(getForm.FormStatus))
+                        if (TradeSettlementService.IsInPendingStatus(form.FormStatus))
                         {
                             TempData["ErrorMessage"] = "Form is still in Pending Approval status.";
                             return View("Error");
                         }
 
-                        var formObj = new EditTradeSettlementFormViewModel()
+                        var formObj = new ViewTradeSettlementFormViewModel()
                         {
-                            Id = getForm.Id,
-                            FormStatus = getForm.FormStatus,
-                            SettlementDate = getForm.SettlementDate,
-                            Currency = getForm.Currency,
+                            Id = form.Id,
+                            FormStatus = form.FormStatus,
+                            SettlementDate = form.SettlementDate,
+                            Currency = form.Currency,
 
-                            PreparedBy = getForm.PreparedBy,
-                            PreparedDate = getForm.PreparedDate,
-                            ApprovedBy = getForm.ApprovedBy,
-                            ApprovedDate = getForm.ApprovedDate,
+                            PreparedBy = form.PreparedBy,
+                            PreparedDate = form.PreparedDate,
+                            ApprovedBy = form.ApprovedBy,
+                            ApprovedDate = form.ApprovedDate,
 
-                            IsAdminEdited = getForm.AdminEditted,
-                            AdminEditedBy = getForm.AdminEdittedBy,
-                            AdminEditedDate = getForm.AdminEdittedDate,
+                            IsAdminEdited = form.AdminEditted,
+                            AdminEditedBy = form.AdminEdittedBy,
+                            AdminEditedDate = form.AdminEdittedDate,
 
-                            EnableResubmit = (getForm.FormStatus == Common.FormStatus.Approved || getForm.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatus.Draft || getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableResubmit = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.Acl.PowerUser)),
+                            EnableSubmitForApproval = (form.FormStatus == Common.FormStatus.Draft || form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
 
-                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatus.Approved),
+                            EnableDraftButton = (form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
+                            EnableSaveAdminChanges = User.IsInRole(Config.Acl.PowerUser) && (form.FormStatus == Common.FormStatus.Approved),
+                            EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Issd) && form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval)
 
                         };
 
@@ -854,7 +858,7 @@ namespace xDC_Web.Controllers
                             AdminEditedDate = getForm.AdminEdittedDate,
 
                             ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
-                            AdminEditPermission = User.IsInRole(Config.AclPowerUser)
+                            AdminEditPermission = User.IsInRole(Config.Acl.PowerUser)
                         };
 
                         return View("TradeSettlement/PartF/View", formObj);
@@ -884,43 +888,44 @@ namespace xDC_Web.Controllers
                 using (var db = new kashflowDBEntities())
                 {
                     var formIdParsed = Convert.ToInt32(formId);
-                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formIdParsed);
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formIdParsed);
 
-                    if (getForm != null)
+                    if (form != null)
                     {
-                        if (TradeSettlementService.IsIamThisFormApprover(db, getForm.Id, User.Identity.Name))
+                        if (TradeSettlementService.IsIamThisFormApprover(db, form.Id, User.Identity.Name))
                         {
                             TempData["ErrorMessage"] = "You are this form Approver. Then you cannot edit it.";
                             return View("Error");
                         }
 
-                        if (TradeSettlementService.IsInPendingStatus(getForm.FormStatus))
+                        if (TradeSettlementService.IsInPendingStatus(form.FormStatus))
                         {
                             TempData["ErrorMessage"] = "Form is still in Pending Approval status.";
                             return View("Error");
                         }
 
-                        var formObj = new EditTradeSettlementFormViewModel()
+                        var formObj = new ViewTradeSettlementFormViewModel()
                         {
-                            Id = getForm.Id,
-                            FormStatus = getForm.FormStatus,
-                            SettlementDate = getForm.SettlementDate,
-                            Currency = getForm.Currency,
+                            Id = form.Id,
+                            FormStatus = form.FormStatus,
+                            SettlementDate = form.SettlementDate,
+                            Currency = form.Currency,
 
-                            PreparedBy = getForm.PreparedBy,
-                            PreparedDate = getForm.PreparedDate,
-                            ApprovedBy = getForm.ApprovedBy,
-                            ApprovedDate = getForm.ApprovedDate,
+                            PreparedBy = form.PreparedBy,
+                            PreparedDate = form.PreparedDate,
+                            ApprovedBy = form.ApprovedBy,
+                            ApprovedDate = form.ApprovedDate,
 
-                            IsAdminEdited = getForm.AdminEditted,
-                            AdminEditedBy = getForm.AdminEdittedBy,
-                            AdminEditedDate = getForm.AdminEdittedDate,
+                            IsAdminEdited = form.AdminEditted,
+                            AdminEditedBy = form.AdminEdittedBy,
+                            AdminEditedDate = form.AdminEdittedDate,
 
-                            EnableResubmit = (getForm.FormStatus == Common.FormStatus.Approved || getForm.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatus.Draft || getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
+                            EnableResubmit = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.Acl.PowerUser)),
+                            EnableSubmitForApproval = (form.FormStatus == Common.FormStatus.Draft || form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
 
-                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.AclPowerUser)),
-                            EnableSaveAdminChanges = User.IsInRole(Config.AclPowerUser) && (getForm.FormStatus == Common.FormStatus.Approved),
+                            EnableDraftButton = (form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
+                            EnableSaveAdminChanges = User.IsInRole(Config.Acl.PowerUser) && (form.FormStatus == Common.FormStatus.Approved),
+                            EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Issd) && form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval)
 
                         };
 

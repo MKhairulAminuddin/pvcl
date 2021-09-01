@@ -60,8 +60,8 @@ namespace xDC_Web.Controllers.Api
                             IsMyFormRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatus.Rejected),
                             IsFormPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
                             IsFormOwner = (User.Identity.Name == item.PreparedBy),
-                            IsCanAdminEdit = (User.IsInRole(Config.AclPowerUser)),
-                            IsResubmitEnabled = (item.FormStatus == "Rejected" && User.IsInRole(Config.AclAmsd) && User.Identity.Name != item.ApprovedBy)
+                            IsCanAdminEdit = (User.IsInRole(Config.Acl.PowerUser)),
+                            IsResubmitEnabled = (item.FormStatus == "Rejected" && User.IsInRole(Config.Acl.Amsd) && User.Identity.Name != item.ApprovedBy)
                         });
                     }
 
@@ -474,7 +474,7 @@ namespace xDC_Web.Controllers.Api
                     }
 
                     var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == existingRecord.FormId);
-                    var isAdminEdit = User.IsInRole(Config.AclPowerUser);
+                    var isAdminEdit = User.IsInRole(Config.Acl.PowerUser);
                     if (isAdminEdit)
                     {
                         formHeader.AdminEditted = true;
@@ -513,7 +513,7 @@ namespace xDC_Web.Controllers.Api
                 newRecord.CreatedDate = DateTime.Now;
 
                 var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == newRecord.FormId);
-                var isAdminEdit = User.IsInRole(Config.AclPowerUser);
+                var isAdminEdit = User.IsInRole(Config.Acl.PowerUser);
                 if (isAdminEdit)
                 {
                     formHeader.AdminEditted = true;
@@ -543,7 +543,7 @@ namespace xDC_Web.Controllers.Api
                 var foundRecord = db.AMSD_InflowFund.First(x => x.Id == key);
 
                 var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == foundRecord.FormId);
-                var isAdminEdit = User.IsInRole(Config.AclPowerUser);
+                var isAdminEdit = User.IsInRole(Config.Acl.PowerUser);
                 if (isAdminEdit)
                 {
                     formHeader.AdminEditted = true;

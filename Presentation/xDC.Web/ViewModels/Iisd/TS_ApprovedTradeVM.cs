@@ -19,8 +19,21 @@ namespace xDC_Web.ViewModels.Iisd
         public int TotalFees { get; set; }
         public int TotalMtm { get; set; }
         public int TotalFx { get; set; }
-        public int TotalContribution { get; set; }
+        public int TotalCn { get; set; }
         public int TotalAltid { get; set; }
         public int TotalOthers { get; set; }
+
+        public int? FormIdEquity { get; set; }
+        public int? FormIdBond { get; set; }
+        public int? FormIdCp { get; set; }
+        public int? FormIdNotesPapers { get; set; }
+        public int? FormIdRepo { get; set; }
+        public int? FormIdCoupon { get; set; }
+        public int? FormIdFees { get; set; }
+        public int? FormIdMtm { get; set; }
+        public int? FormIdFx { get; set; }
+        public int? FormIdCn { get; set; }
+        public int? FormIdAltid { get; set; }
+        public int? FormIdOthers { get; set; }
     }
 }

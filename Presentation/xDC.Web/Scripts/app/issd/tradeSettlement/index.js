@@ -288,7 +288,7 @@
                     case "Part A (Equity)":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartA/New";
                         return;
-                    case "Part B (Bond, CP, Notes and Papers, REPO, Coupon)":
+                    case "Part B (Bond, CP, Notes and Papers, Coupon)":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartB/New";
                         return;
                     case "Part C (MTM, FX)":

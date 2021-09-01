@@ -226,7 +226,7 @@
             function (e) {
                 tradeSettlement.saveAllGrids($repoGrid);
 
-                if (moment().subtract(1, "days").isAfter($settlementDateBox.option("value"))) {
+                if (tradeSettlement.val_isTMinus1($settlementDateBox.option("value"))) {
                     alert("T-n only available for viewing..");
                 }
                 else {

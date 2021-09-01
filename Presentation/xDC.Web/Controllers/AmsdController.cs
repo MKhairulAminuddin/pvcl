@@ -25,7 +25,7 @@ namespace xDC_Web.Controllers
                 using (var db = new kashflowDBEntities())
                 {
                     var isApprover = db.Config_Approver.Any(x => x.Username == User.Identity.Name);
-                    var isAmsdUser = User.IsInRole(Config.AclAmsd) || User.IsInRole(Config.AclAdministrator);
+                    var isAmsdUser = User.IsInRole(Config.Acl.Amsd) || User.IsInRole(Config.Acl.Administrator);
 
                     model.isAllowedToCreateForm = (!isApprover && isAmsdUser);
 
@@ -50,7 +50,7 @@ namespace xDC_Web.Controllers
                 {
                     // only AMSD user can create new form
                     var isApprover = db.Config_Approver.Any(x => x.Username == User.Identity.Name);
-                    if (!User.IsInRole(Config.AclAmsd) && !isApprover)
+                    if (!User.IsInRole(Config.Acl.Amsd) && !isApprover)
                     {
                         TempData["ErrorMessage"] = "You are not authorized to create new Inflow Fund form...";
                         return View("Error");
@@ -86,7 +86,7 @@ namespace xDC_Web.Controllers
 
                     if (getForm != null)
                     {
-                        if (!User.IsInRole(Config.AclPowerUser) &&
+                        if (!User.IsInRole(Config.Acl.PowerUser) &&
                             (getForm.FormStatus == Common.FormStatus.PendingApproval || getForm.FormStatus == Common.FormStatus.Approved))
                         {
                             TempData["ErrorMessage"] = "Hey! You cannot amend form that in Pending Approval or Approved status!";
@@ -116,7 +116,7 @@ namespace xDC_Web.Controllers
                             AdminEditedDate = getForm.AdminEdittedDate,
 
                             ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
-                            AdminEditPermission = User.IsInRole(Config.AclPowerUser),
+                            AdminEditPermission = User.IsInRole(Config.Acl.PowerUser),
 
                             ApprovalOrRejectionNotes = getFormWorkflow?.WorkflowNotes
 
@@ -171,7 +171,7 @@ namespace xDC_Web.Controllers
                             AdminEditedDate = getForm.AdminEdittedDate,
 
                             ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
-                            AdminEditPermission = User.IsInRole(Config.AclPowerUser),
+                            AdminEditPermission = User.IsInRole(Config.Acl.PowerUser),
 
                             IsApprovedOrRejected = isApprovedOrRejected,
                             ApprovalOrRejectionNotes = getFormWorkflow?.WorkflowNotes

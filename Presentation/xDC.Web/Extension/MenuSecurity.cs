@@ -15,7 +15,7 @@ namespace xDC_Web.Extension
             get
             {
                 if (IsAuthenticated() &&
-                    (HttpContext.Current.User.IsInRole(Config.AclAdministrator))
+                    (HttpContext.Current.User.IsInRole(Config.Acl.Administrator))
                 )
                 {
                     return true;
@@ -33,7 +33,7 @@ namespace xDC_Web.Extension
             get
             {
                 if (IsAuthenticated() &&
-                    (HttpContext.Current.User.IsInRole(Config.AclAdministrator) || HttpContext.Current.User.IsInRole(Config.AclPowerUser)))
+                    (HttpContext.Current.User.IsInRole(Config.Acl.Administrator) || HttpContext.Current.User.IsInRole(Config.Acl.PowerUser)))
                 {
                     return true;
                 }
@@ -49,7 +49,7 @@ namespace xDC_Web.Extension
             get
             {
                 if (IsAuthenticated() &&
-                    (HttpContext.Current.User.IsInRole(Config.AclAdministrator) || HttpContext.Current.User.IsInRole(Config.AclPowerUser) || HttpContext.Current.User.IsInRole(Config.AclAmsd)))
+                    (HttpContext.Current.User.IsInRole(Config.Acl.Administrator) || HttpContext.Current.User.IsInRole(Config.Acl.PowerUser) || HttpContext.Current.User.IsInRole(Config.Acl.Amsd)))
                 {
                     return true;
                 }
@@ -65,7 +65,7 @@ namespace xDC_Web.Extension
             get
             {
                 if (IsAuthenticated() &&
-                    (HttpContext.Current.User.IsInRole(Config.AclAdministrator) || HttpContext.Current.User.IsInRole(Config.AclPowerUser) || HttpContext.Current.User.IsInRole(Config.AclFid)))
+                    (HttpContext.Current.User.IsInRole(Config.Acl.Administrator) || HttpContext.Current.User.IsInRole(Config.Acl.PowerUser) || HttpContext.Current.User.IsInRole(Config.Acl.Fid)))
                 {
                     return true;
                 }
@@ -81,7 +81,7 @@ namespace xDC_Web.Extension
             get
             {
                 if (IsAuthenticated() &&
-                    (HttpContext.Current.User.IsInRole(Config.AclAdministrator) || HttpContext.Current.User.IsInRole(Config.AclPowerUser) || HttpContext.Current.User.IsInRole(Config.AclIssd)))
+                    (HttpContext.Current.User.IsInRole(Config.Acl.Administrator) || HttpContext.Current.User.IsInRole(Config.Acl.PowerUser) || HttpContext.Current.User.IsInRole(Config.Acl.Issd)))
                 {
                     return true;
                 }
