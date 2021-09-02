@@ -27,17 +27,13 @@ namespace xDC.Services
             }
         }
 
-        public void PushNotificationForApproval(string formApprover, int formId, string formSubmittedBy, string formType)
+        public void NotifyApprovalRequest(string formApprover, int formId, string formSubmittedBy, string formType)
         {
             var notificationObj = new App_Notification()
             {
                 Title = "Request for approval",
-                ShortMessage = string.Format("Please approve " + " <a href='" + Common.FormUrlViewMapping(formType) + formId + "'>Click here to open it</a>"),
-                Message = string.Format(
-                    formType + 
-                    " form was submitted by " + formSubmittedBy +
-                    " and is now pending your approval. You can approve it from here " +
-                    " <a href='" + Common.FormUrlViewMapping(formType) + formId + "'>Click here to open it</a>"),
+                ShortMessage = $"<a href='{Common.PushNotification_FormUrlMap(formType)}{formId}'>{formType}</a> form pending your approval",
+                Message = $"{formType} form was submitted by {formSubmittedBy} and is now pending your approval. Please approve it <a href='{Common.PushNotification_FormUrlMap(formType)}{formId}'>here</a>.",
                 NotificationIconClass = "fa fa-exclamation",
                 NotificationType = "bg-aqua",
                 CreatedOn = DateTime.Now,
@@ -47,29 +43,25 @@ namespace xDC.Services
             PushNotification(notificationObj);
         }
 
-        public void PushNotificationForApprovalResult(string formPreparer, int formId, string formApprovalBy, string formType, bool isApprove)
+        public void NotifyApprovalResult(string formPreparer, int formId, string formApprovalBy, string formType, string formStatus)
         {
-            var approvalResult = (isApprove) ? "<b>Approved</b>" : "<b>Rejected</b>";
+            var approvalResult = (formStatus == Common.FormStatus.Approved) ? "<b>Approved</b>" : "<b>Rejected</b>";
 
             var notificationObj = new App_Notification()
             {
                 Title = "Approval Result",
-                ShortMessage = string.Format("Your submission have been " + approvalResult + " <a href='" +
-                                             Common.FormUrlViewMapping(formType) + formId +
-                                             "'>Click here to open it</a>"),
-                Message = string.Format(
-                    formType +
-                    " form was " + approvalResult + " by " + formApprovalBy + " " +
-                    " <a href='" + Common.FormUrlViewMapping(formType) + formId +
-                    "'>Click here to open it</a>"),
+                ShortMessage = $"Your <a href='{Common.PushNotification_FormUrlMap(formType)}{formId}'>{formType}</a> form has been {approvalResult}",
+                Message = $"Your submitted <a href='{Common.PushNotification_FormUrlMap(formType)}{formId}'>{formType}</a> form has been approved by {formApprovalBy}",
                 NotificationIconClass = "fa fa-exclamation",
-                NotificationType = (isApprove) ? "bg-green" : "bg-red",
+                NotificationType = (formStatus == Common.FormStatus.Approved) ? "bg-green" : "bg-red",
                 CreatedOn = DateTime.Now,
                 UserId = formPreparer
             };
 
             PushNotification(notificationObj);
         }
+
+
 
         /// <summary>
         /// Send notification to a Approver for Submitted Form Approval
@@ -87,25 +79,25 @@ namespace xDC.Services
 
                     if (isNotificationEnabledParsed)
                     {
-                        var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+                        var form = db.Form_Header.FirstOrDefault(x => x.Id == formId);
 
                         var notificationObj = new App_Notification()
                         {
                             Title = "Pending your approval",
-                            ShortMessage = string.Format("Submitted form " + formHeader.FormType + " by " + formHeader.PreparedBy +
+                            ShortMessage = string.Format("Submitted form " + form.FormType + " by " + form.PreparedBy +
                                                          "form is pending your approval. <a href='../amsd/InflowFundsFormStatus?id=" +
                                                          formId + "'>Click here to open it</a>"),
-                            Message = string.Format("Submitted form " + formHeader.FormType + " by " + formHeader.PreparedBy +
+                            Message = string.Format("Submitted form " + form.FormType + " by " + form.PreparedBy +
                                                     "form is pending your approval. <a href='../amsd/InflowFundsFormStatus?id=" +
                                                     formId + "'>Click here to open it</a>"),
                             NotificationIconClass = "fa fa-exclamation",
                             NotificationType = "bg-aqua",
                             CreatedOn = DateTime.Now,
-                            UserId = formHeader.ApprovedBy
+                            UserId = form.ApprovedBy
                         };
 
                         PushNotification(notificationObj);
-                        new MailService().SendSubmitForApprovalEmail(formId);
+                        new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, "some note here..");
                     }
                     else
                     {
@@ -137,25 +129,25 @@ namespace xDC.Services
 
                     if (isNotificationEnabledParsed)
                     {
-                        var formHeader = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+                        var form = db.Form_Header.FirstOrDefault(x => x.Id == formId);
 
                         var notificationObj = new App_Notification()
                         {
-                            Title = "Form #" + formId + " " + formHeader.FormStatus,
+                            Title = "Form #" + formId + " " + form.FormStatus,
                             ShortMessage = string.Format("Submitted form #" + formId +
-                                                         "has been " + formHeader.FormStatus + ". <a href='../amsd/InflowFundsFormStatus?id=" +
+                                                         "has been " + form.FormStatus + ". <a href='../amsd/InflowFundsFormStatus?id=" +
                                                          formId + "'>Click here to open the form</a>"),
                             Message = string.Format("Submitted form #" + formId +
-                                                    "has been " + formHeader.FormStatus + ". <a href='../amsd/InflowFundsFormStatus?id=" +
+                                                    "has been " + form.FormStatus + ". <a href='../amsd/InflowFundsFormStatus?id=" +
                                                     formId + "'>Click here to open the form</a>"),
-                            NotificationIconClass = (formHeader.FormStatus == "Approved") ? "fa fa-check-circle" : "fa fa-times-circle",
-                            NotificationType = (formHeader.FormStatus == "Approved") ? "bg-green" : "bg-red",
+                            NotificationIconClass = (form.FormStatus == "Approved") ? "fa fa-check-circle" : "fa fa-times-circle",
+                            NotificationType = (form.FormStatus == "Approved") ? "bg-green" : "bg-red",
                             CreatedOn = DateTime.Now,
-                            UserId = formHeader.PreparedBy
+                            UserId = form.PreparedBy
                         };
 
                         PushNotification(notificationObj);
-                        new MailService().SendApprovalStatusEmail(formId);
+                        new MailService().SendApprovalStatus(form.Id, form.FormType, form.FormStatus, form.PreparedBy, "some note here...");
                     }
                     else
                     {

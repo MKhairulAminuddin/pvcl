@@ -373,7 +373,7 @@ namespace xDC_Web.Controllers.Api
         [HttpPost]
         [Route("InflowFundsFormApproval")]
         [Authorize(Roles = "AMSD")]
-        public HttpResponseMessage InflowFundsFormApproval([FromBody] ApprovalInflowFundsModel inputs)
+        public HttpResponseMessage InflowFundsFormApproval([FromBody] FormApprovalModel inputs)
         {
             try
             {
@@ -395,7 +395,7 @@ namespace xDC_Web.Controllers.Api
 
                             new NotificationService().PushApprovalStatusNotification(formId);
                             new NotificationService().PushInflowFundAfterCutOffSubmissionNotification(formId);
-                            new WorkflowService().ApprovalFeedbackWorkflow(formId, inputs.ApprovalStatus, inputs.ApprovalNote, form.FormType);
+                            new WorkflowService().ApprovalFeedbackWorkflow(form.Id, form.FormStatus, inputs.ApprovalNote, form.FormType);
 
                             return Request.CreateResponse(HttpStatusCode.Accepted, formId);
                         }

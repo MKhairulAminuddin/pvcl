@@ -1037,13 +1037,13 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Route("TradeSettlement/Approval")]
-        public HttpResponseMessage ApprovalTradeSettlement([FromBody] ApprovalInflowFundsModel inputs)
+        public HttpResponseMessage ApprovalTradeSettlement([FromBody] FormApprovalModel input)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var formId = Convert.ToInt32(inputs.FormId);
+                    var formId = Convert.ToInt32(input.FormId);
                     var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
 
                     if (form != null)
@@ -1051,14 +1051,13 @@ namespace xDC_Web.Controllers.Api
                         if (form.ApprovedBy == User.Identity.Name)
                         {
                             form.ApprovedDate = DateTime.Now;
-                            form.FormStatus = (inputs.ApprovalStatus)
+                            form.FormStatus = (input.ApprovalStatus)
                                 ? Common.FormStatus.Approved
                                 : Common.FormStatus.Rejected;
 
                             db.SaveChanges();
 
-                            TradeSettlementService.NotifyPreparer(form.PreparedBy, form.Id, User.Identity.Name, form.FormType, inputs.ApprovalStatus,
-                                inputs.ApprovalNote);
+                            TradeSettlementService.NotifyPreparer(form.Id, form.FormType, form.FormStatus, form.PreparedBy, form.ApprovedBy, input.ApprovalNote);
 
                             return Request.CreateResponse(HttpStatusCode.Accepted, formId);
                         }

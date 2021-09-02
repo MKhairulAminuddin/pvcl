@@ -31,5 +31,6 @@ namespace xDC.Infrastructure.Application
         public string Notes { get; set; }
         public string ModifiedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
+        public Nullable<decimal> Principal { get; set; }
     }
 }

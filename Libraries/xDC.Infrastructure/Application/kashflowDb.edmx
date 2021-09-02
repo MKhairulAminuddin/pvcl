@@ -231,6 +231,7 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="Notes" Type="nvarchar" MaxLength="50" />
           <Property Name="ModifiedBy" Type="nvarchar" MaxLength="150" />
           <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="Principal" Type="decimal" Precision="18" Scale="4" />
         </EntityType>
         <EntityType Name="FID_Treasury_MMI">
           <Key>
@@ -902,6 +903,7 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="Notes" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+          <Property Name="Principal" Type="Decimal" Precision="18" Scale="4" />
         </EntityType>
         <EntityType Name="FID_Treasury_MMI">
           <Key>
@@ -1299,6 +1301,7 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <EntitySetMapping Name="FID_Treasury_Deposit">
             <EntityTypeMapping TypeName="kashflowDbModel.FID_Treasury_Deposit">
               <MappingFragment StoreEntitySet="FID_Treasury_Deposit">
+                <ScalarProperty Name="Principal" ColumnName="Principal" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="Notes" ColumnName="Notes" />

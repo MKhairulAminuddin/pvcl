@@ -286,7 +286,7 @@
     <Content Include="Scripts\app\fid\tenAmCutOff\fcaTagging.js" />
     <Content Include="Scripts\app\fid\tenAmCutOff\fcaTaggingEdit.js" />
     <Content Include="Scripts\app\fid\treasury\edit.js" />
-    <Content Include="Scripts\app\fid\treasury\formula.js" />
+    <Content Include="Scripts\app\fid\treasury\treasury.js" />
     <Content Include="Scripts\app\fid\treasury\index.js" />
     <Content Include="Scripts\app\fid\treasury\new.js" />
     <Content Include="Scripts\app\fid\treasury\view.js" />

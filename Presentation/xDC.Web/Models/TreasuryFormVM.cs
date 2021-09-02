@@ -36,6 +36,7 @@ namespace xDC_Web.Models
         public DateTime ValueDate { get; set; }
         public DateTime MaturityDate { get; set; }
         public int Tenor { get; set; }
+        public decimal Principal { get; set; }
         public decimal RatePercent { get; set; }
         public decimal IntProfitReceivable { get; set; }
         public decimal PrincipalIntProfitReceivable { get; set; }

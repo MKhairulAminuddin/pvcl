@@ -221,7 +221,9 @@
     @RenderSection("scripts", required: false)
 
     <script>
-        
+
+        window.currentUser = "@HttpContext.Current.User.Identity.Name";
+
         $(function () {
             DevExpress.setTemplateEngine("underscore");
 

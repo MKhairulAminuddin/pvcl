@@ -11,7 +11,7 @@ namespace xDC_Web.Models
         public string Approver { get; set; }
     }
 
-    public class ApprovalInflowFundsModel
+    public class FormApprovalModel
     {
         public int Id { get; set; }
         public int FormId { get; set; }

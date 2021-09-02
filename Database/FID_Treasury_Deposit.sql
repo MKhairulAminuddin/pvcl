@@ -9,6 +9,7 @@
     [ValueDate] DATE, 
     [MaturityDate] DATE, 
     [Tenor] INT,
+    [Principal] DECIMAL(18,4),
     [RatePercent] DECIMAL(18,4),
     [IntProfitReceivable] DECIMAL(18,4),
     [PrincipalIntProfitReceivable] DECIMAL(18,4),

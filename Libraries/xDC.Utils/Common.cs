@@ -203,25 +203,28 @@ namespace xDC.Utils
         /// woi
         /// </param>
         /// <returns></returns>
-        public static string FormUrlViewMapping(string formType)
+        public static string PushNotification_FormUrlMap(string formType)
         {
             switch (formType)
             {
-                case "Inflow Fund":
+                case FormType.AMSD_IF:
                     return "../amsd/InflowFundsFormStatus?id=";
 
-                case "Trade Settlement (Part A)":
+                case FormType.ISSD_TS_A:
                     return "../issd/TradeSettlement/PartA/View/";
-                case "Trade Settlement (Part B)":
+                case FormType.ISSD_TS_B:
                     return "../issd/TradeSettlement/PartB/View/";
-                case "Trade Settlement (Part C)":
+                case FormType.ISSD_TS_C:
                     return "../issd/TradeSettlement/PartC/View/";
-                case "Trade Settlement (Part D)":
+                case FormType.ISSD_TS_D:
                     return "../issd/TradeSettlement/PartD/View/";
-                case "Trade Settlement (Part E)":
+                case FormType.ISSD_TS_E:
                     return "../issd/TradeSettlement/PartE/View/";
-                case "Trade Settlement (Part F)":
+                case FormType.ISSD_TS_F:
                     return "../issd/TradeSettlement/PartF/View/";
+
+                case FormType.FID_TREASURY:
+                    return "../fid/Treasury/View/";
             }
             return String.Empty;
         }
@@ -233,25 +236,28 @@ namespace xDC.Utils
         /// woi
         /// </param>
         /// <returns></returns>
-        public static string FormUrlViewMappingForEmailNotification(string formType)
+        public static string Email_FormUrlMap(string formType)
         {
             switch (formType)
             {
-                case "Inflow Fund":
+                case FormType.AMSD_IF:
                     return "/amsd/InflowFundsFormStatus?id=";
 
-                case "Trade Settlement (Part A)":
+                case FormType.ISSD_TS_A:
                     return "/issd/TradeSettlement/PartA/View/";
-                case "Trade Settlement (Part B)":
+                case FormType.ISSD_TS_B:
                     return "/issd/TradeSettlement/PartB/View/";
-                case "Trade Settlement (Part C)":
+                case FormType.ISSD_TS_C:
                     return "/issd/TradeSettlement/PartC/View/";
-                case "Trade Settlement (Part D)":
+                case FormType.ISSD_TS_D:
                     return "/issd/TradeSettlement/PartD/View/";
-                case "Trade Settlement (Part E)":
+                case FormType.ISSD_TS_E:
                     return "/issd/TradeSettlement/PartE/View/";
-                case "Trade Settlement (Part F)":
+                case FormType.ISSD_TS_F:
                     return "/issd/TradeSettlement/PartF/View/";
+
+                case FormType.FID_TREASURY:
+                    return "/fid/Treasury/View/";
             }
             return String.Empty;
         }

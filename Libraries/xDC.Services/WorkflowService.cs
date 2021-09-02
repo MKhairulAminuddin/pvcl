@@ -71,7 +71,7 @@ namespace xDC.Services
             }
         }
 
-        public void ApprovalFeedbackWorkflow(int formId, bool isApproved,string notes, string formType)
+        public void ApprovalFeedbackWorkflow(int formId, string formStatus,string notes, string formType)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace xDC.Services
                         StartDate = DateTime.Now,
                         RequestTo = currentFormWorkflow.RequestBy,
                         EndDate = DateTime.Now,
-                        WorkflowStatus = isApproved ? Common.FormStatus.Approved : Common.FormStatus.Rejected,
+                        WorkflowStatus = (formStatus == Common.FormStatus.Approved) ? Common.FormStatus.Approved : Common.FormStatus.Rejected,
                         WorkflowNotes = notes
                     };
 

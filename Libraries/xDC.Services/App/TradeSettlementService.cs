@@ -28,17 +28,17 @@ namespace xDC.Services.App
 
         public static void NotifyApprover(string approverUsername, int formId, string submittedBy, string formType, string notes)
         {
-            new NotificationService().PushNotificationForApproval(approverUsername, formId, submittedBy, formType);
-            new MailService().SubmitForApprovalTradeSettlement(formId);
+            new NotificationService().NotifyApprovalRequest(approverUsername, formId, submittedBy, formType);
+            new MailService().SubmitForApproval(formId, formType, approverUsername, notes);
             new WorkflowService().SubmitForApprovalWorkflow(formId, formType, notes);
         }
 
-        public static void NotifyPreparer(string preparer, int formId, string approvedBy, string formType, bool isApproved, string approvalNotes)
+        public static void NotifyPreparer(int formId, string formType, string formStatus, string preparer, string approvedBy, string approvalNotes)
         {
-            new NotificationService().PushNotificationForApprovalResult(preparer, formId, approvedBy, formType, isApproved);
-            new MailService().ApprovalStatusTradeSettlement(formId);
+            new NotificationService().NotifyApprovalResult(preparer, formId, approvedBy, formType, formStatus);
+            new MailService().SendApprovalStatus(formId, formType, formStatus, preparer, approvalNotes);
             new MailService().ContributionCreditedTradeSettlement(formId);
-            new WorkflowService().ApprovalFeedbackWorkflow(formId, isApproved, approvalNotes, formType);
+            new WorkflowService().ApprovalFeedbackWorkflow(formId, formStatus, approvalNotes, formType);
         }
 
         public static List<Form_Workflow> GetWorkflow(kashflowDBEntities db, int formId)

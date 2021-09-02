@@ -39,5 +39,11 @@ namespace xDC.Services.App
             var counterPartyList = db.EDW_FID_List.Where(x => x.Type == "COUNTERPARTY").ToList();
             return counterPartyList;
         }
+
+        public static decimal Formula_OutflowProceeds()
+        {
+
+            return 0;
+        }
     }
 }

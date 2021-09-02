@@ -482,14 +482,67 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpGet]
-        [Route("Treasury/inflow/deposit")]
-        public HttpResponseMessage Treasury_Inflow_Deposit(DataSourceLoadOptions loadOptions)
+        [Route("Treasury/EdwMaturity/AvailableMaturity")]
+        public HttpResponseMessage Treasury_EdwAvailableMaturity(DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = FidService.List_Issuer(db);
+                    var result = db.EDW_Maturity.Select(x => new
+                    {
+                        day = x.Value_Date.Value.Day,
+                        month = x.Value_Date.Value.Month,
+                        date = x.Value_Date.Value
+                    }).Distinct().ToList();
+
+                    return Request.CreateResponse(HttpStatusCode.OK, result);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("Treasury/EdwMaturity/AvailableMaturity/{tradeDateEpoch}")]
+        public HttpResponseMessage Treasury_EdwAvailableMaturityCurrency(long tradeDateEpoch, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var tradeDate = Common.ConvertEpochToDateTime(tradeDateEpoch);
+                    tradeDate = tradeDate.Value.Date;
+
+                    var result = db.EDW_Maturity.Where(x => DbFunctions.TruncateTime(x.Value_Date.Value) == DbFunctions.TruncateTime(tradeDate)).Select(x => x.currency).Distinct().ToList();
+
+                    return Request.CreateResponse(HttpStatusCode.OK, result);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+
+        [HttpGet]
+        [Route("Treasury/inflow/deposit/{formId}")]
+        public HttpResponseMessage Treasury_Inflow_Deposit(long formId, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.FID_Treasury_Deposit
+                        .Where(x => x.CashflowType == Common.Cashflow.Inflow && x.FormId == formId)
+                        .ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -501,6 +554,74 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [HttpGet]
+        [Route("Treasury/inflow/mmi/{formId}")]
+        public HttpResponseMessage Treasury_Inflow_Mmi(long formId, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.FID_Treasury_MMI
+                        .Where(x => x.CashflowType == Common.Cashflow.Inflow && x.FormId == formId)
+                        .ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("Treasury/outflow/deposit/{formId}")]
+        public HttpResponseMessage Treasury_Outflow_Deposit(long formId, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.FID_Treasury_Deposit
+                        .Where(x => x.CashflowType == Common.Cashflow.Outflow && x.FormId == formId)
+                        .ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("Treasury/outflow/mmi/{formId}")]
+        public HttpResponseMessage Treasury_Outflow_Mmi(long formId, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.FID_Treasury_MMI
+                        .Where(x => x.CashflowType == Common.Cashflow.Outflow && x.FormId == formId)
+                        .ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+
+        // form area
         [HttpPost]
         [Route("Treasury/New")]
         public HttpResponseMessage Treasury_FormNew([FromBody] TreasuryFormVM input)
@@ -539,6 +660,7 @@ namespace xDC_Web.Controllers.Api
                                 Bank = item.Bank,
                                 ValueDate = item.ValueDate,
                                 MaturityDate = item.MaturityDate,
+                                Principal = item.Principal,
                                 Tenor = item.Tenor,
                                 RatePercent = item.RatePercent,
                                 IntProfitReceivable = item.IntProfitReceivable,
@@ -560,7 +682,7 @@ namespace xDC_Web.Controllers.Api
                     {
                         foreach (var item in input.OutflowDeposit)
                         {
-                            inflowDeposit.Add(new FID_Treasury_Deposit
+                            outflowDeposit.Add(new FID_Treasury_Deposit
                             {
                                 FormId = form.Id,
                                 CashflowType = Common.Cashflow.Outflow,
@@ -569,6 +691,7 @@ namespace xDC_Web.Controllers.Api
                                 ValueDate = item.ValueDate,
                                 MaturityDate = item.MaturityDate,
                                 Tenor = item.Tenor,
+                                Principal = item.Principal,
                                 RatePercent = item.RatePercent,
                                 IntProfitReceivable = item.IntProfitReceivable,
                                 PrincipalIntProfitReceivable = item.PrincipalIntProfitReceivable,
@@ -652,6 +775,8 @@ namespace xDC_Web.Controllers.Api
                     if (form.FormStatus == Common.FormStatus.PendingApproval)
                     {
                         new WorkflowService().SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
+                        new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
+                        new NotificationService().NotifyApprovalRequest(form.ApprovedBy, form.Id, form.PreparedBy, form.FormType);
                     }
                     
                     return Request.CreateResponse(HttpStatusCode.Created, form.Id);
@@ -665,22 +790,507 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
-        [HttpGet]
-        [Route("Treasury/EdwMaturity/AvailableMaturity")]
-        public HttpResponseMessage Treasury_EdwAvailableMaturity(DataSourceLoadOptions loadOptions)
+        [HttpPost]
+        [Route("Treasury/Edit")]
+        public HttpResponseMessage Treasury_FormEdit([FromBody] TreasuryFormVM input)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.EDW_Maturity.Select(x => new
+                    var form = db.FID_Treasury.FirstOrDefault(x => x.Id == input.Id);
+
+                    if (form == null)
                     {
-                        day = x.Value_Date.Value.Day,
-                        month = x.Value_Date.Value.Month,
-                        date = x.Value_Date.Value
-                    }).Distinct().ToList();
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not found!");
+                    }
+
+                    /*if (User.IsInRole(Config.Acl.PowerUser))
+                    {
+                        form.AdminEditted = true;
+                        form.AdminEdittedBy = User.Identity.Name;
+                        form.AdminEdittedDate = DateTime.Now;
+                    }*/
+
+                    if (string.IsNullOrEmpty(input.Approver))
+                    {
+                        form.PreparedBy = User.Identity.Name;
+                        form.PreparedDate = DateTime.Now;
+                    }
+
+                    if (input.Approver != null)
+                    {
+                        form.ApprovedBy = input.Approver;
+                        form.ApprovedDate = null; // empty the date as this is new submission
+                        form.FormStatus = Common.FormStatus.PendingApproval;
+
+                        new WorkflowService().SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
+                        new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
+                        new NotificationService().NotifyApprovalRequest(form.ApprovedBy, form.Id, form.PreparedBy, form.FormType);
+                    }
                     
-                    return Request.CreateResponse(HttpStatusCode.OK, result);
+                    if (input.InflowDeposit.Any())
+                    {
+                        var inflowDepositInGrid = input.InflowDeposit;
+                        var existingInflowDeposit = db.FID_Treasury_Deposit.Where(x =>
+                            x.FormId == form.Id && x.CashflowType == Common.Cashflow.Inflow);
+
+                        // delete from existing
+                        var itemExistInGrid =
+                            inflowDepositInGrid.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                        var removedItems =
+                            existingInflowDeposit.Where(x => !itemExistInGrid.Contains(x.Id));
+                        if (removedItems.Any())
+                        {
+                            db.FID_Treasury_Deposit.RemoveRange(removedItems);
+                        }
+
+                        foreach (var item in inflowDepositInGrid)
+                        {
+                            if (item.Id != 0)
+                            {
+                                // edit existing
+                                var foundItem = existingInflowDeposit.FirstOrDefault(x => x.Id == item.Id);
+                                if (foundItem != null)
+                                {
+                                    if (foundItem.AssetType != item.AssetType)
+                                    {
+                                        foundItem.AssetType = item.AssetType;
+                                    }
+                                    if (foundItem.Dealer != item.Dealer)
+                                    {
+                                        foundItem.Dealer = item.Dealer;
+                                    }
+                                    if (foundItem.Bank != item.Bank)
+                                    {
+                                        foundItem.Bank = item.Bank;
+                                    }
+                                    if (foundItem.ValueDate != item.ValueDate)
+                                    {
+                                        foundItem.ValueDate = item.ValueDate;
+                                    }
+                                    if (foundItem.MaturityDate != item.MaturityDate)
+                                    {
+                                        foundItem.MaturityDate = item.MaturityDate;
+                                    }
+                                    if (foundItem.Tenor != item.Tenor)
+                                    {
+                                        foundItem.Tenor = item.Tenor;
+                                    }
+                                    if (foundItem.Principal != item.Principal)
+                                    {
+                                        foundItem.Principal = item.Principal;
+                                    }
+                                    if (foundItem.RatePercent != item.RatePercent)
+                                    {
+                                        foundItem.RatePercent = item.RatePercent;
+                                    }
+                                    if (foundItem.IntProfitReceivable != item.IntProfitReceivable)
+                                    {
+                                        foundItem.IntProfitReceivable = item.IntProfitReceivable;
+                                    }
+                                    if (foundItem.PrincipalIntProfitReceivable != item.PrincipalIntProfitReceivable)
+                                    {
+                                        foundItem.PrincipalIntProfitReceivable = item.PrincipalIntProfitReceivable;
+                                    }
+                                    if (foundItem.AssetType != item.AssetType)
+                                    {
+                                        foundItem.AssetType = item.AssetType;
+                                    }
+                                    if (foundItem.RepoTag != item.RepoTag)
+                                    {
+                                        foundItem.RepoTag = item.RepoTag;
+                                    }
+                                    if (foundItem.ContactPerson != item.ContactPerson)
+                                    {
+                                        foundItem.ContactPerson = item.ContactPerson;
+                                    }
+                                    if (foundItem.Notes != item.Notes)
+                                    {
+                                        foundItem.Notes = item.Notes;
+                                    }
+
+                                    foundItem.ModifiedBy = User.Identity.Name;
+                                    foundItem.ModifiedDate = DateTime.Now;
+                                }
+                            }
+                            else
+                            {
+                                // add new
+                                db.FID_Treasury_Deposit.Add(new FID_Treasury_Deposit
+                                {
+                                    FormId = form.Id,
+                                    CashflowType = Common.Cashflow.Inflow,
+                                    Dealer = item.Dealer,
+                                    Bank = item.Bank,
+                                    ValueDate = item.ValueDate,
+                                    MaturityDate = item.MaturityDate,
+                                    Tenor = item.Tenor,
+                                    Principal = item.Principal,
+                                    RatePercent = item.RatePercent,
+                                    IntProfitReceivable = item.IntProfitReceivable,
+                                    PrincipalIntProfitReceivable = item.PrincipalIntProfitReceivable,
+                                    AssetType = item.AssetType,
+                                    RepoTag = item.RepoTag,
+                                    ContactPerson = item.ContactPerson,
+                                    Notes = item.Notes,
+                                    ModifiedBy = User.Identity.Name,
+                                    ModifiedDate = DateTime.Now
+                                });
+                            }
+                        }
+                    }
+                    
+                    if (input.OutflowDeposit.Any())
+                    {
+                        var outflowDepositInGrid = input.OutflowDeposit;
+                        var existingOutflowDeposit = db.FID_Treasury_Deposit.Where(x =>
+                            x.FormId == form.Id && x.CashflowType == Common.Cashflow.Outflow);
+
+                        // delete from existing
+                        var itemExistInGrid =
+                            outflowDepositInGrid.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                        var removedItems =
+                            existingOutflowDeposit.Where(x => !itemExistInGrid.Contains(x.Id));
+                        if (removedItems.Any())
+                        {
+                            db.FID_Treasury_Deposit.RemoveRange(removedItems);
+                        }
+
+                        foreach (var item in outflowDepositInGrid)
+                        {
+                            if (item.Id != 0)
+                            {
+                                // edit existing
+                                var foundItem = existingOutflowDeposit.FirstOrDefault(x => x.Id == item.Id);
+                                if (foundItem != null)
+                                {
+                                    if (foundItem.AssetType != item.AssetType)
+                                    {
+                                        foundItem.AssetType = item.AssetType;
+                                    }
+                                    if (foundItem.Dealer != item.Dealer)
+                                    {
+                                        foundItem.Dealer = item.Dealer;
+                                    }
+                                    if (foundItem.Bank != item.Bank)
+                                    {
+                                        foundItem.Bank = item.Bank;
+                                    }
+                                    if (foundItem.ValueDate != item.ValueDate)
+                                    {
+                                        foundItem.ValueDate = item.ValueDate;
+                                    }
+                                    if (foundItem.MaturityDate != item.MaturityDate)
+                                    {
+                                        foundItem.MaturityDate = item.MaturityDate;
+                                    }
+                                    if (foundItem.Tenor != item.Tenor)
+                                    {
+                                        foundItem.Tenor = item.Tenor;
+                                    }
+                                    if (foundItem.Principal != item.Principal)
+                                    {
+                                        foundItem.Principal = item.Principal;
+                                    }
+                                    if (foundItem.RatePercent != item.RatePercent)
+                                    {
+                                        foundItem.RatePercent = item.RatePercent;
+                                    }
+                                    if (foundItem.IntProfitReceivable != item.IntProfitReceivable)
+                                    {
+                                        foundItem.IntProfitReceivable = item.IntProfitReceivable;
+                                    }
+                                    if (foundItem.PrincipalIntProfitReceivable != item.PrincipalIntProfitReceivable)
+                                    {
+                                        foundItem.PrincipalIntProfitReceivable = item.PrincipalIntProfitReceivable;
+                                    }
+                                    if (foundItem.AssetType != item.AssetType)
+                                    {
+                                        foundItem.AssetType = item.AssetType;
+                                    }
+                                    if (foundItem.RepoTag != item.RepoTag)
+                                    {
+                                        foundItem.RepoTag = item.RepoTag;
+                                    }
+                                    if (foundItem.ContactPerson != item.ContactPerson)
+                                    {
+                                        foundItem.ContactPerson = item.ContactPerson;
+                                    }
+                                    if (foundItem.Notes != item.Notes)
+                                    {
+                                        foundItem.Notes = item.Notes;
+                                    }
+
+                                    foundItem.ModifiedBy = User.Identity.Name;
+                                    foundItem.ModifiedDate = DateTime.Now;
+                                }
+                            }
+                            else
+                            {
+                                // add new
+                                db.FID_Treasury_Deposit.Add(new FID_Treasury_Deposit
+                                {
+                                    FormId = form.Id,
+                                    CashflowType = Common.Cashflow.Outflow,
+                                    Dealer = item.Dealer,
+                                    Bank = item.Bank,
+                                    ValueDate = item.ValueDate,
+                                    MaturityDate = item.MaturityDate,
+                                    Tenor = item.Tenor,
+                                    Principal = item.Principal,
+                                    RatePercent = item.RatePercent,
+                                    IntProfitReceivable = item.IntProfitReceivable,
+                                    PrincipalIntProfitReceivable = item.PrincipalIntProfitReceivable,
+                                    AssetType = item.AssetType,
+                                    RepoTag = item.RepoTag,
+                                    ContactPerson = item.ContactPerson,
+                                    Notes = item.Notes,
+                                    ModifiedBy = User.Identity.Name,
+                                    ModifiedDate = DateTime.Now
+                                });
+                            }
+                        }
+                    }
+                    
+                    if (input.InflowMoneyMarket.Any())
+                    {
+                        var inflowMmiInGrid = input.InflowMoneyMarket;
+                        var existingInflowMmi = db.FID_Treasury_MMI.Where(x =>
+                            x.FormId == form.Id && x.CashflowType == Common.Cashflow.Inflow);
+
+                        // delete from existing
+                        var itemExistInGrid =
+                            inflowMmiInGrid.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                        var removedItems =
+                            existingInflowMmi.Where(x => !itemExistInGrid.Contains(x.Id));
+                        if (removedItems.Any())
+                        {
+                            db.FID_Treasury_MMI.RemoveRange(removedItems);
+                        }
+
+                        foreach (var item in inflowMmiInGrid)
+                        {
+                            if (item.Id != 0)
+                            {
+                                // edit existing
+                                var foundItem = existingInflowMmi.FirstOrDefault(x => x.Id == item.Id);
+                                if (foundItem != null)
+                                {
+                                    if (foundItem.Dealer != item.Dealer)
+                                    {
+                                        foundItem.Dealer = item.Dealer;
+                                    }
+                                    if (foundItem.Issuer != item.Issuer)
+                                    {
+                                        foundItem.Issuer = item.Issuer;
+                                    }
+                                    if (foundItem.ProductType != item.ProductType)
+                                    {
+                                        foundItem.ProductType = item.ProductType;
+                                    }
+                                    if (foundItem.CounterParty != item.CounterParty)
+                                    {
+                                        foundItem.CounterParty = item.CounterParty;
+                                    }
+                                    if (foundItem.ValueDate != item.ValueDate)
+                                    {
+                                        foundItem.ValueDate = item.ValueDate;
+                                    }
+                                    if (foundItem.MaturityDate != item.MaturityDate)
+                                    {
+                                        foundItem.MaturityDate = item.MaturityDate;
+                                    }
+                                    if (foundItem.HoldingDayTenor != item.HoldingDayTenor)
+                                    {
+                                        foundItem.HoldingDayTenor = item.HoldingDayTenor;
+                                    }
+                                    if (foundItem.Nominal != item.Nominal)
+                                    {
+                                        foundItem.Nominal = item.Nominal;
+                                    }
+                                    if (foundItem.SellPurchaseRateYield != item.SellPurchaseRateYield)
+                                    {
+                                        foundItem.SellPurchaseRateYield = item.SellPurchaseRateYield;
+                                    }
+                                    if (foundItem.Price != item.Price)
+                                    {
+                                        foundItem.Price = item.Price;
+                                    }
+                                    if (foundItem.IntDividendReceivable != item.IntDividendReceivable)
+                                    {
+                                        foundItem.IntDividendReceivable = item.IntDividendReceivable;
+                                    }
+                                    if (foundItem.Proceeds != item.Proceeds)
+                                    {
+                                        foundItem.Proceeds = item.Proceeds;
+                                    }
+                                    if (foundItem.PurchaseProceeds != item.PurchaseProceeds)
+                                    {
+                                        foundItem.PurchaseProceeds = item.PurchaseProceeds;
+                                    }
+                                    if (foundItem.CertNoStockCode != item.CertNoStockCode)
+                                    {
+                                        foundItem.CertNoStockCode = item.CertNoStockCode;
+                                    }
+                                    
+                                    foundItem.ModifiedBy = User.Identity.Name;
+                                    foundItem.ModifiedDate = DateTime.Now;
+                                }
+                            }
+                            else
+                            {
+                                // add new
+                                db.FID_Treasury_MMI.Add(new FID_Treasury_MMI
+                                {
+                                    FormId = form.Id,
+                                    CashflowType = Common.Cashflow.Inflow,
+                                    Dealer = item.Dealer,
+                                    Issuer = item.Issuer,
+                                    ProductType = item.ProductType,
+                                    CounterParty = item.CounterParty,
+                                    ValueDate = item.ValueDate,
+                                    MaturityDate = item.MaturityDate,
+                                    HoldingDayTenor = item.HoldingDayTenor,
+                                    Nominal = item.Nominal,
+                                    SellPurchaseRateYield = item.SellPurchaseRateYield,
+                                    Price = item.Price,
+                                    IntDividendReceivable = item.IntDividendReceivable,
+                                    Proceeds = item.Proceeds,
+                                    PurchaseProceeds = item.PurchaseProceeds,
+                                    CertNoStockCode = item.CertNoStockCode,
+
+                                    ModifiedBy = User.Identity.Name,
+                                    ModifiedDate = DateTime.Now
+                                });
+                            }
+                        }
+                    }
+                    
+                    if (input.OutflowMoneyMarket.Any())
+                    {
+                        var outflowMmiInGrid = input.OutflowMoneyMarket;
+                        var existingOutflowMmi = db.FID_Treasury_MMI.Where(x =>
+                            x.FormId == form.Id && x.CashflowType == Common.Cashflow.Outflow);
+
+                        // delete from existing
+                        var itemExistInGrid =
+                            outflowMmiInGrid.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                        var removedItems =
+                            existingOutflowMmi.Where(x => !itemExistInGrid.Contains(x.Id));
+                        if (removedItems.Any())
+                        {
+                            db.FID_Treasury_MMI.RemoveRange(removedItems);
+                        }
+
+                        foreach (var item in outflowMmiInGrid)
+                        {
+                            if (item.Id != 0)
+                            {
+                                // edit existing
+                                var foundItem = existingOutflowMmi.FirstOrDefault(x => x.Id == item.Id);
+                                if (foundItem != null)
+                                {
+                                    if (foundItem.Dealer != item.Dealer)
+                                    {
+                                        foundItem.Dealer = item.Dealer;
+                                    }
+                                    if (foundItem.Issuer != item.Issuer)
+                                    {
+                                        foundItem.Issuer = item.Issuer;
+                                    }
+                                    if (foundItem.ProductType != item.ProductType)
+                                    {
+                                        foundItem.ProductType = item.ProductType;
+                                    }
+                                    if (foundItem.CounterParty != item.CounterParty)
+                                    {
+                                        foundItem.CounterParty = item.CounterParty;
+                                    }
+                                    if (foundItem.ValueDate != item.ValueDate)
+                                    {
+                                        foundItem.ValueDate = item.ValueDate;
+                                    }
+                                    if (foundItem.MaturityDate != item.MaturityDate)
+                                    {
+                                        foundItem.MaturityDate = item.MaturityDate;
+                                    }
+                                    if (foundItem.HoldingDayTenor != item.HoldingDayTenor)
+                                    {
+                                        foundItem.HoldingDayTenor = item.HoldingDayTenor;
+                                    }
+                                    if (foundItem.Nominal != item.Nominal)
+                                    {
+                                        foundItem.Nominal = item.Nominal;
+                                    }
+                                    if (foundItem.SellPurchaseRateYield != item.SellPurchaseRateYield)
+                                    {
+                                        foundItem.SellPurchaseRateYield = item.SellPurchaseRateYield;
+                                    }
+                                    if (foundItem.Price != item.Price)
+                                    {
+                                        foundItem.Price = item.Price;
+                                    }
+                                    if (foundItem.IntDividendReceivable != item.IntDividendReceivable)
+                                    {
+                                        foundItem.IntDividendReceivable = item.IntDividendReceivable;
+                                    }
+                                    if (foundItem.Proceeds != item.Proceeds)
+                                    {
+                                        foundItem.Proceeds = item.Proceeds;
+                                    }
+                                    if (foundItem.PurchaseProceeds != item.PurchaseProceeds)
+                                    {
+                                        foundItem.PurchaseProceeds = item.PurchaseProceeds;
+                                    }
+                                    if (foundItem.CertNoStockCode != item.CertNoStockCode)
+                                    {
+                                        foundItem.CertNoStockCode = item.CertNoStockCode;
+                                    }
+
+                                    foundItem.ModifiedBy = User.Identity.Name;
+                                    foundItem.ModifiedDate = DateTime.Now;
+                                }
+                            }
+                            else
+                            {
+                                // add new
+                                db.FID_Treasury_MMI.Add(new FID_Treasury_MMI
+                                {
+                                    FormId = form.Id,
+                                    CashflowType = Common.Cashflow.Outflow,
+                                    Dealer = item.Dealer,
+                                    Issuer = item.Issuer,
+                                    ProductType = item.ProductType,
+                                    CounterParty = item.CounterParty,
+                                    ValueDate = item.ValueDate,
+                                    MaturityDate = item.MaturityDate,
+                                    HoldingDayTenor = item.HoldingDayTenor,
+                                    Nominal = item.Nominal,
+                                    SellPurchaseRateYield = item.SellPurchaseRateYield,
+                                    Price = item.Price,
+                                    IntDividendReceivable = item.IntDividendReceivable,
+                                    Proceeds = item.Proceeds,
+                                    PurchaseProceeds = item.PurchaseProceeds,
+                                    CertNoStockCode = item.CertNoStockCode,
+
+                                    ModifiedBy = User.Identity.Name,
+                                    ModifiedDate = DateTime.Now
+                                });
+                            }
+                        }
+                    }
+                    
+                    db.SaveChanges();
+
+                    if (form.FormStatus == Common.FormStatus.PendingApproval)
+                    {
+                        new WorkflowService().SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
+                        new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
+                        new NotificationService().NotifyApprovalRequest(form.ApprovedBy, form.Id, form.PreparedBy, form.FormType);
+                    }
+
+                    return Request.CreateResponse(HttpStatusCode.Created, form.Id);
                 }
 
             }
@@ -691,28 +1301,95 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
-        [HttpGet]
-        [Route("Treasury/EdwMaturity/AvailableMaturity/{tradeDateEpoch}")]
-        public HttpResponseMessage Treasury_EdwAvailableMaturityCurrency(long tradeDateEpoch, DataSourceLoadOptions loadOptions)
+        [HttpPost]
+        [Route("Treasury/Approval")]
+        public HttpResponseMessage Treasury_FormApproval([FromBody] FormApprovalModel input)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var tradeDate = Common.ConvertEpochToDateTime(tradeDateEpoch);
-                    tradeDate = tradeDate.Value.Date;
+                    var form = db.FID_Treasury.FirstOrDefault(x => x.Id == input.FormId);
 
-                    var result = db.EDW_Maturity.Where(x => DbFunctions.TruncateTime(x.Value_Date.Value) == DbFunctions.TruncateTime(tradeDate)).Select(x => x.currency).Distinct().ToList();
+                    if (form != null)
+                    {
+                        if (form.ApprovedBy == User.Identity.Name)
+                        {
+                            form.ApprovedDate = DateTime.Now;
+                            form.FormStatus = (input.ApprovalStatus)
+                                ? Common.FormStatus.Approved
+                                : Common.FormStatus.Rejected;
 
-                    return Request.CreateResponse(HttpStatusCode.OK, result);
+                            db.SaveChanges();
+                            
+                            new WorkflowService().ApprovalFeedbackWorkflow(form.Id, form.FormStatus, input.ApprovalNote, form.FormType);
+                            new MailService().SendApprovalStatus(form.Id, form.FormType, form.FormStatus, form.PreparedBy, input.ApprovalNote);
+                            new NotificationService().NotifyApprovalResult(form.PreparedBy, form.Id, form.ApprovedBy, form.FormType, form.FormStatus);
+                            
+                            return Request.CreateResponse(HttpStatusCode.Accepted, input.FormId);
+                        }
+                        else
+                        {
+                            return Request.CreateResponse(HttpStatusCode.BadRequest, "Unauthorized Approver!");
+                        }
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not Found!");
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
 
+
+        [HttpDelete]
+        [Route("Treasury")]
+        public HttpResponseMessage Treasury_FormDelete(FormDataCollection request)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var key = Convert.ToInt32(request.Get("id"));
+
+                    var form = db.FID_Treasury.FirstOrDefault(x => x.Id == key);
+
+                    if (form != null)
+                    {
+                        db.FID_Treasury.Remove(form);
+
+                        var depositInflowOutflow = db.FID_Treasury_Deposit.Where(x => x.FormId == key);
+                        if (depositInflowOutflow.Any())
+                        {
+                            db.FID_Treasury_Deposit.RemoveRange(depositInflowOutflow);
+                        }
+
+                        var mmiInflowOutflow = db.FID_Treasury_MMI.Where(x => x.FormId == key);
+                        if (mmiInflowOutflow.Any())
+                        {
+                            db.FID_Treasury_MMI.RemoveRange(mmiInflowOutflow);
+                        }
+
+                        db.SaveChanges();
+
+                        return Request.CreateResponse(HttpStatusCode.OK);
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not found!");
+                    }
+                }
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
             }
+
         }
 
         #endregion

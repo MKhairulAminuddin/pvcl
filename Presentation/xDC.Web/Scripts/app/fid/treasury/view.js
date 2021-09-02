@@ -205,7 +205,7 @@
                 },
                 {
                     dataField: "repoTag",
-                    caption: "REPO tag",
+                    caption: "REPO tag"
                 },
                 {
                     dataField: "contactPerson",
@@ -237,12 +237,6 @@
                         }
                     }
                 ]
-            },
-            editing: {
-                mode: "batch",
-                allowUpdating: false,
-                allowDeleting: false,
-                allowAdding: false
             },
             showBorders: true,
             showRowLines: true,
@@ -349,11 +343,11 @@
                 },
                 {
                     dataField: "repoTag",
-                    caption: "REPO tag",
+                    caption: "REPO tag"
                 },
                 {
                     dataField: "contactPerson",
-                    caption: "Contact Person",
+                    caption: "Contact Person"
                 },
                 {
                     dataField: "notes",
@@ -381,12 +375,6 @@
                         }
                     }
                 ]
-            },
-            editing: {
-                mode: "batch",
-                allowUpdating: false,
-                allowDeleting: false,
-                allowAdding: false
             },
             showBorders: true,
             showRowLines: true,
@@ -442,9 +430,6 @@
                         type: "fixedPoint",
                         precision: 0
                     },
-                    calculateCellValue: function (rowData) {
-                        return formula.tenor(rowData.maturityDate, rowData.valueDate);
-                    },
                     allowEditing: false
                 },
                 {
@@ -470,16 +455,6 @@
                         type: "fixedPoint",
                         precision: 2
                     },
-                    calculateCellValue: function (rowData) {
-                        return formula.inflow_price(
-                            rowData.productType,
-                            rowData.maturityDate,
-                            rowData.valueDate,
-                            rowData.nominal,
-                            rowData.sellPurchaseRatePercent,
-                            rowData.purchaseProceeds
-                        );
-                    },
                     allowEditing: false
                 },
                 {
@@ -499,16 +474,6 @@
                         type: "fixedPoint",
                         precision: 2
                     },
-                    calculateCellValue: function (rowData) {
-                        return formula.inflow_intDividendReceivable(
-                            rowData.productType,
-                            rowData.maturityDate,
-                            rowData.valueDate,
-                            rowData.nominal,
-                            rowData.sellPurchaseRatePercent,
-                            rowData.purchaseProceeds
-                        );
-                    },
                     allowEditing: false
                 },
                 {
@@ -518,16 +483,6 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    calculateCellValue: function (rowData) {
-                        return formula.inflow_proceeds(
-                            rowData.productType,
-                            rowData.maturityDate,
-                            rowData.valueDate,
-                            rowData.nominal,
-                            rowData.sellPurchaseRatePercent,
-                            rowData.purchaseProceeds
-                        );
                     },
                     allowEditing: false
                 },
@@ -627,9 +582,6 @@
                         type: "fixedPoint",
                         precision: 0
                     },
-                    calculateCellValue: function (rowData) {
-                        return formula.tenor(rowData.maturityDate, rowData.valueDate);
-                    },
                     allowEditing: false
                 },
                 {
@@ -655,16 +607,6 @@
                         type: "fixedPoint",
                         precision: 2
                     },
-                    calculateCellValue: function (rowData) {
-                        return formula.outflow_price(
-                            rowData.productType,
-                            rowData.maturityDate,
-                            rowData.valueDate,
-                            rowData.nominal,
-                            rowData.sellPurchaseRatePercent,
-                            rowData.purchaseProceeds
-                        );
-                    },
                     allowEditing: false
                 },
                 {
@@ -684,16 +626,6 @@
                         type: "fixedPoint",
                         precision: 2
                     },
-                    calculateCellValue: function (rowData) {
-                        return formula.outflow_intDividendReceivable(
-                            rowData.productType,
-                            rowData.maturityDate,
-                            rowData.valueDate,
-                            rowData.nominal,
-                            rowData.sellPurchaseRatePercent,
-                            rowData.purchaseProceeds
-                        );
-                    },
                     allowEditing: false
                 },
                 {
@@ -703,16 +635,6 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    calculateCellValue: function (rowData) {
-                        return formula.outflow_proceeds(
-                            rowData.productType,
-                            rowData.maturityDate,
-                            rowData.valueDate,
-                            rowData.nominal,
-                            rowData.sellPurchaseRatePercent,
-                            rowData.purchaseProceeds
-                        );
                     },
                     allowEditing: false
                 },

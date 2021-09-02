@@ -50,103 +50,7 @@ namespace xDC.Services
             }
 
         }
-
-        public void SendSubmitForApprovalEmail(int formId)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
-
-                    if (getForm != null)
-                    {
-                        var approverName =
-                            db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == getForm.ApprovedBy);
-
-                        var message = new MimeMessage()
-                        {
-                            Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                            Subject = "[Kashflow] Inflow Fund Submission Require Approval",
-                            To =
-                            {
-                                new MailboxAddress(approverName.DisplayName, approverName.Email)
-                            }
-                        };
-                        
-                        var approvalPageUrl = string.Format("{0}amsd/InflowFund/View?id={1}", Config.EmailApplicationUrl, formId);
-                        var bodyBuilder = new StringBuilder();
-                        bodyBuilder.Append(string.Format("<p>Hi {0}, </p>", approverName.DisplayName));
-                        bodyBuilder.AppendLine(string.Format("<p>An item is pending for your approval. </p> "));
-                        bodyBuilder.AppendLine(string.Format("<p>Click <a href='" + approvalPageUrl + "'>here</a> to view.</p>"));
-
-                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                        {
-                            Text = bodyBuilder.ToString()
-                        };
-                        
-                        SendEmailToSmtp(message);
-                    }
-                    else
-                    {
-
-                        Logger.LogError("SendSubmitForApprovalEmail FAILED, form data error: " + formId);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-            }
-        }
-
-        public void SendApprovalStatusEmail(int formId)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
-
-                    if (getForm != null)
-                    {
-                        var preparerName =
-                            db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == getForm.PreparedBy);
-
-                        var message = new MimeMessage()
-                        {
-                            Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                            Subject = "[Kashflow] Inflow Fund Approval Status",
-                            To =
-                            {
-                                new MailboxAddress(preparerName.DisplayName, preparerName.Email)
-                            }
-                        };
-
-                        var approvalPageUrl = string.Format("{0}amsd/InflowFund/View?id={1}", Config.EmailApplicationUrl, formId);
-                        var bodyBuilder = new StringBuilder();
-                        bodyBuilder.Append(string.Format("<p>Hi {0}, </p>", preparerName.DisplayName));
-                        bodyBuilder.AppendLine(string.Format("<p>Your form  <a href='" + approvalPageUrl + "'>#" + getForm.Id +"</a> have been " + getForm.FormStatus));
-
-                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                        {
-                            Text = bodyBuilder.ToString()
-                        };
-                        
-                        SendEmailToSmtp(message);
-                    }
-                    else
-                    {
-                        Logger.LogError("SendApprovalStatusEmail FAILED, form data error: " + formId);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-            }
-        }
-
+        
         public void SendCutOffTimeViolationEmail(int formId, List<AspNetUsers> fidAdmins, TimeSpan cutOffTime)
         {
             try
@@ -195,47 +99,23 @@ namespace xDC.Services
             }
         }
 
-        public void SubmitForApprovalTradeSettlement(int formId)
+        public void SubmitForApproval(int formId, string formType, string approvedBy, string notes)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
+                    var approver =
+                        db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == approvedBy);
 
-                    if (getForm != null)
+                    if (approver != null)
                     {
-                        var approverName =
-                            db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == getForm.ApprovedBy);
-
-                        var message = new MimeMessage()
-                        {
-                            Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                            Subject = "[Kashflow] Request for Approval " + getForm.FormType,
-                            To =
-                            {
-                                new MailboxAddress(approverName.DisplayName, approverName.Email)
-                            }
-                        };
-
-                        var approvalPageUrl = string.Format("{0}" + Common.FormUrlViewMappingForEmailNotification(getForm.FormType) + "{1}", Config.EmailApplicationUrl, formId);
-
-                        var bodyBuilder = new StringBuilder();
-                        bodyBuilder.Append(string.Format("<p>Hi {0}, </p>", approverName.DisplayName));
-                        bodyBuilder.AppendLine(string.Format("<p>An item is pending for your approval. </p> "));
-                        bodyBuilder.AppendLine(string.Format("<p>Click <a href='" + approvalPageUrl + "'>here</a> to view.</p>"));
-
-                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                        {
-                            Text = bodyBuilder.ToString()
-                        };
-
+                        var message = ComposeSubmitForApprovalMail(formId, formType, approver.DisplayName, approver.Email, notes);
                         SendEmailToSmtp(message);
                     }
                     else
                     {
-
-                        Logger.LogError("SendSubmitForApprovalEmail FAILED, form data error: " + formId);
+                        Logger.LogError("SubmitForApproval Failed. Approver email not found in AD.");
                     }
                 }
             }
@@ -245,46 +125,27 @@ namespace xDC.Services
             }
         }
 
-        public void ApprovalStatusTradeSettlement(int formId)
+        public void SendApprovalStatus(int formId, string formType, string formStatus, string formPreparer, string notes)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
 
-                    if (getForm != null)
+                    var preparer =
+                        db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == formPreparer);
+
+                    if (preparer != null)
                     {
-                        var preparerName =
-                            db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == getForm.PreparedBy);
-
-                        var message = new MimeMessage()
-                        {
-                            Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                            Subject = "[Kashflow] Approval Status " + getForm.FormType,
-                            To =
-                            {
-                                new MailboxAddress(preparerName.DisplayName, preparerName.Email)
-                            }
-                        };
-
-                        var approvalPageUrl = string.Format("{0}" + Common.FormUrlViewMappingForEmailNotification(getForm.FormType) + "{1}", Config.EmailApplicationUrl, formId);
-
-                        var bodyBuilder = new StringBuilder();
-                        bodyBuilder.Append(string.Format("<p>Hi {0}, </p>", preparerName.DisplayName));
-                        bodyBuilder.AppendLine(string.Format("<p>Your form  <a href='" + approvalPageUrl + "'>#" + getForm.Id + "</a> have been " + getForm.FormStatus));
-
-                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                        {
-                            Text = bodyBuilder.ToString()
-                        };
-
+                        var message = ComposeApprovalFeedbackMail(formId, formType, formStatus, preparer.DisplayName,
+                            preparer.Email, notes);
                         SendEmailToSmtp(message);
                     }
                     else
                     {
-                        Logger.LogError("SendApprovalStatusEmail FAILED, form data error: " + formId);
+                        Logger.LogError("SendApprovalStatus email failed. Preparer info not found in AD.");
                     }
+
                 }
             }
             catch (Exception ex)
@@ -332,7 +193,7 @@ namespace xDC.Services
 
                                 message.To.AddRange(cnEmailListAddress);
 
-                                var pageUrl = string.Format("{0}" + Common.FormUrlViewMappingForEmailNotification(getForm.FormType) + "{1}", Config.EmailApplicationUrl, formId);
+                                var pageUrl = string.Format("{0}" + Common.Email_FormUrlMap(getForm.FormType) + "{1}", Config.EmailApplicationUrl, formId);
                                 var bodyBuilder = new StringBuilder();
                                 bodyBuilder.Append("<p>Hi All, </p>");
                                 bodyBuilder.AppendLine(string.Format("<p>Contribution Credited item in  <a href='" + pageUrl + "'>#" + getForm.Id + "</a> form have been " + getForm.FormStatus));
@@ -388,6 +249,10 @@ namespace xDC.Services
             }
         }
 
+
+
+
+
         private void SendEmailToSmtp(MimeMessage message)
         {
             try
@@ -405,6 +270,80 @@ namespace xDC.Services
                 Logger.LogError(ex);
             }
             
+        }
+
+        private MimeMessage ComposeSubmitForApprovalMail(int formId, string formType, string approverName, string approverMail, string notes)
+        {
+            var message = new MimeMessage()
+            {
+                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                Subject = "[Kashflow] Request for Approval " + formType,
+                To =
+                {
+                    new MailboxAddress(approverName, approverMail)
+                }
+            };
+
+            var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}",
+                Config.EmailApplicationUrl, formId);
+
+            var bodyBuilder = new StringBuilder();
+            bodyBuilder.Append($"<p>Hi {approverName}, </p>");
+            bodyBuilder.AppendLine($"<p>A {formType} form is pending for your approval. </p>");
+            bodyBuilder.AppendLine($"<p>Click <a href='{approvalPageUrl}'>here</a> to view.</p>");
+
+            if (!string.IsNullOrEmpty(notes))
+            {
+                bodyBuilder.AppendLine($"<br/><br/><p style='font-weight:bold'>Notes from preparer: </p>");
+                bodyBuilder.AppendLine($"<p>{notes}</p>");
+            }
+
+            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            {
+                Text = bodyBuilder.ToString()
+            };
+
+            return message;
+        }
+
+        private MimeMessage ComposeApprovalFeedbackMail(int formId, string formType, string formStatus, string preparerName, string preparerMail, string notes)
+        {
+            var message = new MimeMessage()
+            {
+                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                Subject = $"[Kashflow] Approval Status for submitted {formType} form",
+                To =
+                {
+                    new MailboxAddress(preparerName, preparerMail)
+                }
+            };
+
+            var approvalPageUrl = $"{Config.EmailApplicationUrl}{Common.Email_FormUrlMap(formType)}{formId}";
+
+            var bodyBuilder = new StringBuilder();
+            bodyBuilder.Append(string.Format("<p>Hi {0}, </p>", preparerName));
+
+            if (formStatus == Common.FormStatus.Approved)
+            {
+                bodyBuilder.AppendLine($"<p>Good News! Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#2ECC71;'>{formStatus}</span>");
+            }
+            else
+            {
+                bodyBuilder.AppendLine($"<p>Bad News! Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#E74C3C;'>{formStatus}</span>");
+            }
+
+            if (!string.IsNullOrEmpty(notes))
+            {
+                bodyBuilder.AppendLine($"<br/><br/><p style='font-weight:bold'>Notes from approver: </p>");
+                bodyBuilder.AppendLine($"<p>{notes}</p>");
+            }
+
+            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            {
+                Text = bodyBuilder.ToString()
+            };
+
+            return message;
         }
     }
 }

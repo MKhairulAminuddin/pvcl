@@ -12,7 +12,7 @@
             $outflowMmiGrid,
 
             $treasuryForm,
-            $selectApproverModal = $('#selectApproverModal'),
+            $selectApproverModal = $("#selectApproverModal"),
             $submitForApprovalModalBtn,
             
             $currencySelectBox,
@@ -36,14 +36,7 @@
         //#endregion
 
         //#region Data Source & Functions
-
-        var dsProductType = ["NID", "NIDC", "Commercial Papers", "Bankers Acceptance", "BNMN",
-            "BNMN-i", "MTB", "MTB-i", "Others"];
-
-        var dsNotes = ["w/d P+I", "r/o P+I", "New"];
-
-        var dsAssetType = ["MMD", "FD", "CMD"];
-
+        
         var dsBankCounterParty = DevExpress.data.AspNet.createStore({
             key: "reference",
             loadUrl: referenceUrl.dsBankCounterParty
@@ -99,7 +92,7 @@
             };
 
             return $.ajax({
-                data: data,
+                data: JSON.stringify(data),
                 dataType: "json",
                 url: referenceUrl.postNewFormRequest,
                 method: "post",
@@ -247,7 +240,11 @@
                 {
                     dataField: "dealer",
                     caption: "Dealer",
-                    allowEditing: false
+                    allowEditing: false,
+                    calculateCellValue: function (rowData) {
+                        rowData.dealer = window.currentUser;
+                        return window.currentUser;
+                    }
                 },
                 {
                     dataField: "bank",
@@ -332,7 +329,7 @@
                     dataField: "assetType",
                     caption: "Asset Type",
                     lookup: {
-                        dataSource: dsAssetType
+                        dataSource: treasury.dsAssetType
                     },
                     allowEditing: false,
                 },
@@ -347,12 +344,15 @@
                 {
                     dataField: "notes",
                     caption: "Notes",
+                    lookup: {
+                        dataSource: treasury.dsNotes
+                    }
                 },
             ],
             summary: {
                 totalItems: [
                     {
-                        column: "tenor",
+                        column: "principal",
                         summaryType: "sum",
                         displayFormat: "{0}",
                         valueFormat: {
@@ -388,7 +388,12 @@
             columns: [
                 {
                     dataField: "dealer",
-                    caption: "Dealer"
+                    caption: "Dealer",
+                    calculateCellValue: function (rowData) {
+                        rowData.dealer = window.currentUser;
+                        return window.currentUser;
+                    },
+                    allowEditing: false
                 },
                 {
                     dataField: "bank",
@@ -437,7 +442,8 @@
                         precision: 0
                     },
                     calculateCellValue: function (rowData) {
-                        return moment(rowData.maturityDate).diff(rowData.valueDate, "days");
+                        rowData.tenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
+                        return rowData.tenor;
                     },
                     allowEditing: false
                 },
@@ -457,10 +463,20 @@
                     },
                     calculateCellValue: function (rowData) {
                         var rate = (parseFloat(rowData.ratePercent * 100) || 0);
-                        var tenor = (parseFloat((moment(rowData.maturityDate).diff(rowData.valueDate, "days")) / 365 * 100) || 0);
                         var principal = (parseFloat(rowData.principal) || 0);
 
-                        return (principal * tenor * rate);
+                        var tenor = 0;
+                        if ($currencySelectBox.option("value") == "USD" ||
+                            $currencySelectBox.option("value") == "AUD" ||
+                            $currencySelectBox.option("value") == "EUR") {
+                            tenor = (parseFloat(treasury.tenor(rowData.maturityDate, rowData.valueDate) / 360 * 100) || 0);
+                        } else {
+                            tenor = (parseFloat(treasury.tenor(rowData.maturityDate, rowData.valueDate) / 365 * 100) || 0);
+                        }
+
+                        rowData.intProfitReceivable = (principal * tenor * rate);
+
+                        return rowData.intProfitReceivable;
                     },
                     allowEditing: false
                 },
@@ -474,10 +490,22 @@
                     },
                     calculateCellValue: function (rowData) {
                         var rate = (parseFloat(rowData.ratePercent * 100) || 0);
-                        var tenor = (parseFloat((moment(rowData.maturityDate).diff(rowData.valueDate, "days")) / 365 * 100) || 0);
                         var principal = (parseFloat(rowData.principal) || 0);
 
-                        return principal + (principal * tenor * rate);
+                        var tenor = 0;
+                        if ($currencySelectBox.option("value") == "USD" ||
+                            $currencySelectBox.option("value") == "AUD" ||
+                            $currencySelectBox.option("value") == "EUR") {
+                            tenor = (parseFloat(treasury.tenor(rowData.maturityDate, rowData.valueDate) / 360 * 100) || 0);
+                        } else {
+                            tenor = (parseFloat(treasury.tenor(rowData.maturityDate, rowData.valueDate) / 365 * 100) || 0);
+                        }
+
+                        var intProfitReceivable = (principal * tenor * rate);
+
+                        rowData.principalIntProfitReceivable = principal + intProfitReceivable;
+
+                        return rowData.principalIntProfitReceivable;
                     },
                     allowEditing: false
                 },
@@ -485,7 +513,7 @@
                     dataField: "assetType",
                     caption: "Asset Type",
                     lookup: {
-                        dataSource: dsAssetType
+                        dataSource: treasury.dsAssetType
                     }
                 },
                 {
@@ -500,14 +528,14 @@
                     dataField: "notes",
                     caption: "Notes",
                     lookup: {
-                        dataSource: dsNotes
+                        dataSource: treasury.dsNotes
                     }
-                },
+                }
             ],
             summary: {
                 totalItems: [
                     {
-                        column: "tenor",
+                        column: "principal",
                         summaryType: "sum",
                         displayFormat: "{0}",
                         valueFormat: {
@@ -544,7 +572,11 @@
                 {
                     dataField: "dealer",
                     caption: "Dealer",
-                    allowEditing: false
+                    allowEditing: false,
+                    calculateCellValue: function (rowData) {
+                        rowData.dealer = window.currentUser;
+                        return window.currentUser;
+                    }
                 },
                 {
                     dataField: "issuer",
@@ -559,7 +591,7 @@
                     dataField: "productType",
                     caption: "Product Type",
                     lookup: {
-                        dataSource: dsProductType
+                        dataSource: treasury.dsProductType
                     }
                 },
                 {
@@ -592,7 +624,7 @@
                     }
                 },
                 {
-                    dataField: "holdingPeriodTenor",
+                    dataField: "holdingDayTenor",
                     caption: "Holding Period / Tenor (days)",
                     dataType: "number",
                     format: {
@@ -600,7 +632,8 @@
                         precision: 0
                     },
                     calculateCellValue: function (rowData) {
-                        return formula.tenor(rowData.maturityDate, rowData.valueDate);
+                        rowData.holdingDayTenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
+                        return rowData.holdingDayTenor;
                     },
                     allowEditing: false
                 },
@@ -614,7 +647,7 @@
                     }
                 },
                 {
-                    dataField: "sellPurchaseRatePercent",
+                    dataField: "sellPurchaseRateYield",
                     caption: "Sell Rate / Yield (%)",
                     dataType: "number",
                     format: "#.00 '%'"
@@ -628,14 +661,13 @@
                         precision: 2
                     },
                     calculateCellValue: function (rowData) {
-                        return formula.inflow_price(
+                        rowData.price = treasury.inflow_price(
                             rowData.productType,
-                            rowData.maturityDate,
-                            rowData.valueDate,
                             rowData.nominal,
-                            rowData.sellPurchaseRatePercent,
-                            rowData.purchaseProceeds
+                            rowData.sellPurchaseRateYield,
+                            treasury.tenor(rowData.maturityDate, rowData.valueDate)
                         );
+                        return rowData.price;
                     },
                     allowEditing: false
                 },
@@ -657,14 +689,14 @@
                         precision: 2
                     },
                     calculateCellValue: function (rowData) {
-                        return formula.inflow_intDividendReceivable(
+                        rowData.intDividendReceivable = treasury.inflow_intDiv(
                             rowData.productType,
-                            rowData.maturityDate,
-                            rowData.valueDate,
                             rowData.nominal,
-                            rowData.sellPurchaseRatePercent,
+                            rowData.sellPurchaseRateYield,
+                            treasury.tenor(rowData.maturityDate, rowData.valueDate),
                             rowData.purchaseProceeds
                         );
+                        return rowData.intDividendReceivable;
                     },
                     allowEditing: false
                 },
@@ -677,14 +709,13 @@
                         precision: 2
                     },
                     calculateCellValue: function (rowData) {
-                        return formula.inflow_proceeds(
+                        rowData.proceeds = treasury.inflow_proceeds(
                             rowData.productType,
-                            rowData.maturityDate,
-                            rowData.valueDate,
                             rowData.nominal,
-                            rowData.sellPurchaseRatePercent,
-                            rowData.purchaseProceeds
+                            rowData.sellPurchaseRateYield,
+                            treasury.tenor(rowData.maturityDate, rowData.valueDate)
                         );
+                        return rowData.proceeds;
                     },
                     allowEditing: false
                 },
@@ -742,7 +773,11 @@
                 {
                     dataField: "dealer",
                     caption: "Dealer",
-                    allowEditing: false
+                    allowEditing: false,
+                    calculateCellValue: function (rowData) {
+                        rowData.dealer = window.currentUser;
+                        return window.currentUser;
+                    }
                 },
                 {
                     dataField: "issuer",
@@ -757,7 +792,7 @@
                     dataField: "productType",
                     caption: "Product Type",
                     lookup: {
-                        dataSource: dsProductType
+                        dataSource: treasury.dsProductType
                     }
                 },
                 {
@@ -790,7 +825,7 @@
                     }
                 },
                 {
-                    dataField: "holdingPeriodTenor",
+                    dataField: "holdingDayTenor",
                     caption: "Holding Period / Tenor (days)",
                     dataType: "number",
                     format: {
@@ -798,7 +833,8 @@
                         precision: 0
                     },
                     calculateCellValue: function (rowData) {
-                        return formula.tenor(rowData.maturityDate, rowData.valueDate);
+                        rowData.holdingDayTenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
+                        return rowData.holdingDayTenor;
                     },
                     allowEditing: false
                 },
@@ -812,7 +848,7 @@
                     }
                 },
                 {
-                    dataField: "sellPurchaseRatePercent",
+                    dataField: "sellPurchaseRateYield",
                     caption: "Purchase Rate / Yield (%)",
                     dataType: "number",
                     format: "#.00 '%'"
@@ -826,25 +862,15 @@
                         precision: 2
                     },
                     calculateCellValue: function (rowData) {
-                        return formula.outflow_price(
+                        rowData.price = treasury.outflow_price(
                             rowData.productType,
-                            rowData.maturityDate,
-                            rowData.valueDate,
                             rowData.nominal,
-                            rowData.sellPurchaseRatePercent,
-                            rowData.purchaseProceeds
+                            rowData.sellPurchaseRateYield,
+                            treasury.tenor(rowData.maturityDate, rowData.valueDate)
                         );
+                        return rowData.price;
                     },
                     allowEditing: false
-                },
-                {
-                    dataField: "purchaseProceeds",
-                    caption: "Purchase Proceeds",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    }
                 },
                 {
                     dataField: "intDividendReceivable",
@@ -855,14 +881,13 @@
                         precision: 2
                     },
                     calculateCellValue: function (rowData) {
-                        return formula.outflow_intDividendReceivable(
+                        rowData.intDividendReceivable = treasury.outflow_intDiv(
                             rowData.productType,
-                            rowData.maturityDate,
-                            rowData.valueDate,
                             rowData.nominal,
-                            rowData.sellPurchaseRatePercent,
-                            rowData.purchaseProceeds
+                            rowData.sellPurchaseRateYield,
+                            treasury.tenor(rowData.maturityDate, rowData.valueDate)
                         );
+                        return rowData.intDividendReceivable;
                     },
                     allowEditing: false
                 },
@@ -875,14 +900,13 @@
                         precision: 2
                     },
                     calculateCellValue: function (rowData) {
-                        return formula.outflow_proceeds(
+                        rowData.proceeds = treasury.outflow_proceeds(
                             rowData.productType,
-                            rowData.maturityDate,
-                            rowData.valueDate,
                             rowData.nominal,
-                            rowData.sellPurchaseRatePercent,
-                            rowData.purchaseProceeds
+                            rowData.sellPurchaseRateYield,
+                            treasury.tenor(rowData.maturityDate, rowData.valueDate)
                         );
+                        return rowData.proceeds;
                     },
                     allowEditing: false
                 },
@@ -969,7 +993,7 @@
                     $selectApproverModal.modal('show');
                 }*/
 
-                $selectApproverModal.modal('show');
+                $selectApproverModal.modal("show");
                 
             });
 
