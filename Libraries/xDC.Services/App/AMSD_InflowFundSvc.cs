@@ -20,9 +20,10 @@ namespace xDC.Services.App
 
         public static bool EnableDelete(string formStatus)
         {
-            var isApproved = formStatus == Common.FormStatus.Approved;
+            var isApproved = (formStatus == Common.FormStatus.Approved);
+            var isPendingApproval = formStatus == Common.FormStatus.PendingApproval;
 
-            return !isApproved;
+            return !isApproved && !isPendingApproval;
         }
 
         public static bool EnablePrint(string formStatus)

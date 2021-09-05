@@ -201,6 +201,7 @@ namespace xDC_Web.Controllers
         #region Print Form
 
         [HttpPost]
+        [Route("Print")]
         public ActionResult Print(string id, bool isExportAsExcel)
         {
             try
@@ -225,6 +226,8 @@ namespace xDC_Web.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("Printed/{id}")]
         public ActionResult Printed(string id)
         {
             try

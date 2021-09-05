@@ -20,25 +20,21 @@ namespace xDC_Web.Extension.DocGenerator
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var getForm = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
+                    var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
 
-                    if (getForm != null)
+                    if (form != null)
                     {
-                        var getInflowFunds = db.AMSD_IF_Item.Where(x => x.FormId == formId).ToList();
-
-                        getForm.Id = getForm.Id;
-                        getForm.PreparedBy = getForm.PreparedBy;
-                        getForm.PreparedDate = getForm.PreparedDate.Value;
-
-                        var getFormWorkflow = db.Form_Workflow
-                            .Where(x => (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected) && x.FormId == getForm.Id)
+                        var inflowFundItems = db.AMSD_IF_Item.Where(x => x.FormId == form.Id).ToList();
+                        
+                        var formWorkflow = db.Form_Workflow
+                            .Where(x => (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected) && x.FormId == form.Id)
                             .OrderByDescending(x => x.RecordedDate)
                             .FirstOrDefault();
 
                         IWorkbook workbook = new Workbook();
                         workbook.Options.Culture = new CultureInfo("en-US");
                         workbook.LoadDocument(MapPath("~/App_Data/Inflow Funds Template.xltx"));
-                        workbook = GenerateDocument(workbook, getForm, getFormWorkflow, getInflowFunds);
+                        workbook = GenerateDocument(workbook, form, formWorkflow, inflowFundItems);
                         var randomFileName = "AMSD Inflow Fund Form - " + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                         if (isExportAsExcel)
@@ -90,7 +86,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     sheet["D7:E7"].CopyFrom(sheet["D6:E6"]);
                     sheet["D7"].Value = "Notes";
-                    sheet["E7"].Value = formWorkflow.WorkflowNotes;
+                    sheet["E7"].Value = formWorkflow?.WorkflowNotes;
                     startingRownumber += 1;
                 }
 

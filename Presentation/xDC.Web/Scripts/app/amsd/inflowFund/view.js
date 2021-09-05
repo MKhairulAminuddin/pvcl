@@ -182,24 +182,18 @@
             }),
             columns: [
                 {
+                    dataField: "recordedDate",
+                    caption: "Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy hh:mm a"
+                },
+                {
                     dataField: "requestBy",
                     caption: "Requested By"
                 },
                 {
                     dataField: "requestTo",
                     caption: "Requested To"
-                },
-                {
-                    dataField: "startDate",
-                    caption: "Start Date",
-                    dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm"
-                },
-                {
-                    dataField: "endDate",
-                    caption: "End Date",
-                    dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm"
                 },
                 {
                     dataField: "workflowStatus",

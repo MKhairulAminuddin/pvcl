@@ -22,7 +22,7 @@
             viewPageRedirect: window.location.origin + "/amsd/inflowfund/view/",
 
             printRequest: window.location.origin + "/amsd/Print",
-            printResponse: window.location.origin + "/amsd/Printed",
+            printResponse: window.location.origin + "/amsd/Printed/",
         };
 
         $newInflowFundBtn = $("#newInflowFundBtn").dxButton({
@@ -71,7 +71,7 @@
                     dataField: "preparedDate",
                     caption: "Prepared Date",
                     dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm",
+                    format: "dd/MM/yyyy hh:mm a",
                     sortOrder: "desc"
                 },
                 {
@@ -82,7 +82,7 @@
                     dataField: "approvedDate",
                     caption: "Approved Date",
                     dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm"
+                    format: "dd/MM/yyyy hh:mm a"
                 },
                 {
                     dataField: "formStatus",
@@ -166,7 +166,7 @@
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
-                                        window.location = referenceUrl.printPageRedirect + data;
+                                        window.location = referenceUrl.printResponse + data;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
                                         app.alertError(textStatus + ': ' + errorThrown);
@@ -198,7 +198,7 @@
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
-                                        window.location = referenceUrl.printPageRedirect + data;
+                                        window.location = referenceUrl.printResponse + data;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
                                         app.alertError(textStatus + ': ' + errorThrown);
