@@ -20,16 +20,14 @@ namespace xDC_Web.Extension.SchedulerTask
                 using (var db = new kashflowDBEntities())
                 {
                     var currencyFromEdw = db.EDW_TradeItem.Select(x => x.Currency).Distinct().ToList();
-                    var currencyConfigKey = Common.DropdownConfigKeyMapping(3);
-
 
                     foreach (var cdw in currencyFromEdw)
                     {
-                        if (!db.Config_Dropdown.Any(x => x.Key == currencyConfigKey && x.Value == cdw ))
+                        if (!db.Config_Dropdown.Any(x => x.Key == Common.DropdownConfigKey.ISSD_TS_Currency && x.Value == cdw ))
                         {
                             var newCurrency = new Config_Dropdown
                             {
-                                Key = currencyConfigKey,
+                                Key = Common.DropdownConfigKey.ISSD_TS_Currency,
                                 Value = cdw,
                                 CreatedBy = "System",
                                 CreatedDate = DateTime.Now,

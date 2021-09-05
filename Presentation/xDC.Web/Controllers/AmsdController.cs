@@ -20,14 +20,15 @@ namespace xDC_Web.Controllers
         {
             try
             {
-                var model = new AmsdViewModel();
-
                 using (var db = new kashflowDBEntities())
                 {
                     var isApprover = db.Config_Approver.Any(x => x.Username == User.Identity.Name);
                     var isAmsdUser = User.IsInRole(Config.Acl.Amsd) || User.IsInRole(Config.Acl.Administrator);
 
-                    model.isAllowedToCreateForm = (!isApprover && isAmsdUser);
+                    var model = new AmsdLandingPageVM()
+                    {
+                        EnableCreateForm = (!isApprover && isAmsdUser)
+                    };
 
                     return View(model);
                 }
@@ -56,12 +57,12 @@ namespace xDC_Web.Controllers
                         return View("Error");
                     }
 
-                    var model = new ViewInflowFundStatusForm()
+                    var model = new InflowFundStatusFormVM()
                     {
                         PreparedBy = User.Identity.Name,
                         PreparedDate = DateTime.Now,
                         FormStatus = Common.FormStatus.Draft,
-                        IsDraftEnabled = true
+                        EnableSaveAsDraftBtn = true
                     };
 
                     return View("InflowFund/New", model);
@@ -74,15 +75,15 @@ namespace xDC_Web.Controllers
             }
         }
 
-        [Route("InflowFund/Edit")]
-        public ActionResult EditInflowFundsForm(string id)
+        [Route("InflowFund/Edit/{id}")]
+        public ActionResult InflowFund_Edit(string id)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
                     var formId = Convert.ToInt32(id);
-                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+                    var getForm = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
 
                     if (getForm != null)
                     {
@@ -94,11 +95,11 @@ namespace xDC_Web.Controllers
                         }
 
                         var getFormWorkflow = db.Form_Workflow
-                            .Where(x => (x.WorkflowStatus == "Approved" || x.WorkflowStatus == "Rejected") &&
-                                        x.FormId == getForm.Id).OrderByDescending(x => x.EndDate)
+                            .Where(x => (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected) &&
+                                        x.FormId == getForm.Id).OrderByDescending(x => x.RecordedDate)
                             .FirstOrDefault();
 
-                        var formObj = new ViewInflowFundStatusForm()
+                        var formObj = new InflowFundStatusFormVM()
                         {
                             Id = getForm.Id,
                             PreparedBy = getForm.PreparedBy,
@@ -109,19 +110,19 @@ namespace xDC_Web.Controllers
                             ApprovedBy = getForm.ApprovedBy,
                             ApprovedDate = getForm.ApprovedDate,
 
-                            IsDraftEnabled = (getForm.FormStatus == Common.FormStatus.Draft),
+                            EnableSaveAsDraftBtn = (getForm.FormStatus == Common.FormStatus.Draft),
 
                             IsAdminEdited = getForm.AdminEditted,
                             AdminEditedBy = getForm.AdminEdittedBy,
                             AdminEditedDate = getForm.AdminEdittedDate,
 
                             ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
-                            AdminEditPermission = User.IsInRole(Config.Acl.PowerUser),
+                            EnableAdminEditBtn = User.IsInRole(Config.Acl.PowerUser),
 
                             ApprovalOrRejectionNotes = getFormWorkflow?.WorkflowNotes
 
                         };
-                        return View("InflowFund/New", formObj);
+                        return View("InflowFund/Edit", formObj);
                     }
                     else
                     {
@@ -138,40 +139,39 @@ namespace xDC_Web.Controllers
             }
         }
 
-        [Route("InflowFund/View")]
-        public ActionResult InflowFundsFormStatus(string id)
+        [Route("InflowFund/View/{formId}")]
+        public ActionResult InflowFundsFormStatus(int formId)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var formId = Convert.ToInt32(id);
-                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+                    var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
 
-                    if (getForm != null)
+                    if (form != null)
                     {
-                        var isApprovedOrRejected = (getForm.FormStatus == Common.FormStatus.Approved ||
-                                                    getForm.FormStatus == Common.FormStatus.Rejected);
+                        var isApprovedOrRejected = (form.FormStatus == Common.FormStatus.Approved ||
+                                                    form.FormStatus == Common.FormStatus.Rejected);
                         var getFormWorkflow = db.Form_Workflow
-                            .Where(x => (x.WorkflowStatus == "Approved" || x.WorkflowStatus == "Rejected") &&
-                                        x.FormId == getForm.Id).OrderByDescending(x => x.EndDate)
+                            .Where(x => (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected) &&
+                                        x.FormId == form.Id).OrderByDescending(x => x.RecordedDate)
                             .FirstOrDefault();
 
-                        var formObj = new ViewInflowFundStatusForm()
+                        var formObj = new InflowFundStatusFormVM()
                         {
-                            Id = getForm.Id,
-                            PreparedBy = getForm.PreparedBy,
-                            PreparedDate = getForm.PreparedDate,
-                            ApprovedBy = getForm.ApprovedBy,
-                            ApprovedDate = getForm.ApprovedDate,
-                            FormStatus = getForm.FormStatus,
+                            Id = form.Id,
+                            PreparedBy = form.PreparedBy,
+                            PreparedDate = form.PreparedDate,
+                            ApprovedBy = form.ApprovedBy,
+                            ApprovedDate = form.ApprovedDate,
+                            FormStatus = form.FormStatus,
 
-                            IsAdminEdited = getForm.AdminEditted,
-                            AdminEditedBy = getForm.AdminEdittedBy,
-                            AdminEditedDate = getForm.AdminEdittedDate,
+                            IsAdminEdited = form.AdminEditted,
+                            AdminEditedBy = form.AdminEdittedBy,
+                            AdminEditedDate = form.AdminEdittedDate,
 
-                            ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
-                            AdminEditPermission = User.IsInRole(Config.Acl.PowerUser),
+                            ApprovePermission = form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval,
+                            EnableAdminEditBtn = User.IsInRole(Config.Acl.PowerUser),
 
                             IsApprovedOrRejected = isApprovedOrRejected,
                             ApprovalOrRejectionNotes = getFormWorkflow?.WorkflowNotes
@@ -201,7 +201,7 @@ namespace xDC_Web.Controllers
         #region Print Form
 
         [HttpPost]
-        public ActionResult PrintInflowFund(string id, bool isExportAsExcel)
+        public ActionResult Print(string id, bool isExportAsExcel)
         {
             try
             {
@@ -225,7 +225,7 @@ namespace xDC_Web.Controllers
             }
         }
 
-        public ActionResult GetPrintInflowFund(string id)
+        public ActionResult Printed(string id)
         {
             try
             {

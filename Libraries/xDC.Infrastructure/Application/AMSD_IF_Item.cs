@@ -12,7 +12,7 @@ namespace xDC.Infrastructure.Application
     using System;
     using System.Collections.Generic;
     
-    public partial class AMSD_InflowFund
+    public partial class AMSD_IF_Item
     {
         public int Id { get; set; }
         public int FormId { get; set; }
@@ -20,9 +20,7 @@ namespace xDC.Infrastructure.Application
         public string Bank { get; set; }
         public Nullable<decimal> Amount { get; set; }
         public Nullable<System.DateTime> LatestSubmission { get; set; }
-        public string CreatedBy { get; set; }
-        public Nullable<System.DateTime> CreatedDate { get; set; }
-        public string UpdatedBy { get; set; }
-        public Nullable<System.DateTime> UpdatedDate { get; set; }
+        public string ModifiedBy { get; set; }
+        public Nullable<System.DateTime> ModifiedDate { get; set; }
     }
 }

@@ -37,8 +37,8 @@ namespace xDC_Web.Extension.DocGenerator
                         getForm.PreparedDate = getForm.PreparedDate.Value;
 
                         var getFormWorkflow = db.Form_Workflow
-                            .Where(x => (x.WorkflowStatus == "Approved" || x.WorkflowStatus == "Rejected") &&
-                                        x.FormId == getForm.Id).OrderByDescending(x => x.EndDate)
+                            .Where(x => (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected) && x.FormId == getForm.Id)
+                            .OrderByDescending(x => x.RecordedDate)
                             .FirstOrDefault();
 
                         var openingBalance = db.ISSD_Balance.Where(x => x.FormId == formId).ToList();
@@ -102,7 +102,7 @@ namespace xDC_Web.Extension.DocGenerator
                         foreach (var formId in associatedFormIdParts)
                         {
                             var workflow = db.Form_Workflow.Where(x => (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected) &&
-                                            x.FormId == formId).OrderByDescending(x => x.EndDate).FirstOrDefault();
+                                            x.FormId == formId).OrderByDescending(x => x.RecordedDate).FirstOrDefault();
                             
                             if (workflow != null)
                             {
@@ -675,7 +675,7 @@ namespace xDC_Web.Extension.DocGenerator
                 sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
                 workflowRowNumber += 1;
                 sheet["A" + workflowRowNumber].Value = "Approved Date";
-                sheet["B" + workflowRowNumber].Value = workflowPartA.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
+                sheet["B" + workflowRowNumber].Value = workflowPartA.RecordedDate.Value.ToString("dd/MM/yyyy HH:mm");
                 sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
                 workflowRowNumber += 2;
             }
@@ -691,7 +691,7 @@ namespace xDC_Web.Extension.DocGenerator
                 sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
                 workflowRowNumber += 1;
                 sheet["A" + workflowRowNumber].Value = "Approved Date";
-                sheet["B" + workflowRowNumber].Value = workflowPartB.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
+                sheet["B" + workflowRowNumber].Value = workflowPartB.RecordedDate.Value.ToString("dd/MM/yyyy HH:mm");
                 sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
                 workflowRowNumber += 2;
             }
@@ -707,7 +707,7 @@ namespace xDC_Web.Extension.DocGenerator
                 sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
                 workflowRowNumber += 1;
                 sheet["A" + workflowRowNumber].Value = "Approved Date";
-                sheet["B" + workflowRowNumber].Value = workflowPartC.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
+                sheet["B" + workflowRowNumber].Value = workflowPartC.RecordedDate.Value.ToString("dd/MM/yyyy HH:mm");
                 sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
                 workflowRowNumber += 2;
             }
@@ -723,7 +723,7 @@ namespace xDC_Web.Extension.DocGenerator
                 sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
                 workflowRowNumber += 1;
                 sheet["A" + workflowRowNumber].Value = "Approved Date";
-                sheet["B" + workflowRowNumber].Value = workflowPartD.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
+                sheet["B" + workflowRowNumber].Value = workflowPartD.RecordedDate.Value.ToString("dd/MM/yyyy HH:mm");
                 sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
                 workflowRowNumber += 2;
             }
@@ -739,7 +739,7 @@ namespace xDC_Web.Extension.DocGenerator
                 sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
                 workflowRowNumber += 1;
                 sheet["A" + workflowRowNumber].Value = "Approved Date";
-                sheet["B" + workflowRowNumber].Value = workflowPartE.EndDate.Value.ToString("dd/MM/yyyy HH:mm");
+                sheet["B" + workflowRowNumber].Value = workflowPartE.RecordedDate.Value.ToString("dd/MM/yyyy HH:mm");
                 sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
                 workflowRowNumber += 2;
             }

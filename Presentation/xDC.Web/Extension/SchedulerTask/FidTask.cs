@@ -143,8 +143,8 @@ namespace xDC_Web.Extension.SchedulerTask
                             }
 
                             var tsApprovals = db.Form_Workflow
-                                .Where(x => x.FormId == form.Id && x.WorkflowStatus == "Approved")
-                                .OrderByDescending(x => x.EndDate).FirstOrDefault();
+                                .Where(x => x.FormId == form.Id && x.WorkflowStatus == Common.FormStatus.Approved)
+                                .OrderByDescending(x => x.RecordedDate).FirstOrDefault();
                             if (tsApprovals != null)
                             {
                                 var approval = new FID_TS10_Approval
@@ -152,7 +152,7 @@ namespace xDC_Web.Extension.SchedulerTask
                                     FormId = ts10am.Id,
                                     FormType = tsApprovals.FormType,
                                     ApprovedBy = tsApprovals.RequestBy,
-                                    ApprovedDate = tsApprovals.EndDate
+                                    ApprovedDate = tsApprovals.RecordedDate
                                 };
                                 db.FID_TS10_Approval.Add(approval);
                                 db.SaveChanges();

@@ -5,7 +5,7 @@ using System.Web;
 
 namespace xDC_Web.Models
 {
-    public class ViewInflowFundStatusForm
+    public class InflowFundStatusFormVM
     {
         public int Id { get; set; }
         public string FormStatus { get; set; }
@@ -17,14 +17,15 @@ namespace xDC_Web.Models
         public string ApprovedBy { get; set; }
         public DateTime? ApprovedDate { get; set; }
 
-        public bool IsDraftEnabled { get; set; }
+        
 
         public bool IsAdminEdited { get; set; }
         public string AdminEditedBy { get; set; }
         public DateTime? AdminEditedDate { get; set; }
 
         public bool ApprovePermission { get; set; }
-        public bool AdminEditPermission { get; set; }
+        public bool EnableAdminEditBtn { get; set; }
+        public bool EnableSaveAsDraftBtn { get; set; }
 
         public bool IsApprovedOrRejected { get; set; }
         public string ApprovalOrRejectionNotes { get; set; }

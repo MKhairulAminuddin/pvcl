@@ -39,12 +39,12 @@ namespace xDC.Services
                         FormType = formType,
                         WorkflowStatus = Common.FormStatus.PendingApproval,
                         WorkflowNotes = notes,
-                        StartDate = DateTime.Now
+                        RecordedDate = DateTime.Now
                     };
 
                     if (formType == Common.FormType.AMSD_IF)
                     {
-                        var form = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+                        var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
                         formWorkflow.RequestBy = form.PreparedBy;
                         formWorkflow.RequestTo = form.ApprovedBy;
                     }
@@ -71,27 +71,20 @@ namespace xDC.Services
             }
         }
 
-        public void ApprovalFeedbackWorkflow(int formId, string formStatus,string notes, string formType)
+        public void ApprovalResponse(int formId, string formStatus, string notes, string formType, string preparedBy, string approvedBy)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var currentFormWorkflow = db.Form_Workflow
-                        .Where(x => x.FormId == formId && x.FormType == formType)
-                        .OrderByDescending(x => new { x.StartDate, x.Id}).FirstOrDefault();
-
-                    currentFormWorkflow.EndDate = DateTime.Now;
-
                     var newFormWorkflow = new Form_Workflow()
                     {
                         FormId = formId,
                         FormType = formType,
-                        RequestBy = currentFormWorkflow.RequestTo,
-                        StartDate = DateTime.Now,
-                        RequestTo = currentFormWorkflow.RequestBy,
-                        EndDate = DateTime.Now,
-                        WorkflowStatus = (formStatus == Common.FormStatus.Approved) ? Common.FormStatus.Approved : Common.FormStatus.Rejected,
+                        RequestBy = approvedBy,
+                        RecordedDate = DateTime.Now,
+                        RequestTo = preparedBy,
+                        WorkflowStatus = formStatus,
                         WorkflowNotes = notes
                     };
 

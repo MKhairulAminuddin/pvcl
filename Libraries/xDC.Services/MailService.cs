@@ -58,7 +58,7 @@ namespace xDC.Services
                 using (var db = new kashflowDBEntities())
                 {
                     var cutOffTimeString = new DateTime(cutOffTime.Ticks).ToString("HH:mm");
-                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+                    var getForm = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
 
                     if (getForm != null)
                     {
@@ -160,8 +160,7 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var contributionEmailKey = Common.ApplicationConfigKeyMapping(4);
-                    var currentCnEmailList = db.Config_Application.FirstOrDefault(x => x.Key == contributionEmailKey);
+                    var currentCnEmailList = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmail);
 
                     if (currentCnEmailList != null && currentCnEmailList.Value != null)
                     {

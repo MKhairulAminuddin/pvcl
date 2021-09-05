@@ -48,11 +48,11 @@ namespace xDC_Web.Controllers.Api
                     var getApprover = db.Config_Approver.Where(x => x.Username == User.Identity.Name);
                     var isMeApprover = getApprover.Any();
 
-                    var resultVM = new List<ViewFormHeaderModel>();
+                    var resultVM = new List<AmsdInflowFundGridModel>();
 
                     foreach (var item in result)
                     {
-                        resultVM.Add(new ViewFormHeaderModel
+                        resultVM.Add(new AmsdInflowFundGridModel
                         {
                             Id = item.Id,
                             FormType = item.FormType,
@@ -63,7 +63,7 @@ namespace xDC_Web.Controllers.Api
                             PreparedDate = item.PreparedDate,
                             ApprovedBy = item.ApprovedBy,
                             ApprovedDate = item.ApprovedDate,
-                            AdminEditted = item.AdminEditted,
+                            /*AdminEditted = item.AdminEditted,
                             AdminEdittedBy = item.AdminEdittedBy,
                             AdminEdittedDate = item.AdminEdittedDate,
 
@@ -77,7 +77,7 @@ namespace xDC_Web.Controllers.Api
 
 
                             
-                            IsCanAdminEdit = (User.IsInRole(Config.Acl.PowerUser) && !isMeApprover && item.FormStatus != Common.FormStatus.PendingApproval),
+                            IsCanAdminEdit = (User.IsInRole(Config.Acl.PowerUser) && !isMeApprover && item.FormStatus != Common.FormStatus.PendingApproval),*/
                             
                         });
                     }
@@ -124,11 +124,11 @@ namespace xDC_Web.Controllers.Api
                             ApprovedDate = x.Max(i=>i.ApprovedDate)
                         });
 
-                    var resultVM = new List<ViewFormHeaderModel>();
+                    var resultVM = new List<AmsdInflowFundGridModel>();
 
                     foreach (var item in result)
                     {
-                        resultVM.Add(new ViewFormHeaderModel
+                        resultVM.Add(new AmsdInflowFundGridModel
                         {
                             FormDate = item.SettlementDate,
                             Currency = item.Currency,

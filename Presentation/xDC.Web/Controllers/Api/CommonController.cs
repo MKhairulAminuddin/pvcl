@@ -132,8 +132,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var key = Common.DropdownConfigKeyMapping(3);
-                    var result = db.Config_Dropdown.Where(x => x.Key == key).ToList();
+                    var result = db.Config_Dropdown.Where(x => x.Key == Common.DropdownConfigKey.ISSD_TS_Currency).ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -152,8 +151,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var key = Common.DropdownConfigKeyMapping(1);
-                    var result = db.Config_Dropdown.Where(x => x.Key == key).ToList();
+                    var result = db.Config_Dropdown.Where(x => x.Key == Common.DropdownConfigKey.AMSD_IF_FundType).ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -172,8 +170,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var key = Common.DropdownConfigKeyMapping(2);
-                    var result = db.Config_Dropdown.Where(x => x.Key == key).ToList();
+                    var result = db.Config_Dropdown.Where(x => x.Key == Common.DropdownConfigKey.AMSD_IF_Bank).ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }

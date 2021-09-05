@@ -5,7 +5,24 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="kashflowDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="AMSD_InflowFund">
+        <EntityType Name="AMSD_IF">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FormType" Type="nvarchar" MaxLength="150" />
+          <Property Name="FormStatus" Type="nvarchar" MaxLength="150" />
+          <Property Name="Currency" Type="nvarchar" MaxLength="150" />
+          <Property Name="FormDate" Type="datetime" />
+          <Property Name="PreparedBy" Type="nvarchar" MaxLength="150" />
+          <Property Name="PreparedDate" Type="datetime" />
+          <Property Name="ApprovedBy" Type="nvarchar" MaxLength="150" />
+          <Property Name="ApprovedDate" Type="datetime" />
+          <Property Name="AdminEditted" Type="bit" Nullable="false" />
+          <Property Name="AdminEdittedBy" Type="nvarchar" MaxLength="150" />
+          <Property Name="AdminEdittedDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="AMSD_IF_Item">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -15,10 +32,8 @@
           <Property Name="Bank" Type="nvarchar" MaxLength="150" />
           <Property Name="Amount" Type="decimal" Precision="18" Scale="2" />
           <Property Name="LatestSubmission" Type="datetime" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
-          <Property Name="CreatedDate" Type="datetime" />
-          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
-          <Property Name="UpdatedDate" Type="datetime" />
+          <Property Name="ModifiedBy" Type="nvarchar" MaxLength="150" />
+          <Property Name="ModifiedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="App_Notification">
           <Key>
@@ -316,23 +331,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="AssignedBy" Type="nvarchar" MaxLength="150" />
           <Property Name="AssignedDate" Type="datetime" />
         </EntityType>
-        <EntityType Name="Form_Header">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="FormType" Type="nvarchar" MaxLength="150" />
-          <Property Name="FormStatus" Type="nvarchar" MaxLength="150" />
-          <Property Name="Currency" Type="nvarchar" MaxLength="150" />
-          <Property Name="FormDate" Type="datetime" />
-          <Property Name="PreparedBy" Type="nvarchar" MaxLength="150" />
-          <Property Name="PreparedDate" Type="datetime" />
-          <Property Name="ApprovedBy" Type="nvarchar" MaxLength="150" />
-          <Property Name="ApprovedDate" Type="datetime" />
-          <Property Name="AdminEditted" Type="bit" Nullable="false" />
-          <Property Name="AdminEdittedBy" Type="nvarchar" MaxLength="150" />
-          <Property Name="AdminEdittedDate" Type="datetime" />
-        </EntityType>
         <EntityType Name="Form_Workflow">
           <Key>
             <PropertyRef Name="Id" />
@@ -342,8 +340,7 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="FormType" Type="nvarchar" MaxLength="150" />
           <Property Name="RequestBy" Type="nvarchar" MaxLength="50" />
           <Property Name="RequestTo" Type="nvarchar" MaxLength="50" />
-          <Property Name="StartDate" Type="datetime" />
-          <Property Name="EndDate" Type="datetime" />
+          <Property Name="RecordedDate" Type="datetime" />
           <Property Name="WorkflowStatus" Type="nvarchar" MaxLength="150" />
           <Property Name="WorkflowNotes" Type="text" />
         </EntityType>
@@ -428,7 +425,8 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="kashflowDbModelStoreContainer">
-          <EntitySet Name="AMSD_InflowFund" EntityType="Self.AMSD_InflowFund" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AMSD_IF" EntityType="Self.AMSD_IF" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AMSD_IF_Item" EntityType="Self.AMSD_IF_Item" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="App_Notification" EntityType="Self.App_Notification" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetActiveDirectoryUsers" EntityType="Self.AspNetActiveDirectoryUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" Schema="dbo" store:Type="Tables" />
@@ -446,7 +444,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="FID_TS10_Approval" EntityType="Self.FID_TS10_Approval" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FID_TS10_OpeningBalance" EntityType="Self.FID_TS10_OpeningBalance" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FID_TS10_TradeItem" EntityType="Self.FID_TS10_TradeItem" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Form_Header" EntityType="Self.Form_Header" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Form_Workflow" EntityType="Self.Form_Workflow" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ISSD_Balance" EntityType="Self.ISSD_Balance" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ISSD_FormHeader" EntityType="Self.ISSD_FormHeader" Schema="dbo" store:Type="Tables" />
@@ -524,12 +521,9 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="Config_Key" EntityType="kashflowDbModel.Config_Key" />
           <EntitySet Name="Config_Approver" EntityType="kashflowDbModel.Config_Approver" />
           <EntitySet Name="App_Notification" EntityType="kashflowDbModel.App_Notification" />
-          <EntitySet Name="Form_Header" EntityType="kashflowDbModel.Form_Header" />
-          <EntitySet Name="AMSD_InflowFund" EntityType="kashflowDbModel.AMSD_InflowFund" />
           <EntitySet Name="ISSD_Balance" EntityType="kashflowDbModel.ISSD_Balance" />
           <EntitySet Name="ISSD_FormHeader" EntityType="kashflowDbModel.ISSD_FormHeader" />
           <EntitySet Name="ISSD_TradeSettlement" EntityType="kashflowDbModel.ISSD_TradeSettlement" />
-          <EntitySet Name="Form_Workflow" EntityType="kashflowDbModel.Form_Workflow" />
           <EntitySet Name="Config_Application" EntityType="kashflowDbModel.Config_Application" />
           <EntitySet Name="FID_TS10" EntityType="kashflowDbModel.FID_TS10" />
           <EntitySet Name="FID_TS10_TradeItem" EntityType="kashflowDbModel.FID_TS10_TradeItem" />
@@ -542,6 +536,9 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="EDW_TradeItem" EntityType="kashflowDbModel.EDW_TradeItem" />
           <EntitySet Name="FID_Treasury_Deposit" EntityType="kashflowDbModel.FID_Treasury_Deposit" />
           <EntitySet Name="FID_Treasury_MMI" EntityType="kashflowDbModel.FID_Treasury_MMI" />
+          <EntitySet Name="AMSD_IF" EntityType="kashflowDbModel.AMSD_IF" />
+          <EntitySet Name="AMSD_IF_Item" EntityType="kashflowDbModel.AMSD_IF_Item" />
+          <EntitySet Name="Form_Workflow" EntityType="kashflowDbModel.Form_Workflow" />
           </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -639,38 +636,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="NotificationUrl" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
-        <EntityType Name="Form_Header">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FormType" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="FormStatus" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="Currency" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="FormDate" Type="DateTime" Precision="3" />
-          <Property Name="PreparedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="PreparedDate" Type="DateTime" Precision="3" />
-          <Property Name="ApprovedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="ApprovedDate" Type="DateTime" Precision="3" />
-          <Property Name="AdminEditted" Type="Boolean" Nullable="false" />
-          <Property Name="AdminEdittedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="AdminEdittedDate" Type="DateTime" Precision="3" />
-        </EntityType>
-        <EntityType Name="AMSD_InflowFund">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FormId" Type="Int32" Nullable="false" />
-          <Property Name="FundType" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="Bank" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="LatestSubmission" Type="DateTime" Precision="3" />
-          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
-          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
-        </EntityType>
         <EntityType Name="ISSD_Balance">
           <Key>
             <PropertyRef Name="Id" />
@@ -722,20 +687,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="Remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-        </EntityType>
-        <EntityType Name="Form_Workflow">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FormId" Type="Int32" Nullable="false" />
-          <Property Name="FormType" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="RequestBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="RequestTo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="StartDate" Type="DateTime" Precision="3" />
-          <Property Name="EndDate" Type="DateTime" Precision="3" />
-          <Property Name="WorkflowStatus" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="WorkflowNotes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Config_Application">
           <Key>
@@ -929,6 +880,49 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
         </EntityType>
+        <EntityType Name="AMSD_IF">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FormType" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="FormStatus" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Currency" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="FormDate" Type="DateTime" Precision="3" />
+          <Property Name="PreparedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="PreparedDate" Type="DateTime" Precision="3" />
+          <Property Name="ApprovedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ApprovedDate" Type="DateTime" Precision="3" />
+          <Property Name="AdminEditted" Type="Boolean" Nullable="false" />
+          <Property Name="AdminEdittedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="AdminEdittedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="AMSD_IF_Item">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FormId" Type="Int32" Nullable="false" />
+          <Property Name="FundType" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Bank" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="LatestSubmission" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Form_Workflow">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FormId" Type="Int32" Nullable="false" />
+          <Property Name="FormType" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="RequestBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RequestTo" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RecordedDate" Type="DateTime" Precision="3" />
+          <Property Name="WorkflowStatus" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="WorkflowNotes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1040,40 +1034,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Form_Header">
-            <EntityTypeMapping TypeName="kashflowDbModel.Form_Header">
-              <MappingFragment StoreEntitySet="Form_Header">
-                <ScalarProperty Name="AdminEdittedDate" ColumnName="AdminEdittedDate" />
-                <ScalarProperty Name="AdminEdittedBy" ColumnName="AdminEdittedBy" />
-                <ScalarProperty Name="AdminEditted" ColumnName="AdminEditted" />
-                <ScalarProperty Name="ApprovedDate" ColumnName="ApprovedDate" />
-                <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
-                <ScalarProperty Name="PreparedDate" ColumnName="PreparedDate" />
-                <ScalarProperty Name="PreparedBy" ColumnName="PreparedBy" />
-                <ScalarProperty Name="FormDate" ColumnName="FormDate" />
-                <ScalarProperty Name="Currency" ColumnName="Currency" />
-                <ScalarProperty Name="FormStatus" ColumnName="FormStatus" />
-                <ScalarProperty Name="FormType" ColumnName="FormType" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="AMSD_InflowFund">
-            <EntityTypeMapping TypeName="kashflowDbModel.AMSD_InflowFund">
-              <MappingFragment StoreEntitySet="AMSD_InflowFund">
-                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
-                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="LatestSubmission" ColumnName="LatestSubmission" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
-                <ScalarProperty Name="Bank" ColumnName="Bank" />
-                <ScalarProperty Name="FundType" ColumnName="FundType" />
-                <ScalarProperty Name="FormId" ColumnName="FormId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="ISSD_Balance">
             <EntityTypeMapping TypeName="kashflowDbModel.ISSD_Balance">
               <MappingFragment StoreEntitySet="ISSD_Balance">
@@ -1124,21 +1084,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
                 <ScalarProperty Name="StockCode" ColumnName="StockCode" />
                 <ScalarProperty Name="InstrumentCode" ColumnName="InstrumentCode" />
                 <ScalarProperty Name="InstrumentType" ColumnName="InstrumentType" />
-                <ScalarProperty Name="FormId" ColumnName="FormId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Form_Workflow">
-            <EntityTypeMapping TypeName="kashflowDbModel.Form_Workflow">
-              <MappingFragment StoreEntitySet="Form_Workflow">
-                <ScalarProperty Name="WorkflowNotes" ColumnName="WorkflowNotes" />
-                <ScalarProperty Name="WorkflowStatus" ColumnName="WorkflowStatus" />
-                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
-                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
-                <ScalarProperty Name="RequestTo" ColumnName="RequestTo" />
-                <ScalarProperty Name="RequestBy" ColumnName="RequestBy" />
-                <ScalarProperty Name="FormType" ColumnName="FormType" />
                 <ScalarProperty Name="FormId" ColumnName="FormId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
@@ -1342,6 +1287,52 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
                 <ScalarProperty Name="Issuer" ColumnName="Issuer" />
                 <ScalarProperty Name="Dealer" ColumnName="Dealer" />
                 <ScalarProperty Name="CashflowType" ColumnName="CashflowType" />
+                <ScalarProperty Name="FormId" ColumnName="FormId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AMSD_IF">
+            <EntityTypeMapping TypeName="kashflowDbModel.AMSD_IF">
+              <MappingFragment StoreEntitySet="AMSD_IF">
+                <ScalarProperty Name="AdminEdittedDate" ColumnName="AdminEdittedDate" />
+                <ScalarProperty Name="AdminEdittedBy" ColumnName="AdminEdittedBy" />
+                <ScalarProperty Name="AdminEditted" ColumnName="AdminEditted" />
+                <ScalarProperty Name="ApprovedDate" ColumnName="ApprovedDate" />
+                <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
+                <ScalarProperty Name="PreparedDate" ColumnName="PreparedDate" />
+                <ScalarProperty Name="PreparedBy" ColumnName="PreparedBy" />
+                <ScalarProperty Name="FormDate" ColumnName="FormDate" />
+                <ScalarProperty Name="Currency" ColumnName="Currency" />
+                <ScalarProperty Name="FormStatus" ColumnName="FormStatus" />
+                <ScalarProperty Name="FormType" ColumnName="FormType" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AMSD_IF_Item">
+            <EntityTypeMapping TypeName="kashflowDbModel.AMSD_IF_Item">
+              <MappingFragment StoreEntitySet="AMSD_IF_Item">
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="LatestSubmission" ColumnName="LatestSubmission" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="Bank" ColumnName="Bank" />
+                <ScalarProperty Name="FundType" ColumnName="FundType" />
+                <ScalarProperty Name="FormId" ColumnName="FormId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Form_Workflow">
+            <EntityTypeMapping TypeName="kashflowDbModel.Form_Workflow">
+              <MappingFragment StoreEntitySet="Form_Workflow">
+                <ScalarProperty Name="WorkflowNotes" ColumnName="WorkflowNotes" />
+                <ScalarProperty Name="WorkflowStatus" ColumnName="WorkflowStatus" />
+                <ScalarProperty Name="RecordedDate" ColumnName="RecordedDate" />
+                <ScalarProperty Name="RequestTo" ColumnName="RequestTo" />
+                <ScalarProperty Name="RequestBy" ColumnName="RequestBy" />
+                <ScalarProperty Name="FormType" ColumnName="FormType" />
                 <ScalarProperty Name="FormId" ColumnName="FormId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>

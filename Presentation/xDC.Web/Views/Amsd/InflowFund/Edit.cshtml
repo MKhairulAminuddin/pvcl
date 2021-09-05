@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Inflow Fund";
-    ViewBag.Subtitle = "New";
+    ViewBag.Subtitle = "Edit";
 }
 
 <section class="content container-fluid">
@@ -11,49 +11,49 @@
             <div class="col-md-12">
                 <div class="box box-solid">
                     <div class="box-header">
-                            @(Html.DevExtreme().Button()
+                        @(Html.DevExtreme().Button()
                             .Type(ButtonType.Back)
                             .StylingMode(ButtonStylingMode.Contained)
                             .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
                             )
 
-                            @if (!Model.EnableAdminEditBtn)
-                            {
-                                <div style="display: inline-block; margin-right: 3px">
-                                    @(Html.DevExtreme().Button()
+                        @if (!Model.EnableAdminEditBtn)
+                        {
+                            <div style="display: inline-block; margin-right: 3px">
+                                @(Html.DevExtreme().Button()
                                     .ID("submitForApprovalBtn")
                                     .Text("Submit for Approval")
                                     .Icon("todo")
                                     .Type(ButtonType.Default)
                                     .StylingMode(ButtonStylingMode.Contained)
                                         )
-                                </div>
+                            </div>
 
-                                if (Model.EnableSaveAsDraftBtn)
-                                {
-                                    <div style="display: inline-block; margin-right: 3px">
-                                        @(Html.DevExtreme().Button()
+                            if (Model.EnableSaveAsDraftBtn)
+                            {
+                                <div style="display: inline-block; margin-right: 3px">
+                                    @(Html.DevExtreme().Button()
                                         .ID("saveAsDraftBtn")
                                         .Text("Save")
                                         .Icon("save")
                                         .Type(ButtonType.Normal)
                                         .StylingMode(ButtonStylingMode.Contained)
                                         )
-                                    </div>
-                                }
+                                </div>
                             }
-                            @if (Model.EnableAdminEditBtn)
-                            {
-                                <div style="display: inline-block; margin-right: 3px">
-                                    @(Html.DevExtreme().Button()
+                        }
+                        @if (Model.EnableAdminEditBtn)
+                        {
+                            <div style="display: inline-block; margin-right: 3px">
+                                @(Html.DevExtreme().Button()
                                     .ID("adminEditSaveChangesBtn")
                                     .Text("Save")
                                     .Icon("save")
                                     .Type(ButtonType.Default)
                                     .StylingMode(ButtonStylingMode.Contained)
                                     )
-                                </div>
-                            }
+                            </div>
+                        }
                     </div>
                     <div class="box-body">
                         <div class="row" style="margin-bottom: 10px;">
@@ -153,5 +153,5 @@
 
 @section scripts
 {
-    <script src="~/Scripts/app/amsd/inflowFund/new.js"></script>
+    <script src="~/Scripts/app/amsd/inflowFund/edit.js"></script>
 }

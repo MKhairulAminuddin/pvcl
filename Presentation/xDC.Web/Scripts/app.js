@@ -74,8 +74,8 @@
 
 var app = (function() {
     var _app = {};
-
-    _app.toast = function (message, toastType) {
+    
+    _app.toast = function (message, toastType = "info", delayTime = 1000) {
         var top = 0;
         var lastOffset = $(".dx-toast-content").last().offset();
         if (lastOffset != null) {
@@ -87,10 +87,11 @@ var app = (function() {
             top = window.innerHeight - top;
             top -= 20;
         }
+        
         window.DevExpress.ui.notify({
             message: message,
             type: toastType,
-            displayTime: 1000,
+            displayTime: delayTime,
             height: "auto",
             width: "auto",
             closeOnClick: false,
@@ -121,6 +122,10 @@ var app = (function() {
         return false;
     };
 
+    _app.getUrlId = function() {
+        return window.location.pathname.split("/").pop();
+    }
+
     _app.saveAllGrids = function () {
         for (var i = 0; i < arguments.length; i++) {
             arguments[i].saveEditData();
@@ -132,9 +137,9 @@ var app = (function() {
             arguments[i].option("dataSource", []);
         }
     }
-
-    var alertTag = $("#error_container");
+    
     _app.alertError = function (message, title) {
+        var alertTag = $("#error_container");
         var cls = 'alert-danger';
         var html = '<div class="alert ' + cls + ' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
         if (typeof title === 'undefined' || title === '') {
@@ -144,6 +149,7 @@ var app = (function() {
         alertTag.html(html);
     }
     _app.alertWarning = function (message, title) {
+        var alertTag = $("#error_container");
         var cls = 'alert-warning';
         var html = '<div class="alert ' + cls + ' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
         if (typeof title === 'undefined' || title === '') {
@@ -153,6 +159,7 @@ var app = (function() {
         alertTag.html(html);
     }
     _app.alertInfo = function (message, title) {
+        var alertTag = $("#error_container");
         var cls = 'alert-info';
         var html = '<div class="alert ' + cls + ' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
         if (typeof title === 'undefined' || title === '') {
@@ -162,6 +169,7 @@ var app = (function() {
         alertTag.html(html);
     }
     _app.alertSuccess = function (message, title) {
+        var alertTag = $("#error_container");
         var cls = 'alert-success';
         var html = '<div class="alert ' + cls + ' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
         if (typeof title === 'undefined' || title === '') {

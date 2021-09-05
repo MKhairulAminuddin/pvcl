@@ -26,27 +26,15 @@ namespace xDC_Web.Controllers
                 using (var db = new kashflowDBEntities())
                 {
                     var appConfigs = db.Config_Application.ToList();
-
-                    var cutOffTimeKey = Common.ApplicationConfigKeyMapping(1);
+                    
                     var cutOffTimeValue =
-                        appConfigs.FirstOrDefault(x => x.Key == cutOffTimeKey);
+                        appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.AMSD_IF_CutOffTime);
                     DateTime.TryParseExact(cutOffTimeValue.Value, "HH:mm",
                         System.Globalization.CultureInfo.InvariantCulture,
                         System.Globalization.DateTimeStyles.None, out var tryParseValue);
-
-                    var inflowFundNotificationKey = Common.ApplicationConfigKeyMapping(2);
-                    var inflowFundNotificationValue =
-                        appConfigs.FirstOrDefault(x => x.Key == inflowFundNotificationKey);
-                    bool.TryParse(inflowFundNotificationValue.Value, out var inflowFundNotificationValueParsed);
-
-                    var inflowFundAdminEditNotificationKey = Common.ApplicationConfigKeyMapping(3);
-                    var inflowFundAdminEditNotificationValue =
-                        appConfigs.FirstOrDefault(x => x.Key == inflowFundAdminEditNotificationKey);
-                    bool.TryParse(inflowFundAdminEditNotificationValue.Value, out var inflowFundAdminEditNotificationValueParsed);
-
-                    var contributionEmailKey = Common.ApplicationConfigKeyMapping(4);
+                    
                     var contributionEmailValue =
-                        appConfigs.FirstOrDefault(x => x.Key == contributionEmailKey);
+                        appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmail);
                     var emailList = new List<string>();
                     if (contributionEmailValue != null)
                     {
@@ -59,8 +47,6 @@ namespace xDC_Web.Controllers
                     NotificationConfigViewModel viewModel = new NotificationConfigViewModel()
                     {
                         InflowFundCutOffTime = tryParseValue,
-                        InflowFundEnableNotification = inflowFundNotificationValueParsed,
-                        InflowFundEnableAdminModificationNotification = inflowFundAdminEditNotificationValueParsed,
                         TradeSettlementContributionEmail = emailList
                     };
 

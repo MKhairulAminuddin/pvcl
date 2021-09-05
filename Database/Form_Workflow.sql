@@ -1,14 +1,13 @@
 ﻿CREATE TABLE [dbo].[Form_Workflow](
 	[Id] INT NOT NULL Identity(1,1) PRIMARY KEY, 
 	[FormId] INT NOT NULL,
-	[FormType] NVARCHAR(150) NULL, 
+	[FormType] NVARCHAR(150), 
 
-    [RequestBy] NVARCHAR(50) NULL, 
-	[RequestTo] NVARCHAR(50) NULL,
+    [RequestBy] NVARCHAR(50), 
+	[RequestTo] NVARCHAR(50),
 
-    [StartDate] DATETIME NULL, 
-    [EndDate] DATETIME NULL,
+    [RecordedDate] DATETIME, 
 
-	[WorkflowStatus] NVARCHAR(150) NULL,
-	[WorkflowNotes] TEXT NULL
+	[WorkflowStatus] NVARCHAR(150),
+	[WorkflowNotes] TEXT
 )

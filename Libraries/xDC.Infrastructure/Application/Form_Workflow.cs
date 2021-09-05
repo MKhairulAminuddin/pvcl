@@ -19,8 +19,7 @@ namespace xDC.Infrastructure.Application
         public string FormType { get; set; }
         public string RequestBy { get; set; }
         public string RequestTo { get; set; }
-        public Nullable<System.DateTime> StartDate { get; set; }
-        public Nullable<System.DateTime> EndDate { get; set; }
+        public Nullable<System.DateTime> RecordedDate { get; set; }
         public string WorkflowStatus { get; set; }
         public string WorkflowNotes { get; set; }
     }

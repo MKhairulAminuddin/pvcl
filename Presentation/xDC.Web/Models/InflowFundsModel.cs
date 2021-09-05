@@ -7,8 +7,9 @@ namespace xDC_Web.Models
     {
         public int Id { get; set; }
         public string FormType { get; set; }
-        public List<AMSD_InflowFund> AmsdInflowFunds { get; set; }
+        public List<AMSD_IF_Item> AmsdInflowFunds { get; set; }
         public string Approver { get; set; }
+        public string ApprovalNotes { get; set; }
     }
 
     public class FormApprovalModel

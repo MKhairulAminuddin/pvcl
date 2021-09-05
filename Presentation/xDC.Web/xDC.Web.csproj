@@ -279,6 +279,7 @@
     <Content Include="Scripts\app.js" />
     <Content Include="Scripts\app\admin\userManagement.js" />
     <Content Include="Scripts\app\admin\utility.js" />
+    <Content Include="Scripts\app\amsd\inflowFund\edit.js" />
     <Content Include="Scripts\app\amsd\inflowFund\view.js" />
     <Content Include="Scripts\app\amsd\inflowFund\new.js" />
     <Content Include="Scripts\app\amsd\index.js" />
@@ -576,6 +577,8 @@
     <Content Include="Views\Issd\TradeSettlement\PartF\Edit.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartF\New.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartF\View.cshtml" />
+    <Content Include="Views\Amsd\InflowFund\Edit.cshtml" />
+    <Content Include="Views\Shared\_SelectApproverModal.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -584,6 +587,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_GlobalResources\ErrorMessage.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ErrorMessage.resx</DependentUpon>
+    </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\DevExtremeBundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -669,6 +677,12 @@
       <Project>{87fa4c9c-f3bf-4cd4-83f2-0be4d31674e5}</Project>
       <Name>xDC.Utils</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\ErrorMessage.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>ErrorMessage.Designer.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

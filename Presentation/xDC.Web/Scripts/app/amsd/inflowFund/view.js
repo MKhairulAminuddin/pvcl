@@ -1,33 +1,87 @@
 ﻿(function ($, window, document) {
 
     $(function () {
-        var $inflowFundsGrid, $printBtn, $tbFormId, $tbFormStatus, $workflowGrid, $loadPanel;
+        //#region Variables
 
-        $("#approveBtn").on({
-            "click": function (e) {
-                cutOffTimeChecker();
-                $('#approvalNoteModal').modal('show');
+        var $inflowFundsGrid, $printBtn, $workflowGrid, $approvalNoteModal, $rejectionNoteModal, $viewWorkflowModal;
 
-                e.preventDefault();
-            }
-        });
+        $approvalNoteModal = $("#approvalNoteModal");
+        $rejectionNoteModal = $("#rejectionNoteModal");
+        $viewWorkflowModal = $("#viewWorkflowModal");
 
-        $("#rejectBtn").on({
-            "click": function (e) {
-                cutOffTimeChecker();
-                $('#rejectionNoteModal').modal('show');
+        var referenceUrl = {
+            loadWorkflow: window.location.origin + "/api/common/GetWorkflow/1/" + app.getUrlId(),
+            loadGrid: window.location.origin + "/api/amsd/GetInflowFunds/" + app.getUrlId(),
 
-                e.preventDefault();
-            }
-        });
+            checkCutOffTime: window.location.origin + "/api/amsd/IsViolatedCutOffTime",
 
-        $("#viewWorkflowBtn").on({
-            "click": function (e) {
-                $('#viewWorkflowModal').modal('show');
+            approvalRequest: window.location.origin + "/api/amsd/InflowFund/Approval",
+            approvalResponse: window.location.origin + "/amsd/inflowfund/view/",
 
-                e.preventDefault();
-            }
-        });
+            printRequest: window.location.origin + "/amsd/Print",
+            printResponse: window.location.origin + "/amsd/Printed/"
+        };
+
+        //#endregion
+        
+
+        //#region Data Source & Functions
+
+        var cutOffTimeChecker = function() {
+            $.ajax({
+                dataType: "json",
+                url: referenceUrl.checkCutOffTime,
+                method: "get",
+                success: function (data) {
+                    if (data) {
+                        $(".cutOffTimeNotify").text("Cut Off Time Violated").addClass("label label-danger");
+                    } else {
+                        $(".cutOffTimeNotify").text("").removeClass("label label-danger");
+                    }
+                },
+                fail: function (jqXHR, textStatus, errorThrown) {
+
+                },
+                complete: function (data) {
+
+                }
+            });
+        }
+
+        var postApproval = function(isApproved) {
+            var data = {
+                approvalNote: (isApproved)
+                    ? $("#approvalNoteTextBox").dxTextArea("instance").option("value")
+                    : $("#rejectionNoteTextBox").dxTextArea("instance").option("value"),
+                approvalStatus: isApproved,
+                formId: app.getUrlId()
+            };
+
+            $.ajax({
+                data: data,
+                dataType: "json",
+                url: referenceUrl.approvalRequest,
+                method: "post",
+                success: function (data) {
+                    window.location.href = referenceUrl.approvalResponse + data;
+                },
+                fail: function (jqXHR, textStatus, errorThrown) {
+                    app.alertError(textStatus + ": " + errorThrown);
+                },
+                complete: function (data) {
+                    if (isApproved) {
+                        $approvalNoteModal.modal("hide");
+                    } else {
+                        $rejectionNoteModal.modal("hide");
+                    }
+                }
+            });
+        }
+
+        //#endregion
+
+
+        //#region Widgets
 
         $printBtn = $("#printBtn").dxDropDownButton({
             text: "Print",
@@ -37,72 +91,49 @@
             dropDownOptions: {
                 width: 230
             },
-            onItemClick: function (e) {
-                if (e.itemData.id == 1) {
-                    $loadPanel.show();
-
-                    var data = {
-                        id: app.getUrlParameter("id"),
-                        isExportAsExcel: true
-                    };
-
-                    $.ajax({
-                        type: "POST",
-                        url: '/amsd/PrintInflowFund',
-                        data: data,
-                        dataType: "text",
-                        success: function (data) {
-                            var url = '/amsd/GetPrintInflowFund?id=' + data;
-                            window.location = url;
-                        },
-                        fail: function (jqXHR, textStatus, errorThrown) {
-                            $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
-                        },
-                        complete: function (data) {
-                            $loadPanel.hide();
-                        }
-                    });
-                    e.event.preventDefault();
-                } else {
-                    $loadPanel.show();
-
-                    var data = {
-                        id: app.getUrlParameter("id"),
-                        isExportAsExcel: false
-                    };
-
-                    $.ajax({
-                        type: "POST",
-                        url: '/amsd/PrintInflowFund',
-                        data: data,
-                        dataType: "text",
-                        success: function (data) {
-                            var url = '/amsd/GetPrintInflowFund?id=' + data;
-                            window.location = url;
-                        },
-                        fail: function (jqXHR, textStatus, errorThrown) {
-                            $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
-                        },
-                        complete: function (data) {
-                            $loadPanel.hide();
-                        }
-                    });
-                    e.event.preventDefault();
-                }
-                
-            },
             displayExpr: "name",
             keyExpr: "id",
             items: [
                 { id: 1, name: "Excel Workbook (*.xlsx)", icon: "fa fa-file-excel-o" },
-                { id: 4, name: "PDF", icon: "fa fa-file-pdf-o"}
-            ]
+                { id: 2, name: "PDF", icon: "fa fa-file-pdf-o" }
+            ],
+            onItemClick: function (e) {
+                app.toast("Generating...");
+
+                var data = {
+                    id: app.getUrlId(),
+                    isExportAsExcel: (e.itemData.id == 1)
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: referenceUrl.printRequest,
+                    data: data,
+                    dataType: "text",
+                    success: function (data) {
+                        var url = referenceUrl.printResponse + data;
+                        window.location = url;
+                    },
+                    fail: function (jqXHR, textStatus, errorThrown) {
+                        app.alertError(textStatus + ": " + errorThrown);
+                    },
+                    complete: function (data) {
+
+                    }
+                });
+
+                e.event.preventDefault();
+            }
         }).dxDropDownButton("instance");
         
+        //#endregion
+
+        //#region DataGrid
+
         $inflowFundsGrid = $("#inflowFundsGrid1").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: window.location.origin + "/api/amsd/GetInflowFunds?id=" + app.getUrlParameter('id')
+                loadUrl: referenceUrl.loadGrid
             }),
             columns: [
                 {
@@ -147,7 +178,7 @@
         $workflowGrid = $("#workflowGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: window.location.origin + "/api/common/GetWorkflow?id=" + app.getUrlParameter('id')
+                loadUrl: referenceUrl.loadWorkflow
             }),
             columns: [
                 {
@@ -188,33 +219,37 @@
             },
             wordWrapEnabled: true
         }).dxDataGrid("instance");
-        
+
+        //#endregion
+
+        //#region Event & Invocation
+
+        $("#approveBtn").on({
+            "click": function (e) {
+                cutOffTimeChecker();
+                $approvalNoteModal.modal("show");
+                e.preventDefault();
+            }
+        });
+
+        $("#rejectBtn").on({
+            "click": function (e) {
+                cutOffTimeChecker();
+                $rejectionNoteModal.modal("show");
+                e.preventDefault();
+            }
+        });
+
+        $("#viewWorkflowBtn").on({
+            "click": function (e) {
+                $viewWorkflowModal.modal("show");
+                e.preventDefault();
+            }
+        });
+
         $("#approveFormBtn").on({
             "click": function (e) {
-                $loadPanel.option("position", { of: "#approvalNoteModalContainer" });
-                $loadPanel.show();
-
-                var data = {
-                    approvalNote: $("#approvalNoteTextBox").dxTextArea("instance").option('value'),
-                    approvalStatus: true,
-                    formId: app.getUrlParameter('id')
-                };
-
-                $.ajax({
-                    data: data,
-                    dataType: 'json',
-                    url: window.location.origin + '/api/amsd/InflowFundsFormApproval',
-                    method: 'post',
-                    success: function (data) {
-                        window.location.href = window.location.origin + "/amsd/inflowfund/view?id=" + data;
-                    },
-                    fail: function (jqXHR, textStatus, errorThrown) {
-                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
-                    },
-                    complete: function (data) {
-                        $loadPanel.hide();
-                    }
-                });
+                postApproval(true);
 
                 e.preventDefault();
             }
@@ -222,55 +257,17 @@
 
         $("#rejectFormBtn").on({
             "click": function (e) {
-                $loadPanel.option("position", { of: "#rejectionNoteModalContainer" });
-                $loadPanel.show();
-
-                var data = {
-                    approvalNote: $("#rejectionNoteTextBox").dxTextArea("instance").option('value'),
-                    approvalStatus: false,
-                    formId: app.getUrlParameter('id')
-                };
-
-                $.ajax({
-                    data: data,
-                    dataType: 'json',
-                    url: window.location.origin + '/api/amsd/InflowFundsFormApproval',
-                    method: 'post',
-                    success: function (data) {
-                        window.location.href = window.location.origin + "/amsd/inflowfund/view?id=" + data;
-                    },
-                    fail: function (jqXHR, textStatus, errorThrown) {
-                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
-                    },
-                    complete: function (data) {
-                        $loadPanel.hide();
-                    }
-                });
+                postApproval(false);
 
                 e.preventDefault();
             }
         });
+
+        //#endregion
+
         
-        function cutOffTimeChecker() {
-            $.ajax({
-                dataType: 'json',
-                url: window.location.origin + '/api/amsd/IsViolatedCutOffTime',
-                method: 'get',
-                success: function (data) {
-                    if (data) {
-                        $(".cutOffTimeNotify").text("Cut Off Time Violated").addClass("label label-danger");
-                    } else {
-                        $(".cutOffTimeNotify").text("").removeClass("label label-danger");
-                    }
-                },
-                fail: function (jqXHR, textStatus, errorThrown) {
-
-                },
-                complete: function (data) {
-
-                }
-            });
-        }
+        
+        
 
     });
 }(window.jQuery, window, document));

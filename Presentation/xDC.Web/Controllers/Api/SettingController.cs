@@ -432,8 +432,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var cutOffTimeConfigKey = Common.ApplicationConfigKeyMapping(1);
-                    var result = db.Config_Application.FirstOrDefault(x => x.Key == cutOffTimeConfigKey);
+                    var result = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.AMSD_IF_CutOffTime);
 
                     if (result != null)
                     {
@@ -466,24 +465,9 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var config = db.Config_Application.ToList();
-
-                    var infFundCutOffTimeKey = Common.ApplicationConfigKeyMapping(1);
-                    var infFundCutOffTime = config.FirstOrDefault(x => x.Key == infFundCutOffTimeKey);
-                    infFundCutOffTime.Value = req.InflowFundCutOffTime.ToString("HH:mm");
-
-                    var infFundNotificationKey = Common.ApplicationConfigKeyMapping(2);
-                    var infFundNotification = config.FirstOrDefault(x => x.Key == infFundNotificationKey);
-                    infFundNotification.Value = req.InflowFundEnableNotification.ToString();
-
-                    var infFundAdminEditNotificationKey = Common.ApplicationConfigKeyMapping(3);
-                    var infFundAdminEditNotification = config.FirstOrDefault(x => x.Key == infFundAdminEditNotificationKey);
-                    if (infFundAdminEditNotification.Value != req.InflowFundEnableAdminModificationNotification.ToString())
-                    {
-                        infFundAdminEditNotification.Value = req.InflowFundEnableAdminModificationNotification.ToString();
-                        infFundAdminEditNotification.UpdatedBy = User.Identity.Name;
-                        infFundAdminEditNotification.UpdatedDate = DateTime.Now;
-                    }
                     
+                    var infFundCutOffTime = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.AMSD_IF_CutOffTime);
+                    infFundCutOffTime.Value = req.InflowFundCutOffTime.ToString("HH:mm");
 
                     db.SaveChanges();
 
@@ -510,9 +494,8 @@ namespace xDC_Web.Controllers.Api
                         var submittedEmailList = String.Join(";", req.TradeSettlementContributionEmail);
 
                         var config = db.Config_Application.ToList();
-
-                        var contributionEmailKey = Common.ApplicationConfigKeyMapping(4);
-                        var currentCnEmailList = config.FirstOrDefault(x => x.Key == contributionEmailKey);
+                        
+                        var currentCnEmailList = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmail);
 
                         if (currentCnEmailList.Value != submittedEmailList)
                         {
@@ -528,9 +511,8 @@ namespace xDC_Web.Controllers.Api
                     else
                     {
                         var config = db.Config_Application.ToList();
-
-                        var contributionEmailKey = Common.ApplicationConfigKeyMapping(4);
-                        var currentCnEmailList = config.FirstOrDefault(x => x.Key == contributionEmailKey);
+                        
+                        var currentCnEmailList = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmail);
                         
                         currentCnEmailList.Value = null;
                         currentCnEmailList.UpdatedBy = User.Identity.Name;

@@ -20,19 +20,19 @@ namespace xDC_Web.Extension.DocGenerator
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var getForm = db.Form_Header.FirstOrDefault(x => x.Id == formId);
+                    var getForm = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
 
                     if (getForm != null)
                     {
-                        var getInflowFunds = db.AMSD_InflowFund.Where(x => x.FormId == formId).ToList();
+                        var getInflowFunds = db.AMSD_IF_Item.Where(x => x.FormId == formId).ToList();
 
                         getForm.Id = getForm.Id;
                         getForm.PreparedBy = getForm.PreparedBy;
                         getForm.PreparedDate = getForm.PreparedDate.Value;
 
                         var getFormWorkflow = db.Form_Workflow
-                            .Where(x => (x.WorkflowStatus == "Approved" || x.WorkflowStatus == "Rejected") &&
-                                        x.FormId == getForm.Id).OrderByDescending(x => x.EndDate)
+                            .Where(x => (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected) && x.FormId == getForm.Id)
+                            .OrderByDescending(x => x.RecordedDate)
                             .FirstOrDefault();
 
                         IWorkbook workbook = new Workbook();
@@ -69,7 +69,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private IWorkbook GenerateDocument(IWorkbook workbook, Form_Header formHeader, Form_Workflow formWorkflow, List<AMSD_InflowFund> inflowFunds)
+        private IWorkbook GenerateDocument(IWorkbook workbook, AMSD_IF formHeader, Form_Workflow formWorkflow, List<AMSD_IF_Item> inflowFunds)
         {
             workbook.BeginUpdate();
             try

@@ -1,4 +1,4 @@
-﻿@model xDC_Web.Models.ViewInflowFundStatusForm
+﻿@model xDC_Web.Models.InflowFundStatusFormVM
 
 @{
     ViewBag.Title = "Inflow Fund";
@@ -20,37 +20,27 @@
                         .StylingMode(ButtonStylingMode.Contained)
                         .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
                         )
-                    @if (Model.ApprovePermission && (Model.FormStatus != "Approved" || Model.FormStatus != "Rejected"))
-                    {
-                        if (Model.FormStatus != "Approved" && Model.FormStatus != "Rejected")
-                        {
-                            @(Html.DevExtreme().Button()
-                                .ID("approveBtn")
-                                .Text("Approve")
-                                .Icon("check")
-                                .Type(ButtonType.Success)
-                                .StylingMode(ButtonStylingMode.Contained)
-                                )
-                            @(Html.DevExtreme().Button()
-                                .ID("rejectBtn")
-                                .Text("Reject")
-                                .Icon("remove")
-                                .Type(ButtonType.Normal)
-                                .StylingMode(ButtonStylingMode.Contained)
-                                )
-                        }
-                    }
-                    @if (Model.AdminEditPermission)
+
+                    @if (Model.ApprovePermission)
                     {
                         @(Html.DevExtreme().Button()
-                            .Text("Admin Edit")
-                            .Icon("edit")
-                            .Type(ButtonType.Default)
+                            .ID("approveBtn")
+                            .Text("Approve")
+                            .Icon("check")
+                            .Type(ButtonType.Success)
                             .StylingMode(ButtonStylingMode.Contained)
-                            .OnClick(@<text> function(){ window.location = "@Url.Action("EditInflowFundsForm", "Amsd")?id=@Model.Id"; } </text>)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("rejectBtn")
+                            .Text("Reject")
+                            .Icon("remove")
+                            .Type(ButtonType.Normal)
+                            .StylingMode(ButtonStylingMode.Contained)
                             )
                     }
+
                     <div id="printBtn"></div>
+                     
                     @(Html.DevExtreme().Button()
                         .ID("viewWorkflowBtn")
                         .Text("Workflow Information")

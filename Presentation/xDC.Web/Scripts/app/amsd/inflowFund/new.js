@@ -17,7 +17,36 @@
         });
         
 
-        var $inflowFundsGrid, $approverDropdown, $historyBtn, $submitBtn, $tbFormId, $tbFormStatus, $loadPanel;
+        var $inflowFundsGrid, $approverDropdown, $historyBtn, $submitBtn, $tbFormId, $tbFormStatus, $approvalNotes;
+
+        var referenceUrl = {
+
+        };
+
+        var postData = function() {
+            var data = {
+                amsdInflowFunds: $inflowFundsGrid.getDataSource().items(),
+                approver: $approverDropdown.option('value'),
+                approvalNotes: $approvalNotes.option("value")
+            };
+
+            $.ajax({
+                data: data,
+                dataType: 'json',
+                url: window.location.origin + '/api/amsd/InflowFund/New',
+                method: 'post',
+                success: function (data) {
+                    window.location.href = window.location.origin + "/amsd/InflowFund/View/" + data;
+                },
+                fail: function (jqXHR, textStatus, errorThrown) {
+                    app.alertError(textStatus + ': ' + errorThrown);
+                },
+                complete: function (data) {
+
+                }
+            });
+        }
+
 
         $approverDropdown = $("#approverDropdown").dxSelectBox({
             dataSource: approverStore,
@@ -32,7 +61,12 @@
                     "</div>";
             }
         }).dxSelectBox("instance");
+
+        $approvalNotes = $("#approvalNotes").dxTextArea({
+            height: 90
+        }).dxTextArea("instance");
         
+
         $("#submitForApprovalBtn").on({
             "click": function (e) {
                 $inflowFundsGrid.saveEditData().then(function () {
@@ -69,39 +103,8 @@
 
         $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                $loadPanel.option("position", { of: "#selectApproverModalContainer" });
-                $loadPanel.show();
 
-                var data;
-
-                if (app.getUrlParameter('id') != false) {
-                    data = {
-                        id: app.getUrlParameter('id'),
-                        amsdInflowFunds: $inflowFundsGrid.getDataSource().items(),
-                        approver: $approverDropdown.option('value')
-                    };
-                } else {
-                    data = {
-                        amsdInflowFunds: $inflowFundsGrid.getDataSource().items(),
-                        approver: $approverDropdown.option('value')
-                    };
-                }
-                
-                $.ajax({
-                    data: data,
-                    dataType: 'json',
-                    url: window.location.origin + '/api/amsd/NewInflowFundsForm',
-                    method: 'post',
-                    success: function (data) {
-                        window.location.href = window.location.origin + "/amsd/inflowfund/view?id=" + data;
-                    },
-                    fail: function (jqXHR, textStatus, errorThrown) {
-                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
-                    },
-                    complete: function (data) {
-                        $loadPanel.hide();
-                    }
-                });
+                postData();
 
                 e.preventDefault();
             }
@@ -115,36 +118,7 @@
                         $("#error_container").bs_warning("Please key in at least one item.");
                     }
                     else {
-                        $loadPanel.option("position", { of: "#formContainer" });
-                        $loadPanel.show();
-
-                        var data;
-                        if (app.getUrlParameter('id') != false) {
-                            data = {
-                                id: app.getUrlParameter('id'),
-                                amsdInflowFunds: $inflowFundsGrid.getDataSource().items()
-                            };
-                        } else {
-                            data = {
-                                amsdInflowFunds: $inflowFundsGrid.getDataSource().items()
-                            };
-                        }
-
-                        $.ajax({
-                            data: data,
-                            dataType: 'json',
-                            url: window.location.origin + '/api/amsd/NewInflowFundsFormDraft',
-                            method: 'post',
-                            success: function (data) {
-                                window.location.href = window.location.origin + "/amsd";
-                            },
-                            fail: function (jqXHR, textStatus, errorThrown) {
-                                $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
-                            },
-                            complete: function (data) {
-                                $loadPanel.hide();
-                            }
-                        });
+                        postData();
                     }
 
                 });
@@ -152,151 +126,68 @@
                 e.preventDefault();
             }
         });
-
-        if (app.getUrlParameter('id') != false) {
-            $inflowFundsGrid = $("#inflowFundsGrid1").dxDataGrid({
-                dataSource: DevExpress.data.AspNet.createStore({
-                    key: "id",
-                    loadUrl: window.location.origin + "/api/amsd/GetInflowFunds?id=" + app.getUrlParameter('id'),
-                    insertUrl: window.location.origin + "/api/amsd/insertInflowFund",
-                    updateUrl: window.location.origin + "/api/amsd/updateInflowFund",
-                    deleteUrl: window.location.origin + "/api/amsd/deleteInflowFund"
-                }),
-                columns: [
+        
+        $inflowFundsGrid = $("#inflowFundsGrid1").dxDataGrid({
+            dataSource: [],
+            columns: [
+                {
+                    dataField: "fundType",
+                    caption: "Fund Types",
+                    lookup: {
+                        dataSource: fundTypeStore,
+                        valueExpr: "value",
+                        displayExpr: "value"
+                    }
+                },
+                {
+                    dataField: "bank",
+                    caption: "Bank",
+                    lookup: {
+                        dataSource: bankStore,
+                        valueExpr: "value",
+                        displayExpr: "value"
+                    }
+                },
+                {
+                    dataField: "amount",
+                    caption: "Amount",
+                    dataType: "number",
+                    format: {
+                        type: "fixedPoint",
+                        precision: 2
+                    }
+                }
+            ],
+            showBorders: true,
+            height: 300,
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowDeleting: true,
+                allowAdding: true
+            },
+            onRowUpdated: function (e) {
+                console.log(e);
+            },
+            summary: {
+                totalItems: [
                     {
-                        dataField: "fundType",
-                        caption: "Fund Types",
-                        lookup: {
-                            dataSource: fundTypeStore,
-                            valueExpr: "value",
-                            displayExpr: "value"
-                        }
+                        column: "type",
+                        displayFormat: "TOTAL"
                     },
                     {
-                        dataField: "bank",
-                        caption: "Bank",
-                        lookup: {
-                            dataSource: bankStore,
-                            valueExpr: "value",
-                            displayExpr: "value"
-                        }
-                    },
-                    {
-                        dataField: "amount",
-                        caption: "Amount",
-                        dataType: "number",
-                        format: {
+                        column: "amount",
+                        summaryType: "sum",
+                        displayFormat: "{0}",
+                        valueFormat: {
                             type: "fixedPoint",
                             precision: 2
                         }
                     }
-                ],
-                showBorders: true,
-                height: 300,
-                editing: {
-                    mode: "batch",
-                    allowUpdating: true,
-                    allowDeleting: true,
-                    allowAdding: true
-                },
-                onRowUpdated: function (e) {
-                    console.log(e);
-                },
-                onRowInserting: function (e) {
-                    e.data["formId"] = app.getUrlParameter('id');
-                    
-                    e.cancel = false;
-                },
-                summary: {
-                    totalItems: [
-                        {
-                            column: "type",
-                            displayFormat: "TOTAL"
-                        },
-                        {
-                            column: "amount",
-                            summaryType: "sum",
-                            displayFormat: "{0}",
-                            valueFormat: {
-                                type: "fixedPoint",
-                                precision: 2
-                            }
-                        }
-                    ]
-                }
-            }).dxDataGrid("instance");
-        } else {
-            $inflowFundsGrid = $("#inflowFundsGrid1").dxDataGrid({
-                dataSource: [],
-                columns: [
-                    {
-                        dataField: "fundType",
-                        caption: "Fund Types",
-                        lookup: {
-                            dataSource: fundTypeStore,
-                            valueExpr: "value",
-                            displayExpr: "value"
-                        }
-                    },
-                    {
-                        dataField: "bank",
-                        caption: "Bank",
-                        lookup: {
-                            dataSource: bankStore,
-                            valueExpr: "value",
-                            displayExpr: "value"
-                        }
-                    },
-                    {
-                        dataField: "amount",
-                        caption: "Amount",
-                        dataType: "number",
-                        format: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    }
-                ],
-                showBorders: true,
-                height: 300,
-                editing: {
-                    mode: "batch",
-                    allowUpdating: true,
-                    allowDeleting: true,
-                    allowAdding: true
-                },
-                onRowUpdated: function (e) {
-                    console.log(e);
-                },
-                summary: {
-                    totalItems: [
-                        {
-                            column: "type",
-                            displayFormat: "TOTAL"
-                        },
-                        {
-                            column: "amount",
-                            summaryType: "sum",
-                            displayFormat: "{0}",
-                            valueFormat: {
-                                type: "fixedPoint",
-                                precision: 2
-                            }
-                        }
-                    ]
-                }
-            }).dxDataGrid("instance");
-        }
-
-        $loadPanel = $("#loadpanel").dxLoadPanel({
-            shadingColor: "rgba(0,0,0,0.4)",
-            visible: false,
-            showIndicator: true,
-            showPane: true,
-            shading: true,
-            closeOnOutsideClick: false
-        }).dxLoadPanel("instance");
-
+                ]
+            }
+        }).dxDataGrid("instance");
+        
         function cutOffTimeChecker() {
             $.ajax({
                 dataType: 'json',

@@ -5,9 +5,9 @@ using System.Web;
 
 namespace xDC_Web.ViewModels
 {
-    public class AmsdViewModel
+    public class AmsdLandingPageVM
     {
-        public bool isAllowedToCreateForm { get; set; }
+        public bool EnableCreateForm { get; set; }
     }
 
     public class ISSDLandingPageViewModel

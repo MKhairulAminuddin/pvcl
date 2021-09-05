@@ -2,7 +2,28 @@
 
     $(function () {
 
-        var $amsdGrid, $newInflowFundBtn, $loadPanel;
+        var $amsdGrid, $newInflowFundBtn, $gridFilterDropdown;
+
+        var statuses = [
+            "All",
+            "Draft",
+            "Pending Approval",
+            "Approved",
+            "Rejected"
+        ];
+
+        var referenceUrl = {
+            loadAmsdGrid: window.location.origin + "/api/amsd/inflowfund",
+
+            deleteForm: window.location.origin + "/api/amsd/inflowfund",
+            
+
+            editPageRedirect: window.location.origin + "/amsd/inflowfund/edit/",
+            viewPageRedirect: window.location.origin + "/amsd/inflowfund/view/",
+
+            printRequest: window.location.origin + "/amsd/Print",
+            printResponse: window.location.origin + "/amsd/Printed",
+        };
 
         $newInflowFundBtn = $("#newInflowFundBtn").dxButton({
             text: "New Inflow Fund",
@@ -21,7 +42,7 @@
                         window.location = window.location.origin + "/amsd/inflowfund/new";
                     }
                 }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                    app.alertError(textStatus + ': ' + errorThrown);
                 });
             } 
         }).dxButton("instance");
@@ -29,7 +50,7 @@
         $amsdGrid = $("#amsdGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: window.location.origin + "/api/amsd/GetAmsdForms"
+                loadUrl: referenceUrl.loadAmsdGrid
             }),
             columns: [
                 {
@@ -73,23 +94,23 @@
                     width: 110,
                     buttons: [
                         {
-                            hint: "Edit Draft",
+                            hint: "Edit",
                             icon: "fa fa-pencil-square",
                             cssClass: "dx-datagrid-command-btn",
                             visible: function (e) {
-                                return (e.row.data.formStatus == "Draft" && e.row.data.isFormOwner);
+                                return e.row.data.enableEdit;
                             },
                             onClick: function (e) {
-                                window.location.href = "/amsd/inflowfund/edit?id=" + e.row.data.id;
+                                window.location.href = referenceUrl.editPageRedirect + e.row.data.id;
                                 e.event.preventDefault();
                             }
                         },
                         {
-                            hint: "Delete Draft",
+                            hint: "Delete",
                             icon: "fa fa-trash-o",
                             cssClass: "dx-datagrid-command-btn text-red",
                             visible: function (e) {
-                                return (e.row.data.formStatus == "Draft" && e.row.data.isFormOwner);
+                                return e.row.data.enableDelete;
                             },
                             onClick: function (e) {
                                 if (!confirm("Do you really want to delete this?")) {
@@ -101,14 +122,14 @@
 
                                     $.ajax({
                                         type: "delete",
-                                        url: window.location.origin + '/api/amsd/DeleteInflowFundDraftForm',
+                                        url: referenceUrl.deleteForm,
                                         data: data,
                                         success: function (data) {
-                                            $("#error_container").bs_success("Draft deleted");
+                                            app.toast("Form Deleted!", "warning");
                                             $amsdGrid.refresh();
                                         },
                                         fail: function (jqXHR, textStatus, errorThrown) {
-                                            $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                                            app.alertError(textStatus + ': ' + errorThrown);
                                         }
                                     });
                                     e.event.preventDefault();
@@ -116,38 +137,11 @@
                             }
                         },
                         {
-                            hint: "Resubmit",
-                            icon: "fa fa-repeat",
-                            cssClass: "dx-datagrid-command-btn",
-                            visible: function (e) {
-                                return (e.row.data.isResubmitEnabled);
-                            },
-                            onClick: function (e) {
-                                window.location.href = "/amsd/inflowfund/edit?id=" + e.row.data.id;
-                                e.event.preventDefault();
-                            }
-                        },
-                        {
-                            hint: "Admin Edit",
-                            icon: "fa fa-pencil-square-o",
-                            cssClass: "dx-datagrid-command-btn text-red",
-                            visible: function (e) {
-                                return (e.row.data.isCanAdminEdit);
-                            },
-                            onClick: function (e) {
-                                window.location.href = "/amsd/inflowfund/edit?id=" + e.row.data.id;
-                                e.event.preventDefault();
-                            }
-                        },
-                        {
-                            hint: "View Form",
+                            hint: "View",
                             icon: "fa fa-eye",
                             cssClass: "dx-datagrid-command-btn",
-                            visible: function (e) {
-                                return (e.row.data.formStatus != "Draft");
-                            },
                             onClick: function (e) {
-                                window.location.href = "/amsd/InflowFund/View?id=" + e.row.data.id;
+                                window.location.href = referenceUrl.viewPageRedirect + e.row.data.id;
                                 e.event.preventDefault();
                             }
                         },
@@ -156,11 +150,10 @@
                             icon: "fa fa-file-excel-o",
                             cssClass: "dx-datagrid-command-btn text-green",
                             visible: function (e) {
-                                return (e.row.data.formStatus != "Draft");
+                                return e.row.data.enablePrint;
                             },
                             onClick: function (e) {
-                                $loadPanel.option("position", { of: "#amsdGrid" });
-                                $loadPanel.show();
+                                app.toast("Generating...");
 
                                 var data = {
                                     id: e.row.data.id,
@@ -169,18 +162,16 @@
 
                                 $.ajax({
                                     type: "POST",
-                                    url: '/amsd/PrintInflowFund',
+                                    url: referenceUrl.printRequest,
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
-                                        var url = '/amsd/GetPrintInflowFund?id=' + data;
-                                        window.location = url;
+                                        window.location = referenceUrl.printPageRedirect + data;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
-                                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                                        app.alertError(textStatus + ': ' + errorThrown);
                                     },
                                     complete:function(data) {
-                                        $loadPanel.hide();
                                     }
                                 });
                                 e.event.preventDefault();
@@ -191,11 +182,10 @@
                             icon: "fa fa-file-pdf-o",
                             cssClass: "dx-datagrid-command-btn text-orange",
                             visible: function (e) {
-                                return (e.row.data.formStatus != "Draft");
+                                return e.row.data.enablePrint;
                             },
                             onClick: function (e) {
-                                $loadPanel.option("position", { of: "#amsdGrid" });
-                                $loadPanel.show();
+                                app.toast("Generating...");
 
                                 var data = {
                                     id: e.row.data.id,
@@ -204,18 +194,17 @@
 
                                 $.ajax({
                                     type: "POST",
-                                    url: '/amsd/PrintInflowFund',
+                                    url: referenceUrl.printRequest,
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
-                                        var url = '/amsd/GetPrintInflowFund?id=' + data;
-                                        window.location = url;
+                                        window.location = referenceUrl.printPageRedirect + data;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
-                                        $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                                        app.alertError(textStatus + ': ' + errorThrown);
                                     },
                                     complete: function (data) {
-                                        $loadPanel.hide();
+
                                     }
                                 });
                                 e.event.preventDefault();
@@ -224,34 +213,53 @@
                     ]
                 }
             ],
-            editing: {
-                mode: "row",
-                allowUpdating: false,
-                allowDeleting: false,
-                allowAdding: false
-            },
             onRowPrepared: function (e) {
                 if (e.rowType == "data") {
-                    if (e.data.isFormPendingMyApproval) {
+                    if (e.data.isPendingMyApproval) {
                         e.rowElement.css("background-color", "#FFEBEE");
                     } 
-                    if (e.data.isMyFormRejected) {
+                    if (e.data.isRejectedForm) {
                         e.rowElement.css("background-color", "#FFEBEE");
                     }
                 }
             },
+            showRowLines: true,
+            rowAlternationEnabled: false,
+            showBorders: true,
+            allowColumnReordering: true,
+            allowColumnResizing: true,
+            sorting: {
+                mode: "multiple",
+                showSortIndexes: true
+            },
+            columnFixing: {
+                enabled: true
+            },
+            headerFilter: { visible: true },
+            pager: {
+                infoText: "Page {0} of {1} ({2} items)",
+                showPageSizeSelector: true,
+                allowedPageSizes: [10, 20, 50],
+                showNavigationButtons: true,
+                showInfo: true
+            },
+            paging: {
+                pageSize: 10,
+                pageIndex: 0
+            },
+            wordWrapEnabled: true
         }).dxDataGrid("instance");
+        
 
-        $amsdGrid.option(dxGridUtils.viewOnlyGridConfig);
-
-        $loadPanel = $("#loadpanel").dxLoadPanel({
-            shadingColor: "rgba(0,0,0,0.4)",
-            visible: false,
-            showIndicator: true,
-            showPane: true,
-            shading: true,
-            closeOnOutsideClick: false
-        }).dxLoadPanel("instance");
-
+        $gridFilterDropdown = $("#gridFilterDropdown").dxSelectBox({
+            dataSource: statuses,
+            value: statuses[0],
+            onValueChanged: function (data) {
+                if (data.value == "All")
+                    $amsdGrid.clearFilter();
+                else
+                    $amsdGrid.filter(["formStatus", "=", data.value]);
+            }
+        });
     });
 }(window.jQuery, window, document));

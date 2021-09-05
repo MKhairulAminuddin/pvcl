@@ -316,11 +316,11 @@ namespace xDC_Web.Controllers.Api
                     }
 
                     // AMSD - Inflow Funds
-                    var submittedAmsdForms = db.Form_Header.FirstOrDefault(x =>
+                    var submittedAmsdForms = db.AMSD_IF.FirstOrDefault(x =>
                         DbFunctions.TruncateTime(x.ApprovedDate) == reportDateParsed);
                     if (submittedAmsdForms != null)
                     {
-                        var inflowFunds = db.AMSD_InflowFund.Where(x => x.FormId == submittedAmsdForms.Id).GroupBy(x => new { x.Bank}).Select(x => new
+                        var inflowFunds = db.AMSD_IF_Item.Where(x => x.FormId == submittedAmsdForms.Id).GroupBy(x => new { x.Bank}).Select(x => new
                         {
                             Bank = x.Key.Bank,
                             Amount = x.Sum(y => y.Amount)
@@ -1321,11 +1321,11 @@ namespace xDC_Web.Controllers.Api
                                 : Common.FormStatus.Rejected;
 
                             db.SaveChanges();
-                            
-                            new WorkflowService().ApprovalFeedbackWorkflow(form.Id, form.FormStatus, input.ApprovalNote, form.FormType);
-                            new MailService().SendApprovalStatus(form.Id, form.FormType, form.FormStatus, form.PreparedBy, input.ApprovalNote);
+
                             new NotificationService().NotifyApprovalResult(form.PreparedBy, form.Id, form.ApprovedBy, form.FormType, form.FormStatus);
-                            
+                            new MailService().SendApprovalStatus(form.Id, form.FormType, form.FormStatus, form.PreparedBy, input.ApprovalNote);
+                            new WorkflowService().ApprovalResponse(form.Id, form.FormStatus, input.ApprovalNote, form.FormType, form.PreparedBy, form.ApprovedBy);
+
                             return Request.CreateResponse(HttpStatusCode.Accepted, input.FormId);
                         }
                         else

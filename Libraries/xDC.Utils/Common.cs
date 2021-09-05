@@ -208,7 +208,7 @@ namespace xDC.Utils
             switch (formType)
             {
                 case FormType.AMSD_IF:
-                    return "../amsd/InflowFundsFormStatus?id=";
+                    return "../amsd/InflowFund/View/";
 
                 case FormType.ISSD_TS_A:
                     return "../issd/TradeSettlement/PartA/View/";
@@ -241,8 +241,7 @@ namespace xDC.Utils
             switch (formType)
             {
                 case FormType.AMSD_IF:
-                    return "/amsd/InflowFundsFormStatus?id=";
-
+                    return "/amsd/InflowFund/View/";
                 case FormType.ISSD_TS_A:
                     return "/issd/TradeSettlement/PartA/View/";
                 case FormType.ISSD_TS_B:
@@ -261,37 +260,26 @@ namespace xDC.Utils
             }
             return String.Empty;
         }
-
-        public static string DropdownConfigKeyMapping(int value)
+        
+        public static class DropdownConfigKey
         {
-            switch (value)
-            {
-                case 1:
-                    return "Amsd.InflowFunds.FundType";
-                case 2:
-                    return "Amsd.InflowFunds.Bank";
-                case 3:
-                    return "ISSD.TradeSettlement.Currency";
-            }
-            return String.Empty;
+            public const string AMSD_IF_FundType = "AMSD.InflowFunds.FundType";
+            public const string AMSD_IF_Bank = "AMSD.InflowFunds.Bank";
+            public const string ISSD_TS_Currency = "ISSD.TradeSettlement.Currency";
         }
 
-        public static string ApplicationConfigKeyMapping(int value)
+        public static class AppConfigKey
         {
-            switch (value)
-            {
-                case 1:
-                    return "Amsd.InflowFunds.CutOffTime";
-                case 2:
-                    return "Amsd.InflowFunds.Notification";
-                case 3:
-                    return "Amsd.InflowFunds.AdminEditNotification";
-                case 4:
-                    return "Issd.TradeSettlement.ContributionEmail";
+            public const string AMSD_IF_CutOffTime = "Amsd.InflowFunds.CutOffTime";
+            public const string AMSD_IF_Notification = "Amsd.InflowFunds.Notification";
 
+            public const string ISSD_TS_CnEmail = "Issd.TradeSettlement.ContributionEmail";
+        }
 
-            }
-            return String.Empty;
+        public static class  CutOffViolationAction
+        {
+            public const string Approval = "Approval";
+            public const string Submission = "Submission";
         }
 
         public static string GetFileExt(FileStream fs)

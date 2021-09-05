@@ -12,7 +12,7 @@ namespace xDC.Infrastructure.Application
     using System;
     using System.Collections.Generic;
     
-    public partial class Form_Header
+    public partial class AMSD_IF
     {
         public int Id { get; set; }
         public string FormType { get; set; }

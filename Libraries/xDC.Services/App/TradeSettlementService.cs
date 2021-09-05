@@ -33,19 +33,19 @@ namespace xDC.Services.App
             new WorkflowService().SubmitForApprovalWorkflow(formId, formType, notes);
         }
 
-        public static void NotifyPreparer(int formId, string formType, string formStatus, string preparer, string approvedBy, string approvalNotes)
+        public static void NotifyPreparer(int formId, string formType, string formStatus, string preparedBy, string approvedBy, string approvalNotes)
         {
-            new NotificationService().NotifyApprovalResult(preparer, formId, approvedBy, formType, formStatus);
-            new MailService().SendApprovalStatus(formId, formType, formStatus, preparer, approvalNotes);
+            new NotificationService().NotifyApprovalResult(preparedBy, formId, approvedBy, formType, formStatus);
+            new MailService().SendApprovalStatus(formId, formType, formStatus, preparedBy, approvalNotes);
             new MailService().ContributionCreditedTradeSettlement(formId);
-            new WorkflowService().ApprovalFeedbackWorkflow(formId, formStatus, approvalNotes, formType);
+            new WorkflowService().ApprovalResponse(formId, formStatus, approvalNotes, formType, preparedBy, approvedBy);
         }
 
         public static List<Form_Workflow> GetWorkflow(kashflowDBEntities db, int formId)
         {
             var result = db.Form_Workflow
                             .Where(x => x.FormId == formId)
-                            .OrderByDescending(x => x.EndDate)
+                            .OrderByDescending(x => x.RecordedDate)
                             .ToList();
 
             return result;
