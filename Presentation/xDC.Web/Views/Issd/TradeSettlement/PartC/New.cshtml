@@ -1,7 +1,7 @@
-﻿@model xDC_Web.ViewModels.ViewTradeSettlementFormViewModel
+﻿ @model xDC_Web.ViewModels.TradeSettlementFormVM
 @{
     ViewBag.NewTitle = "Trade Settlement";
-    ViewBag.Subtitle = "Part C - Payment/Receipt MTM, FX Settlement";
+    ViewBag.Subtitle = "Part C - REPO";
 }
 
 <section class="content container-fluid">
@@ -11,26 +11,26 @@
                 <div class="box box-solid">
                     <div class="box-header">
                         @(Html.DevExtreme().Button()
-                            .Type(ButtonType.Back)
-                            .StylingMode(ButtonStylingMode.Contained)
-                            .OnClick(@<text> function(){ window.location = "@Url.Action("TradeSettlement", "Issd")"; } </text>)
-                            )
+                                    .Type(ButtonType.Back)
+                                    .StylingMode(ButtonStylingMode.Contained)
+                                    .OnClick(@<text> function(){ window.location = "@Url.Action("TradeSettlement", "Issd")"; } </text>)
+                                    )
                         @(Html.DevExtreme().Button()
-                            .ID("submitForApprovalBtn")
-                            .Text("Submit for Approval")
-                            .Icon("todo")
-                            .UseSubmitBehavior(true)
-                            .Type(ButtonType.Default)
-                            .StylingMode(ButtonStylingMode.Contained)
-                            )
+                                    .ID("submitForApprovalBtn")
+                                    .Text("Submit for Approval")
+                                    .Icon("todo")
+                                    .UseSubmitBehavior(true)
+                                    .Type(ButtonType.Default)
+                                    .StylingMode(ButtonStylingMode.Contained)
+                                    )
                         @(Html.DevExtreme().Button()
-                            .ID("saveAsDraftBtn")
-                            .Text("Save")
-                            .Icon("save")
-                            .UseSubmitBehavior(true)
-                            .Type(ButtonType.Normal)
-                            .StylingMode(ButtonStylingMode.Contained)
-                            )
+                                    .ID("saveAsDraftBtn")
+                                    .Text("Save")
+                                    .Icon("save")
+                                    .UseSubmitBehavior(true)
+                                    .Type(ButtonType.Normal)
+                                    .StylingMode(ButtonStylingMode.Contained)
+                                    )
                     </div>
                     <div class="box-body">
                         <div class="dx-fieldset">
@@ -89,13 +89,8 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div id="tabpanel-container" style="background-color: white;">
-                                        <div data-options="dxTemplate : { name: 'mtmTab' }" style="padding-top: 10px; overflow: auto">
-
-                                            <div id="mtmGrid" class="grid-container" style="width: 100%"></div>
-                                        </div>
-                                        <div data-options="dxTemplate : { name: 'fxSettlementTab' }" style="padding-top: 10px; overflow: auto">
-
-                                            <div id="fxSettlementGrid" class="grid-container" style="width: 100%"></div>
+                                        <div data-options="dxTemplate : { name: 'repoTab' }" style="padding-top: 10px; overflow: auto">
+                                            <div id="repoGrid" class="grid-container" style="width: 100%"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -108,7 +103,7 @@
     </form>
 </section>
 
-@Html.Partial("TradeSettlement/_TsSelectApproverModal")
+@Html.Partial("_SelectApproverModal")
 
 <script type="text/html" id="dxPanelTitle">
     <div style="margin: 4px 0">

@@ -41,13 +41,12 @@ namespace xDC.Services.App
             new WorkflowService().ApprovalResponse(formId, formStatus, approvalNotes, formType, preparedBy, approvedBy);
         }
 
-        public static List<Form_Workflow> GetWorkflow(kashflowDBEntities db, int formId)
+        public static Form_Workflow GetLatestWorkflow(kashflowDBEntities db, int formId, string formType)
         {
             var result = db.Form_Workflow
-                            .Where(x => x.FormId == formId)
+                            .Where(x => x.FormId == formId && x.FormType == formType && (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected))
                             .OrderByDescending(x => x.RecordedDate)
-                            .ToList();
-
+                            .FirstOrDefault();
             return result;
         }
 
@@ -177,5 +176,28 @@ namespace xDC.Services.App
                 return false;
             }
         }
+
+        public static bool EditFormRules(string formStatus, string approvedBy, string currentUser, out string errorMessage)
+        {
+            var isPendingApproval = formStatus == Common.FormStatus.PendingApproval;
+            var isYouAreTheApprover = approvedBy == currentUser;
+
+            if (isPendingApproval)
+            {
+                errorMessage = "Form is still in Pending Approval status";
+                return true;
+            }
+            else if (isYouAreTheApprover)
+            {
+                errorMessage = "You are this form Approver. Then you cannot edit it";
+                return true;
+            }
+            else
+            {
+                errorMessage = null;
+                return false;
+            }
+        }
+
     }
 }

@@ -6,12 +6,14 @@
 
         var statuses = [
             "All",
-            "Trade Settlement (Part A)",
-            "Trade Settlement (Part B)",
-            "Trade Settlement (Part C)",
-            "Trade Settlement (Part D)",
-            "Trade Settlement (Part E)",
-            "Trade Settlement (Part F)"
+            "A (Equity)",
+            "B (Bond, CP, Notes/Papers, Coupon)",
+            "C (REPO)",
+            "D (MTM, FX)",
+            "E (ALTID)",
+            "F (Fees)",
+            "G (Contribution)",
+            "H (Others)"
         ];
         
         $issdGrid = $("#issdGrid").dxDataGrid({
@@ -276,32 +278,40 @@
                 width: 230
             },
             items: [
-                "Part A (Equity)",
-                "Part B (Bond, CP, Notes and Papers, Coupon)",
-                "Part C (MTM, FX)",
-                "Part D (ALTID)",
-                "Part E (Fees, Contribution, Others)",
-                "Part F (REPO)",
+                "A (Equity)",
+                "B (Bond, CP, Notes/Papers, Coupon)",
+                "C (REPO)",
+                "D (MTM, FX)",
+                "E (ALTID)",
+                "F (Fees)",
+                "G (Contribution)",
+                "H (Others)"
             ],
             onItemClick: function (e) {
                 switch (e.itemData) {
-                    case "Part A (Equity)":
+                    case "A (Equity)":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartA/New";
                         return;
-                    case "Part B (Bond, CP, Notes and Papers, Coupon)":
+                    case "B (Bond, CP, Notes/Papers, Coupon)":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartB/New";
                         return;
-                    case "Part C (MTM, FX)":
+                    case "C (REPO)":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartC/New";
                         return;
-                    case "Part D (ALTID)":
+                    case "D (MTM, FX)":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartD/New";
                         return;
-                    case "Part E (Fees, Contribution, Others)":
+                    case "E (ALTID)":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartE/New";
                         return;
-                    case "Part F (REPO)":
+                    case "F (Fees)":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartF/New";
+                        return;
+                    case "G (Contribution)":
+                        window.location = window.location.origin + "/issd/TradeSettlement/PartG/New";
+                        return;
+                    case "H (Others)":
+                        window.location = window.location.origin + "/issd/TradeSettlement/PartH/New";
                         return;
                     default:
                         alert("Invalid Selection");

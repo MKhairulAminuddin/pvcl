@@ -313,6 +313,12 @@
     <Content Include="Scripts\app\issd\tradeSettlement\partF\edit.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partF\new.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partF\view.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partG\edit.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partG\new.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partG\view.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partH\edit.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partH\new.js" />
+    <Content Include="Scripts\app\issd\tradeSettlement\partH\view.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\view.js" />
     <Content Include="Scripts\app\setting\approverManagement.js" />
     <Content Include="Scripts\app\setting\dropdownConfig.js" />
@@ -572,13 +578,18 @@
     <Content Include="Views\Fid\Treasury\View.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\_TsApprovalModal.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\_TsRejectionModal.cshtml" />
-    <Content Include="Views\Issd\TradeSettlement\_TsWorkflowInfoModal.cshtml" />
-    <Content Include="Views\Issd\TradeSettlement\_TsSelectApproverModal.cshtml" />
+    <Content Include="Views\Shared\_WorkflowInfoModal.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartF\Edit.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartF\New.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartF\View.cshtml" />
     <Content Include="Views\Amsd\InflowFund\Edit.cshtml" />
     <Content Include="Views\Shared\_SelectApproverModal.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartG\Edit.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartG\New.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartG\View.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartH\Edit.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartH\New.cshtml" />
+    <Content Include="Views\Issd\TradeSettlement\PartH\View.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

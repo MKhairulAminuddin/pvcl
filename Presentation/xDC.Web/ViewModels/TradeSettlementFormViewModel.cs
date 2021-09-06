@@ -5,7 +5,7 @@ using xDC.Domain.ISSD_TS;
 
 namespace xDC_Web.ViewModels
 {
-    public class ViewTradeSettlementFormViewModel
+    public class TradeSettlementFormVM
     {
         public int Id { get; set; }
         public string FormStatus { get; set; }
@@ -20,6 +20,7 @@ namespace xDC_Web.ViewModels
         public bool IsApproved { get; set; }
         public string ApprovedBy { get; set; }
         public DateTime? ApprovedDate { get; set; }
+        public string ApprovalNote { get; set; }
         public string AdminEditedBy { get; set; }
         public DateTime? AdminEditedDate { get; set; }
         
@@ -28,9 +29,8 @@ namespace xDC_Web.ViewModels
         public bool EnableResubmit { get; set; }
         public bool EnableSubmitForApproval { get; set; }
         public bool EnableApproveRejectBtn { get; set; }
+
         
-
-
         public bool IsAdminEdited { get; set; }
         public bool ApprovePermission { get; set; }
         public bool AdminEditPermission { get; set; }

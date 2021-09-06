@@ -102,20 +102,18 @@ namespace xDC_Web.Controllers.Api
                 {
                     var formTypes = new List<string>()
                     {
-                        Common.FormTypeMapping(3),
-                        Common.FormTypeMapping(4),
-                        Common.FormTypeMapping(5),
-                        Common.FormTypeMapping(6),
-                        Common.FormTypeMapping(7)
-                    };
-
-                    var formStatus  = new List<string>()
-                    {
-                        Common.FormStatus.Approved
+                        Common.FormType.ISSD_TS_A,
+                        Common.FormType.ISSD_TS_B,
+                        Common.FormType.ISSD_TS_C,
+                        Common.FormType.ISSD_TS_D,
+                        Common.FormType.ISSD_TS_E,
+                        Common.FormType.ISSD_TS_F,
+                        Common.FormType.ISSD_TS_G,
+                        Common.FormType.ISSD_TS_H
                     };
 
                     var result = db.ISSD_FormHeader
-                        .Where(x => formTypes.Contains(x.FormType) && formStatus.Contains(x.FormStatus))
+                        .Where(x => formTypes.Contains(x.FormType) && x.FormStatus == Common.FormStatus.Approved)
                         .GroupBy(x => new { x.SettlementDate, x.Currency})
                         .Select(x => new
                         {

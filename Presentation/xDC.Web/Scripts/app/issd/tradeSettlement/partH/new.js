@@ -6,7 +6,8 @@
         tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
         
         var $tabpanel,
-            $altidGrid,
+
+            $othersGrid,
             
             $approverDropdown,
             $approvalNotes,
@@ -25,46 +26,22 @@
 
         var referenceUrl = {
             postNewFormRequest: window.location.origin + "/api/issd/TradeSettlement/New",
-            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartD/View/",
+            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartE/View/",
         };
         
         //#endregion
 
         //#region Data Source & Functions
-
-        var populateDwData = function(settlementDate, currency) {
-            if (settlementDate && currency) {
-                $.when(
-                        tradeSettlement.dsTradeItemEdw("ALTID DISTRIBUTION AND DRAWDOWN", settlementDate, currency)
-                    )
-                    .done(function(data1) {
-                        $altidGrid.option("dataSource", data1.data);
-                        $altidGrid.repaint();
-
-                        tradeSettlement.defineTabBadgeNumbers([
-                            { titleId: "titleBadge11", dxDataGrid: $altidGrid }
-                        ]);
-                    })
-                    .always(function(dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-                        tradeSettlement.toast("Data Updated", "info");
-                    })
-                    .then(function() {
-
-                    });
-            } else {
-                dxGridUtils.clearGrid($equityGrid);
-            }
-        };
-
+        
         function postData(isDraft) {
             
             var data = {
                 currency: $currencySelectBox.option("value"),
                 settlementDateEpoch: moment($settlementDateBox.option("value")).unix(),
-                formType: 6,
+                formType: 7,
                 isSaveAsDraft: isDraft,
                 
-                altid: $altidGrid.getDataSource().items(),
+                others: $othersGrid.getDataSource().items(),
 
                 approver: (isDraft) ? null : $approverDropdown.option("value"),
                 approvalNotes: (isDraft) ? null : $approvalNotes.option("value")
@@ -79,7 +56,7 @@
                     window.location.href = referenceUrl.postNewFormResponse + response;
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
                 },
                 complete: function (data) {
                     
@@ -113,7 +90,7 @@
 
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
-                { titleId: "titleBadge11", title: "ALTID", template: "altidTab" }
+                { titleId: "titleBadge12", title: "Others", template: "othersTab" }
             ],
             deferRendering: false,
             itemTitleTemplate: $("#dxPanelTitle"),
@@ -128,7 +105,7 @@
         
         // #region Data Grid
         
-        $altidGrid = $("#altidGrid").dxDataGrid({
+        $othersGrid = $("#othersGrid").dxDataGrid({
             dataSource: [],
             columns: [
                 {
@@ -143,7 +120,7 @@
                 },
                 {
                     dataField: "instrumentCode",
-                    caption: "ALTID Distribution & Drawdown"
+                    caption: "Others"
                 },
                 {
                     dataField: "amountPlus",
@@ -197,7 +174,7 @@
             },
             onSaved: function () {
                 tradeSettlement.defineTabBadgeNumbers([
-                    { titleId: "titleBadge11", dxDataGrid: $altidGrid }
+                    { titleId: "titleBadge12", dxDataGrid: $othersGrid }
                 ]);
             },
             editing: {
@@ -211,16 +188,7 @@
         // #endregion Data Grid
  
         //#region Events
-
-        $settlementDateBox.on("valueChanged", function (data) {
-            populateDwData(data.value, $currencySelectBox.option("value"));
-        });
-
-        $currencySelectBox.on("valueChanged", function (data) {
-            populateDwData($settlementDateBox.option("value"), data.value);
-        });
-
-
+        
         $saveAsDraftBtn = $("#saveAsDraftBtn").on({
             "click": function (e) {
                 isSaveAsDraft = true;
@@ -235,7 +203,7 @@
 
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function (e) {
-                tradeSettlement.saveAllGrids($altidGrid);
+                tradeSettlement.saveAllGrids($othersGrid);
 
                 if (tradeSettlement.val_isTMinus1($settlementDateBox.option("value"))) {
                     alert("T-n only available for viewing..");
@@ -257,7 +225,7 @@
 
         $submitForApprovalModalBtn = $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                tradeSettlement.saveAllGrids($altidGrid);
+                tradeSettlement.saveAllGrids($othersGrid);
 
                 setTimeout(function () {
                     postData(false);

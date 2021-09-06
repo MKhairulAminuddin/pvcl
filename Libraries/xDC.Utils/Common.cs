@@ -45,6 +45,8 @@ namespace xDC.Utils
             public const string ISSD_TS_D = "Trade Settlement (Part D)";
             public const string ISSD_TS_E = "Trade Settlement (Part E)";
             public const string ISSD_TS_F = "Trade Settlement (Part F)";
+            public const string ISSD_TS_G = "Trade Settlement (Part G)";
+            public const string ISSD_TS_H = "Trade Settlement (Part H)";
             public const string FID_TREASURY = "Treasury";
         }
 
@@ -178,24 +180,16 @@ namespace xDC.Utils
                 case 8:
                     return FormType.ISSD_TS_F;
                 case 9:
+                    return FormType.ISSD_TS_G;
+                case 10:
+                    return FormType.ISSD_TS_H;
+                case 11:
                     return FormType.FID_TREASURY;
             }
             return String.Empty;
         }
         
-
-        public static string FormCurrencyMapping(int value)
-        {
-            switch (value)
-            {
-                case 1:
-                    return "MYR";
-                case 2:
-                    return "USD";
-            }
-            return String.Empty;
-        }
-
+        
         /// <summary>
         /// Get form view url
         /// </summary>

@@ -1,7 +1,7 @@
-﻿@model xDC_Web.ViewModels.EditTradeSettlementFormViewModel
+﻿@model xDC_Web.ViewModels.TradeSettlementFormVM
 @{
     ViewBag.EditTitle = "Trade Settlement";
-    ViewBag.Subtitle = "Part B - Bond, CP, Notes & Papers, REPO, Coupon";
+    ViewBag.Subtitle = "Part B - Bond, CP, Notes & Papers, Coupon";
 }
 
 <section class="content container-fluid">
@@ -137,7 +137,7 @@
                                     <div class="dx-field">
                                         <div class="dx-field-label">Approval/Rejection Notes</div>
                                         <div class="dx-field-value">
-                                            @(Html.DevExtreme().TextAreaFor(m => m.ApprovalOrRejectionNotes)
+                                            @(Html.DevExtreme().TextAreaFor(m => m.ApprovalNote)
                                                 .StylingMode(EditorStylingMode.Filled)
                                                 .ReadOnly(true))
                                         </div>
@@ -207,7 +207,7 @@
 </form>
 </section>
 
-@Html.Partial("TradeSettlement/_TsSelectApproverModal")
+@Html.Partial("_SelectApproverModal")
 
 <script type="text/html" id="dxPanelTitle">
     <div style="margin: 4px 0">

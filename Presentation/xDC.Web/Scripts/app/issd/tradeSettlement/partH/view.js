@@ -5,7 +5,9 @@
         tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
 
         var $tabpanel,
-            $feesGrid,
+            
+            $othersGrid,
+
             $workflowGrid,
 
             $tradeSettlementForm,
@@ -15,6 +17,7 @@
 
         var referenceUrl = {
             adminEdit: window.location.origin + "/issd/TradeSettlement/PartE/Edit/",
+            loadWorkflowHistory: window.location.origin + "/api/common/GetWorkflow/?/" + _getIdFromQueryString + "/",
 
             submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
             submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartE/View/"
@@ -25,13 +28,14 @@
         //#region Data Source & Functions
 
         var populateData = function() {
-            $.when(tradeSettlement.dsTradeItem("fees"))
-                .done(function (fees) {
-                    $feesGrid.option("dataSource", fees.data);
-                    $feesGrid.repaint();
+            $.when(tradeSettlement.dsTradeItem("others"))
+                .done(function (others) {
+
+                    $othersGrid.option("dataSource", others.data);
+                    $othersGrid.repaint();
 
                     tradeSettlement.defineTabBadgeNumbers([
-                        { titleId: "titleBadge7", dxDataGrid: $feesGrid }
+                        { titleId: "titleBadge12", dxDataGrid: $othersGrid }
                     ]);
                 })
                 .then(function() {
@@ -70,7 +74,7 @@
         
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
-                { titleId: "titleBadge7", title: "Fees", template: "feesTab" }
+                { titleId: "titleBadge12", title: "Others", template: "othersTab" }
             ],
             deferRendering: false,
             itemTitleTemplate: $("#dxPanelTitle"),
@@ -80,8 +84,8 @@
         //#endregion
         
         // #region DataGrid
-
-        $feesGrid = $("#feesGrid").dxDataGrid({
+        
+        $othersGrid = $("#othersGrid").dxDataGrid({
             dataSource: [],
             columns: [
                 {
@@ -96,7 +100,7 @@
                 },
                 {
                     dataField: "instrumentCode",
-                    caption: "Fees"
+                    caption: "Others"
                 },
                 {
                     dataField: "amountPlus",
@@ -146,15 +150,24 @@
                             type: "fixedPoint",
                             precision: 2
                         }
+                    },
+                    {
+                        column: "amountMinus",
+                        summaryType: "sum",
+                        displayFormat: "{0}",
+                        valueFormat: {
+                            type: "fixedPoint",
+                            precision: 2
+                        }
                     }
                 ]
             }
         }).dxDataGrid("instance");
-        
+
         $workflowGrid = $("#workflowGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: tradeSettlement.api.loadWorkflowHistory + "/7"
+                loadUrl: referenceUrl.loadWorkflowHistory
             }),
             columns: [
                 {

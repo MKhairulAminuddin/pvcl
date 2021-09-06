@@ -206,14 +206,16 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("GetApproverAmsdInflowFunds")]
-        public HttpResponseMessage GetApproverAmsdInflowFunds(DataSourceLoadOptions loadOptions)
+        public HttpResponseMessage Approver_AMSD_IF(DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var key = Common.FormTypeMapping(1);
-                    var result = db.Config_Approver.Where(x => x.FormType == key && x.Username != User.Identity.Name).OrderBy(x => x.DisplayName).ToList();
+                    var result = db.Config_Approver
+                        .Where(x => x.FormType == Common.FormType.AMSD_IF && x.Username != User.Identity.Name)
+                        .OrderBy(x => x.DisplayName)
+                        .ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -226,14 +228,16 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("GetTradeSettlementApprover")]
-        public HttpResponseMessage GetTradeSettlementApprover(DataSourceLoadOptions loadOptions)
+        public HttpResponseMessage Approver_ISSD_TS(DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var key = Common.FormTypeMapping(2);
-                    var result = db.Config_Approver.Where(x => x.FormType == key && x.Username != User.Identity.Name).OrderBy(x => x.DisplayName).ToList();
+                    var result = db.Config_Approver
+                        .Where(x => x.FormType == Common.FormType.ISSD_TS && x.Username != User.Identity.Name)
+                        .OrderBy(x => x.DisplayName)
+                        .ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -246,7 +250,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("approverList/treasury")]
-        public HttpResponseMessage ApproverList_Treasury(DataSourceLoadOptions loadOptions)
+        public HttpResponseMessage Approver_FID_Treasury(DataSourceLoadOptions loadOptions)
         {
             try
             {
@@ -264,9 +268,7 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
-
-
-
+        
         #endregion
 
         #region My Notification
@@ -354,8 +356,9 @@ namespace xDC_Web.Controllers.Api
                 {
                     var formTypeParsed = Common.FormTypeMapping(formTypeId);
                     
-                    var result = db.Form_Workflow.Where(x => x.FormId == formId && x.FormType == formTypeParsed).OrderByDescending(x => x.Id).ToList();
-                    
+                    var result = db.Form_Workflow
+                        .Where(x => x.FormId == formId && x.FormType == formTypeParsed)
+                        .OrderByDescending(x => x.Id).ToList();
                     
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }

@@ -5,8 +5,7 @@
         tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
 
         var $tabpanel,
-            $mtmGrid,
-            $fxSettlementGrid,
+            $repoGrid,
 
             $workflowGrid,
 
@@ -16,34 +15,29 @@
             $printBtn;
 
         var referenceUrl = {
-            adminEdit: window.location.origin + "/issd/TradeSettlement/PartC/Edit/",
+            adminEdit: window.location.origin + "/issd/TradeSettlement/PartF/Edit/",
 
             submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
-            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartC/View/"
+            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartF/View/"
         };
 
         //#endregion
 
         //#region Data Source & Functions
-
-        var populateData = function() {
+        
+        var populateData = function () {
             $.when(
-                    tradeSettlement.dsTradeItem("mtm"),
-                    tradeSettlement.dsTradeItem("fxSettlement")
+                    tradeSettlement.dsTradeItem("repo")
                 )
-                .done(function(data1, data2) {
-                    $mtmGrid.option("dataSource", data1[0].data);
-                    $mtmGrid.repaint();
-
-                    $fxSettlementGrid.option("dataSource", data2[0].data);
-                    $fxSettlementGrid.repaint();
+                .done(function (repo) {
+                    $repoGrid.option("dataSource", repo.data);
+                    $repoGrid.repaint();
 
                     tradeSettlement.defineTabBadgeNumbers([
-                        { titleId: "titleBadge8", dxDataGrid: $mtmGrid },
-                        { titleId: "titleBadge9", dxDataGrid: $fxSettlementGrid }
+                        { titleId: "titleBadge5", dxDataGrid: $repoGrid }
                     ]);
                 })
-                .then(function() {
+                .then(function () {
                     console.log("Done load data");
                 });
         };
@@ -79,8 +73,7 @@
         
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
-                { titleId: "titleBadge8", title: "MTM", template: "mtmTab" },
-                { titleId: "titleBadge9", title: "FX", template: "fxSettlementTab" }
+                { titleId: "titleBadge5", title: "REPO", template: "repoTab" }
             ],
             deferRendering: false,
             itemTitleTemplate: $("#dxPanelTitle"),
@@ -91,40 +84,38 @@
         
         // #region DataGrid
 
-        $mtmGrid = $("#mtmGrid").dxDataGrid({
+        $repoGrid = $("#repoGrid").dxDataGrid({
             dataSource: [],
             columns: [
                 {
-                    dataField: "id",
-                    caption: "Id",
-                    visible: false
-                },
-                {
-                    dataField: "formId",
-                    caption: "Form Id",
-                    visible: false
-                },
-                {
                     dataField: "instrumentCode",
-                    caption: "Payment/ Receipt (MTM)"
+                    caption: "REPO",
+                    allowEditing: false
                 },
                 {
-                    dataField: "amountPlus",
-                    caption: "Amount (+)",
+                    dataField: "stockCode",
+                    caption: "Stock Code/ ISIN",
+                    allowEditing: false
+                },
+                {
+                    dataField: "firstLeg",
+                    caption: "1st Leg (+)",
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    allowEditing: false
                 },
                 {
-                    dataField: "amountMinus",
-                    caption: "Amount (-)",
+                    dataField: "secondLeg",
+                    caption: "2nd Leg (-)",
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    allowEditing: false
                 },
                 {
                     dataField: "remarks",
@@ -149,7 +140,7 @@
                         displayFormat: "TOTAL"
                     },
                     {
-                        column: "amountPlus",
+                        column: "firstLeg",
                         summaryType: "sum",
                         displayFormat: "{0}",
                         valueFormat: {
@@ -158,7 +149,7 @@
                         }
                     },
                     {
-                        column: "amountMinus",
+                        column: "secondLeg",
                         summaryType: "sum",
                         displayFormat: "{0}",
                         valueFormat: {
@@ -169,90 +160,11 @@
                 ]
             }
         }).dxDataGrid("instance");
-
-        $fxSettlementGrid = $("#fxSettlementGrid").dxDataGrid({
-            dataSource: [],
-            columns: [
-                {
-                    dataField: "id",
-                    caption: "Id",
-                    visible: false
-                },
-                {
-                    dataField: "formId",
-                    caption: "Form Id",
-                    visible: false
-                },
-                {
-                    dataField: "instrumentCode",
-                    caption: "FX Settlement"
-                },
-                {
-                    dataField: "amountPlus",
-                    caption: "Amount (+)",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    }
-                },
-                {
-                    dataField: "amountMinus",
-                    caption: "Amount (-)",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    }
-                },
-                {
-                    dataField: "remarks",
-                    caption: "Remarks",
-                    dataType: "text"
-                },
-                {
-                    dataField: "modifiedBy",
-                    caption: "Modified"
-                },
-                {
-                    dataField: "modifiedDate",
-                    caption: "Modified Date",
-                    dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm a"
-                }
-            ],
-            summary: {
-                totalItems: [
-                    {
-                        column: "instrumentCode",
-                        displayFormat: "TOTAL"
-                    },
-                    {
-                        column: "amountPlus",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    },
-                    {
-                        column: "amountMinus",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    }
-                ]
-            }
-        }).dxDataGrid("instance");
-
+        
         $workflowGrid = $("#workflowGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: tradeSettlement.api.loadWorkflowHistory + "/5"
+                loadUrl: tradeSettlement.api.loadWorkflowHistory + "/4"
             }),
             columns: [
                 {
@@ -293,7 +205,7 @@
             },
             wordWrapEnabled: true
         }).dxDataGrid("instance");
-
+        
         // #endregion DataGrid
         
         //#region Events

@@ -1,7 +1,7 @@
-﻿@model xDC_Web.ViewModels.ViewTradeSettlementFormViewModel
+﻿@model xDC_Web.ViewModels.TradeSettlementFormVM
 @{
     ViewBag.NewTitle = "Trade Settlement";
-    ViewBag.Subtitle = "Part B - Bond, CP, Notes & Papers, REPO, Coupon";
+    ViewBag.Subtitle = "Part B - Bond, CP, Notes & Papers, Coupon";
 }
 
 <section class="content container-fluid">
@@ -120,7 +120,7 @@
     </form>
 </section>
 
-@Html.Partial("TradeSettlement/_TsSelectApproverModal")
+@Html.Partial("_SelectApproverModal")
 
 <script type="text/html" id="dxPanelTitle">
     <div style="margin: 4px 0">

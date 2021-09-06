@@ -1,7 +1,7 @@
-﻿@model xDC_Web.ViewModels.EditTradeSettlementFormViewModel
+﻿@model xDC_Web.ViewModels.TradeSettlementFormVM
 @{
     ViewBag.EditTitle = "Trade Settlement";
-    ViewBag.Subtitle = "Part D - ALTID Distribution & Drawdown";
+    ViewBag.Subtitle = "Part D - Payment/Receipt MTM, FX Settlement";
 }
 
 <section class="content container-fluid">
@@ -63,33 +63,33 @@
                         }
                     </div>
                     <div class="box-body">
+                        <div class="dx-fieldset">
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="dx-field">
                                         <div class="dx-field-label">Settlement Date</div>
                                         <div class="dx-field-value">
                                             @(Html.DevExtreme().DateBoxFor(m => m.SettlementDate)
-                                                .ID("settlementDateBox")
-                                                .DisplayFormat("dd/MM/yyyy")
-                                                .StylingMode(EditorStylingMode.Filled)
-                                                .ReadOnly(true)
-                                                )
+                                                        .ID("settlementDateBox")
+                                                        .DisplayFormat("dd/MM/yyyy")
+                                                        .StylingMode(EditorStylingMode.Filled)
+                                                        .ReadOnly(true)
+                                                        )
                                         </div>
                                     </div>
                                     <div class="dx-field">
                                         <div class="dx-field-label">Currency</div>
                                         <div class="dx-field-value">
                                             @(Html.DevExtreme().TextBoxFor(m => m.Currency)
-                                                .ID("currencySelectBox")
-                                                .StylingMode(EditorStylingMode.Filled)
-                                                .ReadOnly(true)
-                                                )
+                                                        .ID("currencySelectBox")
+                                                        .StylingMode(EditorStylingMode.Filled)
+                                                        .ReadOnly(true)
+                                                        )
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4"></div>
                                 <div class="col-md-4">
-                                    <div class="dx-fieldset">
                                         <div class="dx-field">
                                             <div class="dx-field-label">Status</div>
                                             <div class="dx-field-value">
@@ -137,7 +137,7 @@
                                             <div class="dx-field">
                                                 <div class="dx-field-label">Approval/Rejection Notes</div>
                                                 <div class="dx-field-value">
-                                                    @(Html.DevExtreme().TextAreaFor(m => m.ApprovalOrRejectionNotes)
+                                                    @(Html.DevExtreme().TextAreaFor(m => m.ApprovalNote)
                                                         .StylingMode(EditorStylingMode.Filled)
                                                         .ReadOnly(true))
                                                 </div>
@@ -181,8 +181,11 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div id="tabpanel-container" style="background-color: white;">
-                                        <div data-options="dxTemplate : { name: 'altidTab' }" style="padding-top: 10px; overflow: auto">
-                                            <div id="altidGrid" class="grid-container" style="width: 100%"></div>
+                                        <div data-options="dxTemplate : { name: 'mtmTab' }" style="padding-top: 10px; overflow: auto">
+                                            <div id="mtmGrid" class="grid-container" style="width: 100%"></div>
+                                        </div>
+                                        <div data-options="dxTemplate : { name: 'fxSettlementTab' }" style="padding-top: 10px; overflow: auto">
+                                            <div id="fxSettlementGrid" class="grid-container" style="width: 100%"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -193,10 +196,9 @@
             </div>
         </div>
     </form>
-
 </section>
 
-@Html.Partial("TradeSettlement/_TsSelectApproverModal")
+@Html.Partial("_SelectApproverModal")
 
 <script type="text/html" id="dxPanelTitle">
     <div style="margin: 4px 0">

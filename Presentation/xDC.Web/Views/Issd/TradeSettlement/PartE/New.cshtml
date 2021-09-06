@@ -1,106 +1,98 @@
-﻿@model xDC_Web.ViewModels.ViewTradeSettlementFormViewModel
+﻿@model xDC_Web.ViewModels.TradeSettlementFormVM
 @{
     ViewBag.NewTitle = "Trade Settlement";
-    ViewBag.Subtitle = "Part E - Fees, Contribution, Others";
+    ViewBag.Subtitle = "Part E - ALTID Distribution & Drawdown";
 }
 
 <section class="content container-fluid">
     <form id="tradeSettlementForm">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="box box-solid">
-                            <div class="box-header">
-                                @(Html.DevExtreme().Button()
-                                    .Type(ButtonType.Back)
-                                    .StylingMode(ButtonStylingMode.Contained)
-                                    .OnClick(@<text> function(){ window.location = "@Url.Action("TradeSettlement", "Issd")"; } </text>)
-                                    )
-                                @(Html.DevExtreme().Button()
-                                    .ID("submitForApprovalBtn")
-                                    .Text("Submit for Approval")
-                                    .Icon("todo")
-                                    .UseSubmitBehavior(true)
-                                    .Type(ButtonType.Default)
-                                    .StylingMode(ButtonStylingMode.Contained)
-                                    )
-                                @(Html.DevExtreme().Button()
-                                    .ID("saveAsDraftBtn")
-                                    .Text("Save")
-                                    .Icon("save")
-                                    .UseSubmitBehavior(true)
-                                    .Type(ButtonType.Normal)
-                                    .StylingMode(ButtonStylingMode.Contained)
-                                    )
-                            </div>
-                            <div class="box-body">
-                                <div class="dx-fieldset">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="dx-field">
-                                                <div class="dx-field-label">Settlement Date</div>
-                                                <div class="dx-field-value">
-                                                    <div id="settlementDateBox"></div>
-                                                </div>
-                                            </div>
-                                            <div class="dx-field">
-                                                <div class="dx-field-label">Currency</div>
-                                                <div class="dx-field-value">
-                                                    <div id="currencySelectBox"></div>
-                                                </div>
-                                            </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-solid">
+                    <div class="box-header">
+                        @(Html.DevExtreme().Button()
+                            .Type(ButtonType.Back)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .OnClick(@<text> function(){ window.location = "@Url.Action("TradeSettlement", "Issd")"; } </text>)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("submitForApprovalBtn")
+                            .Text("Submit for Approval")
+                            .Icon("todo")
+                            .UseSubmitBehavior(true)
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("saveAsDraftBtn")
+                            .Text("Save")
+                            .Icon("save")
+                            .UseSubmitBehavior(true)
+                            .Type(ButtonType.Normal)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
+                    </div>
+                    <div class="box-body">
+                        <div class="dx-fieldset">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Settlement Date</div>
+                                        <div class="dx-field-value">
+                                            <div id="settlementDateBox"></div>
                                         </div>
-                                        <div class="col-md-4"></div>
-                                        <div class="col-md-4">
-                                            <div class="dx-field">
-                                                <div class="dx-field-label">Status</div>
-                                                <div class="dx-field-value">
-                                                    @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
-                                                        .StylingMode(EditorStylingMode.Filled)
-                                                        .ReadOnly(true))
-                                                </div>
-                                            </div>
-                                            <div class="dx-field">
-                                                <div class="dx-field-label">Preparer</div>
-                                                <div class="dx-field-value">
-                                                    @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
-                                                        .StylingMode(EditorStylingMode.Filled)
-                                                        .ReadOnly(true))
-                                                </div>
-                                            </div>
-                                            <div class="dx-field">
-                                                <div class="dx-field-label">Prepared Date</div>
-                                                <div class="dx-field-value">
-                                                    @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
-                                                        .StylingMode(EditorStylingMode.Filled)
-                                                        .DisplayFormat("dd/MM/yyyy hh:mm a")
-                                                        .ReadOnly(true))
-                                                </div>
-                                            </div>
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Currency</div>
+                                        <div class="dx-field-value">
+                                            <div id="currencySelectBox"></div>
                                         </div>
                                     </div>
                                 </div>
-
-                                <div class="dx-fieldset">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="dx-field">
-                                                <div class="dx-field-label" style="font-weight: bold">Daily Trade Settlement</div>
-                                            </div>
+                                <div class="col-md-4"></div>
+                                <div class="col-md-4">
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Status</div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
+                                                        .StylingMode(EditorStylingMode.Filled)
+                                                        .ReadOnly(true))
                                         </div>
-                                        <div class="col-md-12">
-                                            <div id="tabpanel-container" style="background-color: white;">
-                                                <div data-options="dxTemplate : { name: 'feesTab' }" style="padding-top: 10px; overflow: auto">
-                                                    <div id="feesGrid" class="grid-container" style="width: 100%"></div>
-                                                </div>
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Preparer</div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
+                                                        .StylingMode(EditorStylingMode.Filled)
+                                                        .ReadOnly(true))
+                                        </div>
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Prepared Date</div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
+                                                        .StylingMode(EditorStylingMode.Filled)
+                                                        .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                                        .ReadOnly(true))
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                                                <div data-options="dxTemplate : { name: 'contributionCreditedTab' }" style="padding-top: 10px; overflow: auto">
-                                                    <div id="contributionCreditedGrid" class="grid-container" style="width: 100%"></div>
-                                                </div>
 
-                                                <div data-options="dxTemplate : { name: 'othersTab' }" style="padding-top: 10px; overflow: auto">
-                                                    <div id="othersGrid" class="grid-container" style="width: 100%"></div>
-                                                </div>
-                                            </div>
+                        <div class="dx-fieldset">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="dx-field">
+                                        <div class="dx-field-label" style="font-weight: bold">Daily Trade Settlement</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div id="tabpanel-container" style="background-color: white;">
+                                        <div data-options="dxTemplate : { name: 'altidTab' }" style="padding-top: 10px; overflow: auto">
+
+                                            <div id="altidGrid" class="grid-container" style="width: 100%"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -108,10 +100,12 @@
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
+        </div>
+    </form>
 </section>
 
-@Html.Partial("TradeSettlement/_TsSelectApproverModal")
+@Html.Partial("_SelectApproverModal")
 
 <script type="text/html" id="dxPanelTitle">
     <div style="margin: 4px 0">

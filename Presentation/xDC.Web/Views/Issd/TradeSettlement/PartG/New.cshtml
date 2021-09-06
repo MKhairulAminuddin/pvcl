@@ -1,7 +1,7 @@
 ﻿@model xDC_Web.ViewModels.TradeSettlementFormVM
 @{
     ViewBag.NewTitle = "Trade Settlement";
-    ViewBag.Subtitle = "Part F - Fees";
+    ViewBag.Subtitle = "Part G - Contribution";
 }
 
 <section class="content container-fluid">
@@ -89,8 +89,8 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div id="tabpanel-container" style="background-color: white;">
-                                                <div data-options="dxTemplate : { name: 'feesTab' }" style="padding-top: 10px; overflow: auto">
-                                                    <div id="feesGrid" class="grid-container" style="width: 100%"></div>
+                                                <div data-options="dxTemplate : { name: 'contributionCreditedTab' }" style="padding-top: 10px; overflow: auto">
+                                                    <div id="contributionCreditedGrid" class="grid-container" style="width: 100%"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -114,5 +114,5 @@
 @section scripts
 {
     <script src="~/Scripts/app/issd/tradeSettlement.js"></script>
-    <script src="~/Scripts/app/issd/tradeSettlement/partF/new.js"></script>
+    <script src="~/Scripts/app/issd/tradeSettlement/partG/new.js"></script>
 }

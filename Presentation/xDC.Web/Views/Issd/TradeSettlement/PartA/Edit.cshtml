@@ -1,4 +1,4 @@
-﻿@model xDC_Web.ViewModels.EditTradeSettlementFormViewModel
+﻿@model xDC_Web.ViewModels.TradeSettlementFormVM
 @{
     ViewBag.EditTitle = "Trade Settlement";
     ViewBag.Subtitle = "Part A - Equity";
@@ -63,136 +63,132 @@
                         }
                     </div>
                     <div class="box-body">
-                        <div class="dx-fieldset">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="dx-field">
-                                        <div class="dx-field-label">Settlement Date</div>
-                                        <div class="dx-field-value">
-                                            @(Html.DevExtreme().DateBoxFor(m => m.SettlementDate)
-                                                .ID("settlementDateBox")
-                                                .DisplayFormat("dd/MM/yyyy")
-                                                .StylingMode(EditorStylingMode.Filled)
-                                                .ReadOnly(true)
-                                                )
-                                        </div>
-                                    </div>
-                                    <div class="dx-field">
-                                        <div class="dx-field-label">Currency</div>
-                                        <div class="dx-field-value">
-                                            @(Html.DevExtreme().TextBoxFor(m => m.Currency)
-                                                .ID("currencySelectBox")
-                                                .StylingMode(EditorStylingMode.Filled)
-                                                .ReadOnly(true)
-                                                )
-                                        </div>
-                                    </div>
-                                    <div class="dx-field">
-                                        <div class="dx-field-label" style="font-weight: bold">Opening Balance</div>
-                                        <div id="openingBalanceGrid" class="grid-container"></div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Settlement Date</div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().DateBoxFor(m => m.SettlementDate)
+                                            .ID("settlementDateBox")
+                                            .DisplayFormat("dd/MM/yyyy")
+                                            .StylingMode(EditorStylingMode.Filled)
+                                            .ReadOnly(true)
+                                            )
                                     </div>
                                 </div>
-                                <div class="col-md-4"></div>
-                                <div class="col-md-4">
-                                        <div class="dx-field">
-                                            <div class="dx-field-label">Status</div>
-                                            <div class="dx-field-value">
-                                                @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
-                                                    .StylingMode(EditorStylingMode.Filled)
-                                                    .ReadOnly(true))
-                                            </div>
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Currency</div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().TextBoxFor(m => m.Currency)
+                                            .ID("currencySelectBox")
+                                            .StylingMode(EditorStylingMode.Filled)
+                                            .ReadOnly(true)
+                                            )
+                                    </div>
+                                </div>
+                                <div class="dx-field">
+                                    <div class="dx-field-label" style="font-weight: bold">Opening Balance</div>
+                                    <div id="openingBalanceGrid" class="grid-container"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4">
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Status</div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
+                                            .StylingMode(EditorStylingMode.Filled)
+                                            .ReadOnly(true))
+                                    </div>
+                                </div>
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Preparer</div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
+                                            .StylingMode(EditorStylingMode.Filled)
+                                            .ReadOnly(true))
+                                    </div>
+                                </div>
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Prepared Date</div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
+                                            .StylingMode(EditorStylingMode.Filled)
+                                            .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                            .ReadOnly(true))
+                                    </div>
+                                </div>
+                                @if (Model.IsApproved)
+                                {
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Approved By</div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().TextBoxFor(m => m.ApprovedBy)
+                                                .StylingMode(EditorStylingMode.Filled)
+                                                .ReadOnly(true))
                                         </div>
-                                        <div class="dx-field">
-                                            <div class="dx-field-label">Preparer</div>
-                                            <div class="dx-field-value">
-                                                @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
-                                                    .StylingMode(EditorStylingMode.Filled)
-                                                    .ReadOnly(true))
-                                            </div>
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Approved Date</div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().DateBoxFor(m => m.ApprovedDate)
+                                                .StylingMode(EditorStylingMode.Filled)
+                                                .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                                .ReadOnly(true))
                                         </div>
-                                        <div class="dx-field">
-                                            <div class="dx-field-label">Prepared Date</div>
-                                            <div class="dx-field-value">
-                                                @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
-                                                    .StylingMode(EditorStylingMode.Filled)
-                                                    .DisplayFormat("dd/MM/yyyy hh:mm a")
-                                                    .ReadOnly(true))
-                                            </div>
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Approval/Rejection Notes</div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().TextAreaFor(m => m.ApprovalNote)
+                                                .StylingMode(EditorStylingMode.Filled)
+                                                .ReadOnly(true))
                                         </div>
-                                        @if (Model.IsApproved)
-                                        {
+                                    </div>
+                                }
+
+                                @if (Model.IsAdminEdited)
+                                {
+                                    <div style="background: #FFEBEE; padding: 5px 0">
+                                        <div class="dx-fieldset">
                                             <div class="dx-field">
-                                                <div class="dx-field-label">Approved By</div>
+                                                <div class="dx-field-label text-red">Admin Edited By</div>
                                                 <div class="dx-field-value">
-                                                    @(Html.DevExtreme().TextBoxFor(m => m.ApprovedBy)
+                                                    @(Html.DevExtreme().TextBoxFor(m => m.AdminEditedBy)
                                                         .StylingMode(EditorStylingMode.Filled)
                                                         .ReadOnly(true))
                                                 </div>
                                             </div>
                                             <div class="dx-field">
-                                                <div class="dx-field-label">Approved Date</div>
+                                                <div class="dx-field-label text-red">Admin Edited Date</div>
                                                 <div class="dx-field-value">
-                                                    @(Html.DevExtreme().DateBoxFor(m => m.ApprovedDate)
+                                                    @(Html.DevExtreme().DateBoxFor(m => m.AdminEditedDate)
                                                         .StylingMode(EditorStylingMode.Filled)
                                                         .DisplayFormat("dd/MM/yyyy hh:mm a")
                                                         .ReadOnly(true))
                                                 </div>
                                             </div>
-                                            <div class="dx-field">
-                                                <div class="dx-field-label">Approval/Rejection Notes</div>
-                                                <div class="dx-field-value">
-                                                    @(Html.DevExtreme().TextAreaFor(m => m.ApprovalOrRejectionNotes)
-                                                        .StylingMode(EditorStylingMode.Filled)
-                                                        .ReadOnly(true))
-                                                </div>
-                                            </div>
-                                        }
-
-                                    @if (Model.IsAdminEdited)
-                                    {
-                                        <div style="background: #FFEBEE; padding: 5px 0">
-                                            <div class="dx-fieldset">
-                                                <div class="dx-field">
-                                                    <div class="dx-field-label text-red">Admin Edited By</div>
-                                                    <div class="dx-field-value">
-                                                        @(Html.DevExtreme().TextBoxFor(m => m.AdminEditedBy)
-                                                            .StylingMode(EditorStylingMode.Filled)
-                                                            .ReadOnly(true))
-                                                    </div>
-                                                </div>
-                                                <div class="dx-field">
-                                                    <div class="dx-field-label text-red">Admin Edited Date</div>
-                                                    <div class="dx-field-value">
-                                                        @(Html.DevExtreme().DateBoxFor(m => m.AdminEditedDate)
-                                                            .StylingMode(EditorStylingMode.Filled)
-                                                            .DisplayFormat("dd/MM/yyyy hh:mm a")
-                                                            .ReadOnly(true))
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
-                                    }
-                                </div>
+                                    </div>
+                                }
                             </div>
                         </div>
-
-                        <div class="dx-fieldset">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="dx-field">
-                                        <div class="dx-field-label" style="font-weight: bold">Daily Trade Settlement</div>
-                                    </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="dx-field">
+                                    <div class="dx-field-label" style="font-weight: bold">Daily Trade Settlement</div>
                                 </div>
-                                <div class="col-md-12">
-                                    <div id="tabpanel-container" style="background-color: white;">
-                                        <div data-options="dxTemplate : { name: 'equityTab' }" style="padding-top: 10px; overflow: auto">
+                            </div>
+                            <div class="col-md-12">
+                                <div id="tabpanel-container" style="background-color: white;">
+                                    <div data-options="dxTemplate : { name: 'equityTab' }" style="padding-top: 10px; overflow: auto">
 
-                                            <div id="equityGrid" class="grid-container" style="width: 100%"></div>
-                                        </div>
+                                        <div id="equityGrid" class="grid-container" style="width: 100%"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -201,7 +197,7 @@
 </section>
 
 
-@Html.Partial("TradeSettlement/_TsSelectApproverModal")
+@Html.Partial("_SelectApproverModal")
 
 <script type="text/html" id="dxPanelTitle">
     <div style="margin: 4px 0">

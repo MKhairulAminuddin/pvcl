@@ -6,7 +6,8 @@
         tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
         
         var $tabpanel,
-            $repoGrid,
+
+            $feesGrid,
             
             $approverDropdown,
             $approvalNotes,
@@ -25,46 +26,22 @@
 
         var referenceUrl = {
             postNewFormRequest: window.location.origin + "/api/issd/TradeSettlement/New",
-            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartF/View/",
+            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartE/View/",
         };
         
         //#endregion
 
         //#region Data Source & Functions
 
-        var populateDwData = function(settlementDate, currency) {
-            if (settlementDate && currency) {
-                $.when(
-                        tradeSettlement.dsTradeItemEdw("REPO", settlementDate, currency)
-                    )
-                    .done(function(repo) {
-                        $repoGrid.option("dataSource", repo.data);
-                        $repoGrid.repaint();
-
-                        tradeSettlement.defineTabBadgeNumbers([
-                            { titleId: "titleBadge5", dxDataGrid: $repoGrid }
-                        ]);
-                    })
-                    .always(function(dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-                        tradeSettlement.toast("Data Updated", "info");
-                    })
-                    .then(function() {
-
-                    });
-            } else {
-                dxGridUtils.clearGrid($equityGrid);
-            }
-        };
-
         function postData(isDraft) {
             
             var data = {
                 currency: $currencySelectBox.option("value"),
                 settlementDateEpoch: moment($settlementDateBox.option("value")).unix(),
-                formType: 8,
+                formType: 7,
                 isSaveAsDraft: isDraft,
                 
-                repo: $repoGrid.getDataSource().items(),
+                fees: $feesGrid.getDataSource().items(),
 
                 approver: (isDraft) ? null : $approverDropdown.option("value"),
                 approvalNotes: (isDraft) ? null : $approvalNotes.option("value")
@@ -79,7 +56,7 @@
                     window.location.href = referenceUrl.postNewFormResponse + response;
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
                 },
                 complete: function (data) {
                     
@@ -113,7 +90,7 @@
 
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
-                { titleId: "titleBadge5", title: "REPO", template: "repoTab" }
+                { titleId: "titleBadge7", title: "Fees", template: "feesTab" }
             ],
             deferRendering: false,
             itemTitleTemplate: $("#dxPanelTitle"),
@@ -127,30 +104,27 @@
         //#endregion
         
         // #region Data Grid
-
-        $repoGrid = $("#repoGrid").dxDataGrid({
+        
+        $feesGrid = $("#feesGrid").dxDataGrid({
             dataSource: [],
             columns: [
                 {
+                    dataField: "id",
+                    caption: "Id",
+                    visible: false
+                },
+                {
+                    dataField: "formId",
+                    caption: "Form Id",
+                    visible: false
+                },
+                {
                     dataField: "instrumentCode",
-                    caption: "REPO"
+                    caption: "Fees"
                 },
                 {
-                    dataField: "stockCode",
-                    caption: "Stock Code/ ISIN"
-                },
-                {
-                    dataField: "firstLeg",
-                    caption: "1st Leg (+)",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    }
-                },
-                {
-                    dataField: "secondLeg",
-                    caption: "2nd Leg (-)",
+                    dataField: "amountPlus",
+                    caption: "Amount (+)",
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
@@ -170,16 +144,7 @@
                         displayFormat: "TOTAL"
                     },
                     {
-                        column: "firstLeg",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    },
-                    {
-                        column: "secondLeg",
+                        column: "amountPlus",
                         summaryType: "sum",
                         displayFormat: "{0}",
                         valueFormat: {
@@ -188,6 +153,11 @@
                         }
                     }
                 ]
+            },
+            onSaved: function () {
+                tradeSettlement.defineTabBadgeNumbers([
+                    { titleId: "titleBadge7", dxDataGrid: $feesGrid }
+                ]);
             },
             editing: {
                 mode: "batch",
@@ -200,16 +170,7 @@
         // #endregion Data Grid
  
         //#region Events
-
-        $settlementDateBox.on("valueChanged", function (data) {
-            populateDwData(data.value, $currencySelectBox.option("value"));
-        });
-
-        $currencySelectBox.on("valueChanged", function (data) {
-            populateDwData($settlementDateBox.option("value"), data.value);
-        });
-
-
+        
         $saveAsDraftBtn = $("#saveAsDraftBtn").on({
             "click": function (e) {
                 isSaveAsDraft = true;
@@ -224,7 +185,7 @@
 
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function (e) {
-                tradeSettlement.saveAllGrids($repoGrid);
+                tradeSettlement.saveAllGrids($feesGrid);
 
                 if (tradeSettlement.val_isTMinus1($settlementDateBox.option("value"))) {
                     alert("T-n only available for viewing..");
@@ -246,7 +207,7 @@
 
         $submitForApprovalModalBtn = $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                tradeSettlement.saveAllGrids($repoGrid);
+                tradeSettlement.saveAllGrids($feesGrid);
 
                 setTimeout(function () {
                     postData(false);

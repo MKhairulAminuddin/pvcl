@@ -2,7 +2,7 @@
 
 @{
     ViewBag.Title = "Trade Settlement";
-    ViewBag.Subtitle = "Part F - Fees";
+    ViewBag.Subtitle = "Part G - Contribution";
 }
 
 <section class="content container-fluid">
@@ -117,6 +117,14 @@
                                         .ReadOnly(true))
                                 </div>
                             </div>
+                            <div class="dx-field">
+                                <div class="dx-field-label">Approved Date</div>
+                                <div class="dx-field-value">
+                                    @(Html.DevExtreme().TextAreaFor(m => m.ApprovalNote)
+                                        .StylingMode(EditorStylingMode.Filled)
+                                        .ReadOnly(true))
+                                </div>
+                            </div>
                             @if (Model.IsAdminEdited)
                             {
                                 <div style="background: #FFEBEE; padding: 5px 0">
@@ -149,8 +157,8 @@
                             </div>
 
                             <div id="tabpanel-container" style="background-color: white;">
-                                <div data-options="dxTemplate : { name: 'feesTab' }" style="padding-top: 10px; overflow: auto">
-                                    <div id="feesGrid" class="grid-container" style="width: 100%"></div>
+                                <div data-options="dxTemplate : { name: 'contributionCreditedTab' }" style="padding-top: 10px; overflow: auto">
+                                    <div id="contributionCreditedGrid" class="grid-container" style="width: 100%"></div>
                                 </div>
                             </div>
                         </div>
@@ -175,5 +183,5 @@
 @section scripts
 {
     <script src="~/Scripts/app/issd/tradeSettlement.js"></script>
-    <script src="~/Scripts/app/issd/tradeSettlement/partF/view.js"></script>
+    <script src="~/Scripts/app/issd/tradeSettlement/partG/view.js"></script>
 }

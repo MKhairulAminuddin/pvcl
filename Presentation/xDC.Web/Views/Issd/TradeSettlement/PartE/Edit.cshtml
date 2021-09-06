@@ -1,7 +1,7 @@
-﻿@model xDC_Web.ViewModels.EditTradeSettlementFormViewModel
+﻿@model xDC_Web.ViewModels.TradeSettlementFormVM
 @{
     ViewBag.EditTitle = "Trade Settlement";
-    ViewBag.Subtitle = "Part E - Fees, Contribution, Others";
+    ViewBag.Subtitle = "Part E - ALTID Distribution & Drawdown";
 }
 
 <section class="content container-fluid">
@@ -63,7 +63,6 @@
                         }
                     </div>
                     <div class="box-body">
-                        <div class="dx-fieldset">
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="dx-field">
@@ -90,6 +89,7 @@
                                 </div>
                                 <div class="col-md-4"></div>
                                 <div class="col-md-4">
+                                    <div class="dx-fieldset">
                                         <div class="dx-field">
                                             <div class="dx-field-label">Status</div>
                                             <div class="dx-field-value">
@@ -137,13 +137,13 @@
                                             <div class="dx-field">
                                                 <div class="dx-field-label">Approval/Rejection Notes</div>
                                                 <div class="dx-field-value">
-                                                    @(Html.DevExtreme().TextAreaFor(m => m.ApprovalOrRejectionNotes)
+                                                    @(Html.DevExtreme().TextAreaFor(m => m.ApprovalNote)
                                                         .StylingMode(EditorStylingMode.Filled)
                                                         .ReadOnly(true))
                                                 </div>
                                             </div>
                                         }
-                                    
+
                                     @if (Model.IsAdminEdited)
                                     {
                                         <div style="background: #FFEBEE; padding: 5px 0">
@@ -181,17 +181,8 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div id="tabpanel-container" style="background-color: white;">
-                                        <div data-options="dxTemplate : { name: 'feesTab' }" style="padding-top: 10px; overflow: auto">
-
-                                            <div id="feesGrid" class="grid-container" style="width: 100%"></div>
-                                        </div>
-                                        <div data-options="dxTemplate : { name: 'contributionCreditedTab' }" style="padding-top: 10px; overflow: auto">
-
-                                            <div id="contributionCreditedGrid" class="grid-container" style="width: 100%"></div>
-                                        </div>
-                                        <div data-options="dxTemplate : { name: 'othersTab' }" style="padding-top: 10px; overflow: auto">
-
-                                            <div id="othersGrid" class="grid-container" style="width: 100%"></div>
+                                        <div data-options="dxTemplate : { name: 'altidTab' }" style="padding-top: 10px; overflow: auto">
+                                            <div id="altidGrid" class="grid-container" style="width: 100%"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -205,7 +196,7 @@
 
 </section>
 
-@Html.Partial("TradeSettlement/_TsSelectApproverModal")
+@Html.Partial("_SelectApproverModal")
 
 <script type="text/html" id="dxPanelTitle">
     <div style="margin: 4px 0">

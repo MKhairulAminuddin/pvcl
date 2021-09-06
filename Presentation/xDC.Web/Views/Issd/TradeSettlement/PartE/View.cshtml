@@ -1,8 +1,8 @@
-﻿@model xDC_Web.ViewModels.ViewTradeSettlementFormViewModel
+﻿@model xDC_Web.ViewModels.TradeSettlementFormVM
 
 @{
     ViewBag.Title = "Trade Settlement";
-    ViewBag.Subtitle = "Part E - Fees, Contribution, Others";
+    ViewBag.Subtitle = "Part E - ALTID Distribution & Drawdown";
 }
 
 <section class="content container-fluid">
@@ -34,16 +34,6 @@
                             .Text("Reject")
                             .Icon("remove")
                             .Type(ButtonType.Normal)
-                            .StylingMode(ButtonStylingMode.Contained)
-                            )
-                    }
-                    @if (Model.AdminEditPermission)
-                    {
-                        @(Html.DevExtreme().Button()
-                            .ID("adminEditBtn")
-                            .Text("Admin Edit")
-                            .Icon("edit")
-                            .Type(ButtonType.Default)
                             .StylingMode(ButtonStylingMode.Contained)
                             )
                     }
@@ -159,14 +149,8 @@
                             </div>
 
                             <div id="tabpanel-container" style="background-color: white;">
-                                <div data-options="dxTemplate : { name: 'feesTab' }" style="padding-top: 10px; overflow: auto">
-                                    <div id="feesGrid" class="grid-container" style="width: 100%"></div>
-                                </div>
-                                <div data-options="dxTemplate : { name: 'contributionCreditedTab' }" style="padding-top: 10px; overflow: auto">
-                                    <div id="contributionCreditedGrid" class="grid-container" style="width: 100%"></div>
-                                </div>
-                                <div data-options="dxTemplate : { name: 'othersTab' }" style="padding-top: 10px; overflow: auto">
-                                    <div id="othersGrid" class="grid-container" style="width: 100%"></div>
+                                <div data-options="dxTemplate : { name: 'altidTab' }" style="padding-top: 10px; overflow: auto">
+                                    <div id="altidGrid" class="grid-container" style="width: 100%"></div>
                                 </div>
                             </div>
                         </div>
@@ -177,9 +161,10 @@
     </div>
 </section>
 
+
 @Html.Partial("TradeSettlement/_TsApprovalModal")
 @Html.Partial("TradeSettlement/_TsRejectionModal")
-@Html.Partial("TradeSettlement/_TsWorkflowInfoModal")
+@Html.Partial("_WorkflowInfoModal")
 
 <script type="text/html" id="dxPanelTitle">
     <div style="margin: 4px 0">

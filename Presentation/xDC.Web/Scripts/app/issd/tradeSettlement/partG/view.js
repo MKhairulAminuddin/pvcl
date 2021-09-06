@@ -5,7 +5,9 @@
         tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
 
         var $tabpanel,
-            $feesGrid,
+            
+            $cnGrid,
+
             $workflowGrid,
 
             $tradeSettlementForm,
@@ -15,6 +17,7 @@
 
         var referenceUrl = {
             adminEdit: window.location.origin + "/issd/TradeSettlement/PartE/Edit/",
+            loadWorkflowHistory: window.location.origin + "/api/common/GetWorkflow/?/" + _getIdFromQueryString + "/",
 
             submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
             submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartE/View/"
@@ -25,17 +28,17 @@
         //#region Data Source & Functions
 
         var populateData = function() {
-            $.when(tradeSettlement.dsTradeItem("fees"))
-                .done(function (fees) {
-                    $feesGrid.option("dataSource", fees.data);
-                    $feesGrid.repaint();
+            $.when(tradeSettlement.dsTradeItem("contributionCredited"))
+                .done(function(cn) {
+                    $cnGrid.option("dataSource", cn.data);
+                    $cnGrid.repaint();
 
                     tradeSettlement.defineTabBadgeNumbers([
-                        { titleId: "titleBadge7", dxDataGrid: $feesGrid }
+                        { titleId: "titleBadge10", dxDataGrid: $cnGrid }
                     ]);
                 })
                 .then(function() {
-                    console.log("Done load data");
+                    
                 });
         };
 
@@ -54,7 +57,7 @@
                 url: referenceUrl.submitApprovalRequest,
                 method: "post",
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
                 },
                 success: function (data) {
                     window.location.href = referenceUrl.submitApprovalResponse + data;
@@ -70,7 +73,7 @@
         
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
-                { titleId: "titleBadge7", title: "Fees", template: "feesTab" }
+                { titleId: "titleBadge10", title: "Contribution", template: "contributionCreditedTab" }
             ],
             deferRendering: false,
             itemTitleTemplate: $("#dxPanelTitle"),
@@ -80,8 +83,8 @@
         //#endregion
         
         // #region DataGrid
-
-        $feesGrid = $("#feesGrid").dxDataGrid({
+        
+        $cnGrid = $("#contributionCreditedGrid").dxDataGrid({
             dataSource: [],
             columns: [
                 {
@@ -96,20 +99,11 @@
                 },
                 {
                     dataField: "instrumentCode",
-                    caption: "Fees"
+                    caption: "Contribution Credited"
                 },
                 {
                     dataField: "amountPlus",
                     caption: "Amount (+)",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    }
-                },
-                {
-                    dataField: "amountMinus",
-                    caption: "Amount (-)",
                     dataType: "number",
                     format: {
                         type: "fixedPoint",

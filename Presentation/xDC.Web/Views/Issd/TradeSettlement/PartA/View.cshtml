@@ -1,4 +1,4 @@
-﻿@model xDC_Web.ViewModels.ViewTradeSettlementFormViewModel
+﻿@model xDC_Web.ViewModels.TradeSettlementFormVM
 
 @{
     ViewBag.Title = "Trade Settlement";
@@ -36,16 +36,6 @@
                                 .Text("Reject")
                                 .Icon("remove")
                                 .Type(ButtonType.Normal)
-                                .StylingMode(ButtonStylingMode.Contained)
-                                )
-                        }
-                        @if (Model.AdminEditPermission)
-                        {
-                            @(Html.DevExtreme().Button()
-                                .ID("adminEditBtn")
-                                .Text("Admin Edit")
-                                .Icon("edit")
-                                .Type(ButtonType.Default)
                                 .StylingMode(ButtonStylingMode.Contained)
                                 )
                         }
@@ -183,7 +173,7 @@
 
 @Html.Partial("TradeSettlement/_TsApprovalModal")
 @Html.Partial("TradeSettlement/_TsRejectionModal")
-@Html.Partial("TradeSettlement/_TsWorkflowInfoModal")
+@Html.Partial("_WorkflowInfoModal")
 
 <script type="text/html" id="dxPanelTitle">
     <div style="margin: 4px 0">
