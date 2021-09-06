@@ -32,7 +32,5 @@ namespace xDC_Web.ViewModels
 
         
         public bool IsAdminEdited { get; set; }
-        public bool ApprovePermission { get; set; }
-        public bool AdminEditPermission { get; set; }
     }
 }

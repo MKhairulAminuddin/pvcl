@@ -18,7 +18,8 @@
             $approvalNotes,
             
             isDraft = false,
-            isAdminEdit = false;
+            isAdminEdit = false,
+            formTypeId = 4;
 
         var referenceUrl = {
             submitEditRequest: window.location.origin + "/api/issd/TradeSettlement/Edit",
@@ -38,35 +39,30 @@
                     tradeSettlement.dsTradeItem("bond"),
                     tradeSettlement.dsTradeItem("cp"),
                     tradeSettlement.dsTradeItem("notesPaper"),
-                    tradeSettlement.dsTradeItem("repo"),
                     tradeSettlement.dsTradeItem("coupon")
                 )
-                .done(function(data1, data2, data3, data4, data5) {
-                    $bondGrid.option("dataSource", data1[0].data);
+                .done(function (bond, cp, notesPaper, coupon) {
+                    $bondGrid.option("dataSource", bond[0].data);
                     $bondGrid.repaint();
 
-                    $cpGrid.option("dataSource", data2[0].data);
+                    $cpGrid.option("dataSource", cp[0].data);
                     $cpGrid.repaint();
 
-                    $notesPaperGrid.option("dataSource", data3[0].data);
+                    $notesPaperGrid.option("dataSource", notesPaper[0].data);
                     $notesPaperGrid.repaint();
 
-                    $repoGrid.option("dataSource", data4[0].data);
-                    $repoGrid.repaint();
-
-                    $couponGrid.option("dataSource", data5[0].data);
+                    $couponGrid.option("dataSource", coupon[0].data);
                     $couponGrid.repaint();
 
                     tradeSettlement.defineTabBadgeNumbers([
                         { titleId: "titleBadge2", dxDataGrid: $bondGrid },
                         { titleId: "titleBadge3", dxDataGrid: $cpGrid },
                         { titleId: "titleBadge4", dxDataGrid: $notesPaperGrid },
-                        { titleId: "titleBadge5", dxDataGrid: $repoGrid },
                         { titleId: "titleBadge6", dxDataGrid: $couponGrid }
                     ]);
                 })
-                .then(function() {
-                    console.log("Done load data");
+                .then(function () {
+
                 });
         };
 
@@ -74,14 +70,13 @@
 
             var data = {
                 id: tradeSettlement.getIdFromQueryString,
-                formType: 4,
+                formType: formTypeId,
                 isSaveAsDraft: isDraft,
                 isSaveAdminEdit: isAdminEdit,
 
                 bond: $bondGrid.getDataSource().items(),
                 cp: $cpGrid.getDataSource().items(),
                 notesPaper: $notesPaperGrid.getDataSource().items(),
-                repo: $repoGrid.getDataSource().items(),
                 coupon: $couponGrid.getDataSource().items(),
 
                 approver: (isDraft) ? null : $approverDropdown.option("value"),
@@ -97,7 +92,7 @@
                     window.location.href = referenceUrl.submitEditResponse + data;
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
                 },
                 complete: function (data) {
 
@@ -114,7 +109,6 @@
                 { titleId: "titleBadge2", title: "Bond", template: "bondTab" },
                 { titleId: "titleBadge3", title: "CP", template: "cpTab" },
                 { titleId: "titleBadge4", title: "Notes & Papers", template: "notesPaperTab" },
-                { titleId: "titleBadge5", title: "REPO", template: "repoTab" },
                 { titleId: "titleBadge6", title: "Coupon", template: "couponReceivedTab" }
             ],
             deferRendering: false,

@@ -32,7 +32,7 @@
                     $("#error_container").bs_warning("Email Sent");
 
                 }).fail(function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                    app.alertError(textStatus + ': ' + errorThrown);
 
                 });
 

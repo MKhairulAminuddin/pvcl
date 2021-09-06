@@ -26,27 +26,23 @@ namespace xDC_Web.Extension.DocGenerator
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
 
-                    if (getForm != null)
+                    if (form != null)
                     {
-                        var getTrades = db.ISSD_TradeSettlement.Where(x => x.FormId == formId).ToList();
-
-                        getForm.Id = getForm.Id;
-                        getForm.PreparedBy = getForm.PreparedBy;
-                        getForm.PreparedDate = getForm.PreparedDate.Value;
-
+                        var tradeItems = db.ISSD_TradeSettlement.Where(x => x.FormId == formId).ToList();
+                        
                         var getFormWorkflow = db.Form_Workflow
-                            .Where(x => (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected) && x.FormId == getForm.Id)
+                            .Where(x => x.FormId == form.Id)
                             .OrderByDescending(x => x.RecordedDate)
-                            .FirstOrDefault();
+                            .ToList();
 
                         var openingBalance = db.ISSD_Balance.Where(x => x.FormId == formId).ToList();
 
                         IWorkbook workbook = new Workbook();
                         workbook.Options.Culture = new CultureInfo("en-US");
                         workbook.LoadDocument(MapPath("~/App_Data/Trade Settlement Template.xltx"));
-                        workbook = GenerateDocument(workbook, getForm, getFormWorkflow, getTrades, openingBalance);
+                        workbook = GenerateDocument(workbook, form, getFormWorkflow, tradeItems, openingBalance);
                         var randomFileName = "ISSD Trade Settlement - " + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                         if (isExportAsExcel)
@@ -95,7 +91,7 @@ namespace xDC_Web.Extension.DocGenerator
                         var getTrades = new List<ISSD_TradeSettlement>();
                         foreach (var formId in associatedFormIdParts)
                         {
-                            getTrades.AddRange(TradeSettlementService.GetTradeSettlement(db, formId));
+                            getTrades.AddRange(TradeSettlementSvc.GetTradeSettlement(db, formId));
                         }
 
                         var worflows = new List<Form_Workflow>();
@@ -151,7 +147,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private IWorkbook GenerateDocument(IWorkbook workbook, ISSD_FormHeader formHeader, Form_Workflow formWorkflow, List<ISSD_TradeSettlement> trades, List<ISSD_Balance> ob = null)
+        private IWorkbook GenerateDocument(IWorkbook workbook, ISSD_FormHeader formHeader, List<Form_Workflow> formWorkflow, List<ISSD_TradeSettlement> trades, List<ISSD_Balance> ob = null)
         {
             workbook.BeginUpdate();
             try
@@ -186,7 +182,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                 Content_TradeItems(workbook, sheet, trades, tradeItemStartRow, out tradeItemStartRow);
 
-                Content_WorkflowItems(sheet, new List<Form_Workflow>(){ formWorkflow }, tradeItemStartRow, out tradeItemStartRow);
+                Content_WorkflowItems(sheet, formWorkflow, tradeItemStartRow, out tradeItemStartRow);
 
                 var footerRowNumber = tradeItemStartRow + 4;
                 sheet["A" + footerRowNumber + ":G" + footerRowNumber].Merge();
@@ -663,88 +659,70 @@ namespace xDC_Web.Extension.DocGenerator
             sheet["A" + workflowRowNumber].Font.Bold = true;
             workflowRowNumber += 2;
 
-            var workflowPartA = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part A)" && x.WorkflowStatus == "Approved");
+            var workflowPartA = formWorkflow.FirstOrDefault(x => x.FormType == Common.FormType.ISSD_TS_A);
             if (workflowPartA != null)
             {
-                sheet["A" + workflowRowNumber].Value = "Form Type";
-                sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part A)";
-                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                workflowRowNumber += 1;
-                sheet["A" + workflowRowNumber].Value = "Approver";
-                sheet["B" + workflowRowNumber].Value = workflowPartA.RequestBy;
-                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                workflowRowNumber += 1;
-                sheet["A" + workflowRowNumber].Value = "Approved Date";
-                sheet["B" + workflowRowNumber].Value = workflowPartA.RecordedDate.Value.ToString("dd/MM/yyyy HH:mm");
-                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                workflowRowNumber += 2;
+                GenerateWorkflowBox(sheet, workflowRowNumber, workflowPartA.FormType, workflowPartA.RequestBy, workflowPartA.WorkflowStatus, workflowPartA.RecordedDate, out workflowRowNumber);
             }
-            var workflowPartB = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part B)" && x.WorkflowStatus == "Approved");
+            var workflowPartB = formWorkflow.FirstOrDefault(x => x.FormType == Common.FormType.ISSD_TS_B);
             if (workflowPartB != null)
             {
-                sheet["A" + workflowRowNumber].Value = "Form Type";
-                sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part B)";
-                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                workflowRowNumber += 1;
-                sheet["A" + workflowRowNumber].Value = "Approver";
-                sheet["B" + workflowRowNumber].Value = workflowPartB.RequestBy;
-                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                workflowRowNumber += 1;
-                sheet["A" + workflowRowNumber].Value = "Approved Date";
-                sheet["B" + workflowRowNumber].Value = workflowPartB.RecordedDate.Value.ToString("dd/MM/yyyy HH:mm");
-                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                workflowRowNumber += 2;
+                GenerateWorkflowBox(sheet, workflowRowNumber, workflowPartB.FormType, workflowPartB.RequestBy, workflowPartB.WorkflowStatus, workflowPartB.RecordedDate, out workflowRowNumber);
             }
-            var workflowPartC = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part C)" && x.WorkflowStatus == "Approved");
+            var workflowPartC = formWorkflow.FirstOrDefault(x => x.FormType == Common.FormType.ISSD_TS_C);
             if (workflowPartC != null)
             {
-                sheet["A" + workflowRowNumber].Value = "Form Type";
-                sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part C)";
-                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                workflowRowNumber += 1;
-                sheet["A" + workflowRowNumber].Value = "Approver";
-                sheet["B" + workflowRowNumber].Value = workflowPartC.RequestBy;
-                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                workflowRowNumber += 1;
-                sheet["A" + workflowRowNumber].Value = "Approved Date";
-                sheet["B" + workflowRowNumber].Value = workflowPartC.RecordedDate.Value.ToString("dd/MM/yyyy HH:mm");
-                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                workflowRowNumber += 2;
+                GenerateWorkflowBox(sheet, workflowRowNumber, workflowPartC.FormType, workflowPartC.RequestBy, workflowPartC.WorkflowStatus, workflowPartC.RecordedDate, out workflowRowNumber);
             }
-            var workflowPartD = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part D)" && x.WorkflowStatus == "Approved");
+            var workflowPartD = formWorkflow.FirstOrDefault(x => x.FormType == Common.FormType.ISSD_TS_D);
             if (workflowPartD != null)
             {
-                sheet["A" + workflowRowNumber].Value = "Form Type";
-                sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part D)";
-                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                workflowRowNumber += 1;
-                sheet["A" + workflowRowNumber].Value = "Approver";
-                sheet["B" + workflowRowNumber].Value = workflowPartD.RequestBy;
-                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                workflowRowNumber += 1;
-                sheet["A" + workflowRowNumber].Value = "Approved Date";
-                sheet["B" + workflowRowNumber].Value = workflowPartD.RecordedDate.Value.ToString("dd/MM/yyyy HH:mm");
-                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                workflowRowNumber += 2;
+                GenerateWorkflowBox(sheet, workflowRowNumber, workflowPartD.FormType, workflowPartD.RequestBy, workflowPartD.WorkflowStatus, workflowPartD.RecordedDate, out workflowRowNumber);
             }
-            var workflowPartE = formWorkflow.FirstOrDefault(x => x.FormType == "Trade Settlement (Part E)" && x.WorkflowStatus == "Approved");
+            var workflowPartE = formWorkflow.FirstOrDefault(x => x.FormType == Common.FormType.ISSD_TS_E);
             if (workflowPartE != null)
             {
-                sheet["A" + workflowRowNumber].Value = "Form Type";
-                sheet["B" + workflowRowNumber].Value = "Trade Settlement (Part E)";
-                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                workflowRowNumber += 1;
-                sheet["A" + workflowRowNumber].Value = "Approver";
-                sheet["B" + workflowRowNumber].Value = workflowPartE.RequestBy;
-                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                workflowRowNumber += 1;
-                sheet["A" + workflowRowNumber].Value = "Approved Date";
-                sheet["B" + workflowRowNumber].Value = workflowPartE.RecordedDate.Value.ToString("dd/MM/yyyy HH:mm");
-                sheet["B" + workflowRowNumber].FillColor = Color.LightGoldenrodYellow;
-                workflowRowNumber += 2;
+                GenerateWorkflowBox(sheet, workflowRowNumber, workflowPartE.FormType, workflowPartE.RequestBy, workflowPartE.WorkflowStatus, workflowPartE.RecordedDate, out workflowRowNumber);
+            }
+            var workflowPartF = formWorkflow.FirstOrDefault(x => x.FormType == Common.FormType.ISSD_TS_F);
+            if (workflowPartF != null)
+            {
+                GenerateWorkflowBox(sheet, workflowRowNumber, workflowPartF.FormType, workflowPartF.RequestBy, workflowPartF.WorkflowStatus, workflowPartF.RecordedDate, out workflowRowNumber);
+            }
+            var workflowPartG = formWorkflow.FirstOrDefault(x => x.FormType == Common.FormType.ISSD_TS_E);
+            if (workflowPartG != null)
+            {
+                GenerateWorkflowBox(sheet, workflowRowNumber, workflowPartG.FormType, workflowPartG.RequestBy, workflowPartG.WorkflowStatus, workflowPartG.RecordedDate, out workflowRowNumber);
+            }
+            var workflowPartH = formWorkflow.FirstOrDefault(x => x.FormType == Common.FormType.ISSD_TS_E);
+            if (workflowPartH != null)
+            {
+                GenerateWorkflowBox(sheet, workflowRowNumber, workflowPartH.FormType, workflowPartH.RequestBy, workflowPartH.WorkflowStatus, workflowPartH.RecordedDate, out workflowRowNumber);
             }
 
             currentRowIndex = workflowRowNumber;
+        }
+
+        private void GenerateWorkflowBox(Worksheet sheet, int currentRowNumber, string formType, string approvedBy, string wfStatus, DateTime? recordedDate, out int nextRowNumber)
+        {
+            sheet["A" + currentRowNumber].Value = "Form Type";
+            sheet["B" + currentRowNumber].Value = formType;
+            sheet["B" + currentRowNumber].FillColor = Color.LightGoldenrodYellow;
+            currentRowNumber += 1;
+            sheet["A" + currentRowNumber].Value = "Approver";
+            sheet["B" + currentRowNumber].Value = approvedBy;
+            sheet["B" + currentRowNumber].FillColor = Color.LightGoldenrodYellow;
+            currentRowNumber += 1;
+            sheet["A" + currentRowNumber].Value = "Status";
+            sheet["B" + currentRowNumber].Value = wfStatus;
+            sheet["B" + currentRowNumber].FillColor = Color.LightGoldenrodYellow;
+            currentRowNumber += 1;
+            sheet["A" + currentRowNumber].Value = "Approved Date";
+            sheet["B" + currentRowNumber].Value = (wfStatus == Common.FormStatus.Approved || wfStatus == Common.FormStatus.Rejected)? recordedDate?.ToString("dd/MM/yyyy HH:mm") : null;
+            sheet["B" + currentRowNumber].FillColor = Color.LightGoldenrodYellow;
+            currentRowNumber += 2;
+
+            nextRowNumber = currentRowNumber;
         }
     }
 }

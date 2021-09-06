@@ -9,7 +9,6 @@
             $bondGrid,
             $cpGrid,
             $notesPaperGrid,
-            $repoGrid,
             $couponGrid,
             
             $approverDropdown,
@@ -25,7 +24,8 @@
             $submitForApprovalModalBtn,
 
             $tradeSettlementForm,
-            isSaveAsDraft;
+            isSaveAsDraft,
+            formTypeId = 4;
 
         var referenceUrl = {
             postNewFormRequest: window.location.origin + "/api/issd/TradeSettlement/New",
@@ -42,41 +42,40 @@
                         tradeSettlement.dsTradeItemEdw("BOND", settlementDate, currency),
                         tradeSettlement.dsTradeItemEdw("COMMERCIAL PAPER", settlementDate, currency),
                         tradeSettlement.dsTradeItemEdw("NOTES AND PAPERS", settlementDate, currency),
-                        tradeSettlement.dsTradeItemEdw("REPO", settlementDate, currency),
                         tradeSettlement.dsTradeItemEdw("COUPON", settlementDate, currency)
                     )
-                    .done(function(data1, data2, data3, data4, data5) {
-                        $bondGrid.option("dataSource", data1[0].data);
+                    .done(function(bond, cp, notesPapers, coupon) {
+                        $bondGrid.option("dataSource", bond[0].data);
                         $bondGrid.repaint();
+                        app.toastEdwCount(bond[0].data, "Bond");
 
-                        $cpGrid.option("dataSource", data2[0].data);
+                        $cpGrid.option("dataSource", cp[0].data);
                         $cpGrid.repaint();
+                        app.toastEdwCount(cp[0].data, "Commercial Paper");
 
-                        $notesPaperGrid.option("dataSource", data3[0].data);
+                        $notesPaperGrid.option("dataSource", notesPapers[0].data);
                         $notesPaperGrid.repaint();
+                        app.toastEdwCount(notesPapers[0].data, "Notes/Papers");
 
-                        $repoGrid.option("dataSource", data4[0].data);
-                        $repoGrid.repaint();
-
-                        $couponGrid.option("dataSource", data5[0].data);
+                        $couponGrid.option("dataSource", coupon[0].data);
                         $couponGrid.repaint();
+                        app.toastEdwCount(coupon[0].data, "Coupon");
 
                         tradeSettlement.defineTabBadgeNumbers([
                             { titleId: "titleBadge2", dxDataGrid: $bondGrid },
                             { titleId: "titleBadge3", dxDataGrid: $cpGrid },
                             { titleId: "titleBadge4", dxDataGrid: $notesPaperGrid },
-                            { titleId: "titleBadge5", dxDataGrid: $repoGrid },
                             { titleId: "titleBadge6", dxDataGrid: $couponGrid }
                         ]);
                     })
                     .always(function(dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-                        tradeSettlement.toast("Data Updated", "info");
+                        
                     })
                     .then(function() {
 
                     });
             } else {
-                dxGridUtils.clearGrid($equityGrid);
+                app.clearAllGrid($bondGrid, $cpGrid, $notesPaperGrid, $couponGrid);
             }
         };
 
@@ -85,13 +84,12 @@
             var data = {
                 currency: $currencySelectBox.option("value"),
                 settlementDateEpoch: moment($settlementDateBox.option("value")).unix(),
-                formType: 4,
+                formType: formTypeId,
                 isSaveAsDraft: isDraft,
                 
                 bond: $bondGrid.getDataSource().items(),
                 cp: $cpGrid.getDataSource().items(),
                 notesPaper: $notesPaperGrid.getDataSource().items(),
-                repo: $repoGrid.getDataSource().items(),
                 coupon: $couponGrid.getDataSource().items(),
 
                 approver: (isDraft) ? null : $approverDropdown.option("value"),
@@ -107,7 +105,7 @@
                     window.location.href = referenceUrl.postNewFormResponse + response;
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
                 },
                 complete: function (data) {
                     
@@ -144,7 +142,6 @@
                 { titleId: "titleBadge2", title: "Bond", template: "bondTab" },
                 { titleId: "titleBadge3", title: "CP", template: "cpTab" },
                 { titleId: "titleBadge4", title: "Notes & Papers", template: "notesPaperTab" },
-                { titleId: "titleBadge5", title: "REPO", template: "repoTab" },
                 { titleId: "titleBadge6", title: "Coupon", template: "couponReceivedTab" }
             ],
             deferRendering: false,
@@ -435,76 +432,7 @@
                 allowAdding: false
             }
         }).dxDataGrid("instance");
-
-        $repoGrid = $("#repoGrid").dxDataGrid({
-            dataSource: [],
-            columns: [
-                {
-                    dataField: "instrumentCode",
-                    caption: "REPO"
-                },
-                {
-                    dataField: "stockCode",
-                    caption: "Stock Code/ ISIN"
-                },
-                {
-                    dataField: "firstLeg",
-                    caption: "1st Leg (+)",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    }
-                },
-                {
-                    dataField: "secondLeg",
-                    caption: "2nd Leg (-)",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    }
-                },
-                {
-                    dataField: "remarks",
-                    caption: "Remarks",
-                    dataType: "text"
-                }
-            ],
-            summary: {
-                totalItems: [
-                    {
-                        column: "instrumentCode",
-                        displayFormat: "TOTAL"
-                    },
-                    {
-                        column: "firstLeg",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    },
-                    {
-                        column: "secondLeg",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    }
-                ]
-            },
-            editing: {
-                mode: "batch",
-                allowUpdating: true,
-                allowDeleting: true,
-                allowAdding: true
-            }
-        }).dxDataGrid("instance");
-
+        
         $couponGrid = $("#couponGrid").dxDataGrid({
             dataSource: [],
             columns: [
@@ -588,7 +516,7 @@
 
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function (e) {
-                tradeSettlement.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid);
+                tradeSettlement.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $couponGrid);
 
                 if (tradeSettlement.val_isTMinus1($settlementDateBox.option("value"))) {
                     alert("T-n only available for viewing..");
@@ -610,7 +538,7 @@
 
         $submitForApprovalModalBtn = $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                tradeSettlement.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid);
+                tradeSettlement.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $couponGrid);
 
                 setTimeout(function () {
                     postData(false);

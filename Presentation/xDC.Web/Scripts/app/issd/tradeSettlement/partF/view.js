@@ -14,10 +14,10 @@
             $printBtn;
 
         var referenceUrl = {
-            adminEdit: window.location.origin + "/issd/TradeSettlement/PartE/Edit/",
+            adminEdit: window.location.origin + "/issd/TradeSettlement/PartF/Edit/",
 
             submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
-            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartE/View/"
+            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartF/View/"
         };
 
         //#endregion
@@ -54,7 +54,7 @@
                 url: referenceUrl.submitApprovalRequest,
                 method: "post",
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
                 },
                 success: function (data) {
                     window.location.href = referenceUrl.submitApprovalResponse + data;
@@ -152,10 +152,7 @@
         }).dxDataGrid("instance");
         
         $workflowGrid = $("#workflowGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: tradeSettlement.api.loadWorkflowHistory + "/7"
-            }),
+            dataSource: tradeSettlement.dsWorflowInformation(8),
             columns: [
                 {
                     dataField: "recordedDate",

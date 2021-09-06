@@ -36,7 +36,10 @@ namespace xDC_Web.Controllers.Api
                         Common.FormType.ISSD_TS_B,
                         Common.FormType.ISSD_TS_C,
                         Common.FormType.ISSD_TS_D,
-                        Common.FormType.ISSD_TS_E
+                        Common.FormType.ISSD_TS_E,
+                        Common.FormType.ISSD_TS_F,
+                        Common.FormType.ISSD_TS_G,
+                        Common.FormType.ISSD_TS_H,
                     };
 
                     var todayDate = DateTime.Now.Date;
@@ -48,11 +51,11 @@ namespace xDC_Web.Controllers.Api
                     var getApprover = db.Config_Approver.Where(x => x.Username == User.Identity.Name);
                     var isMeApprover = getApprover.Any();
 
-                    var resultVM = new List<AmsdInflowFundGridModel>();
+                    var resultVM = new List<ISSD_LandingPageGridVM>();
 
                     foreach (var item in result)
                     {
-                        resultVM.Add(new AmsdInflowFundGridModel
+                        resultVM.Add(new ISSD_LandingPageGridVM
                         {
                             Id = item.Id,
                             FormType = item.FormType,
@@ -63,22 +66,14 @@ namespace xDC_Web.Controllers.Api
                             PreparedDate = item.PreparedDate,
                             ApprovedBy = item.ApprovedBy,
                             ApprovedDate = item.ApprovedDate,
-                            /*AdminEditted = item.AdminEditted,
-                            AdminEdittedBy = item.AdminEdittedBy,
-                            AdminEdittedDate = item.AdminEdittedDate,
 
-                            IsDraft = (item.FormStatus != Common.FormStatus.PendingApproval),
-                            IsMeCanEditDraft = (User.IsInRole(Config.Acl.Issd) && !isMeApprover),
+                            EnableEdit = TradeSettlementSvc.EnableEdit(item.FormStatus, item.ApprovedBy, User.Identity.Name),
+                            EnableDelete = TradeSettlementSvc.EnableDelete(item.FormStatus),
+                            EnablePrint = TradeSettlementSvc.EnablePrint(item.FormStatus),
 
-                            IsPendingApproval = (item.FormStatus == Common.FormStatus.PendingApproval),
-
-                            IsMyFormRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatus.Rejected),
-                            IsFormPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
-
-
-                            
-                            IsCanAdminEdit = (User.IsInRole(Config.Acl.PowerUser) && !isMeApprover && item.FormStatus != Common.FormStatus.PendingApproval),*/
-                            
+                            IsRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatus.Rejected),
+                            IsPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
+                            IsPendingApproval = item.FormStatus == Common.FormStatus.PendingApproval
                         });
                     }
 
@@ -154,7 +149,7 @@ namespace xDC_Web.Controllers.Api
                 {
                     var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
                     
-                    var trades = TradeSettlementService.GetTradeSettlement(db, settlementDate.Value.Date, currency);
+                    var trades = TradeSettlementSvc.GetTradeSettlement(db, settlementDate.Value.Date, currency);
 
                     var result = trades
                         .GroupBy(i => 1)
@@ -288,13 +283,12 @@ namespace xDC_Web.Controllers.Api
             }
 
         }
-
-
+        
         #region Trade Settlement Form
 
         [HttpPost]
         [Route("TradeSettlement/New")]
-        public HttpResponseMessage NewTradeSettlement([FromBody] TradeSettlementModel inputs)
+        public HttpResponseMessage TS_NewForm([FromBody] TradeSettlementModel inputs)
         {
             try
             {
@@ -303,15 +297,10 @@ namespace xDC_Web.Controllers.Api
 
                 using (var db = new kashflowDBEntities())
                 {
-                    if (TradeSettlementService.IsSameDateAndCurrencyExist(db, settlementDateConverted.Value.Date, inputs.Currency, Common.FormTypeMapping(inputs.FormType)))
+                    if (TradeSettlementSvc.NewFormRules(db, settlementDateConverted.Value.Date, inputs.Currency, Common.FormTypeMapping(inputs.FormType), out var errorMessage))
                     {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Similar form has been created. Use that instead.");
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, errorMessage);
                     }
-
-                    /*if (TradeSettlementService.IsTMinus(settlementDateConverted.Value.Date))
-                    {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Submission for Settlement Date T-n is not allowed");
-                    }*/
 
                     var newFormHeader = new ISSD_FormHeader()
                     {
@@ -575,7 +564,7 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.Approver != null)
                     {
-                        TradeSettlementService.NotifyApprover(inputs.Approver, newFormHeader.Id, User.Identity.Name, newFormHeader.FormType, inputs.ApprovalNotes);
+                        TradeSettlementSvc.NotifyApprover(inputs.Approver, newFormHeader.Id, User.Identity.Name, newFormHeader.FormType, inputs.ApprovalNotes);
                     }
                     
                     return Request.CreateResponse(HttpStatusCode.Created, newFormHeader.Id);
@@ -590,44 +579,49 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Route("TradeSettlement/Edit")]
-        public HttpResponseMessage EditTradeSettlement([FromBody] TradeSettlementModel inputs)
+        public HttpResponseMessage TS_EditForm([FromBody] TradeSettlementModel inputs)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == inputs.Id);
-
-                    if (getForm == null)
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == inputs.Id);
+                    
+                    if (form == null)
                     {
                         return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not found!");
                     }
 
+                    if (TradeSettlementSvc.NewFormRules(db, form.SettlementDate.Value, inputs.Currency, Common.FormTypeMapping(inputs.FormType), out var errorMessage))
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, errorMessage);
+                    }
+
                     if (inputs.IsSaveAdminEdit)
                     {
-                        getForm.AdminEditted = true;
-                        getForm.AdminEdittedBy = User.Identity.Name;
-                        getForm.AdminEdittedDate = DateTime.Now;
+                        form.AdminEditted = true;
+                        form.AdminEdittedBy = User.Identity.Name;
+                        form.AdminEdittedDate = DateTime.Now;
                     }
 
                     if (inputs.IsSaveAsDraft)
                     {
-                        getForm.PreparedBy = User.Identity.Name;
-                        getForm.PreparedDate = DateTime.Now;
+                        form.PreparedBy = User.Identity.Name;
+                        form.PreparedDate = DateTime.Now;
                     }
 
                     if (inputs.Approver != null)
                     {
-                        getForm.ApprovedBy = inputs.Approver;
-                        getForm.ApprovedDate = null; // empty the date as this is new submission
-                        getForm.FormStatus = Common.FormStatus.PendingApproval;
+                        form.ApprovedBy = inputs.Approver;
+                        form.ApprovedDate = null; // empty the date as this is new submission
+                        form.FormStatus = Common.FormStatus.PendingApproval;
 
-                        TradeSettlementService.NotifyApprover(getForm.ApprovedBy, getForm.Id, User.Identity.Name,
-                            getForm.FormType, inputs.ApprovalNotes);
+                        TradeSettlementSvc.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name,
+                            form.FormType, inputs.ApprovalNotes);
                     }
                     
                     var getTradeItems = db.ISSD_TradeSettlement.Where(x =>
-                        x.FormId == getForm.Id);
+                        x.FormId == form.Id);
 
                     if (inputs.Equity != null)
                     {
@@ -1023,7 +1017,7 @@ namespace xDC_Web.Controllers.Api
                     
                     db.SaveChanges();
 
-                    return Request.CreateResponse(HttpStatusCode.Created, getForm.Id);
+                    return Request.CreateResponse(HttpStatusCode.Created, form.Id);
                 }
             }
             catch (Exception ex)
@@ -1035,7 +1029,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Route("TradeSettlement/Approval")]
-        public HttpResponseMessage ApprovalTradeSettlement([FromBody] FormApprovalModel input)
+        public HttpResponseMessage TS_Approval([FromBody] FormApprovalModel input)
         {
             try
             {
@@ -1055,7 +1049,7 @@ namespace xDC_Web.Controllers.Api
 
                             db.SaveChanges();
 
-                            TradeSettlementService.NotifyPreparer(form.Id, form.FormType, form.FormStatus, form.PreparedBy, form.ApprovedBy, input.ApprovalNote);
+                            TradeSettlementSvc.NotifyPreparer(form.Id, form.FormType, form.FormStatus, form.PreparedBy, form.ApprovedBy, input.ApprovalNote);
 
                             return Request.CreateResponse(HttpStatusCode.Accepted, formId);
                         }
@@ -1079,32 +1073,25 @@ namespace xDC_Web.Controllers.Api
         [HttpDelete]
         [Authorize(Roles = "Administrator, ISSD")]
         [Route("TradeSettlement")]
-        public HttpResponseMessage DeleteTradeSettlement(FormDataCollection form)
+        public HttpResponseMessage TS_DeleteForm(FormDataCollection input)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var key = Convert.ToInt32(form.Get("id"));
+                    var key = Convert.ToInt32(input.Get("id"));
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == key);
 
-                    var formHeader = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == key);
-
-                    if (formHeader != null)
+                    if (form != null)
                     {
-                        db.ISSD_FormHeader.Remove(formHeader);
+                        db.ISSD_FormHeader.Remove(form);
 
                         var tradeItems = db.ISSD_TradeSettlement.Where(x => x.FormId == key);
                         if (tradeItems.Any())
                         {
                             db.ISSD_TradeSettlement.RemoveRange(tradeItems);
                         }
-
-                        var openingBalances = db.ISSD_Balance.Where(x => x.FormId == key);
-                        if (openingBalances.Any())
-                        {
-                            db.ISSD_Balance.RemoveRange(openingBalances);
-                        }
-
+                        
                         db.SaveChanges();
 
                         return Request.CreateResponse(HttpStatusCode.OK);
@@ -1126,25 +1113,6 @@ namespace xDC_Web.Controllers.Api
         #endregion
 
         #region Bank Balance
-        
-        [HttpGet]
-        [Route("GetBalance/{formId}")]
-        public HttpResponseMessage GetBalance(int formId, DataSourceLoadOptions loadOptions)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var result = db.ISSD_Balance.Where(x => x.FormId == formId).ToList();
-
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-        }
 
         [HttpGet]
         [Route("GetBalanceConsolidated/{settlementDateEpoch}/{currency}")]
@@ -1157,20 +1125,8 @@ namespace xDC_Web.Controllers.Api
 
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = new List<ISSD_Balance>();
-
-                    var getForm = db.ISSD_FormHeader.FirstOrDefault(x =>
-                        DbFunctions.TruncateTime(x.SettlementDate) == settlementDateOnly && x.Currency == currency && x.FormStatus == "Approved");
-
-                    if (getForm != null)
-                    {
-                        result = db.ISSD_Balance.Where(x => x.FormId == getForm.Id).ToList();
-                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                    }
+                    var result = TradeSettlementSvc.GetOpeningBalance(db, settlementDateOnly, currency);
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
             }
             catch (Exception ex)

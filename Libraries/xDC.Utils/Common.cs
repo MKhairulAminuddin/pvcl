@@ -216,6 +216,10 @@ namespace xDC.Utils
                     return "../issd/TradeSettlement/PartE/View/";
                 case FormType.ISSD_TS_F:
                     return "../issd/TradeSettlement/PartF/View/";
+                case FormType.ISSD_TS_G:
+                    return "../issd/TradeSettlement/PartG/View/";
+                case FormType.ISSD_TS_H:
+                    return "../issd/TradeSettlement/PartH/View/";
 
                 case FormType.FID_TREASURY:
                     return "../fid/Treasury/View/";
@@ -248,6 +252,10 @@ namespace xDC.Utils
                     return "/issd/TradeSettlement/PartE/View/";
                 case FormType.ISSD_TS_F:
                     return "/issd/TradeSettlement/PartF/View/";
+                case FormType.ISSD_TS_G:
+                    return "/issd/TradeSettlement/PartG/View/";
+                case FormType.ISSD_TS_H:
+                    return "/issd/TradeSettlement/PartH/View/";
 
                 case FormType.FID_TREASURY:
                     return "/fid/Treasury/View/";

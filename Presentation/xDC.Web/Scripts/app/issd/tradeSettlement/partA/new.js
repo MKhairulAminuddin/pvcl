@@ -6,7 +6,6 @@
         tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
         
         var $tabpanel,
-            $openingBalanceGrid,
             $equityGrid,
             
             $approverDropdown,
@@ -22,7 +21,8 @@
             $submitForApprovalModalBtn,
 
             $tradeSettlementForm,
-            isSaveAsDraft;
+            isSaveAsDraft,
+            formTypeId = 3;
 
         var referenceUrl = {
             postNewFormRequest: window.location.origin + "/api/issd/TradeSettlement/New",
@@ -35,23 +35,25 @@
         
         function populateDwData(settlementDate, currency) {
             if (settlementDate && currency) {
-                $.when(
-                        tradeSettlement.dsTradeItemEdw("EQUITY", settlementDate, currency),
-                        tradeSettlement.dsOpeningBalanceEdw(settlementDate, currency)
-                    )
-                    .done(function(data1, data2) {
-                        $equityGrid.option("dataSource", data1[0].data);
+                $.when(tradeSettlement.dsTradeItemEdw("EQUITY", settlementDate, currency))
+                    .done(function(equity) {
+                        $equityGrid.option("dataSource", equity.data);
                         $equityGrid.repaint();
-
-                        $openingBalanceGrid.option("dataSource", data2[0].data);
-                        $openingBalanceGrid.repaint();
-
+                        app.toastEdwCount(equity.data, "Equity");
+                        
                         tradeSettlement.defineTabBadgeNumbers([
                             { titleId: "titleBadge1", dxDataGrid: $equityGrid }
                         ]);
                     })
-                    .always(function(dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-                        tradeSettlement.toast("Data Updated", "info");
+                    .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+
+                        var numberOfItems = dataOrjqXHR.data.length;
+                        if (numberOfItems > 0) {
+                            tradeSettlement.toast(numberOfItems + " records fetched", "info");
+                        } else {
+                            tradeSettlement.toast("No data found for selected date and currency", "warning");
+                        }
+
                     })
                     .then(function() {
 
@@ -66,10 +68,9 @@
             var data = {
                 currency: $currencySelectBox.option("value"),
                 settlementDateEpoch: moment($settlementDateBox.option("value")).unix(),
-                formType: 3,
+                formType: formTypeId,
                 isSaveAsDraft: isDraft,
-
-                openingBalance: $openingBalanceGrid.getDataSource().items(),
+                
                 equity: $equityGrid.getDataSource().items(),
 
                 approver: (isDraft) ? null : $approverDropdown.option("value"),
@@ -85,7 +86,7 @@
                     window.location.href = referenceUrl.postNewFormResponse + response;
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
                 },
                 complete: function (data) {
                     $selectApproverModal.modal("hide");
@@ -133,33 +134,7 @@
         //#endregion
         
         // #region Data Grid
-
-        $openingBalanceGrid = $("#openingBalanceGrid").dxDataGrid({
-            dataSource: [],
-            showColumnHeaders: false,
-            showColumnLines: false,
-            columns: [
-                {
-                    dataField: "balanceCategory",
-                    caption: "Opening Balance"
-                },
-                {
-                    dataField: "currency",
-                    caption: "Currency",
-                    visible: false
-                },
-                {
-                    dataField: "amount",
-                    caption: "Amount",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    }
-                }
-            ]
-        }).dxDataGrid("instance");
-
+        
         $equityGrid = $("#equityGrid").dxDataGrid({
             dataSource: [],
             columns: [

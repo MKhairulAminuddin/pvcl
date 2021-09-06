@@ -21,11 +21,12 @@
             $submitForApprovalModalBtn,
 
             $tradeSettlementForm,
-            isSaveAsDraft;
+            isSaveAsDraft,
+            formTypeId = 7;
 
         var referenceUrl = {
             postNewFormRequest: window.location.origin + "/api/issd/TradeSettlement/New",
-            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartD/View/",
+            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartE/View/",
         };
         
         //#endregion
@@ -61,7 +62,7 @@
             var data = {
                 currency: $currencySelectBox.option("value"),
                 settlementDateEpoch: moment($settlementDateBox.option("value")).unix(),
-                formType: 6,
+                formType: formTypeId,
                 isSaveAsDraft: isDraft,
                 
                 altid: $altidGrid.getDataSource().items(),
@@ -79,7 +80,7 @@
                     window.location.href = referenceUrl.postNewFormResponse + response;
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
                 },
                 complete: function (data) {
                     

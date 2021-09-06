@@ -6,14 +6,14 @@
 
         var statuses = [
             "All",
-            "A (Equity)",
-            "B (Bond, CP, Notes/Papers, Coupon)",
-            "C (REPO)",
-            "D (MTM, FX)",
-            "E (ALTID)",
-            "F (Fees)",
-            "G (Contribution)",
-            "H (Others)"
+            "A - Equity",
+            "B - Bond, CP, Notes/Papers, Coupon",
+            "C - REPO",
+            "D - MTM, FX",
+            "E - ALTID",
+            "F - Fees)",
+            "G - Contribution",
+            "H - Others"
         ];
         
         $issdGrid = $("#issdGrid").dxDataGrid({
@@ -83,7 +83,7 @@
                             icon: "fa fa-pencil-square",
                             cssClass: "dx-datagrid-command-btn",
                             visible: function (e) {
-                                return (!e.row.data.isPendingApproval);
+                                return e.row.data.enableEdit;
                             },
                             onClick: function (e) {
                                 switch (e.row.data.formType) {
@@ -105,6 +105,12 @@
                                     case "Trade Settlement (Part F)":
                                         window.location.href = window.location.origin + "/issd/TradeSettlement/PartF/Edit/" + e.row.data.id;
                                         return;
+                                    case "Trade Settlement (Part G)":
+                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartG/Edit/" + e.row.data.id;
+                                        return;
+                                    case "Trade Settlement (Part H)":
+                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartH/Edit/" + e.row.data.id;
+                                        return;
                                     
                                     default:
                                         alert("Invalid selection!");
@@ -114,9 +120,12 @@
                             }
                         },
                         {
-                            hint: "Delete Draft",
+                            hint: "Delete",
                             icon: "fa fa-trash-o",
                             cssClass: "dx-datagrid-command-btn text-red",
+                            visible: function (e) {
+                                return e.row.data.enableDelete;
+                            },
                             onClick: function (e) {
                                 if (!confirm("Do you really want to delete this?")) {
                                     return false;
@@ -130,11 +139,14 @@
                                         url: window.location.origin + "/api/issd/TradeSettlement/",
                                         data: data,
                                         success: function (data) {
-                                            $("#error_container").bs_success("Draft deleted");
+                                            app.toast("Form delete...", "warning", 2000);
+
                                             $issdGrid.refresh();
+                                            $consolidatedTradeSettlementGrid.refresh();
                                         },
                                         fail: function (jqXHR, textStatus, errorThrown) {
-                                            $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                                            app.alertError(textStatus + ": " + errorThrown);
+
                                         }
                                     });
                                     e.event.preventDefault();
@@ -147,27 +159,33 @@
                             cssClass: "dx-datagrid-command-btn",
                             onClick: function (e) {
                                 switch (e.row.data.formType) {
-                                case "Trade Settlement (Part A)":
-                                    window.location.href = window.location.origin + "/issd/TradeSettlement/PartA/View/" + e.row.data.id;
-                                    return;
-                                case "Trade Settlement (Part B)":
+                                    case "Trade Settlement (Part A)":
+                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartA/View/" + e.row.data.id;
+                                        return;
+                                    case "Trade Settlement (Part B)":
                                         window.location.href = window.location.origin + "/issd/TradeSettlement/PartB/View/" + e.row.data.id;
-                                    return;
-                                case "Trade Settlement (Part C)":
+                                        return;
+                                    case "Trade Settlement (Part C)":
                                         window.location.href = window.location.origin + "/issd/TradeSettlement/PartC/View/" + e.row.data.id;
-                                    return;
-                                case "Trade Settlement (Part D)":
+                                        return;
+                                    case "Trade Settlement (Part D)":
                                         window.location.href = window.location.origin + "/issd/TradeSettlement/PartD/View/" + e.row.data.id;
-                                    return;
-                                case "Trade Settlement (Part E)":
+                                        return;
+                                    case "Trade Settlement (Part E)":
                                         window.location.href = window.location.origin + "/issd/TradeSettlement/PartE/View/" + e.row.data.id;
                                         return;
-                                case "Trade Settlement (Part F)":
-                                    window.location.href = window.location.origin + "/issd/TradeSettlement/PartF/View/" + e.row.data.id;
-                                    return;
+                                    case "Trade Settlement (Part F)":
+                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartF/View/" + e.row.data.id;
+                                        return;
+                                    case "Trade Settlement (Part G)":
+                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartG/View/" + e.row.data.id;
+                                        return;
+                                    case "Trade Settlement (Part H)":
+                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartH/View/" + e.row.data.id;
+                                        return;
 
-                                default:
-                                    alert("Invalid selection!");
+                                    default:
+                                        alert("Invalid selection!");
                                 }
                                 e.event.preventDefault();
                             }
@@ -176,6 +194,9 @@
                             hint: "Download as Excel",
                             icon: "fa fa-file-excel-o",
                             cssClass: "dx-datagrid-command-btn text-green",
+                            visible: function (e) {
+                                return e.row.data.enablePrint;
+                            },
                             onClick: function (e) {
                                 var data = {
                                     id: e.row.data.id,
@@ -192,7 +213,7 @@
                                         window.location = url;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
-                                        $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                                        app.alertError(textStatus + ": " + errorThrown);
                                     },
                                     complete: function (data) {
 
@@ -205,6 +226,9 @@
                             hint: "Download as PDF",
                             icon: "fa fa-file-pdf-o",
                             cssClass: "dx-datagrid-command-btn text-orange",
+                            visible: function (e) {
+                                return e.row.data.enablePrint;
+                            },
                             onClick: function (e) {
 
                                 var data = {
@@ -222,7 +246,7 @@
                                         window.location = url;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
-                                        $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                                        app.alertError(textStatus + ": " + errorThrown);
                                     },
                                     complete: function (data) {
 
@@ -236,10 +260,10 @@
             ],
             onRowPrepared: function (e) {
                 if (e.rowType == "data") {
-                    if (e.data.isFormPendingMyApproval) {
+                    if (e.data.isPendingMyApproval) {
                         e.rowElement.css("background-color", "#FFEBEE");
                     }
-                    if (e.data.isMyFormRejected) {
+                    if (e.data.isRejected) {
                         e.rowElement.css("background-color", "#FFEBEE");
                     }
                 }
@@ -278,39 +302,39 @@
                 width: 230
             },
             items: [
-                "A (Equity)",
-                "B (Bond, CP, Notes/Papers, Coupon)",
-                "C (REPO)",
-                "D (MTM, FX)",
-                "E (ALTID)",
-                "F (Fees)",
-                "G (Contribution)",
-                "H (Others)"
+                "A - Equity",
+                "B - Bond, CP, Notes/Papers, Coupon",
+                "C - REPO",
+                "D - MTM, FX",
+                "E - ALTID",
+                "F - Fees",
+                "G - Contribution",
+                "H - Others"
             ],
             onItemClick: function (e) {
                 switch (e.itemData) {
-                    case "A (Equity)":
+                    case "A - Equity":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartA/New";
                         return;
-                    case "B (Bond, CP, Notes/Papers, Coupon)":
+                    case "B - Bond, CP, Notes/Papers, Coupon":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartB/New";
                         return;
-                    case "C (REPO)":
+                    case "C - REPO":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartC/New";
                         return;
-                    case "D (MTM, FX)":
+                    case "D - MTM, FX":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartD/New";
                         return;
-                    case "E (ALTID)":
+                    case "E - ALTID":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartE/New";
                         return;
-                    case "F (Fees)":
+                    case "F - Fees":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartF/New";
                         return;
-                    case "G (Contribution)":
+                    case "G - Contribution":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartG/New";
                         return;
-                    case "H (Others)":
+                    case "H - Others":
                         window.location = window.location.origin + "/issd/TradeSettlement/PartH/New";
                         return;
                     default:
@@ -388,7 +412,7 @@
                                         window.location = url;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
-                                        $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                                        app.alertError(textStatus + ": " + errorThrown);
                                     },
                                     complete: function (data) {
 
@@ -422,7 +446,7 @@
                                         window.location = url;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
-                                        $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                                        app.alertError(textStatus + ": " + errorThrown);
                                     },
                                     complete: function (data) {
 

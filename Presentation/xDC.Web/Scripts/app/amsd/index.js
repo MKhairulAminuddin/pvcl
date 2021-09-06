@@ -125,7 +125,7 @@
                                         url: referenceUrl.deleteForm,
                                         data: data,
                                         success: function (data) {
-                                            app.toast("Form Deleted!", "warning");
+                                            app.toast("Form Deleted!", "warning", 2000);
                                             $amsdGrid.refresh();
                                         },
                                         fail: function (jqXHR, textStatus, errorThrown) {

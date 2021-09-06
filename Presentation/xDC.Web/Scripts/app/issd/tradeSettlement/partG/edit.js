@@ -14,14 +14,15 @@
             $approvalNotes,
             
             isDraft = false,
-            isAdminEdit = false;
+            isAdminEdit = false,
+            formTypeId = 9;
 
         var referenceUrl = {
             submitEditRequest: window.location.origin + "/api/issd/TradeSettlement/Edit",
-            submitEditResponse: window.location.origin + "/issd/TradeSettlement/PartE/View/",
+            submitEditResponse: window.location.origin + "/issd/TradeSettlement/PartG/View/",
 
             submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
-            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartE/View/"
+            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartG/View/"
         };
 
         //#endregion
@@ -48,7 +49,7 @@
 
             var data = {
                 id: tradeSettlement.getIdFromQueryString,
-                formType: 7,
+                formType: formTypeId,
                 isSaveAsDraft: isDraft,
                 isSaveAdminEdit: isAdminEdit,
                 

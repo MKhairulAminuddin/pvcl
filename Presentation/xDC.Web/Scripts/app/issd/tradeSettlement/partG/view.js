@@ -17,10 +17,9 @@
 
         var referenceUrl = {
             adminEdit: window.location.origin + "/issd/TradeSettlement/PartE/Edit/",
-            loadWorkflowHistory: window.location.origin + "/api/common/GetWorkflow/?/" + _getIdFromQueryString + "/",
 
             submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
-            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartE/View/"
+            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartG/View/"
         };
 
         //#endregion
@@ -146,10 +145,7 @@
         }).dxDataGrid("instance");
         
         $workflowGrid = $("#workflowGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: tradeSettlement.api.loadWorkflowHistory + "/7"
-            }),
+            dataSource: tradeSettlement.dsWorflowInformation(9),
             columns: [
                 {
                     dataField: "recordedDate",

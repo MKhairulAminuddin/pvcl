@@ -26,7 +26,7 @@ namespace xDC_Web.Models
         public bool IsRejected { get; set; }
 
     }
-
+    
     public class ViewTradeSettlementFormHeaderModel
     {
         public int Id { get; set; }

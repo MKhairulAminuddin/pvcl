@@ -14,14 +14,15 @@
             $approvalNotes,
             
             isDraft = false,
-            isAdminEdit = false;
+            isAdminEdit = false,
+            formTypeId = 7;
 
         var referenceUrl = {
             submitEditRequest: window.location.origin + "/api/issd/TradeSettlement/Edit",
-            submitEditResponse: window.location.origin + "/issd/TradeSettlement/PartD/View/",
+            submitEditResponse: window.location.origin + "/issd/TradeSettlement/PartE/View/",
 
             submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
-            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartD/View/"
+            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartE/View/"
         };
 
         //#endregion
@@ -50,7 +51,7 @@
 
             var data = {
                 id: tradeSettlement.getIdFromQueryString,
-                formType: 6,
+                formType: formTypeId,
                 isSaveAsDraft: isDraft,
                 isSaveAdminEdit: isAdminEdit,
 
@@ -69,7 +70,7 @@
                     window.location.href = referenceUrl.submitEditResponse + data;
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
                 },
                 complete: function (data) {
 

@@ -19,7 +19,7 @@
             adminEdit: window.location.origin + "/issd/TradeSettlement/PartC/Edit/",
 
             submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
-            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartC/View/"
+            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartD/View/"
         };
 
         //#endregion
@@ -63,7 +63,7 @@
                 url: referenceUrl.submitApprovalRequest,
                 method: "post",
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
                 },
                 success: function (data) {
                     window.location.href = referenceUrl.submitApprovalResponse + data;
@@ -250,11 +250,14 @@
         }).dxDataGrid("instance");
 
         $workflowGrid = $("#workflowGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: tradeSettlement.api.loadWorkflowHistory + "/5"
-            }),
+            dataSource: tradeSettlement.dsWorflowInformation(6),
             columns: [
+                {
+                    dataField: "recordedDate",
+                    caption: "Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy hh:mm a"
+                },
                 {
                     dataField: "requestBy",
                     caption: "Requested By"
@@ -262,18 +265,6 @@
                 {
                     dataField: "requestTo",
                     caption: "Requested To"
-                },
-                {
-                    dataField: "startDate",
-                    caption: "Start Date",
-                    dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm"
-                },
-                {
-                    dataField: "endDate",
-                    caption: "End Date",
-                    dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm"
                 },
                 {
                     dataField: "workflowStatus",

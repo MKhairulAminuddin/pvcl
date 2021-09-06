@@ -140,7 +140,7 @@
                                         window.location = url;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
-                                        $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                                        app.alertError(textStatus + ": " + errorThrown);
                                     },
                                     complete: function (data) {
 
@@ -173,7 +173,7 @@
                                         window.location = url;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
-                                        $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                                        app.alertError(textStatus + ": " + errorThrown);
                                     },
                                     complete: function (data) {
 

@@ -23,7 +23,7 @@
                 $("#error_container").bs_success("Inflow Form setting updates saved");
 
             }).fail(function (jqXHR, textStatus, errorThrown) {
-                $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                app.alertError(textStatus + ': ' + errorThrown);
             });
 
 
@@ -65,7 +65,7 @@
                 $("#error_container").bs_success("Trade Settlement setting updated");
 
             }).fail(function (jqXHR, textStatus, errorThrown) {
-                $("#error_container").bs_alert(textStatus + ': ' + errorThrown);
+                app.alertError(textStatus + ': ' + errorThrown);
             });
 
         });

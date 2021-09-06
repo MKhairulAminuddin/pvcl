@@ -106,6 +106,14 @@ var app = (function() {
         });
     };
 
+    _app.toastEdwCount = function(data, edwItemType) {
+        var countItems = data.length;
+
+        if (countItems > 0) {
+            _app.toast(countItems + " " + edwItemType + " records fetched", "info");
+        }
+    }
+
     _app.getUrlParameter = function(sParam) {
         var sPageURL = window.location.search.substring(1),
             sURLVariables = sPageURL.split('&'),

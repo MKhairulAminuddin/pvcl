@@ -10,22 +10,8 @@ using xDC.Utils;
 
 namespace xDC.Services.App
 {
-    public static class TradeSettlementService
+    public static class TradeSettlementSvc
     {
-        public static bool IsSameDateAndCurrencyExist(kashflowDBEntities db, DateTime settlementDate, string currency, string formType)
-        {
-            // check for same date and same currency exist
-            var isExist = db.ISSD_FormHeader.Any(x =>
-                DbFunctions.TruncateTime(x.SettlementDate) == settlementDate.Date && x.Currency == currency && x.FormType == formType);
-            return isExist;
-        }
-
-        public static bool IsTMinus(DateTime settlementDate)
-        {
-            var isTMinus = settlementDate.Date < DateTime.Now.Date;
-            return isTMinus;
-        }
-
         public static void NotifyApprover(string approverUsername, int formId, string submittedBy, string formType, string notes)
         {
             new NotificationService().NotifyApprovalRequest(approverUsername, formId, submittedBy, formType);
@@ -44,10 +30,18 @@ namespace xDC.Services.App
         public static Form_Workflow GetLatestWorkflow(kashflowDBEntities db, int formId, string formType)
         {
             var result = db.Form_Workflow
-                            .Where(x => x.FormId == formId && x.FormType == formType && (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected))
+                            .Where(x => x.FormId == formId && x.FormType == formType)
                             .OrderByDescending(x => x.RecordedDate)
                             .FirstOrDefault();
-            return result;
+
+            if (result != null && result.WorkflowStatus == Common.FormStatus.PendingApproval)
+            {
+                return null;
+            }
+            else
+            {
+                return result;
+            }
         }
 
         public static List<ISSD_TradeSettlement> GetTradeSettlement(kashflowDBEntities db, int formId)
@@ -87,7 +81,9 @@ namespace xDC.Services.App
         {
             var result = new List<TS_OpeningBalance>();
 
-            var ob = db.EDW_BankBalance.AsNoTracking().Where(x =>
+            var ob = db.EDW_BankBalance
+                .AsNoTracking()
+                .Where(x =>
                     DbFunctions.TruncateTime(x.SettlementDate) ==
                     DbFunctions.TruncateTime(settlementDate) && x.Currency == currency)
                 .GroupBy(x => new { x.SettlementDate, x.InstrumentType })
@@ -157,24 +153,27 @@ namespace xDC.Services.App
             return result;
         }
 
-        public static bool IsInPendingStatus(string formStatus)
+        public static bool EnableEdit(string formStatus, string formApprover, string currentUser)
         {
-            return (formStatus == Common.FormStatus.PendingApproval);
+            var isPendingApproval = formStatus == Common.FormStatus.PendingApproval;
+            var isFormApprover = formApprover == currentUser;
+
+            return !isPendingApproval && !isFormApprover;
         }
 
-        public static bool IsIamThisFormApprover(kashflowDBEntities db, int formId, string currentUsername)
+        public static bool EnableDelete(string formStatus)
         {
-            var result = db.ISSD_FormHeader
-                .FirstOrDefault(x => x.Id == formId);
+            var isApproved = (formStatus == Common.FormStatus.Approved);
+            var isPendingApproval = formStatus == Common.FormStatus.PendingApproval;
 
-            if (result != null)
-            {
-                return result.ApprovedBy == currentUsername;
-            }
-            else
-            {
-                return false;
-            }
+            return !isApproved && !isPendingApproval;
+        }
+
+        public static bool EnablePrint(string formStatus)
+        {
+            var isDraftForm = formStatus == Common.FormStatus.Draft;
+
+            return !isDraftForm;
         }
 
         public static bool EditFormRules(string formStatus, string approvedBy, string currentUser, out string errorMessage)
@@ -190,6 +189,32 @@ namespace xDC.Services.App
             else if (isYouAreTheApprover)
             {
                 errorMessage = "You are this form Approver. Then you cannot edit it";
+                return true;
+            }
+            else
+            {
+                errorMessage = null;
+                return false;
+            }
+        }
+
+        public static bool NewFormRules(kashflowDBEntities db, DateTime settlementDate, string currency, string formType, out string errorMessage)
+        {
+            var isSameDateFormExist = db.ISSD_FormHeader.Any(x =>
+                DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate.Date) 
+                && x.Currency == currency 
+                && x.FormType == formType);
+
+            var isTMinus = settlementDate.Date < DateTime.Now.Date;
+
+            if (isSameDateFormExist)
+            {
+                errorMessage = "Similar form has been created. Use that instead";
+                return true;
+            }
+            else if (isTMinus)
+            {
+                errorMessage = "Submission for Settlement Date T-n is not allowed";
                 return true;
             }
             else

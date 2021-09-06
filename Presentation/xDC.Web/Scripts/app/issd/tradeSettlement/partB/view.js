@@ -34,35 +34,30 @@
                     tradeSettlement.dsTradeItem("bond"),
                     tradeSettlement.dsTradeItem("cp"),
                     tradeSettlement.dsTradeItem("notesPaper"),
-                    tradeSettlement.dsTradeItem("repo"),
                     tradeSettlement.dsTradeItem("coupon")
                 )
-                .done(function (data1, data2, data3, data4, data5) {
-                    $bondGrid.option("dataSource", data1[0].data);
+                .done(function (bond, cp, notesPaper, coupon) {
+                    $bondGrid.option("dataSource", bond[0].data);
                     $bondGrid.repaint();
 
-                    $cpGrid.option("dataSource", data2[0].data);
+                    $cpGrid.option("dataSource", cp[0].data);
                     $cpGrid.repaint();
 
-                    $notesPaperGrid.option("dataSource", data3[0].data);
+                    $notesPaperGrid.option("dataSource", notesPaper[0].data);
                     $notesPaperGrid.repaint();
 
-                    $repoGrid.option("dataSource", data4[0].data);
-                    $repoGrid.repaint();
-
-                    $couponGrid.option("dataSource", data5[0].data);
+                    $couponGrid.option("dataSource", coupon[0].data);
                     $couponGrid.repaint();
 
                     tradeSettlement.defineTabBadgeNumbers([
                         { titleId: "titleBadge2", dxDataGrid: $bondGrid },
                         { titleId: "titleBadge3", dxDataGrid: $cpGrid },
                         { titleId: "titleBadge4", dxDataGrid: $notesPaperGrid },
-                        { titleId: "titleBadge5", dxDataGrid: $repoGrid },
                         { titleId: "titleBadge6", dxDataGrid: $couponGrid }
                     ]);
                 })
                 .then(function () {
-                    console.log("Done load data");
+                    
                 });
         };
 
@@ -81,7 +76,7 @@
                 url: referenceUrl.submitApprovalRequest,
                 method: "post",
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
                 },
                 success: function (data) {
                     window.location.href = referenceUrl.submitApprovalResponse + data;
@@ -100,7 +95,6 @@
                 { titleId: "titleBadge2", title: "Bond", template: "bondTab" },
                 { titleId: "titleBadge3", title: "CP", template: "cpTab" },
                 { titleId: "titleBadge4", title: "Notes & Papers", template: "notesPaperTab" },
-                { titleId: "titleBadge5", title: "REPO", template: "repoTab" },
                 { titleId: "titleBadge6", title: "Coupon", template: "couponReceivedTab" }
             ],
             deferRendering: false,
@@ -400,83 +394,6 @@
             }
         }).dxDataGrid("instance");
 
-        $repoGrid = $("#repoGrid").dxDataGrid({
-            dataSource: [],
-            columns: [
-                {
-                    dataField: "instrumentCode",
-                    caption: "REPO",
-                    allowEditing: false
-                },
-                {
-                    dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    allowEditing: false
-                },
-                {
-                    dataField: "firstLeg",
-                    caption: "1st Leg (+)",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    },
-                    allowEditing: false
-                },
-                {
-                    dataField: "secondLeg",
-                    caption: "2nd Leg (-)",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    },
-                    allowEditing: false
-                },
-                {
-                    dataField: "remarks",
-                    caption: "Remarks",
-                    dataType: "text"
-                },
-                {
-                    dataField: "modifiedBy",
-                    caption: "Modified"
-                },
-                {
-                    dataField: "modifiedDate",
-                    caption: "Modified Date",
-                    dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm a"
-                }
-            ],
-            summary: {
-                totalItems: [
-                    {
-                        column: "instrumentCode",
-                        displayFormat: "TOTAL"
-                    },
-                    {
-                        column: "firstLeg",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    },
-                    {
-                        column: "secondLeg",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    }
-                ]
-            }
-        }).dxDataGrid("instance");
-
         $couponGrid = $("#couponGrid").dxDataGrid({
             dataSource: [],
             columns: [
@@ -533,11 +450,14 @@
         }).dxDataGrid("instance");
 
         $workflowGrid = $("#workflowGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: tradeSettlement.api.loadWorkflowHistory + "/4"
-            }),
+            dataSource: tradeSettlement.dsWorflowInformation(4),
             columns: [
+                {
+                    dataField: "recordedDate",
+                    caption: "Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy hh:mm a"
+                },
                 {
                     dataField: "requestBy",
                     caption: "Requested By"
@@ -545,18 +465,6 @@
                 {
                     dataField: "requestTo",
                     caption: "Requested To"
-                },
-                {
-                    dataField: "startDate",
-                    caption: "Start Date",
-                    dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm"
-                },
-                {
-                    dataField: "endDate",
-                    caption: "End Date",
-                    dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm"
                 },
                 {
                     dataField: "workflowStatus",

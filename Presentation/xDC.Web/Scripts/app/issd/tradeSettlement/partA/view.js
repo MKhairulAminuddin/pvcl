@@ -6,7 +6,6 @@
 
         var $tabpanel,
             $equityGrid,
-            $openingBalanceGrid,
             $workflowGrid,
             $tradeSettlementForm,
             $currencySelectBox,
@@ -25,16 +24,10 @@
         //#region Data Source & Functions
         
         var populateData = function() {
-            $.when(
-                    tradeSettlement.dsTradeItem("equity"),
-                    tradeSettlement.dsOpeningBalance()
-                )
-                .done(function(data1, data2) {
-                    $equityGrid.option("dataSource", data1[0].data);
+            $.when(tradeSettlement.dsTradeItem("equity"))
+                .done(function (equity) {
+                    $equityGrid.option("dataSource", equity.data);
                     $equityGrid.repaint();
-
-                    $openingBalanceGrid.option("dataSource", data2[0].data);
-                    $openingBalanceGrid.repaint();
 
                     tradeSettlement.defineTabBadgeNumbers([
                         { titleId: "titleBadge1", dxDataGrid: $equityGrid }
@@ -42,7 +35,7 @@
 
                 })
                 .then(function() {
-                    console.log("Done load data");
+                    
                 });
         }
 
@@ -61,7 +54,7 @@
                 url: referenceUrl.submitApprovalRequest,
                 method: "post",
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
                 },
                 success: function(data) {
                     window.location.href = referenceUrl.submitApprovalResponse + data;
@@ -87,32 +80,6 @@
         //#endregion
         
         // #region DataGrid
-
-        $openingBalanceGrid = $("#openingBalanceGrid").dxDataGrid({
-            dataSource: [],
-            showColumnHeaders: false,
-            showColumnLines: false,
-            columns: [
-                {
-                    dataField: "balanceCategory",
-                    caption: "Opening Balance"
-                },
-                {
-                    dataField: "currency",
-                    caption: "Currency",
-                    visible: false
-                },
-                {
-                    dataField: "amount",
-                    caption: "Amount",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    }
-                }
-            ]
-        }).dxDataGrid("instance");
 
         $equityGrid = $("#equityGrid").dxDataGrid({
             dataSource: [],
@@ -206,11 +173,14 @@
         }).dxDataGrid("instance");
 
         $workflowGrid = $("#workflowGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: tradeSettlement.api.loadWorkflowHistory + "/3"
-            }),
+            dataSource: tradeSettlement.dsWorflowInformation(3),
             columns: [
+                {
+                    dataField: "recordedDate",
+                    caption: "Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy hh:mm a"
+                },
                 {
                     dataField: "requestBy",
                     caption: "Requested By"
@@ -218,18 +188,6 @@
                 {
                     dataField: "requestTo",
                     caption: "Requested To"
-                },
-                {
-                    dataField: "startDate",
-                    caption: "Start Date",
-                    dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm"
-                },
-                {
-                    dataField: "endDate",
-                    caption: "End Date",
-                    dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm"
                 },
                 {
                     dataField: "workflowStatus",

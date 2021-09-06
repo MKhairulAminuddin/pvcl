@@ -33,85 +33,66 @@
                                     )
                     </div>
                     <div class="box-body">
-                        <div class="dx-fieldset">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="dx-field">
-                                        <div class="dx-field-label">Settlement Date</div>
-                                        <div class="dx-field-value">
-                                            <div id="settlementDateBox"></div>
-                                        </div>
-                                    </div>
-                                    <div class="dx-field">
-                                        <div class="dx-field-label">Currency</div>
-                                        <div class="dx-field-value">
-                                            <div id="currencySelectBox"></div>
-                                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Settlement Date</div>
+                                    <div class="dx-field-value">
+                                        <div id="settlementDateBox"></div>
                                     </div>
                                 </div>
-                                <div class="col-md-4"></div>
-                                <div class="col-md-4">
-                                    <div class="dx-field">
-                                        <div class="dx-field-label">Status</div>
-                                        <div class="dx-field-value">
-                                            @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
-                                                        .StylingMode(EditorStylingMode.Filled)
-                                                        .ReadOnly(true))
-                                        </div>
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Currency</div>
+                                    <div class="dx-field-value">
+                                        <div id="currencySelectBox"></div>
                                     </div>
-                                    <div class="dx-field">
-                                        <div class="dx-field-label">Preparer</div>
-                                        <div class="dx-field-value">
-                                            @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
-                                                        .StylingMode(EditorStylingMode.Filled)
-                                                        .ReadOnly(true))
-                                        </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4">
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Status</div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
+                                                    .StylingMode(EditorStylingMode.Filled)
+                                                    .ReadOnly(true))
                                     </div>
-                                    <div class="dx-field">
-                                        <div class="dx-field-label">Prepared Date</div>
-                                        <div class="dx-field-value">
-                                            @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
-                                                        .StylingMode(EditorStylingMode.Filled)
-                                                        .DisplayFormat("dd/MM/yyyy hh:mm a")
-                                                        .ReadOnly(true))
-                                        </div>
+                                </div>
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Preparer</div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
+                                                    .StylingMode(EditorStylingMode.Filled)
+                                                    .ReadOnly(true))
+                                    </div>
+                                </div>
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Prepared Date</div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
+                                                    .StylingMode(EditorStylingMode.Filled)
+                                                    .DisplayFormat("dd/MM/yyyy hh:mm a")
+                                                    .ReadOnly(true))
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="dx-fieldset">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="dx-field">
-                                        <div class="dx-field-label" style="font-weight: bold">Opening Balance</div>
-                                    </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="dx-field">
+                                    <div class="dx-field-label" style="font-weight: bold">Daily Trade Settlement</div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div id="openingBalanceGrid" class="grid-container"></div>
-                                </div>
-                                <div class="col-md-8"></div>
-                            </div>
-                        </div>
-
-                        <div class="dx-fieldset">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="dx-field">
-                                        <div class="dx-field-label" style="font-weight: bold">Daily Trade Settlement</div>
-                                    </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div id="tabpanel-container" style="background-color: white;">
-                                        <div data-options="dxTemplate : { name: 'equityTab' }" style="padding-top: 10px; overflow: auto">
-                                            <div id="equityGrid" class="grid-container" style="width: 100%"></div>
-                                        </div>
+                            <div class="col-md-12">
+                                <div id="tabpanel-container" style="background-color: white;">
+                                    <div data-options="dxTemplate : { name: 'equityTab' }" style="padding-top: 10px; overflow: auto">
+                                        <div id="equityGrid" class="grid-container" style="width: 100%"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        
                     </div>
                 </div>
             </div>

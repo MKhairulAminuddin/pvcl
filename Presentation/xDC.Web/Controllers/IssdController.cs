@@ -59,11 +59,11 @@ namespace xDC_Web.Controllers
                             OpeningBalance = new List<TS_OpeningBalance>()
                         };
 
-                        var ob = TradeSettlementService.GetOpeningBalance(db, settlementDateOnly, currency);
+                        var ob = TradeSettlementSvc.GetOpeningBalance(db, settlementDateOnly, currency);
                         vm.OpeningBalance.AddRange(ob);
                         var totalOb = vm.OpeningBalance.Sum(x => x.Amount);
 
-                        var totalFlow = TradeSettlementService.GetTotalFlow(db, getForm.Select(x => x.Id).ToList(), settlementDateOnly, currency);
+                        var totalFlow = TradeSettlementSvc.GetTotalFlow(db, getForm.Select(x => x.Id).ToList(), settlementDateOnly, currency);
 
                         vm.ClosingBalance = totalOb + totalFlow.Inflow - totalFlow.Outflow;
                         
@@ -413,13 +413,12 @@ namespace xDC_Web.Controllers
                 IsAdminEdited = form.AdminEditted,
                 AdminEditedBy = form.AdminEdittedBy,
                 AdminEditedDate = form.AdminEdittedDate,
-
-                ApprovePermission = form.ApprovedBy == User.Identity.Name,
-                AdminEditPermission = User.IsInRole(Config.Acl.PowerUser)
+                
+                EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Issd) && form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval)
             };
         }
 
-        private TradeSettlementFormVM GenerateEditModel(ISSD_FormHeader form)
+        private TradeSettlementFormVM GenerateEditModel(ISSD_FormHeader form, Form_Workflow wf)
         {
             return new TradeSettlementFormVM()
             {
@@ -430,14 +429,17 @@ namespace xDC_Web.Controllers
 
                 PreparedBy = form.PreparedBy,
                 PreparedDate = form.PreparedDate,
+
+                IsApproved = (form.FormStatus == Common.FormStatus.Approved),
                 ApprovedBy = form.ApprovedBy,
                 ApprovedDate = form.ApprovedDate,
+                ApprovalNote = wf?.WorkflowNotes,
 
                 IsAdminEdited = form.AdminEditted,
                 AdminEditedBy = form.AdminEdittedBy,
                 AdminEditedDate = form.AdminEdittedDate,
 
-                EnableResubmit = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.Acl.PowerUser)),
+                EnableResubmit = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.Acl.PowerUser) && (form.ApprovedBy != User.Identity.Name)),
                 EnableSubmitForApproval = (form.FormStatus == Common.FormStatus.Draft || form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
 
                 EnableDraftButton = (form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
@@ -468,7 +470,7 @@ namespace xDC_Web.Controllers
 
                     if (form != null)
                     {
-                        var wf = TradeSettlementService.GetLatestWorkflow(db, form.Id, form.FormType);
+                        var wf = TradeSettlementSvc.GetLatestWorkflow(db, form.Id, form.FormType);
                         var model = GenerateViewModel(form, wf);
 
                         switch (form.FormType)
@@ -520,13 +522,14 @@ namespace xDC_Web.Controllers
 
                     if (form != null)
                     {
-                        if (TradeSettlementService.EditFormRules(form.FormStatus, form.ApprovedBy, User.Identity.Name, out var errorMessage))
+                        if (TradeSettlementSvc.EditFormRules(form.FormStatus, form.ApprovedBy, User.Identity.Name, out var errorMessage))
                         {
                             TempData["ErrorMessage"] = errorMessage;
                             return View("Error");
                         }
 
-                        var model = GenerateEditModel(form);
+                        var wf = TradeSettlementSvc.GetLatestWorkflow(db, form.Id, form.FormType);
+                        var model = GenerateEditModel(form, wf);
 
                         switch (form.FormType)
                         {

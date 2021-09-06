@@ -21,11 +21,12 @@
             $submitForApprovalModalBtn,
 
             $tradeSettlementForm,
-            isSaveAsDraft;
+            isSaveAsDraft,
+            formTypeId = 5;
 
         var referenceUrl = {
             postNewFormRequest: window.location.origin + "/api/issd/TradeSettlement/New",
-            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartF/View/",
+            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartC/View/",
         };
         
         //#endregion
@@ -40,19 +41,20 @@
                     .done(function(repo) {
                         $repoGrid.option("dataSource", repo.data);
                         $repoGrid.repaint();
+                        app.toastEdwCount(repo.data, "REPO");
 
                         tradeSettlement.defineTabBadgeNumbers([
                             { titleId: "titleBadge5", dxDataGrid: $repoGrid }
                         ]);
                     })
                     .always(function(dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-                        tradeSettlement.toast("Data Updated", "info");
+                        
                     })
                     .then(function() {
 
                     });
             } else {
-                dxGridUtils.clearGrid($equityGrid);
+                app.clearAllGrid($repoGrid);
             }
         };
 
@@ -61,7 +63,7 @@
             var data = {
                 currency: $currencySelectBox.option("value"),
                 settlementDateEpoch: moment($settlementDateBox.option("value")).unix(),
-                formType: 8,
+                formType: formTypeId,
                 isSaveAsDraft: isDraft,
                 
                 repo: $repoGrid.getDataSource().items(),
@@ -79,7 +81,7 @@
                     window.location.href = referenceUrl.postNewFormResponse + response;
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
                 },
                 complete: function (data) {
                     

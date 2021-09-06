@@ -22,11 +22,12 @@
             $submitForApprovalModalBtn,
 
             $tradeSettlementForm,
-            isSaveAsDraft;
+            isSaveAsDraft,
+            formTypeId = 8;
 
         var referenceUrl = {
             postNewFormRequest: window.location.origin + "/api/issd/TradeSettlement/New",
-            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartE/View/",
+            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartF/View/",
         };
         
         //#endregion
@@ -38,7 +39,7 @@
             var data = {
                 currency: $currencySelectBox.option("value"),
                 settlementDateEpoch: moment($settlementDateBox.option("value")).unix(),
-                formType: 7,
+                formType: formTypeId,
                 isSaveAsDraft: isDraft,
                 
                 fees: $feesGrid.getDataSource().items(),

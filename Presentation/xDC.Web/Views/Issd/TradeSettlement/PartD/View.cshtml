@@ -117,6 +117,17 @@
                                         .ReadOnly(true))
                                 </div>
                             </div>
+                            @if (!string.IsNullOrEmpty(Model.ApprovalNote))
+                            {
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Approval/Rejection Notes</div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().TextAreaFor(m => m.ApprovalNote)
+                                            .StylingMode(EditorStylingMode.Filled)
+                                            .ReadOnly(true))
+                                    </div>
+                                </div>
+                            }
                             @if (Model.IsAdminEdited)
                             {
                                 <div style="background: #FFEBEE; padding: 5px 0">

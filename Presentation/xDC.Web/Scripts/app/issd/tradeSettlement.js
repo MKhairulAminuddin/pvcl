@@ -13,7 +13,9 @@
     };
 
     _tradeSettlement.api = {
-        loadWorkflowHistory: window.location.origin + "/api/common/GetWorkflow/" + _getIdFromQueryString + "/",
+        loadWorkflowHistory: function(formTypeId) {
+            return window.location.origin + "/api/common/GetWorkflow/" + formTypeId + "/" + _getIdFromQueryString;
+        },
         loadApprover: window.location.origin + "/api/common/GetTradeSettlementApprover",
         loadCurrencies: window.location.origin + "/api/common/GetTradeSettlementCurrencies",
         loadTradeItemEdw: function(instrumentType, settlementDate, currency) {
@@ -120,6 +122,12 @@
         });
     }
 
+    _tradeSettlement.dsWorflowInformation = function (formTypeId) {
+        return DevExpress.data.AspNet.createStore({
+            key: "id",
+            loadUrl: _tradeSettlement.api.loadWorkflowHistory(formTypeId)
+        });
+    }
 
     _tradeSettlement.submitApproverSelectBox = {
         dataSource: DevExpress.data.AspNet.createStore({
@@ -221,7 +229,7 @@
                         window.location = url;
                     },
                     fail: function (jqXHR, textStatus, errorThrown) {
-                        $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                        app.alertError(textStatus + ": " + errorThrown);
                     },
                     complete: function (data) {
 
@@ -263,7 +271,7 @@
                         window.location = url;
                     },
                     fail: function (jqXHR, textStatus, errorThrown) {
-                        $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                        app.alertError(textStatus + ": " + errorThrown);
                     },
                     complete: function (data) {
 
@@ -287,7 +295,7 @@
                         window.location = url;
                     },
                     fail: function (jqXHR, textStatus, errorThrown) {
-                        $("#error_container").bs_alert(textStatus + ": " + errorThrown);
+                        app.alertError(textStatus + ": " + errorThrown);
                     },
                     complete: function (data) {
 

@@ -655,6 +655,7 @@
     <Compile Include="ViewModels\Fid\TenAmCutOffVM.cs" />
     <Compile Include="ViewModels\Fid\Treasury\TreasuryDepositGridVm.cs" />
     <Compile Include="ViewModels\Fid\Ts10AmHomeGridVM.cs" />
+    <Compile Include="ViewModels\Iisd\ISSD_LandingPageGridVM.cs" />
     <Compile Include="ViewModels\Iisd\TS_ApprovedTradeVM.cs" />
     <Compile Include="ViewModels\TradeSettlementFormViewModel.cs" />
     <Compile Include="Models\TradeSettlementModel.cs" />

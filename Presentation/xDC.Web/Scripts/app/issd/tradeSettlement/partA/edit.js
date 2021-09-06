@@ -6,7 +6,6 @@
         tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
 
         var $tabpanel,
-            $openingBalanceGrid,
             $equityGrid,
             $tradeSettlementForm,
             
@@ -14,7 +13,8 @@
             $approvalNotes,
             
             isDraft = false,
-            isAdminEdit = false;
+            isAdminEdit = false,
+            formTypeId = 3;
 
         var referenceUrl = {
             submitEditRequest: window.location.origin + "/api/issd/TradeSettlement/Edit",
@@ -30,16 +30,10 @@
         //#region Data Source & Functions
         
         var populateData = function() {
-            $.when(
-                    tradeSettlement.dsTradeItem("equity"),
-                    tradeSettlement.dsOpeningBalance()
-                )
-                .done(function(data1, data2) {
-                    $equityGrid.option("dataSource", data1[0].data);
+            $.when(tradeSettlement.dsTradeItem("equity"))
+                .done(function (equity) {
+                    $equityGrid.option("dataSource", equity.data);
                     $equityGrid.repaint();
-
-                    $openingBalanceGrid.option("dataSource", data2[0].data);
-                    $openingBalanceGrid.repaint();
 
                     tradeSettlement.defineTabBadgeNumbers([
                         { titleId: "titleBadge1", dxDataGrid: $equityGrid }
@@ -54,15 +48,14 @@
 
             var data = {
                 id: tradeSettlement.getIdFromQueryString,
-                formType: 3,
+                formType: formTypeId,
                 isSaveAsDraft: isDraft,
                 isSaveAdminEdit: isAdminEdit,
 
                 equity: $equityGrid.getDataSource().items(),
-                openingBalance: $openingBalanceGrid.getDataSource().items(),
 
                 approver: (isDraft) ? null : $approverDropdown.option("value"),
-                approvalNotes: (isDraft) ? null : $approvalNotes.option("value"),
+                approvalNotes: (isDraft) ? null : $approvalNotes.option("value")
             };
 
             $.ajax({
@@ -74,7 +67,7 @@
                     window.location.href = referenceUrl.submitEditResponse + data;
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    $("#error_container").bs_alert(errorThrown + ": " + jqXHR.responseJSON);
+                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
                 },
                 complete: function (data) {
 
@@ -102,43 +95,7 @@
         //#endregion
 
         // #region Data Grid
-
-        $openingBalanceGrid = $("#openingBalanceGrid").dxDataGrid({
-            dataSource: [],
-            showColumnHeaders: false,
-            showColumnLines: false,
-            columns: [
-                {
-                    dataField: "id",
-                    caption: "Id",
-                    visible: false
-                },
-                {
-                    dataField: "formId",
-                    caption: "Form Id",
-                    visible: false
-                },
-                {
-                    dataField: "balanceCategory",
-                    caption: "Opening Balance"
-                },
-                {
-                    dataField: "currency",
-                    caption: "Currency",
-                    visible: false
-                },
-                {
-                    dataField: "amount",
-                    caption: "Amount",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    }
-                }
-            ]
-        }).dxDataGrid("instance");
-
+        
         $equityGrid = $("#equityGrid").dxDataGrid({
             dataSource: [],
             columns: [
