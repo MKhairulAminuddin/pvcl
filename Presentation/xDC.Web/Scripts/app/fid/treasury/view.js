@@ -423,7 +423,7 @@
                     }
                 },
                 {
-                    dataField: "holdingPeriodTenor",
+                    dataField: "holdingDayTenor",
                     caption: "Holding Period / Tenor (days)",
                     dataType: "number",
                     format: {
@@ -442,7 +442,7 @@
                     }
                 },
                 {
-                    dataField: "sellPurchaseRatePercent",
+                    dataField: "sellPurchaseRateYield",
                     caption: "Sell Rate / Yield (%)",
                     dataType: "number",
                     format: "#.00 '%'"
@@ -575,7 +575,7 @@
                     }
                 },
                 {
-                    dataField: "holdingPeriodTenor",
+                    dataField: "holdingDayTenor",
                     caption: "Holding Period / Tenor (days)",
                     dataType: "number",
                     format: {
@@ -594,7 +594,7 @@
                     }
                 },
                 {
-                    dataField: "sellPurchaseRatePercent",
+                    dataField: "sellPurchaseRateYield",
                     caption: "Purchase Rate / Yield (%)",
                     dataType: "number",
                     format: "#.00 '%'"

@@ -198,22 +198,22 @@ namespace xDC.Services
                                 bodyBuilder.AppendLine(string.Format("<p>Contribution Credited item in  <a href='" + pageUrl + "'>#" + getForm.Id + "</a> form have been " + getForm.FormStatus));
 
                                 bodyBuilder.Append(
-                                    @"<table>
+                                    @"<table style='border-collapse: collapse;'>
                                       <tr>
-                                        <th>Contribution Credited</th>
-                                        <th>Amount (+)</th>
-                                        <th>Remarks</th>
-                                        <th>Modified By</th>
-                                        <th>Modified Date</th>
+                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Contribution Credited</th>
+                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (+)</th>
+                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th>
+                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Modified By</th>
+                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Modified Date</th>
                                       </tr>");
                                 var tableRows = string.Empty;
                                 foreach (var item in getContributionItems)
                                 {
                                     tableRows += string.Format(@"<tr>
-                                            <td>{0}</td>
-                                            <td>{1}</td>
-                                            <td>{3}</td>
-                                            <td>{4}</td>
+                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td>
+                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td>
+                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td>
+                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td>
                                           </tr>", item.InstrumentCode, item.AmountPlus, item.Remarks, item.ModifiedBy, item.ModifiedDate.Value.ToString("dd/MM/yyyy"))
                                         ;
                                 }
@@ -248,6 +248,36 @@ namespace xDC.Services
             }
         }
 
+        public void TS_AmendAfterCutOff(List<ISSD_TradeSettlement> itemBefore, List<ISSD_TradeSettlement> itemAfter, ISSD_FormHeader form)
+        {
+            try
+            {
+                if (form.FormStatus == Common.FormStatus.PendingApproval && DateTime.Now.Hour >= 10)
+                {
+                    using (var db = new kashflowDBEntities())
+                    {
+                        var listOfPowerUsers = new InternetAddressList();
+                        var powerUsers =
+                            db.AspNetRoles.Where(x => x.Name == Config.Acl.PowerUser).ToList();
+                        foreach (var user in powerUsers)
+                        {
+                            foreach (var item in user.AspNetUsers)
+                            {
+                                listOfPowerUsers.Add(new MailboxAddress(item.FullName, item.Email));
+                            }
+                        }
+
+                        var message = ComposeAmendmentAfterCutOffMail(itemBefore, itemAfter, form, listOfPowerUsers);
+                        SendEmailToSmtp(message);
+                    }
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
 
 
 
@@ -343,6 +373,210 @@ namespace xDC.Services
             };
 
             return message;
+        }
+
+        private MimeMessage ComposeAmendmentAfterCutOffMail(List<ISSD_TradeSettlement> itemBefore, List<ISSD_TradeSettlement> itemAfter, ISSD_FormHeader form, InternetAddressList powerUsers)
+        {
+            var message = new MimeMessage()
+            {
+                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                Subject = $"[Kashflow] Submitted {form.FormType} form amended"
+            };
+            message.To.AddRange(powerUsers);
+
+            var formUrl = $"{Config.EmailApplicationUrl}{Common.Email_FormUrlMap(form.FormType)}{form.Id}";
+
+            var bodyBuilder = new StringBuilder();
+            bodyBuilder.Append("<p>Hi there, </p>");
+            bodyBuilder.AppendLine($"<p>A submitted form <a href='{formUrl}'>#{form.Id}</a> has been amended.</p>");
+
+            bodyBuilder.AppendLine("<p>Data before changes: </p>");
+            bodyBuilder.Append(ConstructTable(itemBefore));
+
+            bodyBuilder.AppendLine("<p>Data after changes: </p>");
+            bodyBuilder.Append(ConstructTable(itemAfter));
+
+            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            {
+                Text = bodyBuilder.ToString()
+            };
+
+            return message;
+        }
+
+        private StringBuilder ConstructTable(List<ISSD_TradeSettlement> tradeItems)
+        {
+            var output = new StringBuilder();
+            
+            var equity = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Equity).ToList();
+            if (equity.Any())
+            {
+                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Equity</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Stock Code/ISIN</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Maturity (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Sales (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Purchase (-)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
+                foreach (var item in equity)
+                {
+                    output.Append(string.Format(
+                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{5}</td></tr>",
+                        item.InstrumentCode, item.StockCode,
+                        (item.Maturity != null ? item.Maturity.Value.ToString("N"): "0.00"), 
+                        (item.Sales!= null ? item.Sales.Value.ToString("N"): "0.00"), (item.Purchase!= null ? item.Purchase.Value.ToString("N"): "0.00"),
+                        item.Remarks));
+                }
+                output.Append("</table>");
+            }
+
+            var bond = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Bond).ToList();
+            if (bond.Any())
+            {
+                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Bond</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Stock Code/ISIN</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Maturity (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Sales (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Purchase (-)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
+                foreach (var item in bond)
+                {
+                    output.Append(string.Format(
+                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{5}</td></tr>",
+                        item.InstrumentCode, item.StockCode,
+                        (item.Maturity != null ? item.Maturity.Value.ToString("N"): "0.00"), (item.Sales!= null ? item.Sales.Value.ToString("N"): "0.00"), (item.Purchase!= null ? item.Purchase.Value.ToString("N"): "0.00"),
+                        item.Remarks));
+                }
+                output.Append("</table>");
+            }
+
+            var cp = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Cp).ToList();
+            if (cp.Any())
+            {
+                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>CP</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Stock Code/ISIN</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Maturity (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Sales (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Purchase (-)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
+                foreach (var item in cp)
+                {
+                    output.Append(string.Format(
+                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{5}</td></tr>",
+                        item.InstrumentCode, item.StockCode,
+                        (item.Maturity != null ? item.Maturity.Value.ToString("N"): "0.00"), (item.Sales!= null ? item.Sales.Value.ToString("N"): "0.00"), (item.Purchase!= null ? item.Purchase.Value.ToString("N"): "0.00"),
+                        item.Remarks));
+                }
+                output.Append("</table>");
+            }
+
+            var np = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.NotesPapers).ToList();
+            if (np.Any())
+            {
+                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Notes/Papers</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Stock Code/ISIN</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Maturity (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Sales (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Purchase (-)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
+                foreach (var item in np)
+                {
+                    output.Append(string.Format(
+                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{5}</td></tr>",
+                        item.InstrumentCode, item.StockCode,
+                        (item.Maturity != null ? item.Maturity.Value.ToString("N"): "0.00"), (item.Sales!= null ? item.Sales.Value.ToString("N"): "0.00"), (item.Purchase!= null ? item.Purchase.Value.ToString("N"): "0.00"),
+                        item.Remarks));
+                }
+                output.Append("</table>");
+            }
+
+            var repo = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Repo).ToList();
+            if (repo.Any())
+            {
+                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>REPO</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Stock Code/ISIN</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>1st Leg(+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>2st Leg (-)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
+                foreach (var item in repo)
+                {
+                    output.Append(string.Format(
+                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td></tr>",
+                        item.InstrumentCode, item.StockCode,
+                        (item.FirstLeg != null ? item.FirstLeg.Value.ToString("N"): "0.00"), (item.SecondLeg!= null ? item.SecondLeg.Value.ToString("N"): "0.00"), 
+                        item.Remarks));
+                }
+                output.Append("</table>");
+            }
+
+            var coupon = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Coupon).ToList();
+            if (coupon.Any())
+            {
+                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Coupon</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Stock Code/ISIN</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
+                foreach (var item in coupon)
+                {
+                    output.Append(string.Format(
+                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td></tr>",
+                        item.InstrumentCode, item.StockCode, (item.AmountPlus!= null ? item.AmountPlus.Value.ToString("N"): "0.00"), item.Remarks));
+                }
+                output.Append("</table>");
+            }
+
+            var mtm = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Mtm).ToList();
+            if (mtm.Any())
+            {
+                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Payment/Receipt (MTM)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (-)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
+                foreach (var item in mtm)
+                {
+                    output.Append(string.Format(
+                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td></tr>",
+                        item.InstrumentCode, item.StockCode, (item.AmountPlus!= null ? item.AmountPlus.Value.ToString("N"): "0.00"), (item.AmountMinus!= null ? item.AmountMinus.Value.ToString("N"): "0.00"), item.Remarks));
+                }
+                output.Append("</table>");
+            }
+
+            var fx = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Fx).ToList();
+            if (fx.Any())
+            {
+                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>FX</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Stock Code/ISIN</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (-)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
+                foreach (var item in fx)
+                {
+                    output.Append(string.Format(
+                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td></tr>",
+                        item.InstrumentCode, item.StockCode, (item.AmountPlus!= null ? item.AmountPlus.Value.ToString("N"): "0.00"), (item.AmountMinus!= null ? item.AmountMinus.Value.ToString("N"): "0.00"), item.Remarks));
+                }
+                output.Append("</table>");
+            }
+
+            var altid = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Altid).ToList();
+            if (altid.Any())
+            {
+                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>ALTID</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (-)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
+                foreach (var item in altid)
+                {
+                    output.Append(string.Format(
+                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td></tr>",
+                        item.InstrumentCode, (item.AmountPlus!= null ? item.AmountPlus.Value.ToString("N"): "0.00"), (item.AmountMinus!= null ? item.AmountMinus.Value.ToString("N"): "0.00"), item.Remarks));
+                }
+                output.Append("</table>");
+            }
+
+            var fees = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Fees).ToList();
+            if (fees.Any())
+            {
+                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Fees</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
+                foreach (var item in fees)
+                {
+                    output.Append(string.Format(
+                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td></tr>",
+                        item.InstrumentCode, (item.AmountPlus!= null ? item.AmountPlus.Value.ToString("N"): "0.00"), item.Remarks));
+                }
+                output.Append("</table>");
+            }
+
+            var cn = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Cn).ToList();
+            if (cn.Any())
+            {
+                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Contribution Credited</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
+                foreach (var item in cn)
+                {
+                    output.Append(string.Format(
+                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td></tr>",
+                        item.InstrumentCode, (item.AmountPlus!= null ? item.AmountPlus.Value.ToString("N"): "0.00"), item.Remarks));
+                }
+                output.Append("</table>");
+            }
+
+            var others = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Others).ToList();
+            if (others.Any())
+            {
+                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Others</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
+                foreach (var item in others)
+                {
+                    output.Append(string.Format(
+                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td></tr>",
+                        item.InstrumentCode, (item.AmountPlus!= null ? item.AmountPlus.Value.ToString("N"): "0.00"), item.Remarks));
+                }
+                output.Append("</table>");
+            }
+
+            return output;
+
         }
     }
 }

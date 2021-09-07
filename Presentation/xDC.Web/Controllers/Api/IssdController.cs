@@ -11,6 +11,7 @@ using DevExtreme.AspNet.Mvc;
 using Newtonsoft.Json;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Services;
 using xDC.Services.App;
 using xDC.Utils;
 using xDC_Web.Models;
@@ -43,10 +44,10 @@ namespace xDC_Web.Controllers.Api
                     };
 
                     var todayDate = DateTime.Now.Date;
-                    /*var result = db.ISSD_FormHeader
-                        .Where(x => formTypes.Contains(x.FormType) && DbFunctions.TruncateTime(x.SettlementDate) >= todayDate);*/
                     var result = db.ISSD_FormHeader
-                        .Where(x => formTypes.Contains(x.FormType));
+                        .Where(x => formTypes.Contains(x.FormType) && DbFunctions.TruncateTime(x.SettlementDate) >= todayDate);
+                    /*var result = db.ISSD_FormHeader
+                        .Where(x => formTypes.Contains(x.FormType));*/
 
                     var getApprover = db.Config_Approver.Where(x => x.Username == User.Identity.Name);
                     var isMeApprover = getApprover.Any();
@@ -583,6 +584,8 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
+                var isResubmissionFromApproved = false;
+
                 using (var db = new kashflowDBEntities())
                 {
                     var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == inputs.Id);
@@ -612,6 +615,8 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.Approver != null)
                     {
+                        isResubmissionFromApproved = true;
+
                         form.ApprovedBy = inputs.Approver;
                         form.ApprovedDate = null; // empty the date as this is new submission
                         form.FormStatus = Common.FormStatus.PendingApproval;
@@ -622,6 +627,9 @@ namespace xDC_Web.Controllers.Api
                     
                     var getTradeItems = db.ISSD_TradeSettlement.Where(x =>
                         x.FormId == form.Id);
+
+                    var cc_itemBefore = getTradeItems;
+                    var cc_itemBeforeList = cc_itemBefore.ToList();
 
                     if (inputs.Equity != null)
                     {
@@ -1016,7 +1024,16 @@ namespace xDC_Web.Controllers.Api
                     }
                     
                     db.SaveChanges();
+                    
+                    var cc_itemAfterList = db.ISSD_TradeSettlement
+                        .Where(x =>
+                        x.FormId == form.Id).ToList();
 
+                    if (isResubmissionFromApproved)
+                    {
+                        new MailService().TS_AmendAfterCutOff(cc_itemBeforeList, cc_itemAfterList, form);
+                    }
+                    
                     return Request.CreateResponse(HttpStatusCode.Created, form.Id);
                 }
             }

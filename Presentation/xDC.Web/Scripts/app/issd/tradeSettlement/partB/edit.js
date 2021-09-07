@@ -9,7 +9,6 @@
             $bondGrid,
             $cpGrid,
             $notesPaperGrid,
-            $repoGrid,
             $couponGrid,
 
             $tradeSettlementForm,
@@ -435,88 +434,7 @@
                 allowAdding: false
             }
         }).dxDataGrid("instance");
-
-        $repoGrid = $("#repoGrid").dxDataGrid({
-            dataSource: [],
-            columns: [
-                {
-                    dataField: "id",
-                    caption: "Id",
-                    visible: false,
-                    allowEditing: false
-                },
-                {
-                    dataField: "formId",
-                    caption: "Form Id",
-                    visible: false,
-                    allowEditing: false
-                },
-                {
-                    dataField: "instrumentCode",
-                    caption: "REPO"
-                },
-                {
-                    dataField: "stockCode",
-                    caption: "Stock Code/ ISIN"
-                },
-                {
-                    dataField: "firstLeg",
-                    caption: "1st Leg (+)",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    }
-                },
-                {
-                    dataField: "secondLeg",
-                    caption: "2nd Leg (-)",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    }
-                },
-                {
-                    dataField: "remarks",
-                    caption: "Remarks",
-                    dataType: "text"
-                }
-            ],
-            summary: {
-                totalItems: [
-                    {
-                        column: "instrumentCode",
-                        displayFormat: "TOTAL"
-                    },
-                    {
-                        column: "firstLeg",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    },
-                    {
-                        column: "secondLeg",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    }
-                ]
-            },
-            editing: {
-                mode: "batch",
-                allowUpdating: true,
-                allowDeleting: true,
-                allowAdding: true
-            }
-        }).dxDataGrid("instance");
-
+        
         $couponGrid = $("#couponGrid").dxDataGrid({
             dataSource: [],
             columns: [
@@ -601,7 +519,7 @@
 
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function(e) {
-                tradeSettlement.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid);
+                tradeSettlement.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $couponGrid);
                 
                 if (isDraft || isAdminEdit) {
                     setTimeout(function() {
@@ -617,7 +535,7 @@
 
         $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                tradeSettlement.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $repoGrid, $couponGrid);
+                tradeSettlement.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $couponGrid);
                 setTimeout(function() {
                     postData(false, false);
                 }, 1000);

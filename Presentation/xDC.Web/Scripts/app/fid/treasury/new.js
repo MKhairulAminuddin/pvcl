@@ -3,6 +3,10 @@
     $(function () {
         //#region Variable Definition
 
+        DevExpress.config({
+            forceIsoDateParsing: true
+        });
+
         var $inflowTabpanel,
             $inflowDepositGrid,
             $inflowMmiGrid,
@@ -23,6 +27,7 @@
             isSaveAsDraft = false;
 
         var referenceUrl = {
+            loadCurrencies: window.location.origin + "/api/common/GetTradeSettlementCurrencies",
             dsMaturity: window.location.origin + "/api/fid/Treasury/EdwMaturity/",
             dsBankCounterParty: window.location.origin + "/api/fid/Treasury/EdwBankCounterParty/",
             dsIssuer: window.location.origin + "/api/fid/Treasury/EdwIssuer/",
@@ -36,6 +41,62 @@
         //#endregion
 
         //#region Data Source & Functions
+        var parseDepositArray = function (dataGridData) {
+            if (dataGridData.length > 0) {
+                var x = dataGridData.map(function (x) {
+                    for (key in x) {
+                        return {
+                            dealer: x.dealer,
+                            bank: x.bank,
+                            valueDate: x.valueDate.toISOString(),
+                            maturityDate: x.maturityDate.toISOString(),
+                            principal: x.principal,
+                            tenor: x.tenor,
+                            ratePercent: x.ratePercent,
+                            intProfitReceivable: x.intProfitReceivable,
+                            principalIntProfitReceivable: x.principalIntProfitReceivable,
+                            assetType: x.assetType,
+                            repoTag: x.repoTag,
+                            contactPerson: x.contactPerson,
+                            notes: x.notes
+                        };
+                    }
+                });
+
+                return x;
+            } else {
+                return [];
+            }
+        }
+
+        var parseMmiArray = function (dataGridData) {
+            if (dataGridData.length > 0) {
+                var x = dataGridData.map(function (x) {
+                    for (key in x) {
+                        return {
+                            certNoStockCode: x.certNoStockCode,
+                            counterParty: x.counterParty,
+                            dealer: x.dealer,
+                            holdingDayTenor: x.holdingDayTenor,
+                            intDividendReceivable: x.intDividendReceivable,
+                            issuer: x.issuer,
+                            maturityDate: x.maturityDate.toISOString(),
+                            nominal: x.nominal,
+                            price: x.price,
+                            proceeds: x.proceeds,
+                            productType: x.productType,
+                            purchaseProceeds: x.purchaseProceeds,
+                            sellPurchaseRateYield: x.sellPurchaseRateYield,
+                            valueDate: x.valueDate.toISOString()
+                        };
+                    }
+                });
+
+                return x;
+            } else {
+                return [];
+            }
+        }
         
         var dsBankCounterParty = DevExpress.data.AspNet.createStore({
             key: "reference",
@@ -82,17 +143,17 @@
                 tradeDate: moment($tradeDate.option("value")).unix(),
                 
                 inflowDeposit: $inflowDepositGrid.getDataSource().items(),
-                outflowDeposit: $outflowDepositGrid.getDataSource().items(),
+                outflowDeposit: parseDepositArray($outflowDepositGrid.getDataSource().items()),
 
-                inflowMoneyMarket: $inflowMmiGrid.getDataSource().items(),
-                outflowMoneyMarket: $outflowMmiGrid.getDataSource().items(),
+                inflowMoneyMarket: parseMmiArray($inflowMmiGrid.getDataSource().items()),
+                outflowMoneyMarket: parseMmiArray($outflowMmiGrid.getDataSource().items()),
 
                 approver: (isDraft) ? null : $approverDropdown.option("value"),
                 approvalNotes: (isDraft) ? null : $approvalNotes.option("value")
             };
 
             return $.ajax({
-                data: JSON.stringify(data),
+                data: data,
                 dataType: "json",
                 url: referenceUrl.postNewFormRequest,
                 method: "post",
@@ -144,6 +205,7 @@
             });
         }
 
+        
         //#endregion
         
         //#region Other Widgets
@@ -164,7 +226,7 @@
                         moment(data.value).unix(),
                     method: "get",
                     success: function(response) {
-                        $currencySelectBox.option("dataSource", response);
+                        
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         app.alertError(errorThrown + ": " + jqXHR.responseJSON);
@@ -177,8 +239,13 @@
         }).dxDateBox("instance");
 
         $currencySelectBox = $("#currency").dxSelectBox({
-            dataSource: ["MYR", "USD"],
-            placeHolder: "Currency..",
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: referenceUrl.loadCurrencies
+            }),
+            displayExpr: "value",
+            valueExpr: "value",
+            placeHolder: "Currency.."
         }).dxSelectBox("instance");
         
         $inflowTabpanel = $("#inflowTabpanel").dxTabPanel({
