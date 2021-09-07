@@ -145,6 +145,16 @@ var app = (function() {
             arguments[i].option("dataSource", []);
         }
     }
+
+    _app.clearUserPreference = function () {
+        localStorage.removeItem("xDC_TS_Grid");
+        localStorage.removeItem("xDC_TS_ApprovedGrid");
+        localStorage.removeItem("xDC_IF_Grid");
+        localStorage.removeItem("xDC_Treasury_Grid");
+        localStorage.removeItem("xDC_T10_Grid");
+        
+        _app.toast("User Preferences cleared. Refresh the page to see the effect.", "info", 2000);
+    }
     
     _app.alertError = function (message, title) {
         var alertTag = $("#error_container");

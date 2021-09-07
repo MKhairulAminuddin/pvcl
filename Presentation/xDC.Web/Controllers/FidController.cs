@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Utils;
+using xDC_Web.Extension.DocGenerator;
 using xDC_Web.ViewModels.Fid;
 using xDC_Web.ViewModels.Fid.Treasury;
 
@@ -145,6 +146,71 @@ namespace xDC_Web.Controllers
 
         #endregion
 
+        #region Print Form
 
+        [HttpPost]
+        [Route("Print")]
+        public ActionResult Print(string id, bool isExportAsExcel)
+        {
+            try
+            {
+                var formId = Convert.ToInt32(id);
+
+                var generatedDocumentFile = new TreasuryFormDoc().GenerateFile(formId, isExportAsExcel);
+
+                if (!string.IsNullOrEmpty(generatedDocumentFile))
+                {
+                    return Content(generatedDocumentFile);
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return HttpNotFound();
+            }
+        }
+
+        [Route("Printed/{id}")]
+        public ActionResult ViewPrinted(string id)
+        {
+            try
+            {
+                var fileStream = new DocGeneratorBase().GetFile(id);
+
+                if (fileStream != null)
+                {
+                    var fileName = Common.GetFileName(fileStream);
+                    Response.AddHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+                    if (Common.GetFileExt(fileStream) == ".xlsx")
+                    {
+                        return File(fileStream, Common.ConvertIndexToContentType(4));
+                    }
+                    else
+                    {
+                        return File(fileStream, Common.ConvertIndexToContentType(11));
+                    }
+
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Generated file not found... sorry...";
+                    return View("Error");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Error");
+            }
+        }
+
+        #endregion
     }
 }

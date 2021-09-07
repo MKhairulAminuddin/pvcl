@@ -116,7 +116,21 @@
             ],
             showBorders: true,
             showColumnLines: true,
-            showRowLines: true
+            showRowLines: true,
+            groupPanel: {
+                visible: true
+            },
+            sorting: {
+                mode: "multiple"
+            },
+            headerFilter: {
+                visible: true
+            },
+            stateStoring: {
+                enabled: true,
+                type: "localStorage",
+                storageKey: "xDC_T10_Grid"
+            }
         }).dxDataGrid("instance");
 
         // #endregion DataGrid

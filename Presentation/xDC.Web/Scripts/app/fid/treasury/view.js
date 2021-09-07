@@ -7,6 +7,8 @@
             $inflowDepositGrid,
             $inflowMmiGrid,
 
+            $printBtn,
+
             $outflowTabpanel,
             $outflowDepositGrid,
             $outflowMmiGrid,
@@ -24,6 +26,9 @@
 
             postNewFormRequest: window.location.origin + "/api/fid/Treasury/New",
             postNewFormResponse: window.location.origin + "/fid/Treasury",
+
+            printRequest: window.location.origin + "/fid/Print",
+            printResponse: window.location.origin + "/fid/Printed/"
         };
         
         //#endregion
@@ -91,6 +96,49 @@
         //#endregion
 
         //#region Other Widgets
+
+        $printBtn = $("#printBtn").dxDropDownButton({
+            text: "Print",
+            icon: "print",
+            type: "normal",
+            stylingMode: "contained",
+            dropDownOptions: {
+                width: 230
+            },
+            displayExpr: "name",
+            keyExpr: "id",
+            items: [
+                { id: 1, name: "Excel Workbook (*.xlsx)", icon: "fa fa-file-excel-o" },
+                { id: 2, name: "PDF", icon: "fa fa-file-pdf-o" }
+            ],
+            onItemClick: function (e) {
+                app.toast("Generating...");
+
+                var data = {
+                    id: app.getUrlId(),
+                    isExportAsExcel: (e.itemData.id == 1)
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: referenceUrl.printRequest,
+                    data: data,
+                    dataType: "text",
+                    success: function (data) {
+                        var url = referenceUrl.printResponse + data;
+                        window.location = url;
+                    },
+                    fail: function (jqXHR, textStatus, errorThrown) {
+                        app.alertError(textStatus + ": " + errorThrown);
+                    },
+                    complete: function (data) {
+
+                    }
+                });
+
+                e.event.preventDefault();
+            }
+        }).dxDropDownButton("instance");
         
         $inflowTabpanel = $("#inflowTabpanel").dxTabPanel({
             dataSource: [

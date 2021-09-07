@@ -44,10 +44,11 @@ namespace xDC_Web.Controllers.Api
                     };
 
                     var todayDate = DateTime.Now.Date;
-                    var result = db.ISSD_FormHeader
-                        .Where(x => formTypes.Contains(x.FormType) && DbFunctions.TruncateTime(x.SettlementDate) >= todayDate);
+                    //todo
                     /*var result = db.ISSD_FormHeader
-                        .Where(x => formTypes.Contains(x.FormType));*/
+                        .Where(x => formTypes.Contains(x.FormType) && DbFunctions.TruncateTime(x.SettlementDate) >= todayDate);*/
+                    var result = db.ISSD_FormHeader
+                        .Where(x => formTypes.Contains(x.FormType));
 
                     var getApprover = db.Config_Approver.Where(x => x.Username == User.Identity.Name);
                     var isMeApprover = getApprover.Any();

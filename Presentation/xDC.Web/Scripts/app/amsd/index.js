@@ -247,7 +247,12 @@
                 pageSize: 10,
                 pageIndex: 0
             },
-            wordWrapEnabled: true
+            wordWrapEnabled: true,
+            stateStoring: {
+                enabled: true,
+                type: "localStorage",
+                storageKey: "xDC_IF_Grid"
+            }
         }).dxDataGrid("instance");
         
 

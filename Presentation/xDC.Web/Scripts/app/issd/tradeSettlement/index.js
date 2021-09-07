@@ -279,6 +279,11 @@
             },
             headerFilter: {
                 visible: true
+            },
+            stateStoring: {
+                enabled: true,
+                type: "localStorage",
+                storageKey: "xDC_TS_Grid"
             }
         }).dxDataGrid("instance");
 
@@ -479,6 +484,11 @@
                 showPageSizeSelector: true,
                 showInfo: true,
                 showNavigationButtons: true
+            },
+            stateStoring: {
+                enabled: true,
+                type: "localStorage",
+                storageKey: "xDC_TS_ApprovedGrid"
             }
         }).dxDataGrid("instance");
 

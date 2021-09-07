@@ -206,6 +206,11 @@
             },
             headerFilter: {
                 visible: true
+            },
+            stateStoring: {
+                enabled: true,
+                type: "localStorage",
+                storageKey: "xDC_Treasury_Grid"
             }
         }).dxDataGrid("instance");
         
