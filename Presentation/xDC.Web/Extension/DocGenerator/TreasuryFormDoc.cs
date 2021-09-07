@@ -34,7 +34,7 @@ namespace xDC_Web.Extension.DocGenerator
                         var mmis = db.FID_Treasury_MMI.Where(x => x.FormId == formId).ToList();
                         
                         var workflow = db.Form_Workflow
-                            .Where(x => x.FormId == form.Id)
+                            .Where(x => x.FormId == form.Id && (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected))
                             .OrderByDescending(x => x.RecordedDate)
                             .FirstOrDefault();
                         
