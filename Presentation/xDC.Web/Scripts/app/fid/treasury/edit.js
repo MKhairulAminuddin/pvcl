@@ -110,7 +110,7 @@
 
         var dsIssuer = DevExpress.data.AspNet.createStore({
             key: "reference",
-            loadUrl: referenceUrl.dsBankCounterParty
+            loadUrl: referenceUrl.dsIssuer
         });
 
         var dsInflowDeposit = function () {

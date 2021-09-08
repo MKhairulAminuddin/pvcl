@@ -389,7 +389,7 @@ namespace xDC_Web.Controllers.Api
                 {
                     var tradeDate = Common.ConvertEpochToDateTime(tradeDateEpoch);
                     tradeDate = tradeDate.Value.Date;
-                    var result = db.EDW_Maturity.Where(x => DbFunctions.TruncateTime(x.Value_Date) == tradeDate && x.currency == currency).Select(
+                    var result = db.EDW_Maturity.Where(x => DbFunctions.TruncateTime(x.Maturity_Date) == tradeDate && x.currency == currency).Select(
                         x => new TreasuryDepositGridVm
                         {
                             Dealer = x.Operator,
@@ -475,7 +475,7 @@ namespace xDC_Web.Controllers.Api
                 var minDate = DateTime.MinValue;
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.EDW_Maturity.GroupBy(x => x.Value_Date != null ? x.Value_Date.Value : minDate).Select(x => new
+                    var result = db.EDW_Maturity.GroupBy(x => x.Maturity_Date != null ? x.Value_Date.Value : minDate).Select(x => new
                     {
                         day = x.Key.Day,
                         month = x.Key.Month,

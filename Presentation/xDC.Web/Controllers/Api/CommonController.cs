@@ -49,13 +49,18 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var result = db.AspNetActiveDirectoryUsers.Where(x => x.Title != null).ToList();
-
-                    var amsdRoleName = Config.Acl.Amsd;
-                    var systemUser = db.AspNetUsers.Where(x => x.AspNetRoles.Select(y => y.Name).Contains(amsdRoleName)).ToList();
-                    var issdRoleName = Config.Acl.Issd;
-                    var issdUsers = db.AspNetUsers.Where(x => x.AspNetRoles.Select(y => y.Name).Contains(issdRoleName)).ToList();
+                    
+                    var systemUser = db.AspNetUsers.Where(x => x.AspNetRoles.Select(y => y.Name).Contains(Config.Acl.Amsd)).ToList();
+                    
+                    var issdUsers = db.AspNetUsers.Where(x => x.AspNetRoles.Select(y => y.Name).Contains(Config.Acl.Issd)).ToList();
                     systemUser.AddRange(issdUsers);
                     
+                    var fidUsers = db.AspNetUsers.Where(x => x.AspNetRoles.Select(y => y.Name).Contains(Config.Acl.Fid)).ToList();
+                    systemUser.AddRange(fidUsers);
+                    
+                    var puUsers = db.AspNetUsers.Where(x => x.AspNetRoles.Select(y => y.Name).Contains(Config.Acl.PowerUser)).ToList();
+                    systemUser.AddRange(puUsers);
+
                     var finalResult = new List<AspNetActiveDirectoryUsers>();
 
                     foreach (var user in systemUser)
@@ -67,6 +72,7 @@ namespace xDC_Web.Controllers.Api
                         }
                     }
 
+                    finalResult = finalResult.OrderBy(x => x.DisplayName).ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(finalResult, loadOptions));
                 }
