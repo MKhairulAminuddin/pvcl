@@ -133,6 +133,15 @@
                     }
                 },
                 {
+                    dataField: "amountMinus",
+                    caption: "Amount (-)",
+                    dataType: "number",
+                    format: {
+                        type: "fixedPoint",
+                        precision: 2
+                    }
+                },
+                {
                     dataField: "remarks",
                     caption: "Remarks",
                     dataType: "text"
