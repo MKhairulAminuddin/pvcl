@@ -2,6 +2,11 @@
 
     $(function () {
 
+        var referenceUrl = {
+            printRequest: window.location.origin + "/fid/Print",
+            printResponse: window.location.origin + "/fid/Printed/"
+        };
+
         var $grid1;
         
         $grid1 = $("#grid1").dxDataGrid({
@@ -127,6 +132,8 @@
                                 return (e.row.data.isDownloadAllowed);
                             },*/
                             onClick: function (e) {
+                                app.toast("Generating...");
+
                                 var data = {
                                     id: e.row.data.id,
                                     isExportAsExcel: true
@@ -134,11 +141,11 @@
 
                                 $.ajax({
                                     type: "POST",
-                                    url: "/issd/Print",
+                                    url: referenceUrl.printRequest,
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
-                                        var url = "/issd/ViewPrinted/" + data;
+                                        var url = referenceUrl.printResponse + data;
                                         window.location = url;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
@@ -148,6 +155,7 @@
 
                                     }
                                 });
+
                                 e.event.preventDefault();
                             }
                         },
@@ -160,6 +168,8 @@
                             },*/
                             onClick: function (e) {
 
+                                app.toast("Generating...");
+
                                 var data = {
                                     id: e.row.data.id,
                                     isExportAsExcel: false
@@ -167,11 +177,11 @@
 
                                 $.ajax({
                                     type: "POST",
-                                    url: "/issd/Print",
+                                    url: referenceUrl.printRequest,
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
-                                        var url = "/issd/ViewPrinted/" + data;
+                                        var url = referenceUrl.printResponse + data;
                                         window.location = url;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
@@ -181,6 +191,7 @@
 
                                     }
                                 });
+                                
                                 e.event.preventDefault();
                             }
                         }
