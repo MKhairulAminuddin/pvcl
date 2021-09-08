@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using xDC.Domain.ISSD_TS;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Services.App;
 using xDC.Utils;
 using xDC_Web.Extension.DocGenerator;
 using xDC_Web.ViewModels.Fid;
@@ -47,14 +49,26 @@ namespace xDC_Web.Controllers
 
                     if (form != null)
                     {
-                        var vModel = new EditFcaAccountAssignmentVM();
-                        vModel.Currency = form.Currency;
+                        var model = new EditFcaAccountAssignmentVM
+                        {
+                            Currency = form.Currency,
+                            OpeningBalance = new List<TS_OpeningBalance>()
+                        };
+                        
                         if (form.SettlementDate != null)
                         {
-                            vModel.SettlementDate = form.SettlementDate.Value;
+                            model.SettlementDate = form.SettlementDate.Value;
+
+                            var ob = FcaTaggingSvc.GetOpeningBalance(db, form.SettlementDate.Value, form.Currency);
+                            model.OpeningBalance.AddRange(ob);
+                            var totalOb = model.OpeningBalance.Sum(x => x.Amount);
+
+                            var totalFlow = FcaTaggingSvc.GetTotalFlow(db, form.Id, form.SettlementDate.Value, form.Currency);
+
+                            model.ClosingBalance = totalOb + totalFlow.Inflow - totalFlow.Outflow;
                         }
 
-                        return View("TenAmCutOff/FcaTaggingEdit", vModel);
+                        return View("TenAmCutOff/FcaTaggingEdit", model);
 
                     }
                     else

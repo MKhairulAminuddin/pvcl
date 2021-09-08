@@ -292,21 +292,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="ApprovedBy" Type="nvarchar" MaxLength="150" />
           <Property Name="ApprovedDate" Type="datetime" />
         </EntityType>
-        <EntityType Name="FID_TS10_OpeningBalance">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="FormId" Type="int" Nullable="false" />
-          <Property Name="Account" Type="nvarchar" MaxLength="250" />
-          <Property Name="Amount" Type="decimal" Precision="18" Scale="2" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="250" />
-          <Property Name="CreatedDate" Type="datetime" />
-          <Property Name="FcaAccount" Type="nvarchar" MaxLength="250" />
-          <Property Name="FcaAmount" Type="decimal" Precision="18" Scale="2" />
-          <Property Name="AssignedBy" Type="nvarchar" MaxLength="150" />
-          <Property Name="AssignedDate" Type="datetime" />
-        </EntityType>
         <EntityType Name="FID_TS10_TradeItem">
           <Key>
             <PropertyRef Name="Id" />
@@ -442,7 +427,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="FID_Treasury_MMI" EntityType="Self.FID_Treasury_MMI" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FID_TS10" EntityType="Self.FID_TS10" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FID_TS10_Approval" EntityType="Self.FID_TS10_Approval" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="FID_TS10_OpeningBalance" EntityType="Self.FID_TS10_OpeningBalance" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FID_TS10_TradeItem" EntityType="Self.FID_TS10_TradeItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Form_Workflow" EntityType="Self.Form_Workflow" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ISSD_Balance" EntityType="Self.ISSD_Balance" Schema="dbo" store:Type="Tables" />
@@ -528,7 +512,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="FID_TS10" EntityType="kashflowDbModel.FID_TS10" />
           <EntitySet Name="FID_TS10_TradeItem" EntityType="kashflowDbModel.FID_TS10_TradeItem" />
           <EntitySet Name="FID_TS10_Approval" EntityType="kashflowDbModel.FID_TS10_Approval" />
-          <EntitySet Name="FID_TS10_OpeningBalance" EntityType="kashflowDbModel.FID_TS10_OpeningBalance" />
           <EntitySet Name="FID_Treasury" EntityType="kashflowDbModel.FID_Treasury" />
           <EntitySet Name="EDW_FID_List" EntityType="kashflowDbModel.EDW_FID_List" />
           <EntitySet Name="EDW_BankBalance" EntityType="kashflowDbModel.EDW_BankBalance" />
@@ -743,21 +726,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
           <Property Name="FormType" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="ApprovedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="ApprovedDate" Type="DateTime" Precision="3" />
-        </EntityType>
-        <EntityType Name="FID_TS10_OpeningBalance">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FormId" Type="Int32" Nullable="false" />
-          <Property Name="Account" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="Amount" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="CreatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
-          <Property Name="FcaAccount" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="FcaAmount" Type="Decimal" Precision="18" Scale="2" />
-          <Property Name="AssignedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="AssignedDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="FID_Treasury">
           <Key>
@@ -1144,22 +1112,6 @@ warning 6002: The table/view 'kashflowDB.dbo.EDW_TradeItem' does not have a prim
                 <ScalarProperty Name="ApprovedDate" ColumnName="ApprovedDate" />
                 <ScalarProperty Name="ApprovedBy" ColumnName="ApprovedBy" />
                 <ScalarProperty Name="FormType" ColumnName="FormType" />
-                <ScalarProperty Name="FormId" ColumnName="FormId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="FID_TS10_OpeningBalance">
-            <EntityTypeMapping TypeName="kashflowDbModel.FID_TS10_OpeningBalance">
-              <MappingFragment StoreEntitySet="FID_TS10_OpeningBalance">
-                <ScalarProperty Name="AssignedDate" ColumnName="AssignedDate" />
-                <ScalarProperty Name="AssignedBy" ColumnName="AssignedBy" />
-                <ScalarProperty Name="FcaAmount" ColumnName="FcaAmount" />
-                <ScalarProperty Name="FcaAccount" ColumnName="FcaAccount" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
-                <ScalarProperty Name="Account" ColumnName="Account" />
                 <ScalarProperty Name="FormId" ColumnName="FormId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>

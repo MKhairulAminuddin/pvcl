@@ -20,13 +20,11 @@ namespace xDC_Web.Extension.SchedulerTask
 
                 using (var db = new kashflowDBEntities())
                 {
-                    
-                    var todayDate = DateTime.Now.Date;
-                    TimeSpan cutOffTime = new TimeSpan(10, 00, 0);
+                    var today = DateTime.Now.Date;
 
                     var tsForms = db.ISSD_FormHeader.Where(x =>
-                        x.FormStatus == "Approved" && DbFunctions.TruncateTime(x.ApprovedDate) == DbFunctions.TruncateTime(todayDate) &&
-                        DbFunctions.CreateTime(x.ApprovedDate.Value.Hour, x.ApprovedDate.Value.Minute, x.ApprovedDate.Value.Second) <= cutOffTime).ToList();
+                        x.FormStatus == Common.FormStatus.Approved &&
+                        DbFunctions.TruncateTime(x.ApprovedDate) == DbFunctions.TruncateTime(today)).ToList();
 
                     Fetch10AmTradeSettlement(db, tsForms);
                 }
@@ -49,11 +47,11 @@ namespace xDC_Web.Extension.SchedulerTask
 
                 using (var db = new kashflowDBEntities())
                 {
-                    TimeSpan cutOffTime = new TimeSpan(10, 00, 0);
+                    var today = DateTime.Now.Date;
 
                     var tsForms = db.ISSD_FormHeader.Where(x =>
-                        x.FormStatus == "Approved" &&
-                        DbFunctions.CreateTime(x.ApprovedDate.Value.Hour, x.ApprovedDate.Value.Minute, x.ApprovedDate.Value.Second) <= cutOffTime).ToList();
+                        x.FormStatus == Common.FormStatus.Approved &&
+                        DbFunctions.TruncateTime(x.ApprovedDate) == DbFunctions.TruncateTime(today)).ToList();
 
                     Fetch10AmTradeSettlement(db, tsForms);
                 }
@@ -83,7 +81,7 @@ namespace xDC_Web.Extension.SchedulerTask
 
                         var ts10am = new FID_TS10()
                         {
-                            FormStatus = "Approved",
+                            FormStatus = Common.FormStatus.Approved,
                             Currency = currentCurrency,
                             FormType = Common.FormTypeMapping(2),
                             SettlementDate = currentSettlementDate
@@ -123,21 +121,86 @@ namespace xDC_Web.Extension.SchedulerTask
                                 db.SaveChanges();
                             }
 
-
-                            var tsOpBalance = db.ISSD_Balance.Where(x => x.FormId == form.Id).ToList();
-                            if (tsOpBalance.Any())
+                            var tsApprovals = db.Form_Workflow
+                                .Where(x => x.FormId == form.Id && x.WorkflowStatus == Common.FormStatus.Approved)
+                                .OrderByDescending(x => x.RecordedDate).FirstOrDefault();
+                            if (tsApprovals != null)
                             {
-                                foreach (var item in tsOpBalance)
+                                var approval = new FID_TS10_Approval
                                 {
-                                    var opBalance = new FID_TS10_OpeningBalance
+                                    FormId = ts10am.Id,
+                                    FormType = tsApprovals.FormType,
+                                    ApprovedBy = tsApprovals.RequestBy,
+                                    ApprovedDate = tsApprovals.RecordedDate
+                                };
+                                db.FID_TS10_Approval.Add(approval);
+                                db.SaveChanges();
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        var existing = db.FID_TS10.FirstOrDefault(x =>
+                            DbFunctions.TruncateTime(x.SettlementDate) ==
+                            DbFunctions.TruncateTime(tsForm.Key.SettlementDate.Value) &&
+                            x.Currency == tsForm.Key.Currency);
+
+                        //cleanup
+                        if (existing != null)
+                        {
+                            var existingTradeItems = db.FID_TS10_TradeItem.Where(x => x.FormId == existing.Id);
+                            if (existingTradeItems != null)
+                            {
+                                db.FID_TS10_TradeItem.RemoveRange(existingTradeItems);
+                            }
+
+                            db.FID_TS10.Remove(existing);
+                            db.SaveChanges();
+                        }
+
+                        // add balik
+                        var currentSettlementDate = tsForm.Key.SettlementDate.Value;
+                        var currentCurrency = tsForm.Key.Currency;
+
+                        var ts10am = new FID_TS10()
+                        {
+                            FormStatus = Common.FormStatus.Approved,
+                            Currency = currentCurrency,
+                            FormType = Common.FormType.ISSD_TS,
+                            SettlementDate = currentSettlementDate
+                        };
+                        db.FID_TS10.Add(ts10am);
+                        db.SaveChanges();
+
+                        foreach (var form in tsForms.Where(x => x.Currency == currentCurrency && x.SettlementDate.Value.Date == currentSettlementDate))
+                        {
+                            var tsTradeItems = db.ISSD_TradeSettlement.Where(x => x.FormId == form.Id).ToList();
+                            if (tsTradeItems.Any())
+                            {
+                                foreach (var item in tsTradeItems)
+                                {
+                                    var tradeItem = new FID_TS10_TradeItem
                                     {
                                         FormId = ts10am.Id,
-                                        Account = item.BalanceCategory,
-                                        Amount = item.Amount,
-                                        CreatedBy = item.CreatedBy,
-                                        CreatedDate = item.CreatedDate,
+                                        InstrumentType = item.InstrumentType,
+                                        InstrumentCode = item.InstrumentCode,
+                                        StockCode = item.StockCode,
+                                        Maturity = item.Maturity,
+                                        Sales = item.Sales,
+                                        Purchase = item.Purchase,
+                                        FirstLeg = item.FirstLeg,
+                                        SecondLeg = item.SecondLeg,
+                                        AmountPlus = item.AmountPlus,
+                                        AmountMinus = item.AmountMinus,
+                                        Remarks = item.Remarks,
+                                        CreatedBy = item.ModifiedBy,
+                                        CreatedDate = item.ModifiedDate,
+
+                                        InflowTo = (currentCurrency == "MYR") ? "RENTAS" : null,
+                                        OutflowFrom = (currentCurrency == "MYR") ? "RENTAS" : null
                                     };
-                                    db.FID_TS10_OpeningBalance.Add(opBalance);
+                                    db.FID_TS10_TradeItem.Add(tradeItem);
                                 }
                                 db.SaveChanges();
                             }

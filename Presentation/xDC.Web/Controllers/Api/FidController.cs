@@ -196,54 +196,38 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpGet]
-        [Route("TcaTaggingGrid/opBalance/{formId}")]
-        public HttpResponseMessage TcaTaggingOpBalanceGrid(int formId, DataSourceLoadOptions loadOptions)
+        [Route("TcaTagging/EdwAccount")]
+        public HttpResponseMessage TcaTagging_EdwAccount(DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var tradeItems =
-                        db.FID_TS10_OpeningBalance.Where(x => x.FormId == formId && x.FormId == formId).ToList();
+                    var result = FidService.List_CounterParty(db);
 
-                    return Request.CreateResponse(DataSourceLoader.Load(tradeItems, loadOptions));
+                    var rentas = new EDW_FID_List()
+                    {
+                        Name = "RENTAS",
+                        Reference = "RENTAS"
+                    };
+
+                    var MMA = new EDW_FID_List()
+                    {
+                        Name = "MMA",
+                        Reference = "MMA"
+                    };
+
+                    result.Add(rentas);
+                    result.Add(MMA);
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
-        }
-
-        [HttpPut]
-        [Route("TcaTaggingGrid/opBalance")]
-        public HttpResponseMessage TcaTaggingOpBalanceGridUpdate(FormDataCollection form)
-        {
-            using (var db = new kashflowDBEntities())
-            {
-                var id = Convert.ToInt32(form.Get("key"));
-                var values = form.Get("values");
-
-                var existingRecord = db.FID_TS10_OpeningBalance.FirstOrDefault(o => o.Id == id);
-
-                JsonConvert.PopulateObject(values, existingRecord);
-
-                if (existingRecord != null)
-                {
-                    existingRecord.AssignedBy = User.Identity.Name;
-                    existingRecord.AssignedDate = DateTime.Now;
-                }
-
-                Validate(existingRecord);
-
-                if (!ModelState.IsValid)
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
-
-                db.SaveChanges();
-
-                return Request.CreateResponse(HttpStatusCode.OK);
-            }
-
         }
 
 
@@ -259,24 +243,27 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var result = new List<TenAmCutOffItemVM>();
-
-                    var forms = db.FID_TS10.Where(x => DbFunctions.TruncateTime(x.SettlementDate) == reportDateParsed)
-                        .ToList();
-
-                    foreach (var form in forms)
+                    
+                    var opBalances = FcaTaggingSvc.GetOpeningBalance(db, reportDateParsed.Value);
+                    foreach (var opBalance in opBalances)
                     {
-                        var opBalances = db.FID_TS10_OpeningBalance.Where(x => x.FormId == form.Id).ToList();
-
-                        foreach (var opBalance in opBalances)
+                        // create row for account and its opening balance. e.g. RENTAS - OB 20,000
+                        var item = new TenAmCutOffItemVM
                         {
-                            // create row for account and its opening balance. e.g. RENTAS - OB 20,000
-                            var item = new TenAmCutOffItemVM();
-                            item.Account = opBalance.Account;
-                            if (opBalance.Amount != null) item.OpeningBalance = opBalance.Amount.Value;
-                            item.Currency = form.Currency;
-
-                            // get total inflow based on assigned inflow account
-                            var tradeItemInflow = db.FID_TS10_TradeItem.Where(x => x.FormId == form.Id && x.InflowTo == opBalance.Account).ToList();
+                            Account = opBalance.Account,
+                            OpeningBalance = opBalance.Amount,
+                            Currency = opBalance.Currency
+                        };
+                        result.Add(item);
+                    }
+                    
+                    foreach (var item in result)
+                    {
+                        // get total inflow based on assigned inflow account
+                        var form = db.FID_TS10.FirstOrDefault(x => DbFunctions.TruncateTime(x.SettlementDate) == reportDateParsed && x.Currency == item.Currency);
+                        if (form != null)
+                        {
+                            var tradeItemInflow = db.FID_TS10_TradeItem.Where(x => x.FormId == form.Id && x.InflowTo == item.Account).ToList();
 
                             var tradeItemInflowGrouped = tradeItemInflow
                                 .GroupBy(x => new { x.FormId, x.InflowTo }).Select(x => new
@@ -293,7 +280,7 @@ namespace xDC_Web.Controllers.Api
                             }
 
                             // get total inflow based on assigned outflow account
-                            var tradeItemOutflow = db.FID_TS10_TradeItem.Where(x => x.FormId == form.Id && x.OutflowFrom == opBalance.Account).ToList();
+                            var tradeItemOutflow = db.FID_TS10_TradeItem.Where(x => x.FormId == form.Id && x.OutflowFrom == item.Account).ToList();
 
                             var tradeItemOutflowGrouped = tradeItemOutflow
                                 .GroupBy(x => new { x.FormId, x.OutflowFrom }).Select(x => new
@@ -308,11 +295,9 @@ namespace xDC_Web.Controllers.Api
                             {
                                 if (tradeItemOutflowGrouped.TotalOutflow != null) item.TotalOutflow = tradeItemOutflowGrouped.TotalOutflow.Value;
                             }
-
-                            item.Net = item.OpeningBalance + item.TotalInflow - item.TotalOutflow;
-
-                            result.Add(item);
                         }
+
+                        item.Net = item.OpeningBalance + item.TotalInflow - item.TotalOutflow;
                     }
 
                     // AMSD - Inflow Funds

@@ -45,12 +45,6 @@
                                             )
                                     </div>
                                 </div>
-                                <div class="dx-field">
-                                    <div class="dx-field-label" style="font-weight: bold">Opening Balance</div>
-                                    <div class="dx-field-value">
-                                        <div id="openingBalanceGrid" class="grid-container"></div>
-                                    </div>
-                                </div>
                             </div>
                             <div class="col-md-8"></div>
                         </div>
@@ -58,6 +52,50 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="dx-field">
+                                    <div class="dx-field-label" style="font-weight: bold">Opening Balance</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                @if (Model.OpeningBalance.Any())
+                                {
+                                    foreach (var item in Model.OpeningBalance)
+                                    {
+                                        <div class="dx-field">
+                                            <div class="dx-field-label">
+                                                @item.Account
+                                            </div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().NumberBox()
+                                                    .Value((double)item.Amount)
+                                                    .Format(x =>
+                                                    {
+                                                        x.Precision(2);
+                                                        x.Type(Format.FixedPoint);
+                                                    })
+                                                    .StylingMode(EditorStylingMode.Filled)
+                                                    .ReadOnly(true))
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="dx-field">
+                                        <div class="dx-field-label" style="color: red">
+                                            No Data found in EDW
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                            <div class="col-md-8"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="dx-field" style="margin-top: 20px">
                                     <div class="dx-field-label" style="font-weight: bold">Daily Trade Settlement</div>
                                 </div>
                             </div>
@@ -79,6 +117,28 @@
                                     <div id="othersGrid" class="grid-container" style="width: 100%"></div>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="dx-field" style="margin-top: 20px">
+                                    <div class="dx-field-label">
+                                        <strong>Closing Balance</strong>
+                                    </div>
+                                    <div class="dx-field-value">
+                                        @(Html.DevExtreme().NumberBoxFor(m => m.ClosingBalance)
+                                            .Format(x =>
+                                            {
+                                                x.Precision(2);
+                                                x.Type(Format.FixedPoint);
+                                            })
+                                            .ID("closingBalance")
+                                            .StylingMode(EditorStylingMode.Filled)
+                                            .ReadOnly(true))
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8"></div>
                         </div>
                     </div>
                 </div>

@@ -8,10 +8,7 @@
             $printBtn;
 
         var referenceUrl = {
-            adminEdit: window.location.origin + "/issd/TradeSettlement/PartA/Edit/",
-
-            submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
-            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartA/View/"
+            load10amCutOff: window.location.origin + "/api/fid/10AmCutOff/"
         };
 
         //#endregion
@@ -20,7 +17,7 @@
 
         var ds = function(selectedDate) {
             return $.ajax({
-                url: window.location.origin + "/api/fid/10AmCutOff/" + moment(selectedDate).unix(),
+                url: referenceUrl.load10amCutOff + moment(selectedDate).unix(),
                 type: "get"
             });
         };
@@ -45,6 +42,8 @@
                     .done(function (data1) {
                         $grid.option("dataSource", data1.data);
                         $grid.repaint();
+
+                        app.toastEdwCount(data1.data, "");
                     });
             }
         }).dxDateBox("instance");
@@ -159,6 +158,9 @@
             showBorders: true,
             grouping: {
                 autoExpandAll: true,
+            },
+            "export": {
+                enabled: true,
             }
         }).dxDataGrid("instance");
         

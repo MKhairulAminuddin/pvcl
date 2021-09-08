@@ -46,16 +46,16 @@ namespace xDC_Web.Controllers
                     var settlementDate = Common.ConvertEpochToDateTime(Convert.ToInt64(settlementDateEpoch));
                     var settlementDateOnly = settlementDate.Value.Date;
 
-                    var getForm = db.ISSD_FormHeader.Where(x =>
+                    var form = db.ISSD_FormHeader.Where(x =>
                         DbFunctions.TruncateTime(x.SettlementDate) == settlementDateOnly && x.Currency == currency);
 
-                    if (getForm.Any())
+                    if (form.Any())
                     {
                         var vm = new TradeSettlementFormVM()
                         {
-                            FormStatus = getForm.First().FormStatus,
-                            SettlementDate = getForm.First().SettlementDate,
-                            Currency = getForm.First().Currency,
+                            FormStatus = form.First().FormStatus,
+                            SettlementDate = form.First().SettlementDate,
+                            Currency = form.First().Currency,
                             OpeningBalance = new List<TS_OpeningBalance>()
                         };
 
@@ -63,7 +63,7 @@ namespace xDC_Web.Controllers
                         vm.OpeningBalance.AddRange(ob);
                         var totalOb = vm.OpeningBalance.Sum(x => x.Amount);
 
-                        var totalFlow = TradeSettlementSvc.GetTotalFlow(db, getForm.Select(x => x.Id).ToList(), settlementDateOnly, currency);
+                        var totalFlow = TradeSettlementSvc.GetTotalFlow(db, form.Select(x => x.Id).ToList(), settlementDateOnly, currency);
 
                         vm.ClosingBalance = totalOb + totalFlow.Inflow - totalFlow.Outflow;
                         

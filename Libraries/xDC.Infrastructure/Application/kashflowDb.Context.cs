@@ -39,7 +39,6 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<FID_TS10> FID_TS10 { get; set; }
         public virtual DbSet<FID_TS10_TradeItem> FID_TS10_TradeItem { get; set; }
         public virtual DbSet<FID_TS10_Approval> FID_TS10_Approval { get; set; }
-        public virtual DbSet<FID_TS10_OpeningBalance> FID_TS10_OpeningBalance { get; set; }
         public virtual DbSet<FID_Treasury> FID_Treasury { get; set; }
         public virtual DbSet<EDW_FID_List> EDW_FID_List { get; set; }
         public virtual DbSet<EDW_BankBalance> EDW_BankBalance { get; set; }

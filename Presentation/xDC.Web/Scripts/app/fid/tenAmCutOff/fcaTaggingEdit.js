@@ -3,7 +3,6 @@
         //#region Variable Definition
 
         var $tabpanel,
-            $openingBalanceGrid,
 
             $equityGrid,
             $bondGrid,
@@ -40,8 +39,7 @@
             updateTradeItem: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem",
 
 
-            opBalanceLoad: window.location.origin + "/api/fid/TcaTaggingGrid/opBalance/" + window.location.pathname.split("/").pop(),
-            opBalanceUpdate: window.location.origin + "/api/fid/TcaTaggingGrid/opBalance",
+            opBalanceLoad: window.location.origin + "/api/fid/TcaTagging/EdwAccount/",
             
         };
 
@@ -50,7 +48,7 @@
         //#region Data Source & Functions
 
         var dsAccountLookup = DevExpress.data.AspNet.createStore({
-            key: "id",
+            key: "reference",
             loadUrl: referenceUrl.opBalanceLoad
         });
         
@@ -91,8 +89,10 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account", allowClearing: true, allowClearing: true
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
+                                        allowClearing: true,
+                                        allowClearing: true
                                     }
                                 },
                                 {
@@ -100,8 +100,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account", allowClearing: true, allowClearing: true
+                                        valueExpr: "reference",
+                                        displayExpr: "reference", allowClearing: true, allowClearing: true
                                     }
                                 },
                                 {
@@ -229,8 +229,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account", allowClearing: true, allowClearing: true
+                                        valueExpr: "reference",
+                                        displayExpr: "reference", allowClearing: true, allowClearing: true
                                     }
                                 },
                                 {
@@ -238,8 +238,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account", allowClearing: true, allowClearing: true
+                                        valueExpr: "reference",
+                                        displayExpr: "reference", allowClearing: true, allowClearing: true
                                     }
                                 },
                                 {
@@ -367,8 +367,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -377,8 +377,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -507,8 +507,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -517,8 +517,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -647,8 +647,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -657,8 +657,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -768,8 +768,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -833,7 +833,7 @@
                             },
                             showBorders: true
                         });
-                        $couponGrid = newTabView;
+                        $couponGrid = newTabView.dxDataGrid("instance");
                         newTabView.appendTo(element);
                     }
                 };
@@ -860,8 +860,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -947,8 +947,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -957,8 +957,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -1063,8 +1063,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -1073,8 +1073,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -1179,8 +1179,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -1266,8 +1266,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -1276,8 +1276,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -1382,8 +1382,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -1392,8 +1392,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "account",
-                                        displayExpr: "account",
+                                        valueExpr: "reference",
+                                        displayExpr: "reference",
                                         allowClearing: true
                                     }
                                 },
@@ -1507,8 +1507,6 @@
                 tabPanelItems = $tabpanel.option("dataSource");
                 $tabpanel.option("selectedIndex", tabPanelItems[0]);
                 
-                $openingBalanceGrid.saveEditData();
-
                 if (typeof ($equityGrid) !== "undefined") {
                     $equityGrid.saveEditData();
                 }
@@ -1547,70 +1545,13 @@
                 }
 
                 loadData();
-                app.toast("Dah Saved", "Success");
+                app.toast("Saved", "Success");
             }
         }).dxButton("instance");
         
         //#endregion
 
         //#region DataGrid
-
-        $openingBalanceGrid = $("#openingBalanceGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
-                loadUrl: referenceUrl.opBalanceLoad,
-                //updateUrl: referenceUrl.opBalanceUpdate
-            }),
-            columns: [
-                /*{
-                    dataField: "fcaAccount",
-                    caption: "FCA Account"
-                },
-                {
-                    dataField: "fcaAmount",
-                    caption: "FCA Amount"
-                },*/
-                {
-                    dataField: "account",
-                    caption: "Account",
-                    allowEditing: false
-                },
-                {
-                    dataField: "amount",
-                    caption: "Amount",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    },
-                    allowEditing: false
-                },
-                {
-                    dataField: "assignedBy",
-                    caption: "Assigned By",
-                    allowEditing: false,
-                    visible: false
-                },
-                {
-                    dataField: "assignedDate",
-                    caption: "Assigned Date",
-                    dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm a",
-                    allowEditing: false,
-                    visible: false
-                }
-            ],
-            editing: {
-                mode: "batch",
-                allowUpdating: false,
-                allowDeleting: false,
-                allowAdding: false
-            },
-            showBorders: false,
-            showColumnLines: false,
-            showRowLines: false,
-            showColumnHeaders: false
-        }).dxDataGrid("instance");
         
         //#endregion DataGrid
 
