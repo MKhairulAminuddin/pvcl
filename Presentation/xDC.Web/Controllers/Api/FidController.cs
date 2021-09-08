@@ -475,7 +475,7 @@ namespace xDC_Web.Controllers.Api
                 var minDate = DateTime.MinValue;
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.EDW_Maturity.GroupBy(x => x.Maturity_Date != null ? x.Value_Date.Value : minDate).Select(x => new
+                    var result = db.EDW_Maturity.GroupBy(x => x.Maturity_Date).Select(x => new
                     {
                         day = x.Key.Day,
                         month = x.Key.Month,
