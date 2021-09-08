@@ -472,13 +472,14 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
+                var minDate = DateTime.MinValue;
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.EDW_Maturity.Select(x => new
+                    var result = db.EDW_Maturity.GroupBy(x => x.Value_Date != null ? x.Value_Date.Value : minDate).Select(x => new
                     {
-                        day = x.Value_Date.Value.Day,
-                        month = x.Value_Date.Value.Month,
-                        date = x.Value_Date.Value
+                        day = x.Key.Day,
+                        month = x.Key.Month,
+                        date = x.Key
                     }).Distinct().ToList();
 
                     return Request.CreateResponse(HttpStatusCode.OK, result);
