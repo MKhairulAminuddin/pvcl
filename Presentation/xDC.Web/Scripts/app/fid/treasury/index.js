@@ -66,11 +66,11 @@
                             hint: "Edit",
                             icon: "fa fa-pencil-square",
                             cssClass: "dx-datagrid-command-btn",
-                            /*visible: function (e) {
+                            visible: function (e) {
                                 return (e.row.data.isEditAllowed);
-                            },*/
+                            },
                             onClick: function (e) {
-                                window.location.href = window.location.origin + "/fid/Treasury/View/" + e.row.data.id;
+                                window.location.href = window.location.origin + "/fid/Treasury/Edit/" + e.row.data.id;
                                 e.event.preventDefault();
                             }
                         },
@@ -78,9 +78,9 @@
                             hint: "Delete",
                             icon: "fa fa-trash-o",
                             cssClass: "dx-datagrid-command-btn text-red",
-                            /*visible: function (e) {
+                            visible: function (e) {
                                 return (e.row.data.isDeleteAllowed);
-                            },*/
+                            },
                             onClick: function (e) {
                                 if (!confirm("Do you really want to delete this?")) {
                                     return false;
@@ -94,11 +94,13 @@
                                         url: window.location.origin + "/api/fid/Treasury/",
                                         data: data,
                                         success: function (data) {
-                                            app.toast("Form Deleted", "warning");
+                                            app.toast("Form Deleted", "warning", 2000);
+
                                             $grid1.refresh();
                                         },
                                         fail: function (jqXHR, textStatus, errorThrown) {
                                             $app.toast(textStatus + ": " + errorThrown, "error");
+
                                         }
                                     });
                                     e.event.preventDefault();

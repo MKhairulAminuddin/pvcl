@@ -375,13 +375,13 @@ namespace xDC_Web.Controllers.Api
                         ApprovedBy = x.ApprovedBy,
                         ApprovedDate = x.ApprovedDate,
 
-                        IsEditAllowed = false,
-                        IsDeleteAllowed = false,
+                        IsEditAllowed = x.FormStatus != Common.FormStatus.PendingApproval && x.ApprovedBy != User.Identity.Name,
+                        IsDeleteAllowed = x.FormStatus != Common.FormStatus.PendingApproval && x.ApprovedBy != User.Identity.Name,
                         IsViewAllowed = false,
 
-                        IsPendingMyApproval = false,
-                        IsMyFormRejected = false,
-                        IsPendingApproval = false
+                        IsPendingMyApproval = x.FormStatus == Common.FormStatus.PendingApproval && x.ApprovedBy == User.Identity.Name,
+                        IsMyFormRejected = x.FormStatus == Common.FormStatus.Rejected && x.PreparedBy == User.Identity.Name,
+                        IsPendingApproval = x.FormStatus == Common.FormStatus.PendingApproval
                     }).ToList();
                     
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
@@ -804,13 +804,6 @@ namespace xDC_Web.Controllers.Api
                     {
                         return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not found!");
                     }
-
-                    /*if (User.IsInRole(Config.Acl.PowerUser))
-                    {
-                        form.AdminEditted = true;
-                        form.AdminEdittedBy = User.Identity.Name;
-                        form.AdminEdittedDate = DateTime.Now;
-                    }*/
 
                     if (string.IsNullOrEmpty(input.Approver))
                     {

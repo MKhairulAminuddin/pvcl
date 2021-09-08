@@ -46,13 +46,7 @@
                         ]);
                     })
                     .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-
-                        var numberOfItems = dataOrjqXHR.data.length;
-                        if (numberOfItems > 0) {
-                            tradeSettlement.toast(numberOfItems + " records fetched", "info");
-                        } else {
-                            tradeSettlement.toast("No data found for selected date and currency", "warning");
-                        }
+                        
 
                     })
                     .then(function() {

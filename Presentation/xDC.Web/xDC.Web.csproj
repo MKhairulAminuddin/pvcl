@@ -591,6 +591,8 @@
     <Content Include="Views\Issd\TradeSettlement\PartH\Edit.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartH\New.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartH\View.cshtml" />
+    <Content Include="Views\Shared\_ApprovalModal.cshtml" />
+    <Content Include="Views\Shared\_RejectionModal.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -20,5 +20,8 @@ namespace xDC_Web.ViewModels.Fid.Treasury
 
         public bool EnableApproveBtn { get; set; }
         public bool EnableRejectBtn { get; set; }
+
+        public bool EnableSubmitForApproval { get; set; }
+        public bool EnableSaveAsDraftBtn { get; set; }
     }
 }

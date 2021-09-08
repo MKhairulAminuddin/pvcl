@@ -75,7 +75,7 @@
 var app = (function() {
     var _app = {};
     
-    _app.toast = function (message, toastType = "info", delayTime = 1000) {
+    _app.toast = function (message, toastType = "info", delayTime = 3000) {
         var top = 0;
         var lastOffset = $(".dx-toast-content").last().offset();
         if (lastOffset != null) {

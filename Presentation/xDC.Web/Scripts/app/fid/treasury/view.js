@@ -9,19 +9,31 @@
 
             $printBtn,
 
+
             $outflowTabpanel,
             $outflowDepositGrid,
             $outflowMmiGrid,
 
             $currencySelectBox,
-            $tradeDate;
+            $tradeDate,
+
+            $viewWorkflowBtn,
+            $workflowGrid,
+            $viewWorkflowModal = $("#viewWorkflowModal"),
+            $approvalNoteModal = $("#approvalNoteModal"),
+            $rejectionNoteModal = $("#rejectionNoteModal");
 
         var referenceUrl = {
+            loadWorkflow: window.location.origin + "/api/common/GetWorkflow/11/" + app.getUrlId(),
+
             dsInflowDeposit: window.location.origin + "/api/fid/Treasury/inflow/deposit/",
             dsOutflowDeposit: window.location.origin + "/api/fid/Treasury/outflow/deposit/",
 
             dsInflowMmi: window.location.origin + "/api/fid/Treasury/inflow/mmi/",
             dsOutflowMmi: window.location.origin + "/api/fid/Treasury/outflow/mmi/",
+
+            approvalRequest: window.location.origin + "/api/fid/Treasury/Approval",
+            approvalResponse: window.location.origin + "/fid/Treasury/view/",
             
 
             postNewFormRequest: window.location.origin + "/api/fid/Treasury/New",
@@ -86,16 +98,62 @@
 
                     })
                     .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-                        app.toast("Data fetched", "info");
+                        
                     })
                     .then(function () {
 
                     });
         }
+
+        var postApproval = function (isApproved) {
+            if (isApproved) {
+                app.toast("Submitting approval response....", "info", 3000);
+            } else {
+                app.toast("Submitting rejection response....", "warning", 3000);
+            }
+
+            var data = {
+                approvalNote: (isApproved)
+                    ? $("#approvalNoteTextBox").dxTextArea("instance").option("value")
+                    : $("#rejectionNoteTextBox").dxTextArea("instance").option("value"),
+                approvalStatus: isApproved,
+                formId: app.getUrlId()
+            };
+
+            $.ajax({
+                data: data,
+                dataType: "json",
+                url: referenceUrl.approvalRequest,
+                method: "post",
+                success: function (data) {
+                    window.location.href = referenceUrl.approvalResponse + data;
+                },
+                fail: function (jqXHR, textStatus, errorThrown) {
+                    app.alertError(textStatus + ": " + errorThrown);
+                },
+                complete: function (data) {
+                    if (isApproved) {
+                        $approvalNoteModal.modal("hide");
+                    } else {
+                        $rejectionNoteModal.modal("hide");
+                    }
+                }
+            });
+        }
         
         //#endregion
 
         //#region Other Widgets
+
+        $viewWorkflowBtn = $("#viewWorkflowBtn").dxButton({
+            stylingMode: "contained",
+            text: "Workflow",
+            type: "normal",
+            icon: "fa fa-cogs",
+            onClick: function () {
+                $viewWorkflowModal.modal("show");
+            }
+        });
 
         $printBtn = $("#printBtn").dxDropDownButton({
             text: "Print",
@@ -159,7 +217,7 @@
             itemTitleTemplate: $("#dxPanelTitle"),
             showNavButtons: true
         });
-
+        
         //#endregion
 
         // #region Data Grid
@@ -734,22 +792,88 @@
             wordWrapEnabled: true
         }).dxDataGrid("instance");
 
+        $workflowGrid = $("#workflowGrid").dxDataGrid({
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: referenceUrl.loadWorkflow
+            }),
+            columns: [
+                {
+                    dataField: "recordedDate",
+                    caption: "Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy hh:mm a"
+                },
+                {
+                    dataField: "requestBy",
+                    caption: "Requested By"
+                },
+                {
+                    dataField: "requestTo",
+                    caption: "Requested To"
+                },
+                {
+                    dataField: "workflowStatus",
+                    caption: "Workflow Status"
+                },
+                {
+                    dataField: "workflowNotes",
+                    caption: "Notes"
+                }
+            ],
+            showRowLines: true,
+            rowAlternationEnabled: false,
+            showBorders: true,
+            sorting: {
+                mode: "multiple",
+                showSortIndexes: true
+            },
+            wordWrapEnabled: true
+        }).dxDataGrid("instance");
+
         // #endregion Data Grid
 
         //#region Events & Invocations
         
-        $("#saveAsDraftBtn").dxButton({
-            onClick: function (e) {
-                alert("hehe clicked!");
-            }
-        });
-
         $("#submitForApprovalBtn").dxButton({
             onClick: function (e) {
                 e.event.preventDefault();
                 
             }
         });
+
+        $("#approveBtn").on({
+            "click": function (e) {
+                $approvalNoteModal.modal("show");
+                e.preventDefault();
+            }
+        });
+
+        $("#rejectBtn").on({
+            "click": function (e) {
+                $rejectionNoteModal.modal("show");
+                e.preventDefault();
+            }
+        });
+
+        $("#approveFormBtn").on({
+            "click": function (e) {
+                postApproval(true);
+
+                e.preventDefault();
+            }
+        });
+
+        $("#rejectFormBtn").on({
+            "click": function (e) {
+                postApproval(false);
+
+                e.preventDefault();
+            }
+        });
+
+
+
 
         setTimeout(function() {
                 populateData();

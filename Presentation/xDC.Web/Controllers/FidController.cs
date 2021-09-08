@@ -93,10 +93,47 @@ namespace xDC_Web.Controllers
             return View("Treasury/New", model);
         }
 
-        [Route("Treasury/Edit")]
-        public ActionResult TreasuryEdit()
+        [Route("Treasury/Edit/{id}")]
+        public ActionResult TreasuryEdit(string id)
         {
-            return View("Treasury/Index");
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formId = Convert.ToInt32(id);
+                    var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
+
+                    if (form != null)
+                    {
+                        var model = new TreasuryFormVM
+                        {
+                            Currency = form.Currency,
+                            TradeDate = form.TradeDate,
+                            FormStatus = form.FormStatus,
+                            PreparedBy = form.PreparedBy,
+                            PreparedDate = form.PreparedDate,
+                            ApprovedBy = form.ApprovedBy,
+                            ApprovedDate = form.ApprovedDate,
+
+                            EnableSubmitForApproval = (form.FormStatus != Common.FormStatus.PendingApproval && form.ApprovedBy == null),
+                            EnableSaveAsDraftBtn = (form.FormStatus == Common.FormStatus.Draft && form.ApprovedBy == null)
+                        };
+                        return View("Treasury/Edit", model);
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Form Not found";
+                        return View("Error");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Error");
+            }
+            
         }
 
         [Route("Treasury/View/{id}")]
@@ -111,6 +148,13 @@ namespace xDC_Web.Controllers
 
                     if (form != null)
                     {
+                        var wf = db.Form_Workflow
+                            .OrderByDescending(x => x.RecordedDate)
+                            .FirstOrDefault(x =>
+                                x.FormId == form.Id && x.FormType == Common.FormType.FID_TREASURY &&
+                                (x.WorkflowStatus == Common.FormStatus.Approved ||
+                                 x.WorkflowStatus == Common.FormStatus.Rejected));
+
                         var formVm = new TreasuryFormVM()
                         {
                             Id = form.Id,
@@ -121,9 +165,10 @@ namespace xDC_Web.Controllers
                             PreparedDate = form.PreparedDate,
                             ApprovedBy = form.ApprovedBy,
                             ApprovedDate = form.ApprovedDate,
+                            ApprovalNotes = wf?.WorkflowNotes,
 
-                            EnableApproveBtn = form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.Approved,
-                            EnableRejectBtn = form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.Rejected,
+                            EnableApproveBtn = form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval,
+                            EnableRejectBtn = form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval,
                         };
                         return View("Treasury/View", formVm);
                     }

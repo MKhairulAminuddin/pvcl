@@ -7,6 +7,11 @@
 <section class="content container-fluid">
     <div class="row">
         <div class="col-md-12">
+            @xDC_HtmlHelper.WorkflowStepper(Model.FormStatus)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
             <form id="treasuryForm">
                 <div class="box box-solid">
                     <div class="box-header">
@@ -32,20 +37,15 @@
                                 .ID("rejectBtn")
                                 .Text("Reject")
                                 .Icon("remove")
-                                .Type(ButtonType.Normal)
+                                .Type(ButtonType.Danger)
                                 .StylingMode(ButtonStylingMode.Contained)
                                 )
                         }
 
                         <div id="printBtn"></div>
 
-                        @(Html.DevExtreme().Button()
-                            .ID("viewWorkflowBtn")
-                            .Text("Workflow")
-                            .Icon("fa fa-cog")
-                            .Type(ButtonType.Normal)
-                            .StylingMode(ButtonStylingMode.Contained)
-                            )
+                        <div id="viewWorkflowBtn"></div>
+
                     </div>
                     <div class="box-body">
                         <div class="dx-fieldset">
@@ -139,12 +139,12 @@
                                             <div class="dx-field-value">
                                                 @(Html.DevExtreme().TextAreaFor(m => m.ApprovalNotes)
                                                     .StylingMode(EditorStylingMode.Filled)
-                                                    .Height(6)
+                                                    .Height(60)
                                                     .ReadOnly(true))
                                             </div>
                                         </div>
                                     }
-                                    
+
 
                                 </div>
                             </div>
@@ -197,6 +197,10 @@
         </div>
     </div>
 </section>
+
+@Html.Partial("_ApprovalModal")
+@Html.Partial("_RejectionModal")
+@Html.Partial("_WorkflowInfoModal")
 
 <script type="text/html" id="dxPanelTitle">
     <div style="margin: 4px 0">

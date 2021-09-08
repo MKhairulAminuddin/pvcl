@@ -123,11 +123,11 @@
                     .done(function (data1) {
                         $inflowDepositGrid.option("dataSource", data1.data);
                         $inflowDepositGrid.repaint();
-                        
+                        app.toastEdwCount(data1.data, "inflow deposits");
+
                     })
                     .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-                        //tradeSettlement.toast("Data Updated", "info");
-                        app.toast("Data Updated", "info");
+                        
                     })
                     .then(function () {
 

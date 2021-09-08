@@ -31,9 +31,15 @@
             dsBankCounterParty: window.location.origin + "/api/fid/Treasury/EdwBankCounterParty/",
             dsIssuer: window.location.origin + "/api/fid/Treasury/EdwIssuer/",
 
+            dsInflowDeposit: window.location.origin + "/api/fid/Treasury/inflow/deposit/",
+            dsOutflowDeposit: window.location.origin + "/api/fid/Treasury/outflow/deposit/",
+
+            dsInflowMmi: window.location.origin + "/api/fid/Treasury/inflow/mmi/",
+            dsOutflowMmi: window.location.origin + "/api/fid/Treasury/outflow/mmi/",
+
             dsApproverList: window.location.origin + "/api/common/approverList/treasury",
 
-            postNewFormRequest: window.location.origin + "/api/fid/Treasury/New",
+            postNewFormRequest: window.location.origin + "/api/fid/Treasury/Edit",
             postNewFormResponse: window.location.origin + "/fid/Treasury/View/"
         };
 
@@ -107,45 +113,76 @@
             loadUrl: referenceUrl.dsBankCounterParty
         });
 
-        var dsMaturity = function (tradeDateEpoch, currency) {
+        var dsInflowDeposit = function () {
             return $.ajax({
-                url: referenceUrl.dsMaturity + "/" + moment(tradeDateEpoch).unix() + "/" + currency,
+                url: referenceUrl.dsInflowDeposit + window.location.pathname.split("/").pop(),
                 type: "get"
             });
         };
 
-        var populateDwData = function (tradeDate, currency) {
-            if (tradeDate && currency) {
-                $.when(
-                    dsMaturity(tradeDate, currency)
-                )
-                    .done(function (data1) {
-                        $inflowDepositGrid.option("dataSource", data1.data);
-                        $inflowDepositGrid.repaint();
+        var dsOutflowDeposit = function () {
+            return $.ajax({
+                url: referenceUrl.dsOutflowDeposit + window.location.pathname.split("/").pop(),
+                type: "get"
+            });
+        };
 
-                    })
-                    .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-                        //tradeSettlement.toast("Data Updated", "info");
-                        app.toast("Data Updated", "info");
-                    })
-                    .then(function () {
+        var dsInflowMmi = function () {
+            return $.ajax({
+                url: referenceUrl.dsInflowMmi + window.location.pathname.split("/").pop(),
+                type: "get"
+            });
+        };
 
-                    });
-            } else {
-                dxGridUtils.clearGrid($inflowDepositGrid);
-            }
+        var dsOutflowMmi = function () {
+            return $.ajax({
+                url: referenceUrl.dsOutflowMmi + window.location.pathname.split("/").pop(),
+                type: "get"
+            });
+        };
+
+        var populateData = function (tradeDate, currency) {
+            $.when(
+                    dsInflowDeposit(),
+                    dsOutflowDeposit(),
+                    dsInflowMmi(),
+                    dsOutflowMmi()
+                    )
+                .done(function (inflowDepo, outflowDepo, inflowMmi, outflowMmi) {
+                    $inflowDepositGrid.option("dataSource", inflowDepo[0].data);
+                    $inflowDepositGrid.repaint();
+
+                    $outflowDepositGrid.option("dataSource", outflowDepo[0].data);
+                    $outflowDepositGrid.repaint();
+
+                    $inflowMmiGrid.option("dataSource", inflowMmi[0].data);
+                    $inflowMmiGrid.repaint();
+
+                    $outflowMmiGrid.option("dataSource", outflowMmi[0].data);
+                    $outflowMmiGrid.repaint();
+                })
+                .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+                    
+                })
+                .then(function () {
+
+                });
         }
 
         function postData(isDraft) {
+            if (isDraft) {
+                app.toast("Saving....", "info", 3000);
+            } else {
+                app.toast("Submitting for approval....", "info", 3000);
+            }
+            
             var data = {
-                currency: $currencySelectBox.option("value"),
-                tradeDate: moment($tradeDate.option("value")).unix(),
-
+                id: app.getUrlId(),
                 inflowDeposit: $inflowDepositGrid.getDataSource().items(),
-                outflowDeposit: parseDepositArray($outflowDepositGrid.getDataSource().items()),
+                outflowDeposit: $outflowDepositGrid.getDataSource().items(),
 
-                inflowMoneyMarket: parseMmiArray($inflowMmiGrid.getDataSource().items()),
-                outflowMoneyMarket: parseMmiArray($outflowMmiGrid.getDataSource().items()),
+                inflowMoneyMarket: $inflowMmiGrid.getDataSource().items(),
+                outflowMoneyMarket: $outflowMmiGrid.getDataSource().items(),
 
                 approver: (isDraft) ? null : $approverDropdown.option("value"),
                 approvalNotes: (isDraft) ? null : $approvalNotes.option("value")
@@ -167,81 +204,13 @@
                 }
             });
         }
-
-        var availableMaturityDates;
-
-        function calendarMarkerTemplate(data) {
-            var cssClass = "";
-
-            $.each(availableMaturityDates, function (_, item) {
-                if (data.date.getDate() === item.day && data.date.getMonth() === item.month - 1) {
-                    cssClass = "markDate";
-                    return false;
-                }
-            });
-
-            return "<span class='" + cssClass + "'>" + data.text + "</span>";
-        }
-
-        var loadCalendarMarkers = function () {
-            $.ajax({
-                contentType: "application/json",
-                url: window.location.origin + "/api/fid/Treasury/EdwMaturity/AvailableMaturity",
-                method: "get",
-                success: function (response) {
-                    availableMaturityDates = response;
-                    $tradeDate.option("calendarOptions",
-                        {
-                            cellTemplate: calendarMarkerTemplate
-                        });
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
-                },
-                complete: function (data) {
-
-                }
-            });
-        }
-
-
+        
         //#endregion
 
         //#region Other Widgets
 
-        $tradeDate = $("#tradeDate").dxDateBox({
-            type: "date",
-            displayFormat: "dd/MM/yyyy",
-            value: new Date(),
-            calendarOptions: {
-                cellTemplate: calendarMarkerTemplate
-            },
-            onValueChanged: function (data) {
-
-                $.ajax({
-                    contentType: "application/json",
-                    url: window.location.origin +
-                        "/api/fid/Treasury/EdwMaturity/AvailableMaturity/" +
-                        moment(data.value).unix(),
-                    method: "get",
-                    success: function (response) {
-                        $currencySelectBox.option("dataSource", response);
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        app.alertError(errorThrown + ": " + jqXHR.responseJSON);
-                    },
-                    complete: function (data) {
-
-                    }
-                });
-            }
-        }).dxDateBox("instance");
-
-        $currencySelectBox = $("#currency").dxSelectBox({
-            dataSource: ["MYR", "USD"],
-            placeHolder: "Currency..",
-        }).dxSelectBox("instance");
-
+        $currencySelectBox = $("#currencySelectBox").dxTextBox("instance");
+        
         $inflowTabpanel = $("#inflowTabpanel").dxTabPanel({
             dataSource: [
                 { titleId: "tab1", title: "Deposit", template: "inflowDepositTab" },
@@ -1022,15 +991,7 @@
         // #endregion Data Grid
 
         //#region Events & Invocations
-
-        $tradeDate.on("valueChanged", function (data) {
-            populateDwData(data.value, $currencySelectBox.option("value"));
-        });
-
-        $currencySelectBox.on("valueChanged", function (data) {
-            populateDwData($tradeDate.option("value"), data.value);
-        });
-
+        
         $("#saveAsDraftBtn").dxButton({
             onClick: function (e) {
                 app.saveAllGrids($inflowDepositGrid, $outflowDepositGrid, $inflowMmiGrid, $outflowMmiGrid);
@@ -1043,7 +1004,7 @@
 
         $treasuryForm = $("#treasuryForm").on("submit",
             function (e) {
-                e.preventDefault();
+                
 
                 app.saveAllGrids($inflowDepositGrid, $outflowDepositGrid, $inflowMmiGrid, $outflowMmiGrid);
 
@@ -1053,9 +1014,10 @@
                 else {
                     $selectApproverModal.modal('show');
                 }*/
+                
+                $selectApproverModal.modal('show');
 
-                $selectApproverModal.modal("show");
-
+                e.preventDefault();
             });
 
         $submitForApprovalModalBtn = $("#submitForApprovalModalBtn").on({
@@ -1069,7 +1031,7 @@
             }
         });
 
-        loadCalendarMarkers();
+        populateData();
 
         //#endregion
     });
