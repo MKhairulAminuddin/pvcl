@@ -12,3 +12,7 @@ INSERT INTO [dbo].[Config_Key]([Key],[KeyType]) VALUES ('Amsd.InflowFunds.Notifi
 
 
 INSERT INTO [dbo].[Config_Key]([Key],[KeyType]) VALUES ('ISSD.TradeSettlement.Currency' ,'Dropdown');
+
+INSERT INTO [dbo].[Config_Key]([Key],[KeyType]) VALUES ('FID.Treasury.Notes' ,'Dropdown');
+INSERT INTO [dbo].[Config_Key]([Key],[KeyType]) VALUES ('FID.Treasury.AssetType' ,'Dropdown');
+INSERT INTO [dbo].[Config_Key]([Key],[KeyType]) VALUES ('FID.Treasury.ProductType' ,'Dropdown');

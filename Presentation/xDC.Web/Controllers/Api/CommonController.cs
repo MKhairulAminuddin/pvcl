@@ -195,7 +195,75 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.Config_Key.Where(x => x.KeyType == "Dropdown").ToList();
+                    var result = db.Config_Key
+                        .Where(x => x.KeyType == Common.ConfigKeyType.Dropdown)
+                        .ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("Treasury/Notes")]
+        public HttpResponseMessage TreasuryNotes(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.Config_Dropdown
+                        .Where(x => x.Key == Common.DropdownConfigKey.FID_Treasury_Notes)
+                        .OrderBy(x => x.Value)
+                        .ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("Treasury/AssetType")]
+        public HttpResponseMessage TreasuryAssetType(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.Config_Dropdown
+                        .Where(x => x.Key == Common.DropdownConfigKey.FID_Treasury_AssetType)
+                        .OrderBy(x => x.Value)
+                        .ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("Treasury/ProductType")]
+        public HttpResponseMessage TreasuryProductType(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.Config_Dropdown
+                        .Where(x => x.Key == Common.DropdownConfigKey.FID_Treasury_ProductType)
+                        .OrderBy(x => x.Value)
+                        .ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }

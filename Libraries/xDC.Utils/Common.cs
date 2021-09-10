@@ -262,12 +262,23 @@ namespace xDC.Utils
             }
             return String.Empty;
         }
-        
+
+        public static class ConfigKeyType
+        {
+            public const string Dropdown = "Dropdown";
+            public const string Application = "Application";
+        }
+
         public static class DropdownConfigKey
         {
             public const string AMSD_IF_FundType = "AMSD.InflowFunds.FundType";
             public const string AMSD_IF_Bank = "AMSD.InflowFunds.Bank";
+
             public const string ISSD_TS_Currency = "ISSD.TradeSettlement.Currency";
+
+            public const string FID_Treasury_Notes = "FID.Treasury.Notes";
+            public const string FID_Treasury_AssetType = "FID.Treasury.AssetType";
+            public const string FID_Treasury_ProductType = "FID.Treasury.ProductType";
         }
 
         public static class AppConfigKey

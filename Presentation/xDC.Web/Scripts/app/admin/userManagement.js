@@ -1,27 +1,36 @@
 ﻿$(function () {
-    var roleStores = DevExpress.data.AspNet.createStore({
-        loadUrl: "../api/common/GetRoles"
-    });
-
-    var aduserStores = DevExpress.data.AspNet.createStore({
-        key: "username",
-        loadUrl: "../api/common/GetActiveDirectoryUsers"
-    });
+    var roleStores = function () {
+        return {
+            store: DevExpress.data.AspNet.createStore({
+                loadUrl: window.location.origin + "/api/common/GetRoles"
+            }),
+            paginate: true,
+            pageSize: 20
+        };
+    }
+    
+    var aduserStores = function () {
+        return {
+            store: DevExpress.data.AspNet.createStore({
+                key: "username",
+                loadUrl: window.location.origin + "/api/common/GetActiveDirectoryUsers"
+            }),
+            paginate: true,
+            pageSize: 20
+        };
+    }
 
     var $grid1;
 
     $grid1 = $("#grid1").dxDataGrid({
         dataSource: DevExpress.data.AspNet.createStore({
             key: "userName",
-            loadUrl: "../api/admin/GetUsers",
-            insertUrl: "../api/admin/insertUser",
-            updateUrl: "../api/admin/updateUser",
-            deleteUrl: "../api/admin/deleteUser"
+            loadUrl: window.location.origin + "/api/admin/GetUsers",
+            insertUrl: window.location.origin + "/api/admin/insertUser",
+            updateUrl: window.location.origin + "/api/admin/updateUser",
+            deleteUrl: window.location.origin + "/api/admin/deleteUser"
         }),
         remoteOperations: true,
-        searchPanel: {
-            visible: true
-        },
         selection: { mode: "single" },
         editing: {
             mode: "form",
@@ -105,7 +114,20 @@
                 format: "dd/MM/yyyy HH:mm:ss",
                 allowEditing: false
             }
-        ]
+        ],
+        headerFilter: {
+            visible: true,
+            allowSearch: true
+        },
+        searchPanel: {
+            visible: true
+        },
+        filterPanel: { visible: true },
+        stateStoring: {
+            enabled: true,
+            type: "localStorage",
+            storageKey: "xDC_Admin_User"
+        }
     }).dxDataGrid('instance');
 
     $grid1.option(dxGridUtils.editingGridConfig);

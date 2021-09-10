@@ -358,10 +358,7 @@
                 {
                     dataField: "assetType",
                     caption: "Asset Type",
-                    lookup: {
-                        dataSource: treasury.dsAssetType
-                    },
-                    allowEditing: false,
+                    allowEditing: false
                 },
                 {
                     dataField: "repoTag",
@@ -375,11 +372,14 @@
                     dataField: "notes",
                     caption: "Notes",
                     lookup: {
-                        dataSource: treasury.dsNotes
+                        dataSource: treasury.dsNotes,
+                        valueExpr: "value",
+                        displayExpr: "value"
                     }
                 },
             ],
             summary: {
+                recalculateWhileEditing: true,
                 totalItems: [
                     {
                         column: "principal",
@@ -407,9 +407,28 @@
                 allowDeleting: false,
                 allowAdding: false
             },
+            onEditorPreparing: function (e) {
+                if (e.parentType == "dataRow" && e.editorName == 'dxSelectBox') {
+                    e.editorOptions.itemTemplate = function (data, index, element) {
+                        var column = e.component.columnOption(e.dataField);
+                        var fieldName = column.lookup.displayExpr;
+
+                        if (data) {
+                            $("<div>").css({ "white-space": "normal" }).text(data[fieldName]).appendTo(element);
+                            return element;
+                        } else {
+                            return "item";
+                        }
+
+                    };
+                    e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
+                }
+            },
             showBorders: true,
             showRowLines: true,
             showColumnLines: true,
+            allowColumnReordering: true,
+            allowColumnResizing: true,
             wordWrapEnabled: true
         }).dxDataGrid("instance");
 
@@ -481,7 +500,7 @@
                     dataField: "ratePercent",
                     caption: "Rate (%)",
                     dataType: "number",
-                    format: "#.00 '%'"
+                    format: "#.000 '%'"
                 },
                 {
                     dataField: "intProfitReceivable",
@@ -489,22 +508,15 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 2
+                        precision: 0
                     },
                     calculateCellValue: function (rowData) {
-                        var rate = (parseFloat(rowData.ratePercent * 100) || 0);
-                        var principal = (parseFloat(rowData.principal) || 0);
+                        var currency = $currencySelectBox.option("value");
+                        var principal = rowData.principal;
+                        var tenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
+                        var rate = rowData.ratePercent;
 
-                        var tenor = 0;
-                        if ($currencySelectBox.option("value") == "USD" ||
-                            $currencySelectBox.option("value") == "AUD" ||
-                            $currencySelectBox.option("value") == "EUR") {
-                            tenor = (parseFloat(treasury.tenor(rowData.maturityDate, rowData.valueDate) / 360 * 100) || 0);
-                        } else {
-                            tenor = (parseFloat(treasury.tenor(rowData.maturityDate, rowData.valueDate) / 365 * 100) || 0);
-                        }
-
-                        rowData.intProfitReceivable = (principal * tenor * rate);
+                        rowData.intProfitReceivable = treasury.outflow_deposit(currency, principal, tenor, rate);
 
                         return rowData.intProfitReceivable;
                     },
@@ -516,25 +528,12 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 2
+                        precision: 0
                     },
                     calculateCellValue: function (rowData) {
-                        var rate = (parseFloat(rowData.ratePercent * 100) || 0);
-                        var principal = (parseFloat(rowData.principal) || 0);
+                        var principal = rowData.principal;
 
-                        var tenor = 0;
-                        if ($currencySelectBox.option("value") == "USD" ||
-                            $currencySelectBox.option("value") == "AUD" ||
-                            $currencySelectBox.option("value") == "EUR") {
-                            tenor = (parseFloat(treasury.tenor(rowData.maturityDate, rowData.valueDate) / 360 * 100) || 0);
-                        } else {
-                            tenor = (parseFloat(treasury.tenor(rowData.maturityDate, rowData.valueDate) / 365 * 100) || 0);
-                        }
-
-                        var intProfitReceivable = (principal * tenor * rate);
-
-                        rowData.principalIntProfitReceivable = principal + intProfitReceivable;
-
+                        rowData.principalIntProfitReceivable = principal + rowData.intProfitReceivable;
                         return rowData.principalIntProfitReceivable;
                     },
                     allowEditing: false
@@ -543,7 +542,9 @@
                     dataField: "assetType",
                     caption: "Asset Type",
                     lookup: {
-                        dataSource: treasury.dsAssetType
+                        dataSource: treasury.dsAssetType,
+                        valueExpr: "value",
+                        displayExpr: "value"
                     }
                 },
                 {
@@ -558,11 +559,14 @@
                     dataField: "notes",
                     caption: "Notes",
                     lookup: {
-                        dataSource: treasury.dsNotes
+                        dataSource: treasury.dsNotes,
+                        valueExpr: "value",
+                        displayExpr: "value"
                     }
                 }
             ],
             summary: {
+                recalculateWhileEditing: true,
                 totalItems: [
                     {
                         column: "principal",
@@ -590,9 +594,28 @@
                 allowDeleting: false,
                 allowAdding: true
             },
+            onEditorPreparing: function (e) {
+                if (e.parentType == "dataRow" && e.editorName == 'dxSelectBox') {
+                    e.editorOptions.itemTemplate = function (data, index, element) {
+                        var column = e.component.columnOption(e.dataField);
+                        var fieldName = column.lookup.displayExpr;
+
+                        if (data) {
+                            $("<div>").css({ "white-space": "normal" }).text(data[fieldName]).appendTo(element);
+                            return element;
+                        } else {
+                            return "item";
+                        }
+
+                    };
+                    e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
+                }
+            },
             showBorders: true,
             showRowLines: true,
             showColumnLines: true,
+            allowColumnReordering: true,
+            allowColumnResizing: true,
             wordWrapEnabled: true
         }).dxDataGrid("instance");
 
@@ -621,7 +644,9 @@
                     dataField: "productType",
                     caption: "Product Type",
                     lookup: {
-                        dataSource: treasury.dsProductType
+                        dataSource: treasury.dsProductType,
+                        valueExpr: "value",
+                        displayExpr: "value"
                     }
                 },
                 {
@@ -673,14 +698,14 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 2
+                        precision: 0
                     }
                 },
                 {
                     dataField: "sellPurchaseRateYield",
                     caption: "Sell Rate / Yield (%)",
                     dataType: "number",
-                    format: "#.00 '%'"
+                    format: "#.000 '%'"
                 },
                 {
                     dataField: "price",
@@ -688,7 +713,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 2
+                        precision: 0
                     },
                     calculateCellValue: function (rowData) {
                         rowData.price = treasury.inflow_price(
@@ -707,7 +732,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 2
+                        precision: 0
                     }
                 },
                 {
@@ -716,7 +741,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 2
+                        precision: 0
                     },
                     calculateCellValue: function (rowData) {
                         rowData.intDividendReceivable = treasury.inflow_intDiv(
@@ -736,7 +761,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 2
+                        precision: 0
                     },
                     calculateCellValue: function (rowData) {
                         rowData.proceeds = treasury.inflow_proceeds(
@@ -755,6 +780,7 @@
                 }
             ],
             summary: {
+                recalculateWhileEditing: true,
                 totalItems: [
                     {
                         column: "nominal",
@@ -791,9 +817,28 @@
                 allowDeleting: false,
                 allowAdding: true
             },
+            onEditorPreparing: function (e) {
+                if (e.parentType == "dataRow" && e.editorName == 'dxSelectBox') {
+                    e.editorOptions.itemTemplate = function (data, index, element) {
+                        var column = e.component.columnOption(e.dataField);
+                        var fieldName = column.lookup.displayExpr;
+
+                        if (data) {
+                            $("<div>").css({ "white-space": "normal" }).text(data[fieldName]).appendTo(element);
+                            return element;
+                        } else {
+                            return "item";
+                        }
+
+                    };
+                    e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
+                }
+            },
             showBorders: true,
             showRowLines: true,
             showColumnLines: true,
+            allowColumnReordering: true,
+            allowColumnResizing: true,
             wordWrapEnabled: true
         }).dxDataGrid("instance");
 
@@ -822,7 +867,9 @@
                     dataField: "productType",
                     caption: "Product Type",
                     lookup: {
-                        dataSource: treasury.dsProductType
+                        dataSource: treasury.dsProductType,
+                        valueExpr: "value",
+                        displayExpr: "value"
                     }
                 },
                 {
@@ -946,6 +993,7 @@
                 }
             ],
             summary: {
+                recalculateWhileEditing: true,
                 totalItems: [
                     {
                         column: "nominal",
@@ -982,9 +1030,28 @@
                 allowDeleting: false,
                 allowAdding: true
             },
+            onEditorPreparing: function (e) {
+                if (e.parentType == "dataRow" && e.editorName == 'dxSelectBox') {
+                    e.editorOptions.itemTemplate = function (data, index, element) {
+                        var column = e.component.columnOption(e.dataField);
+                        var fieldName = column.lookup.displayExpr;
+
+                        if (data) {
+                            $("<div>").css({ "white-space": "normal" }).text(data[fieldName]).appendTo(element);
+                            return element;
+                        } else {
+                            return "item";
+                        }
+
+                    };
+                    e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
+                }
+            },
             showBorders: true,
             showRowLines: true,
             showColumnLines: true,
+            allowColumnReordering: true,
+            allowColumnResizing: true,
             wordWrapEnabled: true
         }).dxDataGrid("instance");
 

@@ -14,17 +14,28 @@ INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('Amsd.In
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('Amsd.InflowFunds.Bank', 'RHB Bank -02', 'System');
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('Amsd.InflowFunds.Bank', 'RHB Bank -03', 'System');
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('Amsd.InflowFunds.Bank', 'BNM-01', 'System');
-INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('Amsd.InflowFunds.Bank', 'BA', 'System');
-INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('Amsd.InflowFunds.Bank', 'CP Matured', 'System');
-INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('Amsd.InflowFunds.Bank', 'Cagamas Int', 'System');
-INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('Amsd.InflowFunds.Bank', 'Loan SPnb', 'System');
-INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('Amsd.InflowFunds.Bank', 'Bon Int', 'System');
-
 
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('Amsd.InflowFunds.FundType', 'Funds Receive', 'System');
-INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('Amsd.InflowFunds.FundType', 'Maturity', 'System');
-INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('Amsd.InflowFunds.FundType', 'Proceed', 'System');
-INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('Amsd.InflowFunds.FundType', 'Interest Received', 'System');
 
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('ISSD.TradeSettlement.Currency', 'MYR', 'System');
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('ISSD.TradeSettlement.Currency', 'USD', 'System');
+
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.Notes', 'w/d P+I', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.Notes', 'r/o P+I', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.Notes', 'New', 'System');
+
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.AssetType', 'MMD', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.AssetType', 'FD', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.AssetType', 'CMD', 'System');
+
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'NID', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'NIDC', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'NIDL', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'CP', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'ICP', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'BA', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'AB-i', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'BNMN', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'BNMN-i', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'MTB', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'MTIB', 'System');

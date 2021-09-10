@@ -1,8 +1,14 @@
 ﻿$(function () {
-    var aduserStores = DevExpress.data.AspNet.createStore({
-        key: "username",
-        loadUrl: "../api/common/GetActiveDirectoryUsersRegisteredIntoSystem"
-    });
+    var aduserStores = function() {
+        return {
+            store: DevExpress.data.AspNet.createStore({
+                key: "username",
+                loadUrl: window.location.origin + "/api/common/GetActiveDirectoryUsersRegisteredIntoSystem"
+            }),
+            paginate: true,
+            pageSize: 20
+        }
+    };
 
     var formTypes = [
         {
@@ -23,10 +29,10 @@
     $grid1 = $("#grid1").dxDataGrid({
         dataSource: DevExpress.data.AspNet.createStore({
             key: "id",
-            loadUrl: "../api/setting/GetApprover",
-            insertUrl: "../api/setting/insertApprover",
-            updateUrl: "../api/setting/updateApprover",
-            deleteUrl: "../api/setting/deleteApprover"
+            loadUrl: window.location.origin + "/api/setting/GetApprover",
+            insertUrl: window.location.origin + "/api/setting/insertApprover",
+            updateUrl: window.location.origin + "/api/setting/updateApprover",
+            deleteUrl: window.location.origin + "/api/setting/deleteApprover"
         }),
         remoteOperations: true,
         searchPanel: {

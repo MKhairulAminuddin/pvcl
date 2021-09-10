@@ -37,7 +37,180 @@
             postNewFormRequest: window.location.origin + "/api/fid/Treasury/New",
             postNewFormResponse: window.location.origin + "/fid/Treasury/View/"
         };
-        
+
+        var sampleDataInflowMmi = [
+            {
+                productType: "NID",
+                valueDate: new Date(2020, 11, 17),
+                maturityDate: new Date(2021, 0, 20),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.05,
+                purchaseProceeds: 0,
+                certNoStockCode: "AMB111210"
+            },
+            {
+                productType: "NIDC",
+                valueDate: new Date(2021, 7, 15),
+                maturityDate: new Date(2021, 8, 30),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.050,
+                purchaseProceeds: 5000000.00,
+                certNoStockCode: "AMB111210"
+            },
+            {
+                productType: "CP",
+                valueDate: new Date(2021, 7, 15),
+                maturityDate: new Date(2021, 7, 30),
+                nominal: 5000000.00,
+                sellPurchaseRateYield: 2.000,
+                purchaseProceeds: 3000000.00,
+                certNoStockCode: "RA86899"
+            },
+            {
+                productType: "ICP",
+                valueDate: new Date(2021, 8, 3),
+                maturityDate: new Date(2021, 8, 30),
+                nominal: 3000000.00,
+                sellPurchaseRateYield: 2.150,
+                purchaseProceeds: 2000000.00,
+                certNoStockCode: "CD88934"
+            },
+            {
+                productType: "BNMN",
+                valueDate: new Date(2021, 8, 1),
+                maturityDate: new Date(2021, 9, 1),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 1.900,
+                purchaseProceeds: 5000000.00,
+                certNoStockCode: "364578"
+            },
+            {
+                issuer: "BNM",
+                productType: "MTB",
+                valueDate: new Date(2021, 8, 30),
+                maturityDate: new Date(2021, 9, 30),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.100,
+                purchaseProceeds: 5000000.00,
+                certNoStockCode: "543989"
+            },
+            {
+                productType: "NIDL",
+                valueDate: new Date(2020, 11, 17),
+                maturityDate: new Date(2021, 0, 22),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.050,
+                purchaseProceeds: 5000000.00,
+                certNoStockCode: "AMB111210"
+            }
+        ];
+
+        var sampleDataOutflowMmi = [
+            {
+                productType: "NID",
+                valueDate: new Date(2020, 11, 17),
+                maturityDate: new Date(2021, 0, 20),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.03,
+                certNoStockCode: "AMB111210"
+            },
+            {
+                productType: "NIDC",
+                valueDate: new Date(2021, 6, 29),
+                maturityDate: new Date(2021, 7, 30),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.060,
+                certNoStockCode: "10111"
+            },
+            {
+                productType: "NIDC",
+                valueDate: new Date(2021, 6, 29),
+                maturityDate: new Date(2021, 7, 30),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.060,
+                certNoStockCode: "10112"
+            },
+            {
+                productType: "CP",
+                valueDate: new Date(2021, 6, 29),
+                maturityDate: new Date(2021, 7, 30),
+                nominal: 5000000.00,
+                sellPurchaseRateYield: 2.000,
+                certNoStockCode: "RA86899"
+            },
+            {
+                productType: "ICP",
+                valueDate: new Date(2021, 6, 29),
+                maturityDate: new Date(2021, 8, 30),
+                nominal: 3000000.00,
+                sellPurchaseRateYield: 2.150,
+                certNoStockCode: "CD88934"
+            },
+            {
+                issuer: "BA",
+                productType: "MTB",
+                valueDate: new Date(2021, 6, 29),
+                maturityDate: new Date(2021, 9, 1),
+                nominal: 500000.00,
+                sellPurchaseRateYield: 2.200,
+                certNoStockCode: "BA7865"
+            },
+            {
+                productType: "AB-i",
+                valueDate: new Date(2021, 6, 29),
+                maturityDate: new Date(2021, 9, 30),
+                nominal: 1000000.00,
+                sellPurchaseRateYield: 2.300,
+                certNoStockCode: "BA89644"
+            },
+            {
+                issuer: "BNMN",
+                productType: "MTB",
+                valueDate: new Date(2021, 6, 29),
+                maturityDate: new Date(2021, 9, 1),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.000,
+                certNoStockCode: "364578"
+            },
+            {
+                productType: "MTB",
+                valueDate: new Date(2021, 6, 29),
+                maturityDate: new Date(2021, 9, 30),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.150,
+                certNoStockCode: "543989"
+            },
+            {
+                productType: "NIDL",
+                valueDate: new Date(2020, 10, 17),
+                maturityDate: new Date(2022, 0, 22),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.03,
+                certNoStockCode: "AMB111210"
+            }
+        ];
+
+        var sampleDataOutflowDeposit = [
+            {
+                maturityDate: new Date(2021, 7, 27),
+                valueDate: new Date(2021, 7, 20),
+                principal: 33026248.32,
+                ratePercent: 0.01,
+                assetType: "MMD",
+                notes: "New",
+                contactPerson: "Zaki"
+            },
+            {
+                maturityDate: new Date(2021, 8, 3),
+                valueDate: new Date(2021, 7, 27),
+                principal: 23149090.84,
+                ratePercent: 0.02,
+                assetType: "MMD",
+                notes: "New",
+                contactPerson: "Zaki"
+            }
+        ];
+
         //#endregion
 
         //#region Data Source & Functions
@@ -102,11 +275,17 @@
             key: "reference",
             loadUrl: referenceUrl.dsBankCounterParty
         });
-
-        var dsIssuer = DevExpress.data.AspNet.createStore({
-            key: "reference",
-            loadUrl: referenceUrl.dsIssuer
-        });
+        
+        var dsIssuer = function() {
+            return {
+                store: DevExpress.data.AspNet.createStore({
+                    key: "reference",
+                    loadUrl: referenceUrl.dsIssuer
+                }),
+                paginate: true,
+                pageSize: 20
+            };
+        }
 
         var dsMaturity = function (tradeDateEpoch, currency) {
             return $.ajax({
@@ -245,8 +424,13 @@
             }),
             displayExpr: "value",
             valueExpr: "value",
-            placeHolder: "Currency.."
-        }).dxSelectBox("instance");
+            placeHolder: "Currency..",
+            onValueChanged:function(data) {
+                $outflowDepositGrid.refresh();
+            }
+        })
+            .dxValidator({ validationRules: [{ type: "required", message: "Currency is required" }] })
+            .dxSelectBox("instance");
         
         $inflowTabpanel = $("#inflowTabpanel").dxTabPanel({
             dataSource: [
@@ -395,10 +579,7 @@
                 {
                     dataField: "assetType",
                     caption: "Asset Type",
-                    lookup: {
-                        dataSource: treasury.dsAssetType
-                    },
-                    allowEditing: false,
+                    allowEditing: false
                 },
                 {
                     dataField: "repoTag",
@@ -412,11 +593,14 @@
                     dataField: "notes",
                     caption: "Notes",
                     lookup: {
-                        dataSource: treasury.dsNotes
+                        dataSource: treasury.dsNotes,
+                        valueExpr: "value",
+                        displayExpr: "value"
                     }
                 },
             ],
             summary: {
+                recalculateWhileEditing: true,
                 totalItems: [
                     {
                         column: "principal",
@@ -444,9 +628,28 @@
                 allowDeleting: false,
                 allowAdding: false
             },
+            onEditorPreparing: function (e) {
+                if (e.parentType == "dataRow" && e.editorName == 'dxSelectBox') {
+                    e.editorOptions.itemTemplate = function (data, index, element) {
+                        var column = e.component.columnOption(e.dataField);
+                        var fieldName = column.lookup.displayExpr;
+
+                        if (data) {
+                            $("<div>").css({ "white-space": "normal" }).text(data[fieldName]).appendTo(element);
+                            return element;
+                        } else {
+                            return "item";
+                        }
+
+                    };
+                    e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
+                }
+            },
             showBorders: true,
             showRowLines: true,
             showColumnLines: true,
+            allowColumnReordering: true,
+            allowColumnResizing: true,
             wordWrapEnabled: true
         }).dxDataGrid("instance");
 
@@ -518,7 +721,7 @@
                     dataField: "ratePercent",
                     caption: "Rate (%)",
                     dataType: "number",
-                    format: "#.00 '%'"
+                    format: "#.000 '%'"
                 },
                 {
                     dataField: "intProfitReceivable",
@@ -526,23 +729,16 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 2
+                        precision: 0
                     },
                     calculateCellValue: function (rowData) {
-                        var rate = (parseFloat(rowData.ratePercent * 100) || 0);
-                        var principal = (parseFloat(rowData.principal) || 0);
+                        var currency = $currencySelectBox.option("value");
+                        var principal = rowData.principal;
+                        var tenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
+                        var rate = rowData.ratePercent;
 
-                        var tenor = 0;
-                        if ($currencySelectBox.option("value") == "USD" ||
-                            $currencySelectBox.option("value") == "AUD" ||
-                            $currencySelectBox.option("value") == "EUR") {
-                            tenor = (parseFloat(treasury.tenor(rowData.maturityDate, rowData.valueDate) / 360 * 100) || 0);
-                        } else {
-                            tenor = (parseFloat(treasury.tenor(rowData.maturityDate, rowData.valueDate) / 365 * 100) || 0);
-                        }
-
-                        rowData.intProfitReceivable = (principal * tenor * rate);
-
+                        rowData.intProfitReceivable = treasury.outflow_deposit(currency, principal, tenor, rate);
+                        
                         return rowData.intProfitReceivable;
                     },
                     allowEditing: false
@@ -553,25 +749,12 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 2
+                        precision: 0
                     },
                     calculateCellValue: function (rowData) {
-                        var rate = (parseFloat(rowData.ratePercent * 100) || 0);
-                        var principal = (parseFloat(rowData.principal) || 0);
+                        var principal = rowData.principal;
 
-                        var tenor = 0;
-                        if ($currencySelectBox.option("value") == "USD" ||
-                            $currencySelectBox.option("value") == "AUD" ||
-                            $currencySelectBox.option("value") == "EUR") {
-                            tenor = (parseFloat(treasury.tenor(rowData.maturityDate, rowData.valueDate) / 360 * 100) || 0);
-                        } else {
-                            tenor = (parseFloat(treasury.tenor(rowData.maturityDate, rowData.valueDate) / 365 * 100) || 0);
-                        }
-
-                        var intProfitReceivable = (principal * tenor * rate);
-
-                        rowData.principalIntProfitReceivable = principal + intProfitReceivable;
-
+                        rowData.principalIntProfitReceivable = principal + rowData.intProfitReceivable;
                         return rowData.principalIntProfitReceivable;
                     },
                     allowEditing: false
@@ -580,7 +763,9 @@
                     dataField: "assetType",
                     caption: "Asset Type",
                     lookup: {
-                        dataSource: treasury.dsAssetType
+                        dataSource: treasury.dsAssetType,
+                        valueExpr: "value",
+                        displayExpr: "value"
                     }
                 },
                 {
@@ -595,11 +780,14 @@
                     dataField: "notes",
                     caption: "Notes",
                     lookup: {
-                        dataSource: treasury.dsNotes
+                        dataSource: treasury.dsNotes,
+                        valueExpr: "value",
+                        displayExpr: "value"
                     }
                 }
             ],
             summary: {
+                recalculateWhileEditing: true,
                 totalItems: [
                     {
                         column: "principal",
@@ -627,10 +815,44 @@
                 allowDeleting: false,
                 allowAdding: true
             },
+            onEditorPreparing: function (e) {
+                if (e.parentType == "dataRow" && e.editorName == 'dxSelectBox') {
+                    e.editorOptions.itemTemplate = function (data, index, element) {
+                        var column = e.component.columnOption(e.dataField);
+                        var fieldName = column.lookup.displayExpr;
+
+                        if (data) {
+                            $("<div>").css({ "white-space": "normal" }).text(data[fieldName]).appendTo(element);
+                            return element;
+                        } else {
+                            return "item";
+                        }
+
+                    };
+                    e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
+                }
+            },
             showBorders: true,
             showRowLines: true,
             showColumnLines: true,
-            wordWrapEnabled: true
+            allowColumnReordering: true,
+            allowColumnResizing: true,
+            wordWrapEnabled: true,
+            onToolbarPreparing: function (e) {
+                var toolbarItems = e.toolbarOptions.items;
+                toolbarItems.push({
+                    widget: "dxButton",
+                    options: {
+                        icon: "gift",
+                        hint: "Populate Sample Data",
+                        onClick: function () {
+                            $outflowDepositGrid.option("dataSource", sampleDataOutflowDeposit);
+                            app.toast("Grid Outflow Deposit populated with sample data", "warning", 4000);
+                        }
+                    },
+                    location: "after"
+                });
+            }
         }).dxDataGrid("instance");
 
         $inflowMmiGrid = $("#inflowMmiGrid").dxDataGrid({
@@ -658,7 +880,9 @@
                     dataField: "productType",
                     caption: "Product Type",
                     lookup: {
-                        dataSource: treasury.dsProductType
+                        dataSource: treasury.dsProductType,
+                        valueExpr: "value",
+                        displayExpr: "value"
                     }
                 },
                 {
@@ -710,14 +934,14 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 2
+                        precision: 0
                     }
                 },
                 {
                     dataField: "sellPurchaseRateYield",
                     caption: "Sell Rate / Yield (%)",
                     dataType: "number",
-                    format: "#.00 '%'"
+                    format: "#.000 '%'"
                 },
                 {
                     dataField: "price",
@@ -725,7 +949,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 2
+                        precision: 0
                     },
                     calculateCellValue: function (rowData) {
                         rowData.price = treasury.inflow_price(
@@ -744,7 +968,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 2
+                        precision: 0
                     }
                 },
                 {
@@ -753,7 +977,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 2
+                        precision: 0
                     },
                     calculateCellValue: function (rowData) {
                         rowData.intDividendReceivable = treasury.inflow_intDiv(
@@ -773,7 +997,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 2
+                        precision: 0
                     },
                     calculateCellValue: function (rowData) {
                         rowData.proceeds = treasury.inflow_proceeds(
@@ -792,6 +1016,7 @@
                 }
             ],
             summary: {
+                recalculateWhileEditing: true,
                 totalItems: [
                     {
                         column: "nominal",
@@ -828,10 +1053,44 @@
                 allowDeleting: false,
                 allowAdding: true
             },
+            onEditorPreparing: function (e) {
+                if (e.parentType == "dataRow" && e.editorName == 'dxSelectBox') {
+                    e.editorOptions.itemTemplate = function (data, index, element) {
+                        var column = e.component.columnOption(e.dataField);
+                        var fieldName = column.lookup.displayExpr;
+
+                        if (data) {
+                            $("<div>").css({ "white-space": "normal" }).text(data[fieldName]).appendTo(element);
+                            return element;
+                        } else {
+                            return "item";
+                        }
+                            
+                    };
+                    e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
+                }
+            },
             showBorders: true,
             showRowLines: true,
             showColumnLines: true,
-            wordWrapEnabled: true
+            allowColumnReordering: true,
+            allowColumnResizing: true,
+            wordWrapEnabled: true,
+            onToolbarPreparing: function(e) {
+                var toolbarItems = e.toolbarOptions.items;
+                toolbarItems.push({
+                    widget: "dxButton",
+                    options: {
+                        icon: "gift",
+                        hint: "Populate Sample Data",
+                        onClick: function () {
+                            $inflowMmiGrid.option("dataSource", sampleDataInflowMmi);
+                            app.toast("Grid Inflow MMI populated with sample data", "warning", 4000);
+                        }
+                    },
+                    location: "after"
+                });
+            }
         }).dxDataGrid("instance");
 
         $outflowMmiGrid = $("#outflowMmiGrid").dxDataGrid({
@@ -859,7 +1118,9 @@
                     dataField: "productType",
                     caption: "Product Type",
                     lookup: {
-                        dataSource: treasury.dsProductType
+                        dataSource: treasury.dsProductType,
+                        valueExpr: "value",
+                        displayExpr: "value"
                     }
                 },
                 {
@@ -983,6 +1244,7 @@
                 }
             ],
             summary: {
+                recalculateWhileEditing: true,
                 totalItems: [
                     {
                         column: "nominal",
@@ -1019,10 +1281,44 @@
                 allowDeleting: false,
                 allowAdding: true
             },
+            onEditorPreparing: function (e) {
+                if (e.parentType == "dataRow" && e.editorName == 'dxSelectBox') {
+                    e.editorOptions.itemTemplate = function (data, index, element) {
+                        var column = e.component.columnOption(e.dataField);
+                        var fieldName = column.lookup.displayExpr;
+
+                        if (data) {
+                            $("<div>").css({ "white-space": "normal" }).text(data[fieldName]).appendTo(element);
+                            return element;
+                        } else {
+                            return "item";
+                        }
+
+                    };
+                    e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
+                }
+            },
             showBorders: true,
             showRowLines: true,
             showColumnLines: true,
-            wordWrapEnabled: true
+            allowColumnReordering: true,
+            allowColumnResizing: true,
+            wordWrapEnabled: true,
+            onToolbarPreparing: function (e) {
+                var toolbarItems = e.toolbarOptions.items;
+                toolbarItems.push({
+                    widget: "dxButton",
+                    options: {
+                        icon: "gift",
+                        hint: "Populate Sample Data",
+                        onClick: function () {
+                            $outflowMmiGrid.option("dataSource", sampleDataOutflowMmi);
+                            app.toast("Grid Outflow MMI populated with sample data", "warning", 4000);
+                        }
+                    },
+                    location: "after"
+                });
+            }
         }).dxDataGrid("instance");
         
         // #endregion Data Grid
@@ -1052,16 +1348,7 @@
                 e.preventDefault();
 
                 app.saveAllGrids($inflowDepositGrid, $outflowDepositGrid, $inflowMmiGrid, $outflowMmiGrid);
-
-                /*if (moment().subtract(1, "days").isAfter($tradeDate.option("value"))) {
-                    alert("T-n only available for viewing..");
-                }
-                else {
-                    $selectApproverModal.modal('show');
-                }*/
-
                 $selectApproverModal.modal("show");
-                
             });
 
         $submitForApprovalModalBtn = $("#submitForApprovalModalBtn").on({

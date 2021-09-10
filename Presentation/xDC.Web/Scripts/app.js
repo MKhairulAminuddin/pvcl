@@ -152,6 +152,7 @@ var app = (function() {
         localStorage.removeItem("xDC_IF_Grid");
         localStorage.removeItem("xDC_Treasury_Grid");
         localStorage.removeItem("xDC_T10_Grid");
+        localStorage.removeItem("xDC_Admin_User");
         
         _app.toast("User Preferences cleared. Refresh the page to see the effect.", "info", 2000);
     }

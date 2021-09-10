@@ -3,7 +3,7 @@
     $(function () {
         var dropdownConfigKeyStore = DevExpress.data.AspNet.createStore({
             key: "key",
-            loadUrl: "../api/common/GetConfigDropdownKey"
+            loadUrl: window.location.origin + "/api/common/GetConfigDropdownKey"
         });
 
         var $dropdownConfigGrid;
@@ -12,10 +12,10 @@
         $dropdownConfigGrid = $("#dropdownConfigGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: "../api/setting/GetDropdownConfig",
-                insertUrl: "../api/setting/InsertDropdownConfig",
-                updateUrl: "../api/setting/UpdateDropdownConfig",
-                deleteUrl: "../api/setting/DeleteDropdownConfig"
+                loadUrl: window.location.origin + "/api/setting/GetDropdownConfig",
+                insertUrl: window.location.origin + "/api/setting/InsertDropdownConfig",
+                updateUrl: window.location.origin + "/api/setting/UpdateDropdownConfig",
+                deleteUrl: window.location.origin + "/api/setting/DeleteDropdownConfig"
             }),
             columns: [
                 {

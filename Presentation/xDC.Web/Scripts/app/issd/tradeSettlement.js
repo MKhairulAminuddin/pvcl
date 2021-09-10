@@ -122,18 +122,39 @@
         });
     }
 
+    _tradeSettlement.dsCurrency = function () {
+        return {
+            store: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: _tradeSettlement.api.loadCurrencies
+            }),
+            paginate: true,
+            pageSize: 20
+        };
+    }
+
     _tradeSettlement.dsWorflowInformation = function (formTypeId) {
-        return DevExpress.data.AspNet.createStore({
-            key: "id",
-            loadUrl: _tradeSettlement.api.loadWorkflowHistory(formTypeId)
-        });
+        return {
+            store: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: _tradeSettlement.api.loadWorkflowHistory(formTypeId)
+            }),
+            paginate: true,
+            pageSize: 20
+        };
     }
 
     _tradeSettlement.submitApproverSelectBox = {
-        dataSource: DevExpress.data.AspNet.createStore({
-            key: "id",
-            loadUrl: _tradeSettlement.api.loadApprover
-        }),
+        dataSource:function() {
+            return {
+                store: DevExpress.data.AspNet.createStore({
+                    key: "id",
+                    loadUrl: _tradeSettlement.api.loadApprover
+                }),
+                paginate: true,
+                pageSize: 20
+            };
+        },
         displayExpr: "displayName",
         valueExpr: "username",
         searchEnabled: true,
@@ -163,20 +184,14 @@
     };
 
     _tradeSettlement.currencySelectBox = {
-        dataSource: DevExpress.data.AspNet.createStore({
-            key: "id",
-            loadUrl: _tradeSettlement.api.loadCurrencies
-        }),
+        dataSource: _tradeSettlement.dsCurrency(),
         displayExpr: "value",
         valueExpr: "value",
         placeHolder: "Currency.."
     };
 
     _tradeSettlement.currencySelectBoxReadOnly = {
-        dataSource: DevExpress.data.AspNet.createStore({
-            key: "id",
-            loadUrl: _tradeSettlement.api.loadCurrencies
-        }),
+        dataSource: _tradeSettlement.dsCurrency(),
         displayExpr: "value",
         valueExpr: "value",
         placeHolder: "Currency..",

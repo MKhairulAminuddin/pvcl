@@ -1,9 +1,30 @@
 ﻿var treasury = (function () {
     var _treasury = {};
 
+    _treasury.api = {
+        loadNotes: window.location.origin + "/api/common/Treasury/Notes",
+        loadAssetType: window.location.origin + "/api/common/Treasury/AssetType",
+        loadProductType: window.location.origin + "/api/common/Treasury/ProductType",
+    };
+
     _treasury.tenor = function (maturityDate, valueDate) {
         return moment(maturityDate).diff(valueDate, "days");
     };
+
+    _treasury.outflow_deposit = function(currency, principal, tenor, rate) {
+        var result = 0;
+
+        switch (currency) {
+            case "USD":
+            case "AUD":
+            case "EUR":
+                result = principal * tenor / 36000 * rate;
+                return result.toFixed(2.5);
+            default:
+                result = principal * tenor / 36500 * rate;
+                return result.toFixed(2.5);
+        }
+    }
 
     _treasury.outflow_proceeds = function (productType, nominal, rate, tenor) {
         var result = 0;
@@ -109,7 +130,7 @@
         case "AB-i":
             var proceedsBa = _treasury.outflow_proceeds(productType, nominal, rate, tenor);
             result = proceedsBa / nominal * 100;
-            return result;
+            return result.toFixed(2.5);
 
         case "BNMN":
         case "BNMN-i":
@@ -128,7 +149,6 @@
         }
     }
 
-
     _treasury.inflow_proceeds = function (productType, nominal, rate, tenor) {
         var result = 0;
 
@@ -136,32 +156,32 @@
         case "NID":
             var interestDividendNid = rate * tenor * nominal / 36500;
             result = interestDividendNid + nominal;
-            return result;
+            return result.toFixed(2.5);
 
         case "NIDC":
             result = nominal - (nominal * tenor / 36500 * rate);
-            return result;
+            return result.toFixed(2.5);
             
         case "CP":
         case "ICP":
             result = nominal - (rate * tenor / 36500 * nominal);
-            return result;
+            return result.toFixed(2.5);
             
         case "BA":
         case "AB-i":
             result = nominal - (rate * tenor / 36500 * nominal);
-            return result;
+            return result.toFixed(2.5);
 
         case "BNMN":
         case "BNMN-i":
         case "MTB":
         case "MTIB":
             result = nominal - (rate * tenor / 36500 * nominal);
-            return result;
+            return result.toFixed(2.5);
 
         case "NIDL":
             result = nominal - (rate * tenor / 36500 * nominal);
-            return result;
+            return result.toFixed(2.5);
 
         default:
             return result;
@@ -173,25 +193,25 @@
 
         switch (productType) {
         case "NID":
-                result = rate * tenor * nominal / 36500;
-            return result;
+            result = rate * tenor * nominal / 36500;
+            return result.toFixed(2.5);
 
         case "NIDC":
             var proceedsNidc = _treasury.inflow_proceeds(productType, nominal, rate, tenor);
             result = proceedsNidc - purchaseProceed;
-            return result;
+            return result.toFixed(2.5);
 
         case "CP":
         case "ICP":
             var proceedsCp = _treasury.inflow_proceeds(productType, nominal, rate, tenor);
             result = proceedsCp - purchaseProceed;
-            return result;
+            return result.toFixed(2.5);
 
         case "BA":
         case "AB-i":
             var proceedsBa = _treasury.inflow_proceeds(productType, nominal, rate, tenor);
             result = proceedsBa - purchaseProceed;
-            return result;
+            return result.toFixed(2.5);
 
         case "BNMN":
         case "BNMN-i":
@@ -199,12 +219,12 @@
         case "MTIB":
             var proceedsOthers = _treasury.inflow_proceeds(productType, nominal, rate, tenor);
             result = proceedsOthers - purchaseProceed;
-            return result;
+            return result.toFixed(2.5);
 
         case "NIDL":
             var proceedsNidl = _treasury.inflow_proceeds(productType, nominal, rate, tenor);
             result = proceedsNidl - purchaseProceed;
-            return result;
+            return result.toFixed(2.5);
 
         default:
             return result;
@@ -218,24 +238,24 @@
         case "NID":
             var proceedsNid = _treasury.inflow_proceeds(productType, nominal, rate, tenor);
             result = (proceedsNid / nominal) * 100;
-            return result;
+            return result.toFixed(2.5);
 
         case "NIDC":
             var proceedsNidc = _treasury.inflow_proceeds(productType, nominal, rate, tenor);
             result = (proceedsNidc / nominal) * 100;
-            return result;
+            return result.toFixed(2.5);
 
         case "CP":
         case "ICP":
             var proceedsCp = _treasury.inflow_proceeds(productType, nominal, rate, tenor);
             result = (proceedsCp / nominal) * 100;
-            return result;
+            return result.toFixed(2.5);
 
         case "BA":
         case "AB-i":
             var proceedsBa = _treasury.inflow_proceeds(productType, nominal, rate, tenor);
             result = (proceedsBa / nominal) * 100;
-            return result;
+            return result.toFixed(4);
 
         case "BNMN":
         case "BNMN-i":
@@ -243,24 +263,50 @@
         case "MTIB":
             var proceedsOthers = _treasury.inflow_proceeds(productType, nominal, rate, tenor);
             result = (proceedsOthers / nominal) * 100;
-            return result;
+            return result.toFixed(4);
 
         case "NIDL":
             var proceedsNidl = _treasury.inflow_proceeds(productType, nominal, rate, tenor);
             result = (proceedsNidl / nominal) * 100;
-            return result;
+            return result.toFixed(2.5);
 
         default:
             return result;
         }
     }
     
-    _treasury.dsNotes = ["w/d P+I", "r/o P+I", "New"];
+    _treasury.dsNotes = function () {
+        return {
+            store: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: _treasury.api.loadNotes
+            }),
+            paginate: true,
+            pageSize: 20
+        };
+    };
 
-    _treasury.dsAssetType = ["MMD", "FD", "CMD"];
+    _treasury.dsAssetType = function () {
+        return {
+            store: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: _treasury.api.loadAssetType
+            }),
+            paginate: true,
+            pageSize: 20
+        };
+    };
 
-    _treasury.dsProductType = ["NID", "NIDC", "NIDL", "CP", "ICP", "BA", "AB-i", "BNMN",
-        "BNMN-i", "MTB", "MTIB"];
+    _treasury.dsProductType = function () {
+        return {
+            store: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: _treasury.api.loadProductType
+            }),
+            paginate: true,
+            pageSize: 20
+        };
+    };
 
 
     return _treasury;

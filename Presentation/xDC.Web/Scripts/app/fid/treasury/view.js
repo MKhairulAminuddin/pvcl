@@ -227,35 +227,23 @@
             columns: [
                 {
                     dataField: "dealer",
-                    caption: "Dealer",
-                    allowEditing: false
+                    caption: "Dealer"
                 },
                 {
                     dataField: "bank",
-                    caption: "Bank",
-                    allowEditing: false
+                    caption: "Bank"
                 },
                 {
                     dataField: "valueDate",
                     caption: "Value Date",
                     dataType: "date",
-                    format: "dd/MM/yyyy",
-                    editorOptions: {
-                        placeholder: "dd/MM/yyyy",
-                        showClearButton: true
-                    },
-                    allowEditing: false
+                    format: "dd/MM/yyyy"
                 },
                 {
                     dataField: "maturityDate",
                     caption: "Maturity Date (T)",
                     dataType: "date",
-                    format: "dd/MM/yyyy",
-                    editorOptions: {
-                        placeholder: "dd/MM/yyyy",
-                        showClearButton: true
-                    },
-                    allowEditing: false
+                    format: "dd/MM/yyyy"
                 },
                 {
                     dataField: "principal",
@@ -264,8 +252,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "tenor",
@@ -274,15 +261,13 @@
                     format: {
                         type: "fixedPoint",
                         precision: 0
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "ratePercent",
                     caption: "Rate (%)",
                     dataType: "number",
-                    format: "#.00 '%'",
-                    allowEditing: false
+                    format: "#.000 '%'"
                 },
                 {
                     dataField: "intProfitReceivable",
@@ -291,8 +276,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "principalIntProfitReceivable",
@@ -301,13 +285,11 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "assetType",
                     caption: "Asset Type",
-                    allowEditing: false,
                 },
                 {
                     dataField: "repoTag",
@@ -315,7 +297,7 @@
                 },
                 {
                     dataField: "contactPerson",
-                    caption: "Contact Person",
+                    caption: "Contact Person"
                 },
                 {
                     dataField: "notes",
@@ -365,21 +347,13 @@
                     dataField: "valueDate",
                     caption: "Value Date",
                     dataType: "date",
-                    format: "dd/MM/yyyy",
-                    editorOptions: {
-                        placeholder: "dd/MM/yyyy",
-                        showClearButton: true
-                    }
+                    format: "dd/MM/yyyy"
                 },
                 {
                     dataField: "maturityDate",
                     caption: "Maturity Date (T)",
                     dataType: "date",
-                    format: "dd/MM/yyyy",
-                    editorOptions: {
-                        placeholder: "dd/MM/yyyy",
-                        showClearButton: true
-                    }
+                    format: "dd/MM/yyyy"
                 },
                 {
                     dataField: "principal",
@@ -397,17 +371,13 @@
                     format: {
                         type: "fixedPoint",
                         precision: 0
-                    },
-                    calculateCellValue: function (rowData) {
-                        return moment(rowData.maturityDate).diff(rowData.valueDate, "days");
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "ratePercent",
                     caption: "Rate (%)",
                     dataType: "number",
-                    format: "#.00 '%'"
+                    format: "#.000 '%'"
                 },
                 {
                     dataField: "intProfitReceivable",
@@ -416,15 +386,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    calculateCellValue: function (rowData) {
-                        var rate = (parseFloat(rowData.ratePercent * 100) || 0);
-                        var tenor = (parseFloat((moment(rowData.maturityDate).diff(rowData.valueDate, "days")) / 365 * 100) || 0);
-                        var principal = (parseFloat(rowData.principal) || 0);
-
-                        return (principal * tenor * rate);
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "principalIntProfitReceivable",
@@ -433,15 +395,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    calculateCellValue: function (rowData) {
-                        var rate = (parseFloat(rowData.ratePercent * 100) || 0);
-                        var tenor = (parseFloat((moment(rowData.maturityDate).diff(rowData.valueDate, "days")) / 365 * 100) || 0);
-                        var principal = (parseFloat(rowData.principal) || 0);
-
-                        return principal + (principal * tenor * rate);
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "assetType",
@@ -493,8 +447,7 @@
             columns: [
                 {
                     dataField: "dealer",
-                    caption: "Dealer",
-                    allowEditing: false
+                    caption: "Dealer"
                 },
                 {
                     dataField: "issuer",
@@ -512,21 +465,13 @@
                     dataField: "valueDate",
                     caption: "Value Date",
                     dataType: "date",
-                    format: "dd/MM/yyyy",
-                    editorOptions: {
-                        placeholder: "dd/MM/yyyy",
-                        showClearButton: true
-                    }
+                    format: "dd/MM/yyyy"
                 },
                 {
                     dataField: "maturityDate",
                     caption: "Maturity Date (T)",
                     dataType: "date",
-                    format: "dd/MM/yyyy",
-                    editorOptions: {
-                        placeholder: "dd/MM/yyyy",
-                        showClearButton: true
-                    }
+                    format: "dd/MM/yyyy"
                 },
                 {
                     dataField: "holdingDayTenor",
@@ -535,8 +480,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 0
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "nominal",
@@ -551,16 +495,12 @@
                     dataField: "sellPurchaseRateYield",
                     caption: "Sell Rate / Yield (%)",
                     dataType: "number",
-                    format: "#.00 '%'"
+                    format: "#.000 '%'"
                 },
                 {
                     dataField: "price",
                     caption: "Price",
                     dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    },
                     allowEditing: false
                 },
                 {
@@ -589,8 +529,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "certNoStockCode",
@@ -645,8 +584,7 @@
             columns: [
                 {
                     dataField: "dealer",
-                    caption: "Dealer",
-                    allowEditing: false
+                    caption: "Dealer"
                 },
                 {
                     dataField: "issuer",
@@ -664,21 +602,13 @@
                     dataField: "valueDate",
                     caption: "Value Date",
                     dataType: "date",
-                    format: "dd/MM/yyyy",
-                    editorOptions: {
-                        placeholder: "dd/MM/yyyy",
-                        showClearButton: true
-                    }
+                    format: "dd/MM/yyyy"
                 },
                 {
                     dataField: "maturityDate",
                     caption: "Maturity Date (T)",
                     dataType: "date",
-                    format: "dd/MM/yyyy",
-                    editorOptions: {
-                        placeholder: "dd/MM/yyyy",
-                        showClearButton: true
-                    }
+                    format: "dd/MM/yyyy"
                 },
                 {
                     dataField: "holdingDayTenor",
@@ -687,8 +617,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 0
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "nominal",
@@ -703,17 +632,12 @@
                     dataField: "sellPurchaseRateYield",
                     caption: "Purchase Rate / Yield (%)",
                     dataType: "number",
-                    format: "#.00 '%'"
+                    format: "#.000 '%'"
                 },
                 {
                     dataField: "price",
                     caption: "Price",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    },
-                    allowEditing: false
+                    dataType: "number"
                 },
                 {
                     dataField: "purchaseProceeds",
@@ -732,7 +656,6 @@
                         type: "fixedPoint",
                         precision: 2
                     },
-                    allowEditing: false
                 },
                 {
                     dataField: "proceeds",
@@ -741,8 +664,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "certNoStockCode",
