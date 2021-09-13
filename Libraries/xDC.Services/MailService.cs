@@ -212,6 +212,7 @@ namespace xDC.Services
                                     tableRows += string.Format(@"<tr>
                                             <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td>
                                             <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td>
+                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td>
                                             <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td>
                                             <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td>
                                           </tr>", item.InstrumentCode, item.AmountPlus, item.Remarks, item.ModifiedBy, item.ModifiedDate.Value.ToString("dd/MM/yyyy"))
@@ -219,9 +220,7 @@ namespace xDC.Services
                                 }
                                 bodyBuilder.Append(tableRows);
                                 bodyBuilder.Append(@"</table>");
-
-
-
+                                
                                 message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                                 {
                                     Text = bodyBuilder.ToString()
