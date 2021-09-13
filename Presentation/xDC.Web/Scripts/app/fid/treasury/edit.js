@@ -531,9 +531,12 @@
                         precision: 0
                     },
                     calculateCellValue: function (rowData) {
+                        var currency = $currencySelectBox.option("value");
                         var principal = rowData.principal;
+                        var tenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
+                        var rate = rowData.ratePercent;
 
-                        rowData.principalIntProfitReceivable = principal + rowData.intProfitReceivable;
+                        rowData.principalIntProfitReceivable = treasury.outflow_depo_PrincipalInt(currency, principal, tenor, rate);
                         return rowData.principalIntProfitReceivable;
                     },
                     allowEditing: false
@@ -928,7 +931,7 @@
                     dataField: "sellPurchaseRateYield",
                     caption: "Purchase Rate / Yield (%)",
                     dataType: "number",
-                    format: "#.00 '%'"
+                    format: "#.000 '%'"
                 },
                 {
                     dataField: "price",
@@ -936,7 +939,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 2
+                        precision: 0
                     },
                     calculateCellValue: function (rowData) {
                         rowData.price = treasury.outflow_price(

@@ -11,7 +11,7 @@
         return moment(maturityDate).diff(valueDate, "days");
     };
 
-    _treasury.outflow_deposit = function(currency, principal, tenor, rate) {
+    _treasury.outflow_depoInt = function(currency, principal, tenor, rate) {
         var result = 0;
 
         switch (currency) {
@@ -26,6 +26,21 @@
         }
     }
 
+    _treasury.outflow_depo_PrincipalInt = function (currency, principal, tenor, rate) {
+        var result = 0;
+
+        switch (currency) {
+        case "USD":
+        case "AUD":
+        case "EUR":
+            result = principal + (principal * tenor / 36000 * rate);
+            return result.toFixed(2.5);
+        default:
+            result = principal + (principal * tenor / 36500 * rate);
+            return result.toFixed(2.5);
+        }
+    }
+
     _treasury.outflow_proceeds = function (productType, nominal, rate, tenor) {
         var result = 0;
 
@@ -35,26 +50,26 @@
             return result;
 
         case "NIDC":
-            var price = (100 / (1 + (tenor * rate / 36500)));
-            result = nominal * price / 100;
-            return result;
+            var price = (100 / (1 + (tenor * rate / 36500))).toFixed(4);
+            result = (nominal * price / 100);
+            return result.toFixed(2.5);
 
         case "CP":
         case "ICP":
-            result = nominal - (rate * tenor / 36500 * nominal);
-            return result;
+            result = nominal - (rate * tenor / 36500 * nominal).toFixed(4);
+            return result.toFixed(2.5);
 
         case "BA":
         case "AB-i":
-            result = nominal - (rate * tenor / 36500 * nominal);
-            return result;
+            result = nominal - (rate * tenor / 36500 * nominal).toFixed(4);
+            return result.toFixed(2.5);
 
         case "BNMN":
         case "BNMN-i":
         case "MTB":
         case "MTIB":
-            result = nominal - (rate * tenor / 36500 * nominal);
-            return result;
+            result = nominal - (rate * tenor / 36500 * nominal).toFixed(4);
+            return result.toFixed(2.5);
 
         case "NIDL":
             result = nominal;
@@ -70,25 +85,25 @@
 
         switch (productType) {
         case "NID":
-            result = rate * tenor * nominal / 36500;
-            return result;
+            result = (rate * tenor * nominal / 36500).toFixed(4);
+            return result.toFixed(2.5);
 
         case "NIDC":
             var proceedsNidc = _treasury.outflow_proceeds(productType, nominal, rate, tenor);
-            result = nominal - proceedsNidc;
-            return result;
+            result = (nominal - proceedsNidc);
+            return result.toFixed(2.5);
 
         case "CP":
         case "ICP":
             var proceedsCp = _treasury.outflow_proceeds(productType, nominal, rate, tenor);
             result = nominal - proceedsCp;
-            return result;
+            return result.toFixed(2.5);
 
         case "BA":
         case "AB-i":
             var proceedsBa = _treasury.outflow_proceeds(productType, nominal, rate, tenor);
             result = nominal - proceedsBa;
-            return result;
+            return result.toFixed(2.5);
 
         case "BNMN":
         case "BNMN-i":
@@ -96,11 +111,11 @@
         case "MTIB":
             var proceedsOthers = _treasury.outflow_proceeds(productType, nominal, rate, tenor);
             result = nominal - proceedsOthers;
-            return result;
+            return result.toFixed(2.5);
 
         case "NIDL":
-            result = rate * tenor * nominal / 36500;
-            return result;
+            result = (rate * tenor * nominal / 36500).toFixed(4);
+            return result.toFixed(2.5);
 
         default:
             return result;
@@ -113,23 +128,23 @@
         switch (productType) {
         case "NID":
             var proceedsNid = _treasury.outflow_proceeds(productType, nominal, rate, tenor);
-            result = proceedsNid / nominal * 100;
-            return result;
+            result = (proceedsNid / nominal * 100).toFixed(4);
+            return result.toFixed(2.5);
 
         case "NIDC":
-            result = (100 / (1 + (tenor * rate / 36500)));
-            return result;
+            result = (100 / (1 + (tenor * rate / 36500))).toFixed(4);
+            return result.toFixed(4);
 
         case "CP":
         case "ICP":
             var proceedsCp = _treasury.outflow_proceeds(productType, nominal, rate, tenor);
-            result = proceedsCp / nominal * 100;
-            return result;
+            result = (proceedsCp / nominal * 100).toFixed(4);
+            return result.toFixed(2.5);
 
         case "BA":
         case "AB-i":
             var proceedsBa = _treasury.outflow_proceeds(productType, nominal, rate, tenor);
-            result = proceedsBa / nominal * 100;
+            result = (proceedsBa / nominal * 100).toFixed(4);
             return result.toFixed(2.5);
 
         case "BNMN":
@@ -137,12 +152,12 @@
         case "MTB":
         case "MTIB":
             var proceedsOthers = _treasury.outflow_proceeds(productType, nominal, rate, tenor);
-            result = proceedsOthers / nominal * 100;
-            return result;
+            result = (proceedsOthers / nominal * 100).toFixed(4);
+            return result.toFixed(2.5);
         case "NIDL":
             var proceedsNidl = _treasury.outflow_proceeds(productType, nominal, rate, tenor);
-            result = proceedsNidl / nominal * 100;
-            return result;
+            result = (proceedsNidl / nominal * 100).toFixed(4);
+            return result.toFixed(2.5);
 
         default:
             return result;
@@ -154,33 +169,34 @@
 
         switch (productType) {
         case "NID":
-            var interestDividendNid = rate * tenor * nominal / 36500;
+            var interestDividendNid = (rate * tenor * nominal / 36500).toFixed(4);
             result = interestDividendNid + nominal;
             return result.toFixed(2.5);
 
         case "NIDC":
-            result = nominal - (nominal * tenor / 36500 * rate);
+            var price = (100 / (1 + (tenor * rate / 36500))).toFixed(4);
+            result = (price * nominal / 100);
             return result.toFixed(2.5);
             
         case "CP":
         case "ICP":
-            result = nominal - (rate * tenor / 36500 * nominal);
+            result = nominal - (rate * tenor / 36500 * nominal).toFixed(4);
             return result.toFixed(2.5);
             
         case "BA":
         case "AB-i":
-            result = nominal - (rate * tenor / 36500 * nominal);
+            result = nominal - (rate * tenor / 36500 * nominal).toFixed(4);
             return result.toFixed(2.5);
 
         case "BNMN":
         case "BNMN-i":
         case "MTB":
         case "MTIB":
-            result = nominal - (rate * tenor / 36500 * nominal);
+            result = nominal - (rate * tenor / 36500 * nominal).toFixed(4);
             return result.toFixed(2.5);
 
         case "NIDL":
-            result = nominal - (rate * tenor / 36500 * nominal);
+            result = nominal - (rate * tenor / 36500 * nominal).toFixed(4);
             return result.toFixed(2.5);
 
         default:
@@ -193,7 +209,7 @@
 
         switch (productType) {
         case "NID":
-            result = rate * tenor * nominal / 36500;
+            result = (rate * tenor * nominal / 36500);
             return result.toFixed(2.5);
 
         case "NIDC":
@@ -241,9 +257,8 @@
             return result.toFixed(2.5);
 
         case "NIDC":
-            var proceedsNidc = _treasury.inflow_proceeds(productType, nominal, rate, tenor);
-            result = (proceedsNidc / nominal) * 100;
-            return result.toFixed(2.5);
+            result = (100 / (1 + (tenor * rate / 36500))).toFixed(4);
+            return result.toFixed(4);
 
         case "CP":
         case "ICP":

@@ -144,17 +144,19 @@
         };
     }
 
+    _tradeSettlement.dsApproverList = function () {
+        return {
+            store: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: _tradeSettlement.api.loadApprover
+            }),
+            paginate: true,
+            pageSize: 20
+        };
+    }
+
     _tradeSettlement.submitApproverSelectBox = {
-        dataSource:function() {
-            return {
-                store: DevExpress.data.AspNet.createStore({
-                    key: "id",
-                    loadUrl: _tradeSettlement.api.loadApprover
-                }),
-                paginate: true,
-                pageSize: 20
-            };
-        },
+        dataSource: _tradeSettlement.dsApproverList(),
         displayExpr: "displayName",
         valueExpr: "username",
         searchEnabled: true,
