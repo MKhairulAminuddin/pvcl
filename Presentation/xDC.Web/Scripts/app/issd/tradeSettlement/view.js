@@ -62,6 +62,14 @@
                             dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdEquity, "equity"),
                             columns: [
                                 {
+                                    caption: "#",
+                                    cellTemplate: function (cellElement, cellInfo) {
+                                        cellElement.text(cellInfo.row.rowIndex + 1);
+                                    },
+                                    allowEditing: false,
+                                    width: "30px"
+                                },
+                                {
                                     dataField: "instrumentCode",
                                     caption: "Equity"
                                 },
@@ -146,6 +154,9 @@
                                         }
                                     }
                                 ]
+                            },
+                            paging: {
+                                enabled: false
                             }
                         });
                         $equityGrid = newTabView.dxDataGrid("instance");
@@ -166,6 +177,14 @@
                         newTabView.dxDataGrid({
                             dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdBond, "bond"),
                             columns: [
+                                {
+                                    caption: "#",
+                                    cellTemplate: function (cellElement, cellInfo) {
+                                        cellElement.text(cellInfo.row.rowIndex + 1);
+                                    },
+                                    allowEditing: false,
+                                    width: "30px"
+                                },
                                 {
                                     dataField: "instrumentCode",
                                     caption: "Bond",
@@ -256,6 +275,9 @@
                                         }
                                     }
                                 ]
+                            },
+                            paging: {
+                                enabled: false
                             }
                         });
                         $bondGrid = newTabView.dxDataGrid("instance");
@@ -276,6 +298,14 @@
                         newTabView.dxDataGrid({
                             dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdCp, "cp"),
                             columns: [
+                                {
+                                    caption: "#",
+                                    cellTemplate: function (cellElement, cellInfo) {
+                                        cellElement.text(cellInfo.row.rowIndex + 1);
+                                    },
+                                    allowEditing: false,
+                                    width: "30px"
+                                },
                                 {
                                     dataField: "instrumentCode",
                                     caption: "CP",
@@ -366,6 +396,9 @@
                                         }
                                     }
                                 ]
+                            },
+                            paging: {
+                                enabled: false
                             }
                         });
                         $cpGrid = newTabView.dxDataGrid("instance");
@@ -386,6 +419,14 @@
                         newTabView.dxDataGrid({
                             dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdNotesPapers, "notesPapers"),
                             columns: [
+                                {
+                                    caption: "#",
+                                    cellTemplate: function (cellElement, cellInfo) {
+                                        cellElement.text(cellInfo.row.rowIndex + 1);
+                                    },
+                                    allowEditing: false,
+                                    width: "30px"
+                                },
                                 {
                                     dataField: "instrumentCode",
                                     caption: "Notes & Papers",
@@ -476,6 +517,9 @@
                                         }
                                     }
                                 ]
+                            },
+                            paging: {
+                                enabled: false
                             }
                         });
                         $notesPaperGrid = newTabView.dxDataGrid("instance");
@@ -496,6 +540,14 @@
                         newTabView.dxDataGrid({
                             dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdRepo, "repo"),
                             columns: [
+                                {
+                                    caption: "#",
+                                    cellTemplate: function (cellElement, cellInfo) {
+                                        cellElement.text(cellInfo.row.rowIndex + 1);
+                                    },
+                                    allowEditing: false,
+                                    width: "30px"
+                                },
                                 {
                                     dataField: "instrumentCode",
                                     caption: "REPO",
@@ -567,6 +619,9 @@
                                         }
                                     }
                                 ]
+                            },
+                            paging: {
+                                enabled: false
                             }
                         });
                         $repoGrid = newTabView.dxDataGrid("instance");
@@ -587,6 +642,14 @@
                         newTabView.dxDataGrid({
                             dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdCoupon, "coupon"),
                             columns: [
+                                {
+                                    caption: "#",
+                                    cellTemplate: function (cellElement, cellInfo) {
+                                        cellElement.text(cellInfo.row.rowIndex + 1);
+                                    },
+                                    allowEditing: false,
+                                    width: "30px"
+                                },
                                 {
                                     dataField: "instrumentCode",
                                     caption: "Coupon Received"
@@ -636,6 +699,9 @@
                                         }
                                     }
                                 ]
+                            },
+                            paging: {
+                                enabled: false
                             }
                         });
                         $couponGrid = newTabView.dxDataGrid("instance");
@@ -656,6 +722,14 @@
                         newTabView.dxDataGrid({
                             dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdMtm, "mtm"),
                             columns: [
+                                {
+                                    caption: "#",
+                                    cellTemplate: function (cellElement, cellInfo) {
+                                        cellElement.text(cellInfo.row.rowIndex + 1);
+                                    },
+                                    allowEditing: false,
+                                    width: "30px"
+                                },
                                 {
                                     dataField: "id",
                                     caption: "Id",
@@ -729,6 +803,9 @@
                                         }
                                     }
                                 ]
+                            },
+                            paging: {
+                                enabled: false
                             }
                         });
                         $mtmGrid = newTabView.dxDataGrid("instance");
@@ -749,6 +826,14 @@
                         newTabView.dxDataGrid({
                             dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdFx, "fx"),
                             columns: [
+                                {
+                                    caption: "#",
+                                    cellTemplate: function (cellElement, cellInfo) {
+                                        cellElement.text(cellInfo.row.rowIndex + 1);
+                                    },
+                                    allowEditing: false,
+                                    width: "30px"
+                                },
                                 {
                                     dataField: "id",
                                     caption: "Id",
@@ -822,6 +907,9 @@
                                         }
                                     }
                                 ]
+                            },
+                            paging: {
+                                enabled: false
                             }
                         });
                         $fxSettlementGrid = newTabView.dxDataGrid("instance");
@@ -842,6 +930,14 @@
                         newTabView.dxDataGrid({
                             dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdAltid, "altid"),
                             columns: [
+                                {
+                                    caption: "#",
+                                    cellTemplate: function (cellElement, cellInfo) {
+                                        cellElement.text(cellInfo.row.rowIndex + 1);
+                                    },
+                                    allowEditing: false,
+                                    width: "30px"
+                                },
                                 {
                                     dataField: "id",
                                     caption: "Id",
@@ -915,6 +1011,9 @@
                                         }
                                     }
                                 ]
+                            },
+                            paging: {
+                                enabled: false
                             }
                         });
                         $altidGrid = newTabView.dxDataGrid("instance");
@@ -935,6 +1034,14 @@
                         newTabView.dxDataGrid({
                             dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdFees, "fees"),
                             columns: [
+                                {
+                                    caption: "#",
+                                    cellTemplate: function (cellElement, cellInfo) {
+                                        cellElement.text(cellInfo.row.rowIndex + 1);
+                                    },
+                                    allowEditing: false,
+                                    width: "30px"
+                                },
                                 {
                                     dataField: "id",
                                     caption: "Id",
@@ -999,6 +1106,9 @@
                                         }
                                     }
                                 ]
+                            },
+                            paging: {
+                                enabled: false
                             }
                         });
                         $feesGrid = newTabView.dxDataGrid("instance");
@@ -1019,6 +1129,14 @@
                         newTabView.dxDataGrid({
                             dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdCn, "contributionCredited"),
                             columns: [
+                                {
+                                    caption: "#",
+                                    cellTemplate: function (cellElement, cellInfo) {
+                                        cellElement.text(cellInfo.row.rowIndex + 1);
+                                    },
+                                    allowEditing: false,
+                                    width: "30px"
+                                },
                                 {
                                     dataField: "id",
                                     caption: "Id",
@@ -1074,6 +1192,9 @@
                                         }
                                     }
                                 ]
+                            },
+                            paging: {
+                                enabled: false
                             }
                         });
                         $cnGrid = newTabView.dxDataGrid("instance");
@@ -1094,6 +1215,14 @@
                         newTabView.dxDataGrid({
                             dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdOthers, "others"),
                             columns: [
+                                {
+                                    caption: "#",
+                                    cellTemplate: function (cellElement, cellInfo) {
+                                        cellElement.text(cellInfo.row.rowIndex + 1);
+                                    },
+                                    allowEditing: false,
+                                    width: "30px"
+                                },
                                 {
                                     dataField: "id",
                                     caption: "Id",
@@ -1167,6 +1296,9 @@
                                         }
                                     }
                                 ]
+                            },
+                            paging: {
+                                enabled: false
                             }
                         });
                         $othersGrid = newTabView.dxDataGrid("instance");

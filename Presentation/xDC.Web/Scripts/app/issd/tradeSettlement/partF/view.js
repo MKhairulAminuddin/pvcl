@@ -85,6 +85,14 @@
             dataSource: [],
             columns: [
                 {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
+                {
                     dataField: "id",
                     caption: "Id",
                     visible: false
@@ -148,6 +156,9 @@
                         }
                     }
                 ]
+            },
+            paging: {
+                enabled: false
             }
         }).dxDataGrid("instance");
         

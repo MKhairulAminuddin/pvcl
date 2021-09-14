@@ -134,6 +134,14 @@
             dataSource: [],
             columns: [
                 {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
+                {
                     dataField: "instrumentCode",
                     caption: "REPO"
                 },
@@ -196,6 +204,9 @@
                 allowUpdating: true,
                 allowDeleting: true,
                 allowAdding: true
+            },
+            paging: {
+                enabled: false
             }
         }).dxDataGrid("instance");
         

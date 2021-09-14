@@ -161,6 +161,14 @@
             dataSource: [],
             columns: [
                 {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
+                {
                     dataField: "instrumentCode",
                     caption: "Bond",
                     allowEditing: false
@@ -246,12 +254,23 @@
                 allowUpdating: true,
                 allowDeleting: false,
                 allowAdding: false
+            },
+            paging: {
+                enabled: false
             }
         }).dxDataGrid("instance");
 
         $cpGrid = $("#cpGrid").dxDataGrid({
             dataSource: [],
             columns: [
+                {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
                 {
                     dataField: "instrumentCode",
                     caption: "CP",
@@ -338,12 +357,23 @@
                 allowUpdating: true,
                 allowDeleting: false,
                 allowAdding: false
+            },
+            paging: {
+                enabled: false
             }
         }).dxDataGrid("instance");
 
         $notesPaperGrid = $("#notesPaperGrid").dxDataGrid({
             dataSource: [],
             columns: [
+                {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
                 {
                     dataField: "instrumentCode",
                     caption: "Notes & Papers",
@@ -430,12 +460,23 @@
                 allowUpdating: true,
                 allowDeleting: false,
                 allowAdding: false
+            },
+            paging: {
+                enabled: false
             }
         }).dxDataGrid("instance");
         
         $couponGrid = $("#couponGrid").dxDataGrid({
             dataSource: [],
             columns: [
+                {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
                 {
                     dataField: "instrumentCode",
                     caption: "Coupon Received"
@@ -486,6 +527,9 @@
                 allowUpdating: true,
                 allowDeleting: true,
                 allowAdding: true
+            },
+            paging: {
+                enabled: false
             }
         }).dxDataGrid("instance");
         

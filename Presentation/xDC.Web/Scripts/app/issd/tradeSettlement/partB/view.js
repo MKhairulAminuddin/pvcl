@@ -110,6 +110,14 @@
             dataSource: [],
             columns: [
                 {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
+                {
                     dataField: "instrumentCode",
                     caption: "Bond",
                     allowEditing: false
@@ -199,12 +207,23 @@
                         }
                     }
                 ]
+            },
+            paging: {
+                enabled: false
             }
         }).dxDataGrid("instance");
 
         $cpGrid = $("#cpGrid").dxDataGrid({
             dataSource: [],
             columns: [
+                {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
                 {
                     dataField: "instrumentCode",
                     caption: "CP",
@@ -295,12 +314,23 @@
                         }
                     }
                 ]
+            },
+            paging: {
+                enabled: false
             }
         }).dxDataGrid("instance");
 
         $notesPaperGrid = $("#notesPaperGrid").dxDataGrid({
             dataSource: [],
             columns: [
+                {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
                 {
                     dataField: "instrumentCode",
                     caption: "Notes & Papers",
@@ -391,12 +421,23 @@
                         }
                     }
                 ]
+            },
+            paging: {
+                enabled: false
             }
         }).dxDataGrid("instance");
 
         $couponGrid = $("#couponGrid").dxDataGrid({
             dataSource: [],
             columns: [
+                {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
                 {
                     dataField: "instrumentCode",
                     caption: "Coupon Received"
@@ -446,6 +487,9 @@
                         }
                     }
                 ]
+            },
+            paging: {
+                enabled: false
             }
         }).dxDataGrid("instance");
 

@@ -133,6 +133,14 @@
             dataSource: [],
             columns: [
                 {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1 );
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
+                {
                     dataField: "instrumentCode",
                     caption: "Equity",
                     allowEditing: false
@@ -221,7 +229,10 @@
             },
             showBorders: true,
             showRowLines: true,
-            showColumnLines: true
+            showColumnLines: true,
+            paging: {
+                enabled: false
+            }
         }).dxDataGrid("instance");
         
         // #endregion Data Grid
