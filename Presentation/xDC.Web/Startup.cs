@@ -36,6 +36,9 @@ namespace xDC_Web
             RecurringJob.AddOrUpdate(
                 () => IssdTask.FetchNewCurrency(),
                 Cron.Daily, TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate(
+                () => FidTask.FetchAssetType(),
+                Cron.Daily, TimeZoneInfo.Local);
 
         }
         

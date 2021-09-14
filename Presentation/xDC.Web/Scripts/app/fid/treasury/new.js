@@ -29,8 +29,6 @@
         var referenceUrl = {
             loadCurrencies: window.location.origin + "/api/common/GetTradeSettlementCurrencies",
             dsMaturity: window.location.origin + "/api/fid/Treasury/EdwMaturity/",
-            dsBankCounterParty: window.location.origin + "/api/fid/Treasury/EdwBankCounterParty/",
-            dsIssuer: window.location.origin + "/api/fid/Treasury/EdwIssuer/",
 
             dsApproverList: window.location.origin + "/api/common/approverList/treasury",
 
@@ -271,22 +269,6 @@
             }
         }
         
-        var dsBankCounterParty = DevExpress.data.AspNet.createStore({
-            key: "reference",
-            loadUrl: referenceUrl.dsBankCounterParty
-        });
-        
-        var dsIssuer = function() {
-            return {
-                store: DevExpress.data.AspNet.createStore({
-                    key: "reference",
-                    loadUrl: referenceUrl.dsIssuer
-                }),
-                paginate: true,
-                pageSize: 20
-            };
-        }
-
         var dsMaturity = function (tradeDateEpoch, currency) {
             return $.ajax({
                 url: referenceUrl.dsMaturity + "/" + moment(tradeDateEpoch).unix() + "/" + currency,
@@ -501,11 +483,10 @@
                     dataField: "bank",
                     caption: "Bank",
                     lookup: {
-                        dataSource: dsBankCounterParty,
+                        dataSource: treasury.dsBankCounterParty(),
                         valueExpr: "name",
                         displayExpr: "name"
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "valueDate",
@@ -515,8 +496,7 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "maturityDate",
@@ -526,8 +506,7 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "principal",
@@ -536,8 +515,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "tenor",
@@ -547,14 +525,17 @@
                         type: "fixedPoint",
                         precision: 0
                     },
+                    calculateCellValue: function (rowData) {
+                        rowData.tenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
+                        return rowData.tenor;
+                    },
                     allowEditing: false
                 },
                 {
                     dataField: "ratePercent",
                     caption: "Rate (%)",
                     dataType: "number",
-                    format: "#.000 '%'",
-                    allowEditing: false
+                    format: "#.000 '%'"
                 },
                 {
                     dataField: "intProfitReceivable",
@@ -563,6 +544,16 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
+                    },
+                    calculateCellValue: function (rowData) {
+                        var currency = $currencySelectBox.option("value");
+                        var principal = rowData.principal;
+                        var tenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
+                        var rate = rowData.ratePercent;
+
+                        rowData.intProfitReceivable = treasury.outflow_depoInt(currency, principal, tenor, rate);
+
+                        return rowData.intProfitReceivable;
                     },
                     allowEditing: false
                 },
@@ -574,12 +565,25 @@
                         type: "fixedPoint",
                         precision: 2
                     },
+                    calculateCellValue: function (rowData) {
+                        var currency = $currencySelectBox.option("value");
+                        var principal = rowData.principal;
+                        var tenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
+                        var rate = rowData.ratePercent;
+
+                        rowData.principalIntProfitReceivable = treasury.outflow_depo_PrincipalInt(currency, principal, tenor, rate);
+                        return rowData.principalIntProfitReceivable;
+                    },
                     allowEditing: false
                 },
                 {
                     dataField: "assetType",
                     caption: "Asset Type",
-                    allowEditing: false
+                    lookup: {
+                        dataSource: treasury.dsAssetType(),
+                        valueExpr: "value",
+                        displayExpr: "value"
+                    }
                 },
                 {
                     dataField: "repoTag",
@@ -593,11 +597,37 @@
                     dataField: "notes",
                     caption: "Notes",
                     lookup: {
-                        dataSource: treasury.dsNotes,
+                        dataSource: treasury.dsNotes(),
                         valueExpr: "value",
                         displayExpr: "value"
                     }
                 },
+                {
+                    type: "buttons",
+                    width: 110,
+                    buttons: [
+                        "edit",
+                        "delete",
+                        {
+                            text: "Copy",
+                            onClick: function (e) {
+                                e.component.byKey(e.row.key).done((source) => {
+                                    var clone = Object.assign({}, source);
+                                    clone.ID = Math.round(Math.random() * 1000);
+                                    e.component
+                                        .getDataSource()
+                                        .store()
+                                        .insert(clone)
+                                        .done(() => e.component.refresh());
+                                }).then(() => {
+                                    app.toast("Copied", "info");
+                                });
+
+                                e.event.preventDefault();
+                            }
+                        }
+                    ]
+                }
             ],
             summary: {
                 recalculateWhileEditing: true,
@@ -623,10 +653,10 @@
                 ]
             },
             editing: {
-                mode: "batch",
+                mode: "row",
                 allowUpdating: true,
-                allowDeleting: false,
-                allowAdding: false
+                allowDeleting: true,
+                allowAdding: true
             },
             onEditorPreparing: function (e) {
                 if (e.parentType == "dataRow" && e.editorName == 'dxSelectBox') {
@@ -650,7 +680,13 @@
             showColumnLines: true,
             allowColumnReordering: true,
             allowColumnResizing: true,
-            wordWrapEnabled: true
+            wordWrapEnabled: true,
+            paging: {
+                enabled: false
+            },
+            selection: {
+                mode: "single"
+            },
         }).dxDataGrid("instance");
 
         $outflowDepositGrid = $("#outflowDepositGrid").dxDataGrid({
@@ -669,7 +705,7 @@
                     dataField: "bank",
                     caption: "Bank",
                     lookup: {
-                        dataSource: dsBankCounterParty,
+                        dataSource: treasury.dsBankCounterParty(),
                         valueExpr: "name",
                         displayExpr: "name"
                     }
@@ -787,6 +823,32 @@
                         valueExpr: "value",
                         displayExpr: "value"
                     }
+                },
+                {
+                    type: "buttons",
+                    width: 110,
+                    buttons: [
+                        "edit",
+                        "delete",
+                        {
+                            text: "Copy",
+                            onClick: function (e) {
+                                e.component.byKey(e.row.key).done((source) => {
+                                    var clone = Object.assign({}, source);
+                                    clone.ID = Math.round(Math.random() * 1000);
+                                    e.component
+                                        .getDataSource()
+                                        .store()
+                                        .insert(clone)
+                                        .done(() => e.component.refresh());
+                                }).then(() => {
+                                    app.toast("Copied", "info");
+                                });
+
+                                e.event.preventDefault();
+                            }
+                        }
+                    ]
                 }
             ],
             summary: {
@@ -813,9 +875,9 @@
                 ]
             },
             editing: {
-                mode: "batch",
+                mode: "row",
                 allowUpdating: true,
-                allowDeleting: false,
+                allowDeleting: true,
                 allowAdding: true
             },
             onEditorPreparing: function (e) {
@@ -855,6 +917,9 @@
                     },
                     location: "after"
                 });
+            },
+            paging: {
+                enabled: false
             }
         }).dxDataGrid("instance");
 
@@ -874,7 +939,7 @@
                     dataField: "issuer",
                     caption: "Issuer",
                     lookup: {
-                        dataSource: dsIssuer,
+                        dataSource: treasury.dsIssuer(),
                         valueExpr: "name",
                         displayExpr: "name"
                     }
@@ -892,7 +957,7 @@
                     dataField: "counterParty",
                     caption: "Counterparty",
                     lookup: {
-                        dataSource: dsBankCounterParty,
+                        dataSource: treasury.dsBankCounterParty(),
                         valueExpr: "name",
                         displayExpr: "name"
                     }
@@ -1016,6 +1081,32 @@
                 {
                     dataField: "certNoStockCode",
                     caption: "Certificate No. / Stock Code"
+                },
+                {
+                    type: "buttons",
+                    width: 110,
+                    buttons: [
+                        "edit",
+                        "delete",
+                        {
+                            text: "Copy",
+                            onClick: function (e) {
+                                e.component.byKey(e.row.key).done((source) => {
+                                    var clone = Object.assign({}, source);
+                                    clone.ID = Math.round(Math.random() * 1000);
+                                    e.component
+                                        .getDataSource()
+                                        .store()
+                                        .insert(clone)
+                                        .done(() => e.component.refresh());
+                                }).then(() => {
+                                    app.toast("Copied", "info");
+                                });
+
+                                e.event.preventDefault();
+                            }
+                        }
+                    ]
                 }
             ],
             summary: {
@@ -1051,9 +1142,9 @@
                 ]
             },
             editing: {
-                mode: "batch",
+                mode: "row",
                 allowUpdating: true,
-                allowDeleting: false,
+                allowDeleting: true,
                 allowAdding: true
             },
             onEditorPreparing: function (e) {
@@ -1093,6 +1184,9 @@
                     },
                     location: "after"
                 });
+            },
+            paging: {
+                enabled: false
             }
         }).dxDataGrid("instance");
 
@@ -1112,7 +1206,7 @@
                     dataField: "issuer",
                     caption: "Issuer",
                     lookup: {
-                        dataSource: dsIssuer,
+                        dataSource: treasury.dsIssuer(),
                         valueExpr: "name",
                         displayExpr: "name"
                     }
@@ -1130,7 +1224,7 @@
                     dataField: "counterParty",
                     caption: "Counterparty",
                     lookup: {
-                        dataSource: dsBankCounterParty,
+                        dataSource: treasury.dsBankCounterParty(),
                         valueExpr: "name",
                         displayExpr: "name"
                     }
@@ -1244,6 +1338,32 @@
                 {
                     dataField: "certNoStockCode",
                     caption: "Certificate No. / Stock Code"
+                },
+                {
+                    type: "buttons",
+                    width: 110,
+                    buttons: [
+                        "edit",
+                        "delete",
+                        {
+                            text: "Copy",
+                            onClick: function (e) {
+                                e.component.byKey(e.row.key).done((source) => {
+                                    var clone = Object.assign({}, source);
+                                    clone.ID = Math.round(Math.random() * 1000);
+                                    e.component
+                                        .getDataSource()
+                                        .store()
+                                        .insert(clone)
+                                        .done(() => e.component.refresh());
+                                }).then(() => {
+                                    app.toast("Copied", "info");
+                                });
+
+                                e.event.preventDefault();
+                            }
+                        }
+                    ]
                 }
             ],
             summary: {
@@ -1279,9 +1399,9 @@
                 ]
             },
             editing: {
-                mode: "batch",
+                mode: "row",
                 allowUpdating: true,
-                allowDeleting: false,
+                allowDeleting: true,
                 allowAdding: true
             },
             onEditorPreparing: function (e) {
@@ -1321,6 +1441,9 @@
                     },
                     location: "after"
                 });
+            },
+            paging: {
+                enabled: false
             }
         }).dxDataGrid("instance");
         
