@@ -29,7 +29,7 @@ namespace xDC_Web
                 Cron.Monthly, TimeZoneInfo.Local);
             RecurringJob.AddOrUpdate(
                 () => FidTask.FetchToday10AmTradeSettlement(),
-                "*/15 * * * *", TimeZoneInfo.Local);
+                "*/5 * * * *", TimeZoneInfo.Local);
             RecurringJob.AddOrUpdate(
                 () => FidTask.Fetch10AmTradeSettlementOnDemand(),
                 "0 0 31 2 0", TimeZoneInfo.Local);
