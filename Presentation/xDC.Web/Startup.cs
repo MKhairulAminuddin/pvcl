@@ -21,24 +21,14 @@ namespace xDC_Web
             app.UseHangfireAspNet(GetHangfireServers);
             app.UseHangfireDashboard();
             
-            RecurringJob.AddOrUpdate(
-                () => SyncActiveDirectory.Sync(),
-                Cron.Weekly, TimeZoneInfo.Local);
-            RecurringJob.AddOrUpdate(
-                () => SyncActiveDirectory.SyncUserProfileWithAd(),
-                Cron.Monthly, TimeZoneInfo.Local);
-            RecurringJob.AddOrUpdate(
-                () => FidTask.FetchToday10AmTradeSettlement(),
-                "*/5 * * * *", TimeZoneInfo.Local);
-            RecurringJob.AddOrUpdate(
-                () => FidTask.Fetch10AmTradeSettlementOnDemand(),
-                "0 0 31 2 0", TimeZoneInfo.Local);
-            RecurringJob.AddOrUpdate(
-                () => IssdTask.FetchNewCurrency(),
-                Cron.Daily, TimeZoneInfo.Local);
-            RecurringJob.AddOrUpdate(
-                () => FidTask.FetchAssetType(),
-                Cron.Daily, TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate("Sync AD", () => SyncActiveDirectory.Sync(),Cron.Weekly, TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate("Sync User Profile with AD", () => SyncActiveDirectory.SyncUserProfileWithAd(), Cron.Monthly, TimeZoneInfo.Local);
+            
+            RecurringJob.AddOrUpdate("ISSD TS - Currency", () => IssdTask.FetchNewCurrency(), Cron.Daily, TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate("FID Treasury - Asset Type", () => FidTask.FetchAssetType(), Cron.Daily, TimeZoneInfo.Local);
+
+            RecurringJob.AddOrUpdate("FID FCA Tagging - TS Approved Data (Today)", () => FidTask.FetchToday10AmTradeSettlement(), "*/5 * * * *", TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate("FID FCA Tagging - TS Approved Data (Get All)", () => FidTask.Fetch10AmTradeSettlementOnDemand(), "0 0 31 2 0", TimeZoneInfo.Local);
 
         }
         
