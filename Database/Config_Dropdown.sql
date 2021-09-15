@@ -23,6 +23,8 @@ INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('ISSD.Tr
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.Notes', 'w/d P+I', 'System');
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.Notes', 'r/o P+I', 'System');
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.Notes', 'New', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.Notes', 'Early Withdrawal', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.Notes', 'Accrued Interest', 'System');
 
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.AssetType', 'MMD', 'System');
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.AssetType', 'FD', 'System');
