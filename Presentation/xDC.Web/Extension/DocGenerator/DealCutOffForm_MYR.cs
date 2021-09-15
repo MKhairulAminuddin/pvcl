@@ -27,6 +27,10 @@ namespace xDC_Web.Extension.DocGenerator
                 using (var db = new kashflowDBEntities())
                 {
                     //get data 
+                    var dataObj = new DealCutOffObj()
+                    {
+                        SelectedDate = selectedDate
+                    };
 
                     //1. Opening Balance RENTAS from EDW
                     var rentasOb = db.EDW_BankBalance
@@ -34,7 +38,7 @@ namespace xDC_Web.Extension.DocGenerator
                         .GroupBy(x => new { x.Currency, x.InstrumentType, x.SettlementDate})
                         .Select(x => x.Sum(y => y.Amount))
                         .FirstOrDefault();
-
+                    dataObj.RentasOb = rentasOb;
 
                     //2. Opening Balance MMA from EDW
                     var mmaOb = db.EDW_BankBalance
@@ -42,7 +46,7 @@ namespace xDC_Web.Extension.DocGenerator
                         .GroupBy(x => new { x.Currency, x.InstrumentType, x.SettlementDate })
                         .Select(x => x.Sum(y => y.Amount))
                         .FirstOrDefault();
-
+                    dataObj.MmaOb = mmaOb;
 
                     //3. AMSD Inflow Fund RHB
                     var amsdApprovedForms = db.AMSD_IF
@@ -54,6 +58,7 @@ namespace xDC_Web.Extension.DocGenerator
                         .GroupBy(x => x.FundType)
                         .Select(x => x.Sum(y => y.Amount))
                         .FirstOrDefault();
+                    dataObj.TotalRhb = (double?)totalRhb;
 
                     //4. Inflow Money Market Principal 
                     var treasuryApprovedForms = db.FID_Treasury
@@ -79,12 +84,45 @@ namespace xDC_Web.Extension.DocGenerator
                         .Select(x => x.Sum(y => y.PrincipalIntProfitReceivable))
                         .FirstOrDefault();
 
+                    dataObj.InflowDepoPrincipal = (double?)inflowTotalDepoPrincipal;
+                    dataObj.InflowDepoInterest = (double?)inflowTotalDepoInterest;
+                    dataObj.InflowTotalDepoPrincipalInterest = (double?)inflowTotalDepoPrincipalInterest;
+
+
+                    // 5. TS Equity
+                    var approveTradeSettlementForms = db.ISSD_FormHeader
+                        .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate) && x.Currency == "MYR" && x.FormStatus == Common.FormStatus.Approved)
+                        .Select(x => x.Id)
+                        .ToList();
+                    var inflowTotalEquity = db.ISSD_TradeSettlement
+                        .Where(x => approveTradeSettlementForms.Contains(x.FormId) && x.InstrumentType == Common.TsItemCategory.Equity)
+                        .GroupBy(x => x.InstrumentType)
+                        .Select(x => new
+                        {
+                            AmountPlus = x.Sum(y => (double?)y.AmountMinus),
+                            Sales = x.Sum(y => (double?)y.Sales),
+                            Maturity = x.Sum(y => (double?)y.Maturity)
+                        })
+                        .Select(x => (x.Sales + x.Maturity + x.AmountPlus))
+                        .FirstOrDefault();
+                    var outflowTotalEquity = db.ISSD_TradeSettlement
+                        .Where(x => approveTradeSettlementForms.Contains(x.FormId) && x.InstrumentType == Common.TsItemCategory.Equity)
+                        .GroupBy(x => x.InstrumentType)
+                        .Select(x => new
+                        {
+                            AmountMinus = x.Sum(y => (double?)y.AmountMinus),
+                            Purchase = x.Sum(y => (double?)y.Purchase)
+                        })
+                        .Select(x => (x.AmountMinus + x.Purchase))
+                        .FirstOrDefault();
+                    dataObj.InflowEquity = inflowTotalEquity;
+                    dataObj.OutflowEquity = outflowTotalEquity;
+
 
                     IWorkbook workbook = new Workbook();
                     workbook.Options.Culture = new CultureInfo("en-US");
                     workbook.LoadDocument(MapPath("~/App_Data/Deal Cut Off MYR Template.xltx"));
-                    workbook = GenerateDocument(workbook, selectedDate, rentasOb, mmaOb, (double?)totalRhb,
-                        (double?)inflowTotalDepoPrincipal, (double?)inflowTotalDepoInterest, (double?)inflowTotalDepoPrincipalInterest);
+                    workbook = GenerateDocument(workbook, dataObj);
 
                     return workbook;
 
@@ -103,7 +141,10 @@ namespace xDC_Web.Extension.DocGenerator
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    //get data 
+                    var dataObj = new DealCutOffObj()
+                    {
+                        SelectedDate = selectedDate
+                    };
 
                     //1. Opening Balance RENTAS from EDW
                     var rentasOb = db.EDW_BankBalance
@@ -111,7 +152,7 @@ namespace xDC_Web.Extension.DocGenerator
                         .GroupBy(x => new { x.Currency, x.InstrumentType, x.SettlementDate })
                         .Select(x => x.Sum(y => y.Amount))
                         .FirstOrDefault();
-
+                    dataObj.RentasOb = rentasOb;
 
                     //2. Opening Balance MMA from EDW
                     var mmaOb = db.EDW_BankBalance
@@ -119,7 +160,7 @@ namespace xDC_Web.Extension.DocGenerator
                         .GroupBy(x => new { x.Currency, x.InstrumentType, x.SettlementDate })
                         .Select(x => x.Sum(y => y.Amount))
                         .FirstOrDefault();
-
+                    dataObj.MmaOb = mmaOb;
 
                     //3. AMSD Inflow Fund RHB
                     var amsdApprovedForms = db.AMSD_IF
@@ -131,6 +172,7 @@ namespace xDC_Web.Extension.DocGenerator
                         .GroupBy(x => x.FundType)
                         .Select(x => x.Sum(y => y.Amount))
                         .FirstOrDefault();
+                    dataObj.TotalRhb = (double?)totalRhb;
 
                     //4. Inflow Money Market Principal 
                     var treasuryApprovedForms = db.FID_Treasury
@@ -156,12 +198,45 @@ namespace xDC_Web.Extension.DocGenerator
                         .Select(x => x.Sum(y => y.PrincipalIntProfitReceivable))
                         .FirstOrDefault();
 
+                    dataObj.InflowDepoPrincipal = (double?)inflowTotalDepoPrincipal;
+                    dataObj.InflowDepoInterest = (double?)inflowTotalDepoInterest;
+                    dataObj.InflowTotalDepoPrincipalInterest = (double?)inflowTotalDepoPrincipalInterest;
+
+
+                    // 5. TS Equity
+                    var approveTradeSettlementForms = db.ISSD_FormHeader
+                        .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate) && x.Currency == "MYR" && x.FormStatus == Common.FormStatus.Approved)
+                        .Select(x => x.Id)
+                        .ToList();
+                    var inflowTotalEquity = db.ISSD_TradeSettlement
+                        .Where(x => approveTradeSettlementForms.Contains(x.FormId) && x.InstrumentType == Common.TsItemCategory.Equity)
+                        .GroupBy(x => x.InstrumentType)
+                        .Select(x => new
+                        {
+                            AmountPlus = x.Sum(y => (double?)y.AmountMinus),
+                            Sales = x.Sum(y => (double?)y.Sales),
+                            Maturity = x.Sum(y => (double?)y.Maturity)
+                        })
+                        .Select(x => (x.Sales + x.Maturity + x.AmountPlus))
+                        .FirstOrDefault();
+                    var outflowTotalEquity = db.ISSD_TradeSettlement
+                        .Where(x => approveTradeSettlementForms.Contains(x.FormId) && x.InstrumentType == Common.TsItemCategory.Equity)
+                        .GroupBy(x => x.InstrumentType)
+                        .Select(x => new
+                        {
+                            AmountMinus = x.Sum(y => (double?)y.AmountMinus),
+                            Purchase = x.Sum(y => (double?)y.Purchase)
+                        })
+                        .Select(x => (x.AmountMinus + x.Purchase))
+                        .FirstOrDefault();
+                    dataObj.InflowEquity = inflowTotalEquity;
+                    dataObj.OutflowEquity = outflowTotalEquity;
+
 
                     IWorkbook workbook = new Workbook();
                     workbook.Options.Culture = new CultureInfo("en-US");
                     workbook.LoadDocument(MapPath("~/App_Data/Deal Cut Off MYR Template.xltx"));
-                    workbook = GenerateDocument(workbook, selectedDate, rentasOb, mmaOb, (double?)totalRhb,
-                        (double?)inflowTotalDepoPrincipal, (double?)inflowTotalDepoInterest, (double?)inflowTotalDepoPrincipalInterest);
+                    workbook = GenerateDocument(workbook, dataObj);
                     var randomFileName = "FID Deal Cut Off MYR wei - " + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                         if (isExportAsExcel)
@@ -187,8 +262,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private IWorkbook GenerateDocument(IWorkbook workbook, DateTime? selectedDate, double? rentasOb, double? mmaOb, double? totalRhb,
-            double? inflowDepoPrincipal, double? inflowDepoInterest, double? inflowTotalDepoPrincipalInterest)
+        private IWorkbook GenerateDocument(IWorkbook workbook, DealCutOffObj dataItem)
         {
             workbook.BeginUpdate();
             try
@@ -196,16 +270,18 @@ namespace xDC_Web.Extension.DocGenerator
                 var sheet = workbook.Worksheets[0];
 
                 // 0. Date
-                sheet["J2"].Value = (selectedDate != null) ? selectedDate.Value.ToString("dd/MM/yyyy") : null;
+                sheet["J2"].Value = (dataItem.SelectedDate != null) ? dataItem.SelectedDate.Value.ToString("dd/MM/yyyy") : null;
 
                 // 1. Rentas OB
-                sheet["J4"].Value = (rentasOb != null) ? rentasOb.Value : 0.00;
-                sheet["G8"].Value = (mmaOb != null) ? mmaOb.Value : 0.00;
-                sheet["G10"].Value = (totalRhb != null) ? totalRhb.Value : 0.00;
+                sheet["J4"].Value = (dataItem.RentasOb != null) ? dataItem.RentasOb.Value : 0.00;
+                sheet["G8"].Value = (dataItem.MmaOb != null) ? dataItem.MmaOb.Value : 0.00;
+                sheet["G10"].Value = (dataItem.TotalRhb != null) ? dataItem.TotalRhb.Value : 0.00;
 
-                sheet["E13"].Value = (inflowDepoPrincipal != null) ? inflowDepoPrincipal.Value : 0.00;
-                sheet["E14"].Value = (inflowDepoInterest != null) ? inflowDepoInterest.Value : 0.00;
-                sheet["G15"].Value = (inflowTotalDepoPrincipalInterest != null) ? inflowTotalDepoPrincipalInterest.Value : 0.00;
+                sheet["E13"].Value = (dataItem.InflowDepoPrincipal != null) ? dataItem.InflowDepoPrincipal.Value : 0.00;
+                sheet["E14"].Value = (dataItem.InflowDepoInterest != null) ? dataItem.InflowDepoInterest.Value : 0.00;
+                sheet["G15"].Value = (dataItem.InflowTotalDepoPrincipalInterest != null) ? dataItem.InflowTotalDepoPrincipalInterest.Value : 0.00;
+
+                sheet["E23"].Value = (dataItem.InflowEquity != null) ? dataItem.InflowEquity.Value : 0.00;
 
                 workbook.Calculate();
             }
@@ -216,5 +292,19 @@ namespace xDC_Web.Extension.DocGenerator
 
             return workbook;
         }
+    }
+
+    public class DealCutOffObj
+    {
+        public DateTime? SelectedDate { get; set; }
+        public double? RentasOb { get; set; }
+        public double? MmaOb { get; set; }
+        public double? TotalRhb { get; set; }
+        public double? InflowDepoPrincipal { get; set; }
+        public double? InflowDepoInterest { get; set; }
+        public double? InflowTotalDepoPrincipalInterest { get; set; }
+        public double? InflowEquity { get; set; }
+        public double? OutflowEquity { get; set; }
+
     }
 }

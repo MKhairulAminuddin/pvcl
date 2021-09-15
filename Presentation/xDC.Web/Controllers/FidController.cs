@@ -208,7 +208,7 @@ namespace xDC_Web.Controllers
 
         #endregion
 
-        #region Deal Cut Off
+        #region Deal Cut Off (MYR)
 
         public ActionResult DealCutOffMyr()
         {
@@ -317,6 +317,19 @@ namespace xDC_Web.Controllers
             StreamReader reader = new StreamReader(stream);
             return reader.ReadToEnd();
         }
+
+        #endregion
+
+        #region Deal Cut Off (FCY)
+        
+        public ActionResult DealCutOffFcy()
+        {
+            DealCutOffMyrTemplateModel model = new DealCutOffMyrTemplateModel();
+            model.PreviewModel.Workbook = new DealCutOffForm_MYR().GenerateWorkbook(DateTime.Now);
+
+            return View("DealCutOff/Fcy", model);
+        }
+
 
         #endregion
 

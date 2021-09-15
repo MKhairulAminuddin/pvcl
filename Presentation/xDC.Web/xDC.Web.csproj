@@ -263,6 +263,7 @@
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\images\data.png" />
+    <Content Include="Content\images\design-team.png" />
     <Content Include="Content\images\error colored.svg" />
     <Content Include="Content\images\kwap_logo_lg.svg" />
     <Content Include="Content\images\kwap_logo_sm.svg" />
@@ -284,6 +285,7 @@
     <Content Include="Scripts\app\amsd\inflowFund\new.js" />
     <Content Include="Scripts\app\amsd\index.js" />
     <Content Include="Scripts\app.dxGrid.utils.js" />
+    <Content Include="Scripts\app\fid\dealCutOff\fcy.js" />
     <Content Include="Scripts\app\fid\dealCutOff\myr.js" />
     <Content Include="Scripts\app\fid\tenAmCutOff\fcaTagging.js" />
     <Content Include="Scripts\app\fid\tenAmCutOff\fcaTaggingEdit.js" />
@@ -597,6 +599,7 @@
     <Content Include="Views\Shared\_RejectionModal.cshtml" />
     <Content Include="Views\Fid\DealCutOff\Myr.cshtml" />
     <Content Include="Views\Shared\_MyrDealCutOff.cshtml" />
+    <Content Include="Views\Fid\DealCutOff\Fcy.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
