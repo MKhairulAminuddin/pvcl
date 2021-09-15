@@ -370,8 +370,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var formId = Convert.ToInt32(input.FormId);
-                    var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
+                    var form = db.AMSD_IF.FirstOrDefault(x => x.Id == input.FormId);
 
                     if (form != null)
                     {
@@ -385,10 +384,11 @@ namespace xDC_Web.Controllers.Api
                             db.SaveChanges();
 
                             new NotificationService().NotifyApprovalResult(form.PreparedBy, form.Id, form.ApprovedBy, form.FormType, form.FormStatus);
+                            new MailService().SendApprovalStatus(form.Id, form.FormType, form.FormStatus, form.PreparedBy, input.ApprovalNote);
                             new NotificationService().NotifyViolateCutOff(form.Id, form.FormType, Common.CutOffViolationAction.Approval);
                             new WorkflowService().ApprovalResponse(form.Id, form.FormStatus, input.ApprovalNote, form.FormType, form.PreparedBy, form.ApprovedBy);
 
-                            return Request.CreateResponse(HttpStatusCode.Accepted, formId);
+                            return Request.CreateResponse(HttpStatusCode.Accepted, input.FormId);
                         }
                         else
                         {
