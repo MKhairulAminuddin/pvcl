@@ -1,0 +1,25 @@
+﻿
+
+@model xDC_Web.ViewModels.Fid.DealCutOff.SpreadsheetPreviewModel
+
+@using System.Web.UI.WebControls
+@using DevExpress.Spreadsheet
+@using DevExpress.Web
+@using DevExpress.Web.Mvc.UI
+
+
+@Html.DevExpress().PageControl(
+    settings =>
+    {
+        settings.Name = "spreadsheetPreviewPage";
+        settings.ActiveTabIndex = 0;
+        settings.Width = Unit.Percentage(100);
+        settings.Styles.Content.Paddings.Assign(new Paddings(Unit.Pixel(1)));
+        //settings.Theme = "MaterialCompactOrange";
+        Worksheet sheet = Model.Workbook.Worksheets[0];
+        string pageName = String.Format("previewFrame{0}", 0);
+        string previewPath = String.Format("{0}?{1}.PreviewSheetIndex={2}", Model.PreviewDocumentAction, Model.OwnerPropertyName, 0);
+        ViewContext.Writer.Write(String.Format(@"<div style='background-color:white;'><iframe id=""{0}"" style='width: 100%; height: {2}px; border-style:none;' src=""{1}""> </iframe></div>", pageName, previewPath, Model.HeightInPixels));
+
+    }
+    ).GetHtml()

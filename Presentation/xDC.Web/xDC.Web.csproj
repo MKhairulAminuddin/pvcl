@@ -284,6 +284,7 @@
     <Content Include="Scripts\app\amsd\inflowFund\new.js" />
     <Content Include="Scripts\app\amsd\index.js" />
     <Content Include="Scripts\app.dxGrid.utils.js" />
+    <Content Include="Scripts\app\fid\dealCutOff\myr.js" />
     <Content Include="Scripts\app\fid\tenAmCutOff\fcaTagging.js" />
     <Content Include="Scripts\app\fid\tenAmCutOff\fcaTaggingEdit.js" />
     <Content Include="Scripts\app\fid\treasury\edit.js" />
@@ -371,6 +372,7 @@
     <Content Include="App_Data\Trade Settlement Template - Consolidated.xltx" />
     <Content Include="Content\dx.generic.kashflow-light.json" />
     <Content Include="App_Data\Treasury Template.xltx" />
+    <Content Include="App_Data\Deal Cut Off MYR Template.xltx" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
     <Content Include="Scripts\jquery-3.5.1.min.js" />
@@ -593,6 +595,8 @@
     <Content Include="Views\Issd\TradeSettlement\PartH\View.cshtml" />
     <Content Include="Views\Shared\_ApprovalModal.cshtml" />
     <Content Include="Views\Shared\_RejectionModal.cshtml" />
+    <Content Include="Views\Fid\DealCutOff\Myr.cshtml" />
+    <Content Include="Views\Shared\_MyrDealCutOff.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -631,6 +635,7 @@
     <Compile Include="Extension\CustomAttribute\InflowFundFormPermissionAttribute.cs" />
     <Compile Include="Extension\CustomAttribute\KashflowAuthorize.cs" />
     <Compile Include="Extension\CustomHtmlHelper\xDC_HtmlHelperTest.cs" />
+    <Compile Include="Extension\DocGenerator\DealCutOffForm_MYR.cs" />
     <Compile Include="Extension\DocGenerator\DocGeneratorBase.cs" />
     <Compile Include="Extension\DocGenerator\TreasuryFormDoc.cs" />
     <Compile Include="Extension\DocGenerator\TradeSettlementFormDoc.cs" />
@@ -652,6 +657,9 @@
     <Compile Include="Models\MailMerge\SpreadsheetPreviewModel.cs" />
     <Compile Include="Models\Trades.cs" />
     <Compile Include="Models\TreasuryFormVM.cs" />
+    <Compile Include="ViewModels\Fid\DealCutOff\SpreadsheetModelBase.cs" />
+    <Compile Include="ViewModels\Fid\DealCutOff\DealCutOffMyrTemplateModel.cs" />
+    <Compile Include="ViewModels\Fid\DealCutOff\SpreadsheetPreviewModel.cs" />
     <Compile Include="ViewModels\Fid\EditFcaAccountAssignmentVM.cs" />
     <Compile Include="ViewModels\Fid\Treasury\TreasuryFormVM.cs" />
     <Compile Include="ViewModels\Fid\Treasury\TreasuryGridVm.cs" />
