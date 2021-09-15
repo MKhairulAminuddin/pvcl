@@ -50,8 +50,7 @@ namespace xDC_Web.Extension.SchedulerTask
                     var today = DateTime.Now.Date;
 
                     var tsForms = db.ISSD_FormHeader.Where(x =>
-                        x.FormStatus == Common.FormStatus.Approved &&
-                        DbFunctions.TruncateTime(x.ApprovedDate) == DbFunctions.TruncateTime(today)).ToList();
+                        x.FormStatus == Common.FormStatus.Approved).ToList();
 
                     Fetch10AmTradeSettlement(db, tsForms);
                 }
@@ -113,8 +112,8 @@ namespace xDC_Web.Extension.SchedulerTask
                                         CreatedBy = item.ModifiedBy,
                                         CreatedDate = item.ModifiedDate,
 
-                                        InflowTo = (currentCurrency == "MYR") ? "RENTAS" : null,
-                                        OutflowFrom = (currentCurrency == "MYR") ? "RENTAS" : null
+                                        InflowTo = (currentCurrency == "MYR" && (item.Maturity > 0 || item.Sales > 0 || item.AmountPlus > 0 || item.FirstLeg > 0)) ? "RENTAS" : null,
+                                        OutflowFrom = (currentCurrency == "MYR" && (item.Purchase > 0 || item.AmountMinus > 0 || item.SecondLeg > 0)) ? "RENTAS" : null
                                     };
                                     db.FID_TS10_TradeItem.Add(tradeItem);
                                 }
@@ -197,8 +196,8 @@ namespace xDC_Web.Extension.SchedulerTask
                                         CreatedBy = item.ModifiedBy,
                                         CreatedDate = item.ModifiedDate,
 
-                                        InflowTo = (currentCurrency == "MYR") ? "RENTAS" : null,
-                                        OutflowFrom = (currentCurrency == "MYR") ? "RENTAS" : null
+                                        InflowTo = (currentCurrency == "MYR" && (item.Maturity > 0 || item.Sales > 0 || item.AmountPlus > 0 || item.FirstLeg > 0)) ? "RENTAS" : null,
+                                        OutflowFrom = (currentCurrency == "MYR" && (item.Purchase > 0 || item.AmountMinus > 0 || item.SecondLeg > 0)) ? "RENTAS" : null
                                     };
                                     db.FID_TS10_TradeItem.Add(tradeItem);
                                 }
