@@ -126,6 +126,19 @@
             headerFilter: {
                 visible: true
             },
+            paging: {
+                pageSize: 10
+            },
+            pager: {
+                visible: true,
+                allowedPageSizes: [10, 20, 50, "all"],
+                showPageSizeSelector: true,
+                showInfo: true,
+                showNavigationButtons: true
+            },
+            filterPanel: {
+                visible: true
+            },
             stateStoring: {
                 enabled: true,
                 type: "localStorage",

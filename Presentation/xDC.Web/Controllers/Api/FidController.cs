@@ -220,7 +220,7 @@ namespace xDC_Web.Controllers.Api
                     result.Add(rentas);
                     result.Add(MMA);
 
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    return Request.CreateResponse(DataSourceLoader.Load(result.OrderBy(x => x.Reference), loadOptions));
                 }
             }
             catch (Exception ex)
