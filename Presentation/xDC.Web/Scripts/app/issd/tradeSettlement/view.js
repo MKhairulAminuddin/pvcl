@@ -824,7 +824,7 @@
                     template: function (itemData, itemIndex, element) {
                         var newTabView = $("<div id='fxSettlementGrid' class='grid-container-tabview' style='width: 100%'/>");
                         newTabView.dxDataGrid({
-                            dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdFx, "fx"),
+                            dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdFx, "fxSettlement"),
                             columns: [
                                 {
                                     caption: "#",
