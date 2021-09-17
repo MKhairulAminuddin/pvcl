@@ -147,8 +147,8 @@ var app = (function() {
     }
 
     _app.clearUserPreference = function () {
-        localStorage.removeItem("xDC_TS_Grid");
-        localStorage.removeItem("xDC_TS_ApprovedGrid");
+        localStorage.removeItem("xDC_TS_Grid_02");
+        localStorage.removeItem("xDC_TS_ApprovedGrid_02");
         localStorage.removeItem("xDC_IF_Grid");
         localStorage.removeItem("xDC_Treasury_Grid");
         localStorage.removeItem("xDC_T10_Grid");

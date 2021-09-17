@@ -56,6 +56,35 @@ namespace xDC.Utils
             public const string Outflow = "OUTFLOW";
         }
 
+        public static class TsEmailNotificationType
+        {
+            public const string Contribution = "Contribution";
+            public const string PE = "PE";
+            public const string Load = "Loan";
+            public const string Property = "Property";
+            public const string CouponBond = "Coupon - Bond";
+        }
+
+        public static class ExcelTemplateLocation
+        {
+            public const string AMSD_IF = "~/App_Data/Inflow Funds Template.xltx";
+            public const string ISSD_TS = "~/App_Data/Trade Settlement Template.xltx";
+            public const string ISSD_TS_Consolidated = "~/App_Data/Trade Settlement Template - Consolidated.xltx";
+            public const string FID_Treasury = "~/App_Data/Treasury Template.xltx";
+            public const string FID_DealCutOff_MYR = "~/App_Data/Deal Cut Off MYR Template.xltx";
+            public const string FID_DealCutOff_FCY = "~/App_Data/Deal Cut Off FCY Template.xltx";
+        }
+
+        public static class DownloadedFileName
+        {
+            public const string AMSD_IF = "AMSD Inflow Fund Form - ";
+            public const string ISSD_TS = "ISSD Trade Settlement - ";
+            public const string ISSD_TS_Consolidated = "ISSD Trade Settlement - ";
+            public const string FID_Treasury = "FID Treasury - ";
+            public const string FID_DealCutOff_MYR = "FID Deal Cut Off MYR - ";
+            public const string FID_DealCutOff_FCY = "FID Deal Cut Off FCY - ";
+        }
+
         public static string ConvertIndexToContentType(int value)
         {
             switch (value)

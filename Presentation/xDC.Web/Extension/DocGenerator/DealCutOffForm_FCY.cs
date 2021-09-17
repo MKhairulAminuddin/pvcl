@@ -14,7 +14,7 @@ using xDC.Utils;
 
 namespace xDC_Web.Extension.DocGenerator
 {
-    public class DealCutOffForm_MYR : DocGeneratorBase
+    public class DealCutOffForm_FCY : DocGeneratorBase
     {
         private Color _tableHeaderPrimaryColor = System.Drawing.ColorTranslator.FromHtml("#5b8efb");
         private Color _inflowColor = System.Drawing.ColorTranslator.FromHtml("#3498DB");
@@ -31,7 +31,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     IWorkbook workbook = new Workbook();
                     workbook.Options.Culture = new CultureInfo("en-US");
-                    workbook.LoadDocument(MapPath(Common.ExcelTemplateLocation.FID_DealCutOff_MYR));
+                    workbook.LoadDocument(MapPath(Common.ExcelTemplateLocation.FID_DealCutOff_FCY));
                     workbook = GenerateDocument(workbook, dataObj);
 
                     return workbook;
@@ -50,7 +50,7 @@ namespace xDC_Web.Extension.DocGenerator
             try
             {
                 IWorkbook workbook = GenerateWorkbook(selectedDate);
-                var randomFileName = Common.DownloadedFileName.FID_DealCutOff_MYR + DateTime.Now.ToString("yyyyMMddHHmmss");
+                var randomFileName = Common.DownloadedFileName.FID_DealCutOff_FCY + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                 if (isExportAsExcel)
                 {
@@ -202,7 +202,7 @@ namespace xDC_Web.Extension.DocGenerator
         }
     }
 
-    public class DealCutOffObj
+    public class FCY_DealCutOffData
     {
         public DateTime? SelectedDate { get; set; }
         public double? RentasOb { get; set; }

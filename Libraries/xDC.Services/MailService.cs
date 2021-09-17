@@ -279,6 +279,31 @@ namespace xDC.Services
         }
 
 
+        public void TS_IncomingFund(int formId, string formType, string approvedBy, string notes)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var approver =
+                        db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == approvedBy);
+
+                    if (approver != null)
+                    {
+                        var message = ComposeSubmitForApprovalMail(formId, formType, approver.DisplayName, approver.Email, notes);
+                        SendEmailToSmtp(message);
+                    }
+                    else
+                    {
+                        Logger.LogError("TS_IncomingFund email failed");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
 
 
         private void SendEmailToSmtp(MimeMessage message)
@@ -576,6 +601,40 @@ namespace xDC.Services
 
             return output;
 
+        }
+
+        private MimeMessage ComposeTS_IncomingFundMail(int formId, string formType, string approverName, string approverMail, string notes)
+        {
+            var message = new MimeMessage()
+            {
+                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                Subject = "[Kashflow] Incoming Funds dated " + DateTime.Now.ToString("dd/MM/yyyy"),
+                To =
+                {
+                    new MailboxAddress(approverName, approverMail)
+                }
+            };
+
+            var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}",
+                Config.EmailApplicationUrl, formId);
+
+            var bodyBuilder = new StringBuilder();
+            bodyBuilder.Append($"<p>Hi {approverName}, </p>");
+            bodyBuilder.AppendLine($"<p>A {formType} form is pending for your approval. </p>");
+            bodyBuilder.AppendLine($"<p>Click <a href='{approvalPageUrl}'>here</a> to view.</p>");
+
+            if (!string.IsNullOrEmpty(notes))
+            {
+                bodyBuilder.AppendLine($"<br/><br/><p style='font-weight:bold'>Notes from preparer: </p>");
+                bodyBuilder.AppendLine($"<p>{notes}</p>");
+            }
+
+            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            {
+                Text = bodyBuilder.ToString()
+            };
+
+            return message;
         }
     }
 }

@@ -31,11 +31,8 @@ namespace xDC_Web.Extension.DocGenerator
                             .OrderByDescending(x => x.RecordedDate)
                             .FirstOrDefault();
 
-                        IWorkbook workbook = new Workbook();
-                        workbook.Options.Culture = new CultureInfo("en-US");
-                        workbook.LoadDocument(MapPath("~/App_Data/Inflow Funds Template.xltx"));
-                        workbook = GenerateDocument(workbook, form, formWorkflow, inflowFundItems);
-                        var randomFileName = "AMSD Inflow Fund Form - " + DateTime.Now.ToString("yyyyMMddHHmmss");
+                        IWorkbook workbook = GenerateDocument(form, formWorkflow, inflowFundItems);
+                        var randomFileName = Common.DownloadedFileName.AMSD_IF + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                         if (isExportAsExcel)
                         {
@@ -65,8 +62,12 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private IWorkbook GenerateDocument(IWorkbook workbook, AMSD_IF formHeader, Form_Workflow formWorkflow, List<AMSD_IF_Item> inflowFunds)
+        private IWorkbook GenerateDocument(AMSD_IF formHeader, Form_Workflow formWorkflow, List<AMSD_IF_Item> inflowFunds)
         {
+            IWorkbook workbook = new Workbook();
+            workbook.Options.Culture = new CultureInfo("en-US");
+            workbook.LoadDocument(MapPath(Common.ExcelTemplateLocation.AMSD_IF));
+
             workbook.BeginUpdate();
             try
             {

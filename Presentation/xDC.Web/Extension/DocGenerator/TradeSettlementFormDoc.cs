@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
+using xDC.Domain.ISSD_TS;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services.App;
@@ -37,13 +38,10 @@ namespace xDC_Web.Extension.DocGenerator
                             .OrderByDescending(x => x.RecordedDate)
                             .ToList();
 
-                        var openingBalance = db.ISSD_Balance.Where(x => x.FormId == formId).ToList();
+                        var openingBalance = TradeSettlementSvc.GetOpeningBalance(db, form.SettlementDate.Value, form.Currency);
 
-                        IWorkbook workbook = new Workbook();
-                        workbook.Options.Culture = new CultureInfo("en-US");
-                        workbook.LoadDocument(MapPath("~/App_Data/Trade Settlement Template.xltx"));
-                        workbook = GenerateDocument(workbook, form, getFormWorkflow, tradeItems, openingBalance);
-                        var randomFileName = "ISSD Trade Settlement - " + DateTime.Now.ToString("yyyyMMddHHmmss");
+                        IWorkbook workbook = GenerateDocument(form, getFormWorkflow, tradeItems, openingBalance);
+                        var randomFileName = Common.DownloadedFileName.ISSD_TS + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                         if (isExportAsExcel)
                         {
@@ -82,7 +80,7 @@ namespace xDC_Web.Extension.DocGenerator
                     var getForm = db.ISSD_FormHeader.Where(x =>
                             DbFunctions.TruncateTime(x.SettlementDate) == settlementDate.Date 
                             && x.Currency == currency 
-                            && x.FormStatus == "Approved").ToList();
+                            && x.FormStatus == Common.FormStatus.Approved).ToList();
 
                     if (getForm.Any())
                     {
@@ -106,18 +104,15 @@ namespace xDC_Web.Extension.DocGenerator
                             }
                         }
 
-                        var getEquityFormId = getForm.FirstOrDefault(x => x.FormType == "Trade Settlement (Part A)");
-                        var getOpeningBalance = new List<ISSD_Balance>();
-                        if (getEquityFormId != null)
+                        var getOpeningBalance = new List<TS_OpeningBalance>();
+                        var firstForm = getForm.FirstOrDefault();
+                        if (firstForm != null)
                         {
-                            getOpeningBalance = db.ISSD_Balance.Where(x => x.FormId == getEquityFormId.Id).ToList();
+                            getOpeningBalance = TradeSettlementSvc.GetOpeningBalance(db, firstForm.SettlementDate.Value, firstForm.Currency);
                         }
                         
-                        IWorkbook workbook = new Workbook();
-                        workbook.Options.Culture = new CultureInfo("en-US");
-                        workbook.LoadDocument(MapPath("~/App_Data/Trade Settlement Template - Consolidated.xltx"));
-                        workbook = GenerateDocumentConsolidated(workbook, settlementDate, currency, worflows, getTrades, getOpeningBalance);
-                        var randomFileName = "ISSD Trade Settlement - " + DateTime.Now.ToString("yyyyMMddHHmmss");
+                        IWorkbook workbook = GenerateDocumentConsolidated(settlementDate, currency, worflows, getTrades, getOpeningBalance);
+                        var randomFileName = Common.DownloadedFileName.ISSD_TS_Consolidated + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                         if (isExportAsExcel)
                         {
@@ -147,8 +142,12 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private IWorkbook GenerateDocument(IWorkbook workbook, ISSD_FormHeader formHeader, List<Form_Workflow> formWorkflow, List<ISSD_TradeSettlement> trades, List<ISSD_Balance> ob = null)
+        private IWorkbook GenerateDocument(ISSD_FormHeader formHeader, List<Form_Workflow> formWorkflow, List<ISSD_TradeSettlement> trades, List<TS_OpeningBalance> ob = null)
         {
+            IWorkbook workbook = new Workbook();
+            workbook.Options.Culture = new CultureInfo("en-US");
+            workbook.LoadDocument(MapPath(Common.ExcelTemplateLocation.ISSD_TS));
+
             workbook.BeginUpdate();
             try
             {
@@ -160,8 +159,7 @@ namespace xDC_Web.Extension.DocGenerator
                 
                 int tradeItemStartRow = 7;
                 // Opening Balance
-                var openingBalance = ob.Where(x => x.FormId == formHeader.Id).ToList();
-                if (openingBalance.Any())
+                if (ob != null && ob.Any())
                 {
                     sheet["A5"].Value = "Opening Balance:";
                     sheet["A5"].Font.Bold = true;
@@ -169,9 +167,9 @@ namespace xDC_Web.Extension.DocGenerator
 
                     var headerStartRow = tradeItemStartRow;
                     
-                    foreach (var item in openingBalance)
+                    foreach (var item in ob)
                     {
-                        sheet["A" + tradeItemStartRow].Value = item.BalanceCategory;
+                        sheet["A" + tradeItemStartRow].Value = item.Account;
                         sheet["B" + tradeItemStartRow].Value = item.Amount;
                         sheet["B" + tradeItemStartRow].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                         tradeItemStartRow++;
@@ -204,8 +202,12 @@ namespace xDC_Web.Extension.DocGenerator
             return workbook;
         }
 
-        private IWorkbook GenerateDocumentConsolidated(IWorkbook workbook, DateTime settlementDate, string currency, List<Form_Workflow> formWorkflow, List<ISSD_TradeSettlement> trades, List<ISSD_Balance> ob)
+        private IWorkbook GenerateDocumentConsolidated(DateTime settlementDate, string currency, List<Form_Workflow> formWorkflow, List<ISSD_TradeSettlement> trades, List<TS_OpeningBalance> ob)
         {
+            IWorkbook workbook = new Workbook();
+            workbook.Options.Culture = new CultureInfo("en-US");
+            workbook.LoadDocument(MapPath(Common.ExcelTemplateLocation.ISSD_TS_Consolidated));
+
             workbook.BeginUpdate();
             try
             {
@@ -226,7 +228,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     foreach (var item in ob)
                     {
-                        sheet["A" + tradeItemStartRow].Value = item.BalanceCategory;
+                        sheet["A" + tradeItemStartRow].Value = item.Account;
                         sheet["B" + tradeItemStartRow].Value = item.Amount;
                         sheet["B" + tradeItemStartRow].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                         tradeItemStartRow++;

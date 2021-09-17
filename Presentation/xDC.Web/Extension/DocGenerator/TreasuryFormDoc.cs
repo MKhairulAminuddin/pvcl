@@ -38,11 +38,8 @@ namespace xDC_Web.Extension.DocGenerator
                             .OrderByDescending(x => x.RecordedDate)
                             .FirstOrDefault();
                         
-                        IWorkbook workbook = new Workbook();
-                        workbook.Options.Culture = new CultureInfo("en-US");
-                        workbook.LoadDocument(MapPath("~/App_Data/Treasury Template.xltx"));
-                        workbook = GenerateDocument(workbook, form, deposits, mmis, workflow);
-                        var randomFileName = "FID Treasury - " + DateTime.Now.ToString("yyyyMMddHHmmss");
+                        IWorkbook workbook = GenerateDocument(form, deposits, mmis, workflow);
+                        var randomFileName = Common.DownloadedFileName.FID_Treasury + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                         if (isExportAsExcel)
                         {
@@ -72,8 +69,12 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
         
-        private IWorkbook GenerateDocument(IWorkbook workbook, FID_Treasury form, List<FID_Treasury_Deposit> depo, List<FID_Treasury_MMI> mmi, Form_Workflow workflow)
+        private IWorkbook GenerateDocument(FID_Treasury form, List<FID_Treasury_Deposit> depo, List<FID_Treasury_MMI> mmi, Form_Workflow workflow)
         {
+            IWorkbook workbook = new Workbook();
+            workbook.Options.Culture = new CultureInfo("en-US");
+            workbook.LoadDocument(MapPath(Common.ExcelTemplateLocation.FID_Treasury));
+
             workbook.BeginUpdate();
             try
             {

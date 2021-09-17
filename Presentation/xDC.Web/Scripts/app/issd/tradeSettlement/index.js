@@ -6,14 +6,14 @@
 
         var statuses = [
             "All",
-            "A - Equity",
-            "B - Bond, CP, Notes/Papers, Coupon",
-            "C - REPO",
-            "D - MTM, FX",
-            "E - ALTID",
-            "F - Fees)",
-            "G - Contribution",
-            "H - Others"
+            "Trade Settlement (Part A)",
+            "Trade Settlement (Part B)",
+            "Trade Settlement (Part C)",
+            "Trade Settlement (Part D)",
+            "Trade Settlement (Part E)",
+            "Trade Settlement (Part F)",
+            "Trade Settlement (Part G)",
+            "Trade Settlement (Part H)"
         ];
         
         $issdGrid = $("#issdGrid").dxDataGrid({
@@ -280,10 +280,23 @@
             headerFilter: {
                 visible: true
             },
+            paging: {
+                pageSize: 10
+            },
+            pager: {
+                visible: true,
+                allowedPageSizes: [10, 20, 50, "all"],
+                showPageSizeSelector: true,
+                showInfo: true,
+                showNavigationButtons: true
+            },
+            filterPanel: {
+                visible: true
+            },
             stateStoring: {
                 enabled: true,
                 type: "localStorage",
-                storageKey: "xDC_TS_Grid"
+                storageKey: "xDC_TS_Grid_02"
             }
         }).dxDataGrid("instance");
 
@@ -360,12 +373,12 @@
                     dataType: "datetime",
                     format: "dd/MM/yyyy",
                     sortIndex: 0,
-                    sortOrder: "desc"
+                    sortOrder: "desc",
+                    groupIndex: 0
                 },
                 {
                     dataField: "currency",
-                    caption: "Currency",
-                    groupIndex: 0
+                    caption: "Currency"
                 },
                 {
                     dataField: "approvedDate",
@@ -476,19 +489,22 @@
                 visible: true
             },
             paging: {
-                pageSize: 50
+                pageSize: 10
             },
             pager: {
                 visible: true,
-                allowedPageSizes: [20, 50, 'all'],
+                allowedPageSizes: [10, 20, 50, "all"],
                 showPageSizeSelector: true,
                 showInfo: true,
                 showNavigationButtons: true
             },
+            filterPanel: {
+                visible: true
+            },
             stateStoring: {
                 enabled: true,
                 type: "localStorage",
-                storageKey: "xDC_TS_ApprovedGrid"
+                storageKey: "xDC_TS_ApprovedGrid_02"
             }
         }).dxDataGrid("instance");
 

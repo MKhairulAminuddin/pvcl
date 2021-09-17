@@ -230,7 +230,7 @@ namespace xDC_Web.Controllers
                     selectedDate = Common.ConvertEpochToDateTime(Convert.ToInt64(TradeDate));
                 }
 
-                var generatedDocumentFile = new DealCutOffForm_MYR().GenerateFile(selectedDate, isExportAsExcel);
+                var generatedDocumentFile = new DealCutOffForm_MYR().GenerateFile(selectedDate.Value, isExportAsExcel);
 
                 if (!string.IsNullOrEmpty(generatedDocumentFile))
                 {
