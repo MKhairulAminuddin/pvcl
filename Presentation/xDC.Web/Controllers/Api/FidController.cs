@@ -301,15 +301,20 @@ namespace xDC_Web.Controllers.Api
                     }
 
                     // AMSD - Inflow Funds
-                    var submittedAmsdForms = db.AMSD_IF.FirstOrDefault(x =>
-                        DbFunctions.TruncateTime(x.ApprovedDate) == reportDateParsed);
-                    if (submittedAmsdForms != null)
+                    var approvedAmsdForms = db.AMSD_IF.Where(x =>
+                        DbFunctions.TruncateTime(x.ApprovedDate) == DbFunctions.TruncateTime(reportDateParsed) &&
+                        x.FormStatus == Common.FormStatus.Approved).Select(x => x.Id);
+
+                    if (approvedAmsdForms.Any())
                     {
-                        var inflowFunds = db.AMSD_IF_Item.Where(x => x.FormId == submittedAmsdForms.Id).GroupBy(x => new { x.Bank}).Select(x => new
-                        {
-                            Bank = x.Key.Bank,
-                            Amount = x.Sum(y => y.Amount)
-                        });
+                        var inflowFunds = db.AMSD_IF_Item
+                            .Where(x => approvedAmsdForms.Contains(x.FormId))
+                            .GroupBy(x => new { x.Bank })
+                            .Select(x => new
+                            {
+                                Bank = x.Key.Bank,
+                                Amount = x.Sum(y => y.Amount)
+                            });
 
                         foreach (var fund in inflowFunds)
                         {
