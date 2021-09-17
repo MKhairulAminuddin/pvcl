@@ -73,7 +73,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private IWorkbook GenerateDocument(IWorkbook workbook, DealCutOffObj dataItem)
+        private IWorkbook GenerateDocument(IWorkbook workbook, MYR_DealCutOffData dataItem)
         {
             workbook.BeginUpdate();
             try
@@ -104,10 +104,10 @@ namespace xDC_Web.Extension.DocGenerator
             return workbook;
         }
 
-        private DealCutOffObj ConstructData(kashflowDBEntities db, DateTime? selectedDate)
+        private MYR_DealCutOffData ConstructData(kashflowDBEntities db, DateTime? selectedDate)
         {
             //get data 
-            var dataObj = new DealCutOffObj()
+            var dataObj = new MYR_DealCutOffData()
             {
                 SelectedDate = selectedDate
             };
