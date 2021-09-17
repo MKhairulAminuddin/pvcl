@@ -33,7 +33,7 @@ namespace xDC.Services.App
                 result.Add(new TS_OpeningBalance()
                 {
                     Account = item.account,
-                    Amount = (decimal)item.total
+                    Amount = item.total
                 });
             }
 
@@ -63,7 +63,7 @@ namespace xDC.Services.App
                 {
                     Account = item.account,
                     Currency = item.currency,
-                    Amount = (decimal)item.total
+                    Amount = item.total
                 });
             }
 
@@ -83,19 +83,19 @@ namespace xDC.Services.App
             var totalFlow = trades.GroupBy(x => 1)
                 .Select(x => new
                 {
-                    totalMaturity = x.Sum(y => y.Maturity??0),
-                    totalSales = x.Sum(y => y.Sales ?? 0),
-                    totalFirstLeg = x.Sum(y => y.FirstLeg ?? 0),
-                    totalAmountPlus = x.Sum(y => y.AmountPlus ?? 0),
+                    totalMaturity = x.Sum(y => y.Maturity),
+                    totalSales = x.Sum(y => y.Sales),
+                    totalFirstLeg = x.Sum(y => y.FirstLeg),
+                    totalAmountPlus = x.Sum(y => y.AmountPlus),
 
-                    totalPurchase = x.Sum(y => y.Purchase ?? 0),
-                    totalSecondLeg = x.Sum(y => y.SecondLeg ?? 0),
-                    totalAmountMinus = x.Sum(y => y.AmountMinus ?? 0)
+                    totalPurchase = x.Sum(y => y.Purchase),
+                    totalSecondLeg = x.Sum(y => y.SecondLeg),
+                    totalAmountMinus = x.Sum(y => y.AmountMinus)
                 })
                 .FirstOrDefault();
 
-            decimal cbInflow = 0;
-            decimal cbOutflow = 0;
+            double cbInflow = 0;
+            double cbOutflow = 0;
 
             if (totalFlow != null)
             {

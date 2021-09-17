@@ -36,10 +36,10 @@ namespace xDC_Web.Models
         public DateTime ValueDate { get; set; }
         public DateTime MaturityDate { get; set; }
         public int Tenor { get; set; }
-        public decimal Principal { get; set; }
-        public decimal RatePercent { get; set; }
-        public decimal IntProfitReceivable { get; set; }
-        public decimal PrincipalIntProfitReceivable { get; set; }
+        public double Principal { get; set; }
+        public double RatePercent { get; set; }
+        public double IntProfitReceivable { get; set; }
+        public double PrincipalIntProfitReceivable { get; set; }
         public string AssetType { get; set; }
         public string RepoTag { get; set; }
         public string ContactPerson { get; set; }
@@ -60,12 +60,12 @@ namespace xDC_Web.Models
         public DateTime ValueDate { get; set; }
         public DateTime MaturityDate { get; set; }
         public int HoldingDayTenor { get; set; }
-        public decimal Nominal { get; set; }
+        public double Nominal { get; set; }
         public decimal SellPurchaseRateYield { get; set; }
-        public decimal Price { get; set; }
-        public decimal IntDividendReceivable { get; set; }
-        public decimal PurchaseProceeds { get; set; }
-        public decimal Proceeds { get; set; }
+        public double Price { get; set; }
+        public double IntDividendReceivable { get; set; }
+        public double PurchaseProceeds { get; set; }
+        public double Proceeds { get; set; }
         public string CertNoStockCode { get; set; }
 
         public string ModifiedBy { get; set; }

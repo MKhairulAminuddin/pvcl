@@ -264,19 +264,13 @@
             function (e) {
                 tradeSettlement.saveAllGrids($equityGrid);
 
-                if (tradeSettlement.val_isTMinus1($settlementDateBox.option("value"))) {
-                    alert("T-n only available for viewing..");
+                if (isSaveAsDraft) {
+                    setTimeout(function () {
+                        postData(true);
+                    }, 1000);
                 }
                 else {
-                    if (isSaveAsDraft) {
-                        // new clean draft
-                        setTimeout(function () {
-                            postData(true);
-                        }, 1000);
-                    }
-                    else {
-                        $selectApproverModal.modal('show');
-                    }
+                    $selectApproverModal.modal('show');
                 }
                 
                 e.preventDefault();
@@ -286,9 +280,15 @@
             "click": function (e) {
                 tradeSettlement.saveAllGrids($equityGrid);
 
-                setTimeout(function () {
-                    postData(false);
-                }, 1000);
+                if ($approverDropdown.option("value") != null) {
+                    setTimeout(function() {
+                            postData(false);
+                        },
+                        1000);
+                } else {
+                    alert("Please select at least one approver!");
+                }
+                
                 e.preventDefault();
             }
         });

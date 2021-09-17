@@ -276,7 +276,7 @@ namespace xDC_Web.Controllers.Api
 
                             if (tradeItemInflowGrouped != null)
                             {
-                                if (tradeItemInflowGrouped.TotalInflow != null) item.TotalInflow = tradeItemInflowGrouped.TotalInflow.Value;
+                                item.TotalInflow = tradeItemInflowGrouped.TotalInflow;
                             }
 
                             // get total inflow based on assigned outflow account
@@ -293,7 +293,7 @@ namespace xDC_Web.Controllers.Api
 
                             if (tradeItemOutflowGrouped != null)
                             {
-                                if (tradeItemOutflowGrouped.TotalOutflow != null) item.TotalOutflow = tradeItemOutflowGrouped.TotalOutflow.Value;
+                                item.TotalOutflow = tradeItemOutflowGrouped.TotalOutflow;
                             }
                         }
 
@@ -322,8 +322,8 @@ namespace xDC_Web.Controllers.Api
                             {
                                 Account = fund.Bank,
                                 Currency = "MYR",
-                                OpeningBalance = fund.Amount ?? 0,
-                                Net = fund.Amount ?? 0
+                                OpeningBalance = fund.Amount,
+                                Net = fund.Amount
                             };
                             result.Add(inflowFundsFromAmsd);
                         }

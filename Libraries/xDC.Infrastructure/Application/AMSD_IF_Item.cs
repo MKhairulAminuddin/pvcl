@@ -18,7 +18,7 @@ namespace xDC.Infrastructure.Application
         public int FormId { get; set; }
         public string FundType { get; set; }
         public string Bank { get; set; }
-        public Nullable<decimal> Amount { get; set; }
+        public double Amount { get; set; }
         public Nullable<System.DateTime> LatestSubmission { get; set; }
         public string ModifiedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }

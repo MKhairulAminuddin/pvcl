@@ -548,22 +548,6 @@ namespace xDC_Web.Controllers.Api
                     db.ISSD_TradeSettlement.AddRange(newTrades);
                     db.SaveChanges();
                     
-                    if (inputs.OpeningBalance.Any())
-                    {
-                        foreach (var item in inputs.OpeningBalance)
-                        {
-                            db.ISSD_Balance.Add(new ISSD_Balance()
-                            {
-                                FormId = newFormHeader.Id,
-                                BalanceCategory = item.InstrumentType,
-                                Amount = item.Amount,
-                                CreatedBy = User.Identity.Name,
-                                CreatedDate = DateTime.Now
-                            });
-                        }
-                        db.SaveChanges();
-                    }
-
                     if (inputs.Approver != null)
                     {
                         TradeSettlementSvc.NotifyApprover(inputs.Approver, newFormHeader.Id, User.Identity.Name, newFormHeader.FormType, inputs.ApprovalNotes);
@@ -1258,11 +1242,11 @@ namespace xDC_Web.Controllers.Api
                                 InstrumentType = item.InstrumentType,
                                 InstrumentCode = item.InstrumentName,
                                 StockCode = string.IsNullOrEmpty(item.ISIN) ? item.StockCode : string.Concat(item.StockCode, " / " + item.ISIN),
-                                Maturity = (decimal?)((item.Type == "M" && item.InstrumentType != Common.TsItemCategory.Repo) ? item.Amount : 0),
-                                Sales = (decimal?)((item.Type == "S" && item.InstrumentType != Common.TsItemCategory.Repo) ? item.Amount : 0),
-                                Purchase = (decimal?)((item.Type == "P" && item.InstrumentType != Common.TsItemCategory.Repo) ? item.Amount : 0),
-                                SecondLeg = (decimal?)((item.InstrumentType == Common.TsItemCategory.Repo) ? item.Amount : 0),
-                                AmountPlus = (decimal?)((item.InstrumentType == Common.TsItemCategory.Coupon) ? item.Amount : 0),
+                                Maturity = (double)(item.Type == "M" && item.InstrumentType != Common.TsItemCategory.Repo ? item.Amount : 0),
+                                Sales = (double)((item.Type == "S" && item.InstrumentType != Common.TsItemCategory.Repo) ? item.Amount : 0),
+                                Purchase = (double)(item.Type == "P" && item.InstrumentType != Common.TsItemCategory.Repo ? item.Amount : 0),
+                                SecondLeg = (double)(item.InstrumentType == Common.TsItemCategory.Repo ? item.Amount : 0),
+                                AmountPlus = (double)(item.InstrumentType == Common.TsItemCategory.Coupon ? item.Amount : 0),
                             };
 
                             finalResult.Add(tradeItem);

@@ -22,15 +22,15 @@ namespace xDC.Infrastructure.Application
         public Nullable<System.DateTime> ValueDate { get; set; }
         public Nullable<System.DateTime> MaturityDate { get; set; }
         public Nullable<int> Tenor { get; set; }
-        public Nullable<decimal> RatePercent { get; set; }
-        public Nullable<decimal> IntProfitReceivable { get; set; }
-        public Nullable<decimal> PrincipalIntProfitReceivable { get; set; }
+        public double Principal { get; set; }
+        public double RatePercent { get; set; }
+        public double IntProfitReceivable { get; set; }
+        public double PrincipalIntProfitReceivable { get; set; }
         public string AssetType { get; set; }
         public string RepoTag { get; set; }
         public string ContactPerson { get; set; }
         public string Notes { get; set; }
         public string ModifiedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
-        public Nullable<decimal> Principal { get; set; }
     }
 }

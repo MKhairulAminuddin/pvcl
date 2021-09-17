@@ -13,9 +13,7 @@ namespace xDC_Web.Models
         public string Currency { get; set; }
         public bool IsSaveAsDraft { get; set; }
         public bool IsSaveAdminEdit { get; set; }
-
-        public List<BankBalance> OpeningBalance { get; set; }
-
+        
         public List<Trades> Equity { get; set; }
         public List<Trades> Bond { get; set; }
         public List<Trades> Cp { get; set; }
@@ -43,8 +41,6 @@ namespace xDC_Web.Models
             this.ContributionCredited = new List<Trades>();
             this.Altid = new List<Trades>();
             this.Others = new List<Trades>();
-
-            this.OpeningBalance = new List<BankBalance>();
         }
     }
 }

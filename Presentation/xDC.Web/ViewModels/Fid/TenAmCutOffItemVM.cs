@@ -4,9 +4,9 @@
     {
         public string Currency { get; set; }
         public string Account { get; set; }
-        public decimal OpeningBalance { get; set; }
-        public decimal TotalInflow { get; set; }
-        public decimal TotalOutflow { get; set; }
-        public decimal Net { get; set; }
+        public double OpeningBalance { get; set; }
+        public double TotalInflow { get; set; }
+        public double TotalOutflow { get; set; }
+        public double Net { get; set; }
     }
 }

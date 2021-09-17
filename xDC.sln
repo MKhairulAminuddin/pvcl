@@ -27,6 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{71
 		Database\ISSD_Balance.sql = Database\ISSD_Balance.sql
 		Database\ISSD_FormHeader.sql = Database\ISSD_FormHeader.sql
 		Database\ISSD_TradeSettlement.sql = Database\ISSD_TradeSettlement.sql
+		Database\Seed.sql = Database\Seed.sql
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{288D30C0-C4F9-4D78-BD96-15D52D9FEB14}"

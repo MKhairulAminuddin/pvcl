@@ -24,12 +24,12 @@ namespace xDC.Infrastructure.Application
         public Nullable<System.DateTime> ValueDate { get; set; }
         public Nullable<System.DateTime> MaturityDate { get; set; }
         public Nullable<int> HoldingDayTenor { get; set; }
-        public Nullable<decimal> Nominal { get; set; }
+        public double Nominal { get; set; }
         public Nullable<decimal> SellPurchaseRateYield { get; set; }
-        public Nullable<decimal> Price { get; set; }
-        public Nullable<decimal> IntDividendReceivable { get; set; }
-        public Nullable<decimal> Proceeds { get; set; }
-        public Nullable<decimal> PurchaseProceeds { get; set; }
+        public double Price { get; set; }
+        public double IntDividendReceivable { get; set; }
+        public double Proceeds { get; set; }
+        public double PurchaseProceeds { get; set; }
         public string CertNoStockCode { get; set; }
         public string ModifiedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }

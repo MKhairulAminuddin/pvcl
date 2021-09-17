@@ -441,8 +441,8 @@ namespace xDC.Services
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{5}</td></tr>",
                         item.InstrumentCode, item.StockCode,
-                        (item.Maturity != null ? item.Maturity.Value.ToString("N"): "0.00"), 
-                        (item.Sales!= null ? item.Sales.Value.ToString("N"): "0.00"), (item.Purchase!= null ? item.Purchase.Value.ToString("N"): "0.00"),
+                        item.Maturity.ToString("N"), 
+                         item.Sales.ToString("N"),  item.Purchase.ToString("N"),
                         item.Remarks));
                 }
                 output.Append("</table>");
@@ -457,7 +457,7 @@ namespace xDC.Services
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{5}</td></tr>",
                         item.InstrumentCode, item.StockCode,
-                        (item.Maturity != null ? item.Maturity.Value.ToString("N"): "0.00"), (item.Sales!= null ? item.Sales.Value.ToString("N"): "0.00"), (item.Purchase!= null ? item.Purchase.Value.ToString("N"): "0.00"),
+                         item.Maturity.ToString("N"),  item.Sales.ToString("N"),  item.Purchase.ToString("N"),
                         item.Remarks));
                 }
                 output.Append("</table>");
@@ -472,7 +472,7 @@ namespace xDC.Services
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{5}</td></tr>",
                         item.InstrumentCode, item.StockCode,
-                        (item.Maturity != null ? item.Maturity.Value.ToString("N"): "0.00"), (item.Sales!= null ? item.Sales.Value.ToString("N"): "0.00"), (item.Purchase!= null ? item.Purchase.Value.ToString("N"): "0.00"),
+                         item.Maturity.ToString("N"),  item.Sales.ToString("N"),  item.Purchase.ToString("N"),
                         item.Remarks));
                 }
                 output.Append("</table>");
@@ -487,7 +487,7 @@ namespace xDC.Services
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{5}</td></tr>",
                         item.InstrumentCode, item.StockCode,
-                        (item.Maturity != null ? item.Maturity.Value.ToString("N"): "0.00"), (item.Sales!= null ? item.Sales.Value.ToString("N"): "0.00"), (item.Purchase!= null ? item.Purchase.Value.ToString("N"): "0.00"),
+                         item.Maturity.ToString("N"),  item.Sales.ToString("N"),  item.Purchase.ToString("N"),
                         item.Remarks));
                 }
                 output.Append("</table>");
@@ -502,7 +502,7 @@ namespace xDC.Services
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td></tr>",
                         item.InstrumentCode, item.StockCode,
-                        (item.FirstLeg != null ? item.FirstLeg.Value.ToString("N"): "0.00"), (item.SecondLeg!= null ? item.SecondLeg.Value.ToString("N"): "0.00"), 
+                        item.FirstLeg.ToString("N"), item.SecondLeg.ToString("N"), 
                         item.Remarks));
                 }
                 output.Append("</table>");
@@ -516,7 +516,7 @@ namespace xDC.Services
                 {
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td></tr>",
-                        item.InstrumentCode, item.StockCode, (item.AmountPlus!= null ? item.AmountPlus.Value.ToString("N"): "0.00"), item.Remarks));
+                        item.InstrumentCode, item.StockCode, item.AmountPlus.ToString("N"), item.Remarks));
                 }
                 output.Append("</table>");
             }
@@ -529,7 +529,7 @@ namespace xDC.Services
                 {
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td></tr>",
-                        item.InstrumentCode, item.StockCode, (item.AmountPlus!= null ? item.AmountPlus.Value.ToString("N"): "0.00"), (item.AmountMinus!= null ? item.AmountMinus.Value.ToString("N"): "0.00"), item.Remarks));
+                        item.InstrumentCode, item.StockCode, item.AmountPlus.ToString("N"), item.AmountMinus.ToString("N"), item.Remarks));
                 }
                 output.Append("</table>");
             }
@@ -542,7 +542,7 @@ namespace xDC.Services
                 {
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td></tr>",
-                        item.InstrumentCode, item.StockCode, (item.AmountPlus!= null ? item.AmountPlus.Value.ToString("N"): "0.00"), (item.AmountMinus!= null ? item.AmountMinus.Value.ToString("N"): "0.00"), item.Remarks));
+                        item.InstrumentCode, item.StockCode, item.AmountPlus.ToString("N"), item.AmountMinus.ToString("N"), item.Remarks));
                 }
                 output.Append("</table>");
             }
@@ -555,7 +555,7 @@ namespace xDC.Services
                 {
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td></tr>",
-                        item.InstrumentCode, (item.AmountPlus!= null ? item.AmountPlus.Value.ToString("N"): "0.00"), (item.AmountMinus!= null ? item.AmountMinus.Value.ToString("N"): "0.00"), item.Remarks));
+                        item.InstrumentCode, item.AmountPlus.ToString("N"), item.AmountMinus.ToString("N"), item.Remarks));
                 }
                 output.Append("</table>");
             }
@@ -568,7 +568,7 @@ namespace xDC.Services
                 {
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td></tr>",
-                        item.InstrumentCode, (item.AmountPlus!= null ? item.AmountPlus.Value.ToString("N"): "0.00"), item.Remarks));
+                        item.InstrumentCode, item.AmountPlus.ToString("N"), item.Remarks));
                 }
                 output.Append("</table>");
             }
@@ -581,7 +581,7 @@ namespace xDC.Services
                 {
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td></tr>",
-                        item.InstrumentCode, (item.AmountPlus!= null ? item.AmountPlus.Value.ToString("N"): "0.00"), item.Remarks));
+                        item.InstrumentCode, item.AmountPlus.ToString("N"), item.Remarks));
                 }
                 output.Append("</table>");
             }
@@ -594,7 +594,7 @@ namespace xDC.Services
                 {
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td></tr>",
-                        item.InstrumentCode, (item.AmountPlus!= null ? item.AmountPlus.Value.ToString("N"): "0.00"), item.Remarks));
+                        item.InstrumentCode, item.AmountPlus.ToString("N"), item.Remarks));
                 }
                 output.Append("</table>");
             }

@@ -11,6 +11,6 @@ namespace xDC_Web.ViewModels.Fid
         public string Currency { get; set; }
         public DateTime SettlementDate { get; set; }
         public List<TS_OpeningBalance> OpeningBalance { get; set; }
-        public decimal ClosingBalance { get; set; }
+        public double ClosingBalance { get; set; }
     }
 }

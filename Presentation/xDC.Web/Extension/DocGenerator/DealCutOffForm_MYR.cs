@@ -79,153 +79,133 @@ namespace xDC_Web.Extension.DocGenerator
             try
             {
                 var sheet = workbook.Worksheets[0];
+                
+                sheet["J2"].Value = (dataItem.SelectedDate != null)
+                    ? dataItem.SelectedDate.Value.ToString("dd/MM/yyyy")
+                    : null;
 
-                // 0. Date
-                sheet["J2"].Value = (dataItem.SelectedDate != null) ? dataItem.SelectedDate.Value.ToString("dd/MM/yyyy") : null;
+                #region 1 - IF: OB Rentas, MMA, RHB
 
-                // 1. Rentas OB
-                sheet["J4"].Value = (dataItem.RentasOb != null) ? dataItem.RentasOb.Value : 0.00;
-                sheet["G8"].Value = (dataItem.MmaOb != null) ? dataItem.MmaOb.Value : 0.00;
-                sheet["G10"].Value = (dataItem.TotalRhb != null) ? dataItem.TotalRhb.Value : 0.00;
+                sheet["J4"].Value = dataItem.RentasOb;
+                sheet["G8"].Value = dataItem.MmaOb;
+                sheet["G10"].Value = dataItem.TotalRhb;
 
-                sheet["E13"].Value = (dataItem.InflowDepoPrincipal != null) ? dataItem.InflowDepoPrincipal.Value : 0.00;
-                sheet["E14"].Value = (dataItem.InflowDepoInterest != null) ? dataItem.InflowDepoInterest.Value : 0.00;
-                sheet["G15"].Value = (dataItem.InflowTotalDepoPrincipalInterest != null) ? dataItem.InflowTotalDepoPrincipalInterest.Value : 0.00;
+                #endregion
 
-                sheet["E18"].Value = (dataItem.InflowOthersFixedIncome != null) ? dataItem.InflowOthersFixedIncome.Value : 0.00;
+                #region 2 - IF: Money Market
 
-                var currentRowIndex = 19;
+                sheet["E13"].Value = dataItem.InflowDepoPrincipal;
+                sheet["E14"].Value = dataItem.InflowDepoInterest;
+                sheet["G15"].Value = dataItem.InflowTotalDepoPrincipalInterest;
 
-                if (dataItem.InflowMgs.Any())
+                #endregion
+
+                #region 3 - IF: Fixed Income
+
+                var currentRowIndex = 18;
+
+                IterateFixedIncomeItem(dataItem.IF_Bond, Common.TsItemCategory.Bond, 18, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_CP, Common.TsItemCategory.Cp, 18, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_NP, Common.TsItemCategory.NotesPapers, 18, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_REPO, Common.TsItemCategory.Repo, 18, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_Coupon, Common.TsItemCategory.Coupon, 18, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_Fees, Common.TsItemCategory.Fees, 18, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_Mtm, Common.TsItemCategory.Mtm, 18, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_Fx, Common.TsItemCategory.Fx, 18, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_Cn, Common.TsItemCategory.Cn, 18, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_Altid, Common.TsItemCategory.Altid, 18, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_Others, Common.TsItemCategory.Others, 18, ref sheet, ref currentRowIndex);
+
+                if (currentRowIndex == 18)
                 {
-                    foreach (var item in dataItem.InflowMgs)
-                    {
-                        if (item.Amount > 0)
-                        {
-                            sheet.Rows[currentRowIndex].Insert();
-
-                            sheet["B" + currentRowIndex].Borders.LeftBorder.Color = Color.Black;
-                            sheet["B" + currentRowIndex].Borders.LeftBorder.LineStyle = BorderLineStyle.Thin;
-
-                            sheet["C" + currentRowIndex].Value = item.Name;
-
-                            sheet["E" + currentRowIndex].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
-                            sheet["E" + currentRowIndex].Value = item.Amount;
-                            sheet["E" + currentRowIndex].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                            sheet["H" + currentRowIndex].Borders.RightBorder.Color = Color.Black;
-                            sheet["H" + currentRowIndex].Borders.RightBorder.LineStyle = BorderLineStyle.Thin;
-
-                            currentRowIndex++;
-                        }
-                    }
+                    currentRowIndex += 1;
                 }
+                sheet["G" + currentRowIndex].Value = dataItem.IF_TotalFixedIncome;
 
-                if (dataItem.InflowGii.Any())
-                {
-                    foreach (var item in dataItem.InflowGii)
-                    {
-                        if (item.Amount > 0)
-                        {
-                            sheet.Rows[currentRowIndex].Insert();
+                #endregion
 
-                            sheet["B" + currentRowIndex].Borders.LeftBorder.Color = Color.Black;
-                            sheet["B" + currentRowIndex].Borders.LeftBorder.LineStyle = BorderLineStyle.Thin;
-
-                            sheet["C" + currentRowIndex].Value = item.Name;
-
-                            sheet["E" + currentRowIndex].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
-                            sheet["E" + currentRowIndex].Value = item.Amount;
-                            sheet["E" + currentRowIndex].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                            sheet["H" + currentRowIndex].Borders.RightBorder.Color = Color.Black;
-                            sheet["H" + currentRowIndex].Borders.RightBorder.LineStyle = BorderLineStyle.Thin;
-
-                            currentRowIndex++;
-                        }
-                    }
-                }
-
-                // total inflow fixed income
-                sheet["G" + currentRowIndex].Value = dataItem.InflowTotalFixedIncome;
-                sheet["G" + currentRowIndex].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
+                #region 4 - IF: Equity
 
                 currentRowIndex += 3;
-                sheet["E"+ currentRowIndex++].Value = (dataItem.InflowEquity != null) ? dataItem.InflowEquity.Value : 0.00;
-                sheet["G"+ currentRowIndex++].Value = (dataItem.InflowEquity != null) ? dataItem.InflowEquity.Value : 0.00;
-
+                sheet["E" + currentRowIndex].Value = dataItem.IF_Equity;
                 currentRowIndex += 1;
-                sheet["G" + currentRowIndex].Value = (dataItem.InflowTotalNet != null) ? dataItem.InflowTotalNet.Value : 0.00;
-                sheet["J" + currentRowIndex].Value = (dataItem.InflowTotalNetWithOb != null) ? dataItem.InflowTotalNetWithOb.Value : 0.00;
+                sheet["G" + currentRowIndex].Value = dataItem.IF_Equity;
 
+                #endregion
+
+                #region 5 - IF: Net
+
+                currentRowIndex += 2;
+                sheet["G" + currentRowIndex].Value = dataItem.IF_Net;
+                sheet["J" + currentRowIndex].Value = dataItem.IF_Net;
+
+                #endregion
+
+                #region 2 - OF: Money Market
+
+                currentRowIndex += 10;
+                sheet["E" + currentRowIndex].Value = dataItem.OF_MM_Rollover;
                 currentRowIndex += 1;
-                sheet["E"+ currentRowIndex].Value = (dataItem.OutflowOthersFixedIncome != null) ? dataItem.OutflowOthersFixedIncome.Value : 0.00;
+                sheet["E" + currentRowIndex].Value = dataItem.OF_MM_NewPlacement;
+                currentRowIndex += 1;
+                sheet["G" + currentRowIndex].Value = dataItem.OF_MM_Rollover + dataItem.OF_MM_NewPlacement;
 
-                // fixed income outflow
-                currentRowIndex += 16;
+                #endregion
 
-                if (dataItem.OutflowMgs.Any())
+                #region 3 - OF: Fixed Income
+
+                int startIndex = currentRowIndex + 3;
+                currentRowIndex += 3;
+
+                IterateFixedIncomeItem(dataItem.OF_Bond, Common.TsItemCategory.Bond, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_CP, Common.TsItemCategory.Cp, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_NP, Common.TsItemCategory.NotesPapers, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_REPO, Common.TsItemCategory.Repo, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_Coupon, Common.TsItemCategory.Coupon, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_Fees, Common.TsItemCategory.Fees, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_Mtm, Common.TsItemCategory.Mtm, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_Fx, Common.TsItemCategory.Fx, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_Cn, Common.TsItemCategory.Cn, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_Altid, Common.TsItemCategory.Altid, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_Others, Common.TsItemCategory.Others, startIndex, ref sheet, ref currentRowIndex);
+
+                if (currentRowIndex == startIndex)
                 {
-                    foreach (var item in dataItem.OutflowMgs)
-                    {
-                        if (item.Amount > 0)
-                        {
-                            sheet.Rows[currentRowIndex].Insert();
-
-                            sheet["B" + currentRowIndex].Borders.LeftBorder.Color = Color.Black;
-                            sheet["B" + currentRowIndex].Borders.LeftBorder.LineStyle = BorderLineStyle.Thin;
-
-                            sheet["C" + currentRowIndex].Value = item.Name;
-
-                            sheet["E" + currentRowIndex].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
-                            sheet["E" + currentRowIndex].Value = item.Amount;
-                            sheet["E" + currentRowIndex].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                            sheet["H" + currentRowIndex].Borders.RightBorder.Color = Color.Black;
-                            sheet["H" + currentRowIndex].Borders.RightBorder.LineStyle = BorderLineStyle.Thin;
-
-                            currentRowIndex++;
-                        }
-                    }
+                    currentRowIndex += 1;
                 }
+                sheet["G" + currentRowIndex].Value = dataItem.OF_TotalFixedIncome;
 
-                if (dataItem.OutflowGii.Any())
-                {
-                    foreach (var item in dataItem.OutflowGii)
-                    {
-                        if (item.Amount > 0)
-                        {
-                            sheet.Rows[currentRowIndex].Insert();
+                #endregion
 
-                            sheet["B" + currentRowIndex].Borders.LeftBorder.Color = Color.Black;
-                            sheet["B" + currentRowIndex].Borders.LeftBorder.LineStyle = BorderLineStyle.Thin;
+                #region 4 - OF: Equity
 
-                            sheet["C" + currentRowIndex].Value = item.Name;
+                currentRowIndex += 3;
+                sheet["E" + currentRowIndex].Value = dataItem.OF_Equity;
+                currentRowIndex += 1;
+                sheet["G" + currentRowIndex].Value = dataItem.OF_Equity;
 
-                            sheet["E" + currentRowIndex].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
-                            sheet["E" + currentRowIndex].Value = item.Amount;
-                            sheet["E" + currentRowIndex].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+                #endregion
 
-                            sheet["H" + currentRowIndex].Borders.RightBorder.Color = Color.Black;
-                            sheet["H" + currentRowIndex].Borders.RightBorder.LineStyle = BorderLineStyle.Thin;
+                #region 5 - OF: Net
 
-                            currentRowIndex++;
-                        }
-                    }
-                }
+                currentRowIndex += 2;
+                sheet["G" + currentRowIndex].Value = dataItem.OF_Net;
+                sheet["J" + currentRowIndex].Value = dataItem.OF_Net * -1;
 
-                // total outflow fixed income
-                sheet["B" + currentRowIndex].Borders.LeftBorder.Color = Color.Black;
-                sheet["B" + currentRowIndex].Borders.LeftBorder.LineStyle = BorderLineStyle.Thin;
-                sheet["G" + currentRowIndex].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
-                sheet["G" + currentRowIndex].Value = dataItem.OutflowTotalFixedIncome;
-                sheet["G" + currentRowIndex].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                sheet["H" + currentRowIndex].Borders.RightBorder.Color = Color.Black;
-                sheet["H" + currentRowIndex].Borders.RightBorder.LineStyle = BorderLineStyle.Thin;
+                #endregion
 
+                #region 5 - Rentas + Inflow - Outflow
+
+                currentRowIndex += 3;
+                sheet["J" + currentRowIndex].Value = dataItem.RentasOb + dataItem.IF_Net - dataItem.OF_Net;
+
+                #endregion
 
                 workbook.Calculate();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
             }
             finally
             {
@@ -243,13 +223,15 @@ namespace xDC_Web.Extension.DocGenerator
                 SelectedDate = selectedDate
             };
 
+            #region 1 - IF OB Rentas, MMA, RHB
+
             //1. Opening Balance RENTAS from EDW
             var rentasOb = db.EDW_BankBalance
                 .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate) && x.Currency == "MYR" && x.InstrumentType == "RENTAS")
                 .GroupBy(x => new { x.Currency, x.InstrumentType, x.SettlementDate })
                 .Select(x => x.Sum(y => y.Amount))
                 .FirstOrDefault();
-            dataObj.RentasOb = rentasOb;
+            dataObj.RentasOb = rentasOb ?? 0;
 
             //2. Opening Balance MMA from EDW
             var mmaOb = db.EDW_BankBalance
@@ -257,7 +239,7 @@ namespace xDC_Web.Extension.DocGenerator
                 .GroupBy(x => new { x.Currency, x.InstrumentType, x.SettlementDate })
                 .Select(x => x.Sum(y => y.Amount))
                 .FirstOrDefault();
-            dataObj.MmaOb = mmaOb;
+            dataObj.MmaOb = mmaOb ?? 0;
 
             //3. AMSD Inflow Fund RHB
             var amsdApprovedForms = db.AMSD_IF
@@ -269,273 +251,201 @@ namespace xDC_Web.Extension.DocGenerator
                 .GroupBy(x => x.FundType)
                 .Select(x => x.Sum(y => y.Amount))
                 .FirstOrDefault();
-            dataObj.TotalRhb = (double?)totalRhb;
+            dataObj.TotalRhb = totalRhb;
 
-            //4. Inflow Money Market Principal 
+            #endregion
+
+            #region 2 - IF MMI 
+            
             var treasuryApprovedForms = db.FID_Treasury
-                .Where(x => DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate) && x.Currency == "MYR" && x.FormStatus == Common.FormStatus.Approved)
+                .Where(x => DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate) 
+                            && x.Currency == "MYR" 
+                            && x.FormStatus == Common.FormStatus.Approved)
                 .Select(x => x.Id)
                 .ToList();
 
-            var inflowTotalDepoPrincipal = db.FID_Treasury_Deposit
+            var ifTotalPrincipal = db.FID_Treasury_Deposit
                 .Where(x => treasuryApprovedForms.Contains(x.FormId) && x.CashflowType == Common.Cashflow.Inflow)
                 .GroupBy(x => x.CashflowType)
                 .Select(x => x.Sum(y => y.Principal))
                 .FirstOrDefault();
 
-            var inflowTotalDepoInterest = db.FID_Treasury_Deposit
+            var ifTotalInterest = db.FID_Treasury_Deposit
                 .Where(x => treasuryApprovedForms.Contains(x.FormId) && x.CashflowType == Common.Cashflow.Inflow)
                 .GroupBy(x => x.CashflowType)
                 .Select(x => x.Sum(y => y.IntProfitReceivable))
                 .FirstOrDefault();
 
-            var inflowTotalDepoPrincipalInterest = db.FID_Treasury_Deposit
-                .Where(x => treasuryApprovedForms.Contains(x.FormId) && x.CashflowType == Common.Cashflow.Inflow)
-                .GroupBy(x => x.CashflowType)
-                .Select(x => x.Sum(y => y.PrincipalIntProfitReceivable))
-                .FirstOrDefault();
+            var inflowTotalDepoPrincipalInterest = ifTotalPrincipal + ifTotalInterest;
 
-            dataObj.InflowDepoPrincipal = (double?)inflowTotalDepoPrincipal;
-            dataObj.InflowDepoInterest = (double?)inflowTotalDepoInterest;
-            dataObj.InflowTotalDepoPrincipalInterest = (double?)inflowTotalDepoPrincipalInterest;
+            dataObj.InflowDepoPrincipal = ifTotalPrincipal;
+            dataObj.InflowDepoInterest = ifTotalInterest;
+            dataObj.InflowTotalDepoPrincipalInterest = inflowTotalDepoPrincipalInterest;
 
+            #endregion
+            
+            #region 3 - IF Fixed Income
 
-            // 5. TS Equity
-            var approveTradeSettlementForms = db.ISSD_FormHeader
-                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate) 
+            var approvedTsForms = db.ISSD_FormHeader
+                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
                             && x.Currency == "MYR" && x.FormStatus == Common.FormStatus.Approved)
                 .Select(x => x.Id)
                 .ToList();
 
-            var inflowTotalEquity = db.ISSD_TradeSettlement
-                .Where(x => approveTradeSettlementForms.Contains(x.FormId) && x.InstrumentType == Common.TsItemCategory.Equity)
-                .GroupBy(x => x.InstrumentType)
-                .Select(x => new
-                {
-                    InstrumentType = x.Key,
-                    AmountPlus = x.Sum(y => (double?)y.AmountMinus) ?? 0,
-                    Sales = x.Sum(y => (double?)y.Sales) ?? 0,
-                    Maturity = x.Sum(y => (double?)y.Maturity) ?? 0
-                })
-                .Select(x => (x.Sales + x.Maturity + x.AmountPlus))
+            dataObj.IF_Bond = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Bond);
+            dataObj.IF_CP = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cp);
+            dataObj.IF_NP = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.NotesPapers);
+            dataObj.IF_REPO = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Repo);
+            dataObj.IF_Coupon = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Coupon);
+            dataObj.IF_Fees = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Fees);
+            dataObj.IF_Mtm = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Mtm);
+            dataObj.IF_Fx = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Fx);
+            dataObj.IF_Cn = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cn);
+            dataObj.IF_Altid = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Altid);
+            dataObj.IF_Others = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Others);
+
+            dataObj.IF_TotalFixedIncome = TradeSettlementSvc.GetTotalInflowWithoutEquity(db, approvedTsForms);
+
+            #endregion
+
+            #region 4 - IF Equity
+
+            dataObj.IF_Equity = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Equity);
+
+            #endregion
+
+            #region 5 - IF Net
+
+            dataObj.IF_Net = dataObj.IF_Equity + dataObj.IF_TotalFixedIncome +
+                             dataObj.InflowTotalDepoPrincipalInterest + dataObj.TotalRhb + dataObj.MmaOb;
+
+            #endregion
+
+            #region 2 - OF MMI 
+            
+            dataObj.OF_MM_NewPlacement = db.FID_Treasury_Deposit
+                .Where(x => treasuryApprovedForms.Contains(x.FormId) 
+                            && x.CashflowType == Common.Cashflow.Outflow
+                            && x.Notes == "New")
+                .GroupBy(x => x.CashflowType)
+                .Select(x => x.Sum(y => y.Principal))
                 .FirstOrDefault();
 
-            var outflowTotalEquity = db.ISSD_TradeSettlement
-                .Where(x => approveTradeSettlementForms.Contains(x.FormId) && x.InstrumentType == Common.TsItemCategory.Equity)
-                .GroupBy(x => x.InstrumentType)
-                .Select(x => new
-                {
-                    InstrumentType = x.Key,
-                    AmountMinus = x.Sum(y => (double?)y.AmountMinus) ?? 0,
-                    Purchase = x.Sum(y => (double?)y.Purchase) ?? 0
-                })
-                .Select(x => (x.AmountMinus + x.Purchase))
+            dataObj.OF_MM_Rollover = db.FID_Treasury_Deposit
+                .Where(x => treasuryApprovedForms.Contains(x.FormId) 
+                            && x.CashflowType == Common.Cashflow.Outflow
+                            && x.Notes == "r/o p+i")
+                .GroupBy(x => x.CashflowType)
+                .Select(x => x.Sum(y => y.IntProfitReceivable))
                 .FirstOrDefault();
 
-            dataObj.InflowEquity = inflowTotalEquity;
-            dataObj.OutflowEquity = outflowTotalEquity;
+            #endregion
 
-            // 6. Fix Income Others
-            var excludeFromOthers = new List<string>()
-            {
-                Common.TsItemCategory.Equity,
-                Common.TsItemCategory.Bond,
-                Common.TsItemCategory.Coupon
-            };
+            #region ? - OF Fixed Income
 
-            var inflowOthersFixIncome = db.ISSD_TradeSettlement
-                .Where(x => approveTradeSettlementForms.Contains(x.FormId) && !excludeFromOthers.Contains(x.InstrumentType))
-                .GroupBy(x => x.InstrumentType)
-                .Select(x => new
-                {
-                    InstrumentType = x.Key,
-                    AmountPlus = x.Sum(y => (double?)y.AmountMinus) ?? 0,
-                    Sales = x.Sum(y => (double?)y.Sales) ?? 0,
-                    Maturity = x.Sum(y => (double?)y.Maturity) ?? 0,
-                    FirstLeg = x.Sum(y => (double?)y.FirstLeg) ?? 0
-                })
-                .Select(x => (x.Sales + x.Maturity + x.AmountPlus + x.FirstLeg))
-                .FirstOrDefault();
+            dataObj.OF_Bond = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Bond);
+            dataObj.OF_CP = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cp);
+            dataObj.OF_NP = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.NotesPapers);
+            dataObj.OF_REPO = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Repo);
+            dataObj.OF_Coupon = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Coupon);
+            dataObj.OF_Fees = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Fees);
+            dataObj.OF_Mtm = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Mtm);
+            dataObj.OF_Fx = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Fx);
+            dataObj.OF_Cn = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cn);
+            dataObj.OF_Altid = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Altid);
+            dataObj.OF_Others = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Others);
 
-            var outflowOthersFixIncome = db.ISSD_TradeSettlement
-                .Where(x => approveTradeSettlementForms.Contains(x.FormId) && !excludeFromOthers.Contains(x.InstrumentType))
-                .GroupBy(x => x.InstrumentType)
-                .Select(x => new
-                {
-                    InstrumentType = x.Key,
-                    AmountMinus = x.Sum(y => (double?)y.AmountMinus) ?? 0,
-                    Purchase = x.Sum(y => (double?)y.Purchase) ?? 0,
-                    SecondLeg = x.Sum(y => (double?)y.SecondLeg) ?? 0
-                })
-                .Select(x => (x.AmountMinus + x.Purchase + x.SecondLeg))
-                .FirstOrDefault();
+            dataObj.OF_TotalFixedIncome = TradeSettlementSvc.GetTotalOutflowWithoutEquity(db, approvedTsForms);
 
-            dataObj.InflowOthersFixedIncome = inflowOthersFixIncome;
-            dataObj.OutflowOthersFixedIncome = outflowOthersFixIncome;
+            #endregion
 
-            // 7. Mgs
-            var inflowMgsFixedIncome = db.ISSD_TradeSettlement
-                .Where(x => approveTradeSettlementForms.Contains(x.FormId) 
-                            && (x.InstrumentType == Common.TsItemCategory.Bond || x.InstrumentType == Common.TsItemCategory.Coupon)
-                            && x.InstrumentCode.StartsWith("MGS"))
-                .GroupBy(x => x.InstrumentCode)
-                .Select(x => new
-                {
-                    Name = x.Key,
-                    AmountPlus = x.Sum(y => (double?)y.AmountMinus) ?? 0,
-                    Sales = x.Sum(y => (double?)y.Sales) ?? 0,
-                    Maturity = x.Sum(y => (double?)y.Maturity) ?? 0,
-                    FirstLeg = x.Sum(y => (double?)y.FirstLeg) ?? 0
-                })
-                .Select(x => new MYR_DealCutOffData_Item()
-                {
-                    Name = x.Name,
-                    Amount = (x.AmountPlus + x.Sales + x.Maturity + x.FirstLeg)
-                })
-                .ToList();
+            #region 4 - OF Equity
 
-            var outflowMgsFixedIncome = db.ISSD_TradeSettlement
-                .Where(x => approveTradeSettlementForms.Contains(x.FormId)
-                            && (x.InstrumentType == Common.TsItemCategory.Bond || x.InstrumentType == Common.TsItemCategory.Coupon)
-                            && x.InstrumentCode.StartsWith("MGS"))
-                .GroupBy(x => x.InstrumentCode)
-                .Select(x => new
-                {
-                    Name = x.Key,
-                    AmountMinus = x.Sum(y => (double?)y.AmountMinus) ?? 0,
-                    Purchase = x.Sum(y => (double?)y.Purchase) ?? 0,
-                    SecondLeg = x.Sum(y => (double?)y.SecondLeg) ?? 0
-                })
-                .Select(x => new MYR_DealCutOffData_Item()
-                {
-                    Name = x.Name,
-                    Amount = (x.AmountMinus + x.Purchase + x.SecondLeg)
-                })
-                .ToList();
+            dataObj.OF_Equity = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Equity);
 
-            dataObj.InflowMgs = inflowMgsFixedIncome;
-            dataObj.OutflowMgs = outflowMgsFixedIncome;
+            #endregion
 
-            // 8. GII
-            var inflowGiiFixedIncome = db.ISSD_TradeSettlement
-                .Where(x => approveTradeSettlementForms.Contains(x.FormId)
-                            && (x.InstrumentType == Common.TsItemCategory.Bond || x.InstrumentType == Common.TsItemCategory.Coupon)
-                            && x.InstrumentCode.StartsWith("GII"))
-                .GroupBy(x => x.InstrumentCode)
-                .Select(x => new
-                {
-                    Name = x.Key,
-                    AmountPlus = x.Sum(y => (double?)y.AmountMinus) ?? 0,
-                    Sales = x.Sum(y => (double?)y.Sales) ?? 0,
-                    Maturity = x.Sum(y => (double?)y.Maturity) ?? 0,
-                    FirstLeg = x.Sum(y => (double?)y.FirstLeg) ?? 0,
-                })
-                .Select(x => new MYR_DealCutOffData_Item()
-                {
-                    Name = x.Name,
-                    Amount = (x.AmountPlus + x.Sales + x.Maturity + x.FirstLeg)
-                })
-                .ToList();
+            #region 5 - OF Net
 
-            var outflowGiiFixedIncome = db.ISSD_TradeSettlement
-                .Where(x => approveTradeSettlementForms.Contains(x.FormId)
-                            && (x.InstrumentType == Common.TsItemCategory.Bond || x.InstrumentType == Common.TsItemCategory.Coupon)
-                            && x.InstrumentCode.StartsWith("GII"))
-                .GroupBy(x => x.InstrumentCode)
-                .Select(x => new
-                {
-                    Name = x.Key,
-                    AmountMinus = x.Sum(y => (double?)y.AmountMinus) ?? 0,
-                    Purchase = x.Sum(y => (double?)y.Purchase) ?? 0,
-                    SecondLeg = x.Sum(y => (double?)y.SecondLeg) ?? 0
-                })
-                .Select(x => new MYR_DealCutOffData_Item()
-                {
-                    Name = x.Name,
-                    Amount = (x.AmountMinus + x.Purchase + x.SecondLeg)
-                })
-                .ToList();
+            dataObj.OF_Net = dataObj.OF_Equity + dataObj.OF_TotalFixedIncome +
+                             dataObj.OF_MM_NewPlacement + dataObj.OF_MM_Rollover;
 
-            dataObj.InflowGii = inflowGiiFixedIncome;
-            dataObj.OutflowGii = outflowGiiFixedIncome;
-
-            // 8. Total Fixed Income
-            var inflowTotalFixIncome = db.ISSD_TradeSettlement
-                .Where(x => approveTradeSettlementForms.Contains(x.FormId) && x.InstrumentType != Common.TsItemCategory.Equity)
-                .GroupBy(x => x.InstrumentType)
-                .Select(x => new
-                {
-                    InstrumentType = x.Key,
-                    AmountPlus = x.Sum(y => (double?)y.AmountMinus) ?? 0,
-                    Sales = x.Sum(y => (double?)y.Sales) ?? 0,
-                    Maturity = x.Sum(y => (double?)y.Maturity) ?? 0,
-                    FirstLeg = x.Sum(y => (double?)y.FirstLeg) ?? 0
-                })
-                .Select(x => (x.Sales + x.Maturity + x.AmountPlus + x.FirstLeg))
-                .FirstOrDefault();
-
-            dataObj.InflowTotalFixedIncome = inflowTotalFixIncome;
-
-            var outflowTotalFixIncome = db.ISSD_TradeSettlement
-                .Where(x => approveTradeSettlementForms.Contains(x.FormId) && x.InstrumentType != Common.TsItemCategory.Equity)
-                .GroupBy(x => x.InstrumentType)
-                .Select(x => new
-                {
-                    InstrumentType = x.Key,
-                    AmountMinus = x.Sum(y => (double?)y.AmountMinus) ?? 0,
-                    Purchase = x.Sum(y => (double?)y.Purchase) ?? 0,
-                    SecondLeg = x.Sum(y => (double?)y.SecondLeg) ?? 0
-                })
-                .Select(x => (x.AmountMinus + x.Purchase + x.SecondLeg))
-                .FirstOrDefault();
-
-            dataObj.OutflowTotalFixedIncome = outflowTotalFixIncome;
-
-            // 9. total net inflow
-            dataObj.InflowTotalNet = (dataObj.MmaOb ?? 0) + (dataObj.TotalRhb ?? 0) + (dataObj.InflowTotalDepoPrincipalInterest ?? 0) +
-                (dataObj.InflowTotalFixedIncome ?? 0) + (dataObj.InflowEquity ?? 0);
-
-            dataObj.InflowTotalNetWithOb = dataObj.InflowTotalNet + dataObj.RentasOb ?? 0;
+            #endregion
 
             return dataObj;
 
             
+        }
+
+        private void IterateFixedIncomeItem(double amount, string category, int startIndex, ref Worksheet sheet, ref int currentRowIndex)
+        {
+            if (amount > 0)
+            {
+                if (currentRowIndex != startIndex)
+                {
+                    sheet.Rows[currentRowIndex-1].Insert(InsertCellsMode.ShiftCellsDown);
+                    sheet.Rows[currentRowIndex-1].CopyFrom(sheet.Rows[startIndex - 1], PasteSpecial.All);
+                }
+                sheet["C" + currentRowIndex].Value = category;
+                sheet["E" + currentRowIndex].Value = amount;
+                currentRowIndex++;
+                
+            }
         }
     }
 
     public class MYR_DealCutOffData
     {
         public DateTime? SelectedDate { get; set; }
-        public double? RentasOb { get; set; }
-        public double? MmaOb { get; set; }
-        public double? TotalRhb { get; set; }
-        public double? InflowDepoPrincipal { get; set; }
-        public double? InflowDepoInterest { get; set; }
-        public double? InflowTotalDepoPrincipalInterest { get; set; }
-        public double? InflowEquity { get; set; }
-        public double? OutflowEquity { get; set; }
+        public double RentasOb { get; set; }
+        public double MmaOb { get; set; }
+        public double TotalRhb { get; set; }
+        public double InflowDepoPrincipal { get; set; }
+        public double InflowDepoInterest { get; set; }
+        public double InflowTotalDepoPrincipalInterest { get; set; }
 
-        public List<MYR_DealCutOffData_Item> InflowMgs { get; set; }
-        public List<MYR_DealCutOffData_Item> InflowGii { get; set; }
+        public double IF_Bond { get; set; }
+        public double IF_CP { get; set; }
+        public double IF_NP { get; set; }
+        public double IF_REPO { get; set; }
+        public double IF_Coupon { get; set; }
+        public double IF_Fees { get; set; }
+        public double IF_Mtm { get; set; }
+        public double IF_Fx { get; set; }
+        public double IF_Cn { get; set; }
+        public double IF_Altid { get; set; }
+        public double IF_Others { get; set; }
+        public double IF_TotalFixedIncome { get; set; }
 
-        public List<MYR_DealCutOffData_Item> OutflowMgs { get; set; }
-        public List<MYR_DealCutOffData_Item> OutflowGii { get; set; }
+        public double IF_Equity { get; set; }
+        public double IF_Net { get; set; }
 
-        public double? InflowOthersFixedIncome { get; set; }
-        public double? OutflowOthersFixedIncome { get; set; }
+        public double OF_MM_Rollover { get; set; }
+        public double OF_MM_NewPlacement { get; set; }
 
-        public double? InflowTotalFixedIncome { get; set; }
-        public double? OutflowTotalFixedIncome { get; set; }
+        public double OF_Bond { get; set; }
+        public double OF_CP { get; set; }
+        public double OF_NP { get; set; }
+        public double OF_REPO { get; set; }
+        public double OF_Coupon { get; set; }
+        public double OF_Fees { get; set; }
+        public double OF_Mtm { get; set; }
+        public double OF_Fx { get; set; }
+        public double OF_Cn { get; set; }
+        public double OF_Altid { get; set; }
+        public double OF_Others { get; set; }
+        public double OF_TotalFixedIncome { get; set; }
 
-        public double? InflowTotalNet { get; set; }
-        public double? InflowTotalNetWithOb { get; set; }
+        public double OF_Equity { get; set; }
+        public double OF_Net { get; set; }
+
 
     }
 
     public class MYR_DealCutOffData_Item
     {
         public string Name { get; set; }
-        public double? Amount { get; set; }
+        public double Amount { get; set; }
     }
     
 }

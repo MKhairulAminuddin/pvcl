@@ -13,7 +13,7 @@ namespace xDC_Web.ViewModels
         public string Currency { get; set; }
 
         public List<TS_OpeningBalance> OpeningBalance { get; set; }
-        public decimal ClosingBalance { get; set; }
+        public double ClosingBalance { get; set; }
 
         public string PreparedBy { get; set; }
         public DateTime? PreparedDate { get; set; }

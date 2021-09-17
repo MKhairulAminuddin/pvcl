@@ -113,9 +113,6 @@
     <Compile Include="Application\Form_Workflow.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Application\ISSD_Balance.cs">
-      <DependentUpon>kashflowDb.tt</DependentUpon>
-    </Compile>
     <Compile Include="Application\ISSD_FormHeader.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>

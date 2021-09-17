@@ -52,25 +52,25 @@
             return result;
 
         case "NIDC":
-            var price = (100 / (1 + (tenor * rate / 36500)));
+            var price = (100 / (1 + (tenor * rate / 36500))).toFixed(4);
             result = (nominal * price / 100);
             return result.toFixed(2.5);
 
         case "CP":
         case "ICP":
-            result = nominal - (rate * tenor / 36500 * nominal);
+            result = nominal - (rate * tenor / 36500 * nominal).toFixed(4);
             return result.toFixed(2.5);
 
         case "BA":
         case "AB-i":
-            result = nominal - (rate * tenor / 36500 * nominal);
+            result = nominal - (rate * tenor / 36500 * nominal).toFixed(4);
             return result.toFixed(2.5);
 
         case "BNMN":
         case "BNMN-i":
         case "MTB":
         case "MTIB":
-            result = nominal - (rate * tenor / 36500 * nominal);
+            result = nominal - (rate * tenor / 36500 * nominal).toFixed(4);
             return result.toFixed(2.5);
 
         case "NIDL":
@@ -87,7 +87,7 @@
 
         switch (productType) {
         case "NID":
-            result = (rate * tenor * nominal / 36500);
+            result = (rate * tenor * nominal / 36500).toFixed(4);
             return result.toFixed(2.5);
 
         case "NIDC":
@@ -116,7 +116,7 @@
             return result.toFixed(2.5);
 
         case "NIDL":
-            result = (rate * tenor * nominal / 36500);
+            result = (rate * tenor * nominal / 36500).toFixed(4);
             return result.toFixed(2.5);
 
         default:

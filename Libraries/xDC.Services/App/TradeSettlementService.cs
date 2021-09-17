@@ -98,7 +98,7 @@ namespace xDC.Services.App
                 result.Add(new TS_OpeningBalance()
                 {
                     Account = item.account,
-                    Amount = (decimal)item.total
+                    Amount = item.total
                 });
             }
 
@@ -121,19 +121,19 @@ namespace xDC.Services.App
             var totalFlow = trades.GroupBy(x => 1)
                 .Select(x => new
                 {
-                    totalMaturity = x.Sum(y => y.Maturity??0),
-                    totalSales = x.Sum(y => y.Sales ?? 0),
-                    totalFirstLeg = x.Sum(y => y.FirstLeg ?? 0),
-                    totalAmountPlus = x.Sum(y => y.AmountPlus ?? 0),
+                    totalMaturity = x.Sum(y => y.Maturity),
+                    totalSales = x.Sum(y => y.Sales),
+                    totalFirstLeg = x.Sum(y => y.FirstLeg),
+                    totalAmountPlus = x.Sum(y => y.AmountPlus),
 
-                    totalPurchase = x.Sum(y => y.Purchase ?? 0),
-                    totalSecondLeg = x.Sum(y => y.SecondLeg ?? 0),
-                    totalAmountMinus = x.Sum(y => y.AmountMinus ?? 0)
+                    totalPurchase = x.Sum(y => y.Purchase),
+                    totalSecondLeg = x.Sum(y => y.SecondLeg),
+                    totalAmountMinus = x.Sum(y => y.AmountMinus)
                 })
                 .FirstOrDefault();
 
-            decimal cbInflow = 0;
-            decimal cbOutflow = 0;
+            double cbInflow = 0;
+            double cbOutflow = 0;
 
             if (totalFlow != null)
             {
@@ -224,5 +224,72 @@ namespace xDC.Services.App
             }
         }
 
+
+        public static double GetTotalInflowByCategory(kashflowDBEntities db, List<int> approvedFormIds, string category)
+        {
+            var result = db.ISSD_TradeSettlement
+                .Where(x => approvedFormIds.Contains(x.FormId) && x.InstrumentType == category)
+                .GroupBy(x => x.InstrumentType)
+                .Select(x => new
+                {
+                    InstrumentType = x.Key,
+                    AmountPlus = x.Sum(y => y.AmountPlus),
+                    Sales = x.Sum(y => y.Sales),
+                    Maturity = x.Sum(y => y.Maturity),
+                    FirstLeg = x.Sum(y => y.FirstLeg)
+                })
+                .Select(x => (x.Sales + x.Maturity + x.AmountPlus + x.FirstLeg))
+                .FirstOrDefault();
+
+            return result;
+        }
+
+        public static double GetTotalInflowWithoutEquity(kashflowDBEntities db, List<int> approvedFormIds)
+        {
+            if (approvedFormIds.Any())
+            {
+                var result = db.ISSD_TradeSettlement
+                    .Where(x => approvedFormIds.Contains(x.FormId) && x.InstrumentType != Common.TsItemCategory.Equity)
+                    .Sum(x => x.Sales + x.Maturity + x.AmountPlus + x.FirstLeg);
+                return result;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public static double GetTotalOutflowByCategory(kashflowDBEntities db, List<int> approvedFormIds, string category)
+        {
+            var result = db.ISSD_TradeSettlement
+                .Where(x => approvedFormIds.Contains(x.FormId) && x.InstrumentType == category)
+                .GroupBy(x => x.InstrumentType)
+                .Select(x => new
+                {
+                    InstrumentType = x.Key,
+                    AmountMinus = x.Sum(y => y.AmountMinus),
+                    Purchase = x.Sum(y => y.Purchase),
+                    SecondLeg = x.Sum(y => y.SecondLeg)
+                })
+                .Select(x => (x.AmountMinus + x.Purchase + x.SecondLeg))
+                .FirstOrDefault();
+
+            return result;
+        }
+
+        public static double GetTotalOutflowWithoutEquity(kashflowDBEntities db, List<int> approvedFormIds)
+        {
+            if (approvedFormIds.Any())
+            {
+                var result = db.ISSD_TradeSettlement
+                    .Where(x => approvedFormIds.Contains(x.FormId) && x.InstrumentType != Common.TsItemCategory.Equity)
+                    .Sum(x => x.Purchase + x.AmountMinus + x.SecondLeg);
+                return result;
+            }
+            else
+            {
+                return 0;
+            }
+        }
     }
 }
