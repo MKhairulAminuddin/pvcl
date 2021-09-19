@@ -319,13 +319,93 @@ namespace xDC_Web.Controllers
         #endregion
 
         #region Deal Cut Off (FCY)
-        
+
         public ActionResult DealCutOffFcy()
         {
-            DealCutOffMyrTemplateModel model = new DealCutOffMyrTemplateModel();
-            model.PreviewModel.Workbook = new DealCutOffForm_MYR().GenerateWorkbook(DateTime.Now);
+            return View("DealCutOff/Fcy");
+        }
 
-            return View("DealCutOff/Fcy", model);
+        [HttpPost]
+        [Route("DealCutOffMyr/Print")]
+        public ActionResult DealCutOffFcy_Print(string TradeDate, bool isExportAsExcel)
+        {
+            try
+            {
+                DateTime? selectedDate = DateTime.Now;
+                if (!string.IsNullOrEmpty(TradeDate))
+                {
+                    selectedDate = Common.ConvertEpochToDateTime(Convert.ToInt64(TradeDate));
+                }
+
+                var generatedDocumentFile = new DealCutOffForm_FCY().GenerateFile(selectedDate.Value, isExportAsExcel);
+
+                if (!string.IsNullOrEmpty(generatedDocumentFile))
+                {
+                    return Content(generatedDocumentFile);
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return HttpNotFound();
+            }
+        }
+
+        [Route("DealCutOffFcy/Printed/{id}")]
+        public ActionResult DealCutOffFcy_ViewPrinted(string id)
+        {
+            try
+            {
+                var fileStream = new DocGeneratorBase().GetFile(id);
+
+                if (fileStream != null)
+                {
+                    var fileName = Common.GetFileName(fileStream);
+                    Response.AddHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+                    if (Common.GetFileExt(fileStream) == ".xlsx")
+                    {
+                        return File(fileStream, Common.ConvertIndexToContentType(4));
+                    }
+                    else
+                    {
+                        return File(fileStream, Common.ConvertIndexToContentType(11));
+                    }
+
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Generated file not found... sorry...";
+                    return View("Error");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Error");
+            }
+        }
+
+        public ActionResult DealCutOffFcyPreview(string TradeDate, int SheetIndex)
+        {
+            DateTime selectedDate = DateTime.Now;
+            if (!string.IsNullOrEmpty(TradeDate))
+            {
+                selectedDate = (DateTime)Common.ConvertEpochToDateTime(Convert.ToInt64(TradeDate));
+            }
+
+            var previewModel = new SpreadsheetPreviewModel
+            {
+                Workbook = new DealCutOffForm_FCY().GenerateWorkbook(selectedDate),
+                PreviewSheetIndex = SheetIndex
+            };
+            return GenerateHtmlPreview(previewModel);
         }
 
 

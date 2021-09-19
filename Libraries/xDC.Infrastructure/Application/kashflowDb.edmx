@@ -138,6 +138,21 @@
           <Property Name="UpdatedBy" Type="nvarchar" MaxLength="250" />
           <Property Name="UpdatedDate" Type="datetime" />
         </EntityType>
+        <EntityType Name="Config_FcaBankAccount">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AccountName1" Type="nvarchar" MaxLength="250" />
+          <Property Name="AccountName2" Type="nvarchar" MaxLength="250" />
+          <Property Name="AccountName3" Type="nvarchar" MaxLength="250" />
+          <Property Name="AccountNo" Type="nvarchar" MaxLength="250" />
+          <Property Name="Currency" Type="nvarchar" MaxLength="10" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="250" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="250" />
+          <Property Name="UpdatedDate" Type="datetime" />
+        </EntityType>
         <EntityType Name="Config_Key">
           <Key>
             <PropertyRef Name="Key" />
@@ -405,6 +420,7 @@ warning 6002: The table/view 'kashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="Config_Application" EntityType="Self.Config_Application" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Config_Approver" EntityType="Self.Config_Approver" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Config_Dropdown" EntityType="Self.Config_Dropdown" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Config_FcaBankAccount" EntityType="Self.Config_FcaBankAccount" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Config_Key" EntityType="Self.Config_Key" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EDW_FID_List" EntityType="Self.EDW_FID_List" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="FID_Treasury" EntityType="Self.FID_Treasury" Schema="dbo" store:Type="Tables" />
@@ -505,6 +521,7 @@ warning 6002: The table/view 'kashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="AMSD_IF_Item" EntityType="kashflowDbModel.AMSD_IF_Item" />
           <EntitySet Name="FID_Treasury_Deposit" EntityType="kashflowDbModel.FID_Treasury_Deposit" />
           <EntitySet Name="FID_Treasury_MMI" EntityType="kashflowDbModel.FID_Treasury_MMI" />
+          <EntitySet Name="Config_FcaBankAccount" EntityType="kashflowDbModel.Config_FcaBankAccount" />
           </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -858,6 +875,21 @@ warning 6002: The table/view 'kashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="CertNoStockCode" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Config_FcaBankAccount">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AccountName1" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="AccountName2" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="AccountName3" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="AccountNo" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Currency" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -1238,6 +1270,22 @@ warning 6002: The table/view 'kashflowDb.dbo.EDW_TradeItem' does not have a prim
                 <ScalarProperty Name="Dealer" ColumnName="Dealer" />
                 <ScalarProperty Name="CashflowType" ColumnName="CashflowType" />
                 <ScalarProperty Name="FormId" ColumnName="FormId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Config_FcaBankAccount">
+            <EntityTypeMapping TypeName="kashflowDbModel.Config_FcaBankAccount">
+              <MappingFragment StoreEntitySet="Config_FcaBankAccount">
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="Currency" ColumnName="Currency" />
+                <ScalarProperty Name="AccountNo" ColumnName="AccountNo" />
+                <ScalarProperty Name="AccountName3" ColumnName="AccountName3" />
+                <ScalarProperty Name="AccountName2" ColumnName="AccountName2" />
+                <ScalarProperty Name="AccountName1" ColumnName="AccountName1" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

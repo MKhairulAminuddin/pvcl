@@ -1,5 +1,4 @@
-﻿@model xDC_Web.ViewModels.Fid.DealCutOff.DealCutOffMyrTemplateModel
-
+﻿
 @{
     ViewBag.Title = "Deal Cut Off";
     ViewBag.Subtitle = "FCY";
@@ -18,7 +17,13 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    <img src="@Url.Content("~/Content/images/design-team.png")" alt="Alternate Text" class="img img-responsive" style="width: 100px; margin: 0 auto;" />
+                    <div id="tabpanel-container">
+                        <div style="padding-top: 10px; overflow: auto">
+                            <div style="width: 100%">
+                                <iframe id="sheet1" style="width: 100%; height: 1200px; border-style: none;"> </iframe>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

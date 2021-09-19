@@ -48,5 +48,6 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<AMSD_IF_Item> AMSD_IF_Item { get; set; }
         public virtual DbSet<FID_Treasury_Deposit> FID_Treasury_Deposit { get; set; }
         public virtual DbSet<FID_Treasury_MMI> FID_Treasury_MMI { get; set; }
+        public virtual DbSet<Config_FcaBankAccount> Config_FcaBankAccount { get; set; }
     }
 }

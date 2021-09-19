@@ -29,6 +29,7 @@
         <EntityTypeShape EntityType="kashflowDbModel.AMSD_IF_Item" Width="1.5" PointX="10.625" PointY="5.75" />
         <EntityTypeShape EntityType="kashflowDbModel.FID_Treasury_Deposit" Width="1.5" PointX="13" PointY="9.75" />
         <EntityTypeShape EntityType="kashflowDbModel.FID_Treasury_MMI" Width="1.5" PointX="11.375" PointY="9.75" />
+        <EntityTypeShape EntityType="kashflowDbModel.Config_FcaBankAccount" Width="1.5" PointX="6.75" PointY="4.875" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

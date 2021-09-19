@@ -1,7 +1,7 @@
 ﻿(function ($, window, document) {
     $(function () {
         //#region Variable Definition
-        
+
         var $dateSelectionBtn,
             $printBtn;
 
@@ -13,7 +13,21 @@
         //#endregion
 
         //#region Data Source & Functions
-        
+
+        var populateData = function (selectedDate) {
+            var epochDate = moment(selectedDate).unix();
+            var params = "TradeDate=" + encodeURIComponent(epochDate);
+
+            var iframeElement0 = document.getElementById("sheet1");
+            iframeElement0.src = "./DealCutOffFcyPreview?" + params + "&SheetIndex=0";
+
+            /*var iframeElement2 = document.getElementById("sheet2");
+            iframeElement2.src = "./DealCutOffFcyPreview?" + params + "&SheetIndex=1";
+
+            var iframeElement3 = document.getElementById("sheet3");
+            iframeElement3.src = "./DealCutOffFcyPreview?" + params + "&SheetIndex=2";*/
+        }
+
         //#endregion
 
         //#region Other Widgets
@@ -22,12 +36,7 @@
             displayFormat: "dd/MM/yyyy",
             value: new Date(),
             onValueChanged: function (data) {
-
-                var epochDate = moment(data.value).unix();
-                var params = "TradeDate=" + encodeURIComponent(epochDate);
-
-                var iframeElement = document.getElementById("previewFrame0");
-                iframeElement.src = "./DealCutOffMyrPreview?" + params;
+                populateData(data.value);
             }
         }).dxDateBox("instance");
 
@@ -74,21 +83,32 @@
             }
         }).dxDropDownButton("instance");
 
+        var tabPanel = $("#tabpanel-container").dxTabPanel({
+            dataSource: [
+                { title: "Summary"}
+            ],
+            deferRendering: false,
+            //itemTitleTemplate: $("#dxPanelTitle"),
+            showNavButtons: true
+        });
+
         //#endregion
 
         // #region DataGrid
-        
-        
+
+
         // #endregion DataGrid
 
         //#region Events
 
-        
+
 
         //#endregion
 
         //#region Immediate Invocation function
-        
+
+
+        populateData(new Date());
 
         //#endregion
     });

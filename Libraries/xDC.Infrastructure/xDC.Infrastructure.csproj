@@ -77,6 +77,9 @@
     <Compile Include="Application\Config_Dropdown.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
+    <Compile Include="Application\Config_FcaBankAccount.cs">
+      <DependentUpon>kashflowDb.tt</DependentUpon>
+    </Compile>
     <Compile Include="Application\Config_Key.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
