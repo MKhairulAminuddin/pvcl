@@ -13,6 +13,20 @@
         //#endregion
 
         //#region Data Source & Functions
+
+        var populateData = function (selectedDate) {
+            var epochDate = moment(selectedDate).unix();
+            var params = "TradeDate=" + encodeURIComponent(epochDate);
+
+            var iframeElement0 = document.getElementById("sheet1");
+            iframeElement0.src = "./DealCutOffMyrPreview?" + params + "&SheetIndex=0";
+
+            var iframeElement2 = document.getElementById("sheet2");
+            iframeElement2.src = "./DealCutOffMyrPreview?" + params + "&SheetIndex=1";
+
+            var iframeElement3 = document.getElementById("sheet3");
+            iframeElement3.src = "./DealCutOffMyrPreview?" + params + "&SheetIndex=2";
+        }
         
         //#endregion
 
@@ -22,12 +36,7 @@
             displayFormat: "dd/MM/yyyy",
             value: new Date(),
             onValueChanged: function (data) {
-
-                var epochDate = moment(data.value).unix();
-                var params = "TradeDate=" + encodeURIComponent(epochDate);
-
-                var iframeElement = document.getElementById("previewFrame0");
-                iframeElement.src = "./DealCutOffMyrPreview?" + params;
+                populateData(data.value);
             }
         }).dxDateBox("instance");
 
@@ -74,6 +83,17 @@
             }
         }).dxDropDownButton("instance");
 
+        var tabPanel = $("#tabpanel-container").dxTabPanel({
+            dataSource: [
+                { titleId: "titleBadge2", title: "Cashflow", template: "bondTab" },
+                { titleId: "titleBadge3", title: "Money Market", template: "cpTab" },
+                { titleId: "titleBadge4", title: "Others", template: "notesPaperTab" }
+            ],
+            deferRendering: false,
+            //itemTitleTemplate: $("#dxPanelTitle"),
+            showNavButtons: true
+        });
+
         //#endregion
 
         // #region DataGrid
@@ -88,7 +108,9 @@
         //#endregion
 
         //#region Immediate Invocation function
+
         
+        populateData(new Date());
 
         //#endregion
     });

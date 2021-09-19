@@ -212,10 +212,7 @@ namespace xDC_Web.Controllers
 
         public ActionResult DealCutOffMyr()
         {
-            DealCutOffMyrTemplateModel model = new DealCutOffMyrTemplateModel();
-            model.PreviewModel.Workbook = new DealCutOffForm_MYR().GenerateWorkbook(DateTime.Now);
-
-            return View("DealCutOff/Myr", model);
+            return View("DealCutOff/Myr");
         }
 
         [HttpPost]
@@ -285,7 +282,7 @@ namespace xDC_Web.Controllers
             }
         }
 
-        public ActionResult DealCutOffMyrPreview(string TradeDate)
+        public ActionResult DealCutOffMyrPreview(string TradeDate, int SheetIndex)
         {
             DateTime? selectedDate = DateTime.Now;
             if (!string.IsNullOrEmpty(TradeDate))
@@ -295,7 +292,8 @@ namespace xDC_Web.Controllers
 
             var previewModel = new SpreadsheetPreviewModel
             {
-                Workbook = new DealCutOffForm_MYR().GenerateWorkbook(selectedDate)
+                Workbook = new DealCutOffForm_MYR().GenerateWorkbook(selectedDate),
+                PreviewSheetIndex = SheetIndex
             };
             return GenerateHtmlPreview(previewModel);
         }

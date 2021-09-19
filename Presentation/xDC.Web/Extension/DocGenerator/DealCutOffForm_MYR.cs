@@ -78,8 +78,10 @@ namespace xDC_Web.Extension.DocGenerator
             workbook.BeginUpdate();
             try
             {
+                #region Sheet 1
+
                 var sheet = workbook.Worksheets[0];
-                
+
                 sheet["J2"].Value = (dataItem.SelectedDate != null)
                     ? dataItem.SelectedDate.Value.ToString("dd/MM/yyyy")
                     : null;
@@ -141,7 +143,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                 #endregion
 
-                #region 2 - OF: Money Market
+                #region 6 - OF: Money Market
 
                 currentRowIndex += 10;
                 sheet["E" + currentRowIndex].Value = dataItem.OF_MM_Rollover;
@@ -152,7 +154,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                 #endregion
 
-                #region 3 - OF: Fixed Income
+                #region 7 - OF: Fixed Income
 
                 int startIndex = currentRowIndex + 3;
                 currentRowIndex += 3;
@@ -177,7 +179,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                 #endregion
 
-                #region 4 - OF: Equity
+                #region 8 - OF: Equity
 
                 currentRowIndex += 3;
                 sheet["E" + currentRowIndex].Value = dataItem.OF_Equity;
@@ -186,7 +188,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                 #endregion
 
-                #region 5 - OF: Net
+                #region 9 - OF: Net
 
                 currentRowIndex += 2;
                 sheet["G" + currentRowIndex].Value = dataItem.OF_Net;
@@ -194,7 +196,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                 #endregion
 
-                #region 5 - Rentas + Inflow - Outflow
+                #region 10 - Rentas + Inflow - Outflow
 
                 currentRowIndex += 3;
                 sheet["J" + currentRowIndex].Value = dataItem.RentasOb + dataItem.IF_Net - dataItem.OF_Net;
@@ -202,6 +204,55 @@ namespace xDC_Web.Extension.DocGenerator
                 #endregion
 
                 workbook.Calculate();
+
+                #endregion
+
+                #region Sheet 2 - Money Market
+
+                var sheet2 = workbook.Worksheets[1];
+
+                var title = "MONEY MARKET TRANSACTIONS WITH FINANCIAL INSTITUTIONS FOR ";
+                sheet2["C3"].Value = title + dataItem.SelectedDate.Value.ToString("dd/MM/yyyy");
+                
+                var sheet2_startIndex = 8;
+                var sheet2_currentIndex = 8;
+                
+                MmiTab_MaturityTable(dataItem.SelectedDate.Value, dataItem.IF_MMI_Items, sheet2_startIndex, ref sheet2, ref sheet2_currentIndex);
+
+                sheet2_startIndex = (sheet2_currentIndex != sheet2_startIndex) ? sheet2_currentIndex += 5: 14;
+                sheet2_currentIndex = (sheet2_startIndex != 14) ? sheet2_currentIndex : 14;
+
+                MmiTab_MaturityTable(dataItem.SelectedDate.Value, dataItem.OF_MMI_RolloverItems, sheet2_startIndex, ref sheet2, ref sheet2_currentIndex);
+
+                sheet2_startIndex = (sheet2_currentIndex != sheet2_startIndex) ? sheet2_currentIndex += 5 : 20;
+                sheet2_currentIndex = (sheet2_startIndex != 20) ? sheet2_currentIndex : 20;
+
+                MmiTab_MaturityTable(dataItem.SelectedDate.Value, dataItem.OF_MMI_NewPlacementItems, sheet2_startIndex, ref sheet2, ref sheet2_currentIndex);
+
+                workbook.Calculate();
+
+                #endregion
+
+                #region Sheet 3 - Others
+
+                var sheet3 = workbook.Worksheets[2];
+
+                sheet3["E6"].Value = dataItem.MmaOb;
+                sheet3["E7"].Value = dataItem.TotalRhb;
+
+                sheet3["E13"].Value = dataItem.IF_Equity;
+
+                int s3StartIndex = 16;
+                int s3CurrentIndex = 16;
+
+                OthersTab_IfTable(dataItem.IF_OthersTab_Others, s3StartIndex, ref sheet3, ref s3CurrentIndex);
+
+
+                workbook.Calculate();
+
+                #endregion
+
+
             }
             catch (Exception ex)
             {
@@ -321,7 +372,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             #endregion
 
-            #region 2 - OF MMI 
+            #region 6 - OF MMI 
             
             dataObj.OF_MM_NewPlacement = db.FID_Treasury_Deposit
                 .Where(x => treasuryApprovedForms.Contains(x.FormId) 
@@ -341,7 +392,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             #endregion
 
-            #region ? - OF Fixed Income
+            #region 7 - OF Fixed Income
 
             dataObj.OF_Bond = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Bond);
             dataObj.OF_CP = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cp);
@@ -359,16 +410,106 @@ namespace xDC_Web.Extension.DocGenerator
 
             #endregion
 
-            #region 4 - OF Equity
+            #region 8 - OF Equity
 
             dataObj.OF_Equity = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Equity);
 
             #endregion
 
-            #region 5 - OF Net
+            #region 9 - OF Net
 
             dataObj.OF_Net = dataObj.OF_Equity + dataObj.OF_TotalFixedIncome +
                              dataObj.OF_MM_NewPlacement + dataObj.OF_MM_Rollover;
+
+            #endregion
+
+            #region 10 - MMI Inflow
+
+            var ifInflowItems = db.FID_Treasury_Deposit
+                .Where(x => treasuryApprovedForms.Contains(x.FormId) 
+                            && x.CashflowType == Common.Cashflow.Inflow)
+                .Select(x => new MYR_DealCutOffData_Mmi
+                {
+                    Bank = x.Bank,
+                    MaturityDate = x.MaturityDate.Value,
+                    ValueDate = x.ValueDate.Value,
+                    Principal = x.Principal,
+                    Interest = x.IntProfitReceivable,
+                    PrincipalInterest = x.PrincipalIntProfitReceivable,
+                    Rate = x.RatePercent,
+                    ContactPerson = x.ContactPerson,
+                    Notes = x.Notes
+                })
+                .OrderBy(x => x.MaturityDate)
+                .ToList();
+
+            dataObj.IF_MMI_Items = ifInflowItems;
+
+            #endregion
+
+            #region 11 - MMI OF Rollover & New Placement
+
+            var ofInflowRolloverItems = db.FID_Treasury_Deposit
+                .Where(x => treasuryApprovedForms.Contains(x.FormId) 
+                            && x.CashflowType == Common.Cashflow.Outflow
+                            && x.Notes == "r/o P+I")
+                .Select(x => new MYR_DealCutOffData_Mmi
+                {
+                    Bank = x.Bank,
+                    MaturityDate = x.MaturityDate.Value,
+                    ValueDate = x.ValueDate.Value,
+                    Principal = x.Principal,
+                    Interest = x.IntProfitReceivable,
+                    PrincipalInterest = x.PrincipalIntProfitReceivable,
+                    Rate = x.RatePercent,
+                    ContactPerson = x.ContactPerson,
+                    Notes = x.Notes
+                })
+                .OrderBy(x => x.MaturityDate)
+                .ToList();
+
+            dataObj.OF_MMI_RolloverItems = ofInflowRolloverItems;
+
+            var ofInflowNewPlacementItems = db.FID_Treasury_Deposit
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
+                            && x.CashflowType == Common.Cashflow.Outflow
+                            && x.Notes == "New")
+                .Select(x => new MYR_DealCutOffData_Mmi
+                {
+                    Bank = x.Bank,
+                    MaturityDate = x.MaturityDate.Value,
+                    ValueDate = x.ValueDate.Value,
+                    Principal = x.Principal,
+                    Interest = x.IntProfitReceivable,
+                    PrincipalInterest = x.PrincipalIntProfitReceivable,
+                    Rate = x.RatePercent,
+                    ContactPerson = x.ContactPerson,
+                    Notes = x.Notes
+                })
+                .ToList();
+
+            dataObj.OF_MMI_NewPlacementItems = ofInflowNewPlacementItems;
+
+            #endregion
+
+            #region Others Tab - IF Others
+
+            /*var ifTsOthers = db.ISSD_TradeSettlement
+                .Where(x => approvedTsForms.Contains(x.FormId) && x.InstrumentType != Common.TsItemCategory.Equity)
+                .Select(x => new MYR_DealCutOffData_OthersItem
+                {
+                    InstrumentType = x.InstrumentType,
+                    Bank = x.InstrumentCode,
+                    StockCode = x.StockCode,
+                    TradeDate = null,
+                    SettlementDate = x.se,
+                    NominalAmount = x.,
+                    Price = 0,
+                    Rate = 0,
+                    Proceed = 0,
+                    Notes = null
+                })
+                .ToList();*/
 
             #endregion
 
@@ -389,6 +530,91 @@ namespace xDC_Web.Extension.DocGenerator
                 sheet["C" + currentRowIndex].Value = category;
                 sheet["E" + currentRowIndex].Value = amount;
                 currentRowIndex++;
+                
+            }
+        }
+
+        private void MmiTab_MaturityTable(DateTime selectedDate, List<MYR_DealCutOffData_Mmi> items, int startIndex, ref Worksheet sheet, ref int currentIndex)
+        {
+            sheet["E" + (startIndex - 3)].Value = selectedDate;
+
+            if (items.Any())
+            {
+                foreach (var item in items)
+                {
+                    if (currentIndex != startIndex)
+                    {
+                        sheet.Rows[currentIndex - 1].Insert(InsertCellsMode.ShiftCellsDown);
+                        sheet.Rows[currentIndex - 1].CopyFrom(sheet.Rows[startIndex - 1], PasteSpecial.All);
+                    }
+
+                    sheet["D" + currentIndex].Value = item.Bank;
+                    sheet["E" + currentIndex].Value = item.MaturityDate;
+                    sheet["F" + currentIndex].Value = item.ValueDate;
+                    sheet["G" + currentIndex].Value = item.Principal;
+                    sheet["I" + currentIndex].Value = item.Rate;
+                    sheet["J" + currentIndex].Value = item.Interest;
+                    sheet["K" + currentIndex].Value = item.PrincipalInterest;
+                    sheet["L" + currentIndex].Value = item.ContactPerson;
+                    sheet["M" + currentIndex].Value = item.Notes;
+
+                    currentIndex++;
+                }
+
+                if (currentIndex != startIndex)
+                {
+                    sheet["G" + currentIndex].Formula = "=SUM($G$" + startIndex + ":$G$" + (currentIndex - 1) + ")";
+                    sheet["J" + currentIndex].Formula = "=SUM($J$" + startIndex + ":$J$" + (currentIndex - 1) + ")";
+                    sheet["K" + currentIndex].Formula = "=SUM($K$" + startIndex + ":$K$" + (currentIndex - 1) + ")";
+                }
+            }
+        }
+
+        private void OthersTab_IfTable(List<MYR_DealCutOffData_OthersItem> items, int startIndex, ref Worksheet sheet, ref int currentIndex)
+        {
+            if (items.Any())
+            {
+                var availableGroup = items.GroupBy(x => x.InstrumentType);
+
+                foreach (var group in availableGroup)
+                {
+                    if (currentIndex == startIndex)
+                    {
+                        sheet["C16"].Value = group.Key;
+                    }
+                    else
+                    {
+                        sheet["C" + currentIndex].Value = group.Key;
+                    }
+
+                    foreach (var item in items)
+                    {
+                        if (currentIndex != startIndex)
+                        {
+                            sheet.Rows[currentIndex - 1].Insert(InsertCellsMode.ShiftCellsDown);
+                            sheet.Rows[currentIndex - 1].CopyFrom(sheet.Rows[startIndex - 1], PasteSpecial.All);
+                        }
+
+                        sheet["D" + currentIndex].Value = item.Bank;
+                        sheet["E" + currentIndex].Value = item.StockCode;
+                        sheet["F" + currentIndex].Value = item.TradeDate;
+                        sheet["G" + currentIndex].Value = item.SettlementDate;
+                        sheet["H" + currentIndex].Value = item.NominalAmount;
+                        sheet["I" + currentIndex].Value = item.Price;
+                        sheet["J" + currentIndex].Value = item.Rate;
+                        sheet["K" + currentIndex].Value = item.Proceed;
+                        sheet["L" + currentIndex].Value = item.Notes;
+
+                        currentIndex++;
+                    }
+
+                    if (currentIndex != startIndex)
+                    {
+                        sheet["H" + currentIndex].Formula = "=SUM($H$" + startIndex + ":$H$" + (currentIndex - 1) + ")";
+                        sheet["K" + currentIndex].Formula = "=SUM($K$" + startIndex + ":$K$" + (currentIndex - 1) + ")";
+                    }
+                }
+
                 
             }
         }
@@ -439,13 +665,40 @@ namespace xDC_Web.Extension.DocGenerator
         public double OF_Equity { get; set; }
         public double OF_Net { get; set; }
 
+        public List<MYR_DealCutOffData_Mmi> IF_MMI_Items { get; set; }
+        public List<MYR_DealCutOffData_Mmi> OF_MMI_RolloverItems { get; set; }
+        public List<MYR_DealCutOffData_Mmi> OF_MMI_NewPlacementItems { get; set; }
+
+        public List<MYR_DealCutOffData_OthersItem> IF_OthersTab_Others { get; set; }
 
     }
 
-    public class MYR_DealCutOffData_Item
+    public class MYR_DealCutOffData_OthersItem
     {
-        public string Name { get; set; }
-        public double Amount { get; set; }
+        public string InstrumentType { get; set; }
+        public string Bank { get; set; }
+        public string StockCode { get; set; }
+        public DateTime TradeDate { get; set; }
+        public DateTime SettlementDate { get; set; }
+        public double NominalAmount { get; set; }
+        public double Price { get; set; }
+        public double Rate { get; set; }
+        public double Proceed { get; set; }
+        public string Notes { get; set; }
     }
-    
+
+    public class MYR_DealCutOffData_Mmi
+    {
+        public string Bank { get; set; }
+        public DateTime MaturityDate { get; set; }
+        public DateTime ValueDate { get; set; }
+        public double Principal { get; set; }
+        public int Tenor { get; set; }
+        public double Rate { get; set; }
+        public double Interest { get; set; }
+        public double PrincipalInterest { get; set; }
+        public string ContactPerson { get; set; }
+        public string Notes { get; set; }
+    }
+
 }

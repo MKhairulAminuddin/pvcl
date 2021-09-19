@@ -376,6 +376,7 @@
     <Content Include="App_Data\Treasury Template.xltx" />
     <Content Include="App_Data\Deal Cut Off MYR Template.xltx" />
     <Content Include="App_Data\Deal Cut Off FCY Template.xltx" />
+    <Content Include="App_Data\Deal Cut Off MYR Template - Copy.xltx" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
     <Content Include="Scripts\jquery-3.5.1.min.js" />
