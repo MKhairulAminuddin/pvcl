@@ -196,31 +196,19 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpGet]
-        [Route("TcaTagging/EdwAccount")]
-        public HttpResponseMessage TcaTagging_EdwAccount(DataSourceLoadOptions loadOptions)
+        [Route("TcaTagging/FcaAccount")]
+        public HttpResponseMessage TcaTagging_FcaAccount(DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = FidService.List_CounterParty(db);
+                    var result = FidService.List_FcaBankAccount(db);
+                    
+                    result.Add("RENTAS");
+                    result.Add("MMA");
 
-                    var rentas = new EDW_FID_List()
-                    {
-                        Name = "RENTAS",
-                        Reference = "RENTAS"
-                    };
-
-                    var MMA = new EDW_FID_List()
-                    {
-                        Name = "MMA",
-                        Reference = "MMA"
-                    };
-
-                    result.Add(rentas);
-                    result.Add(MMA);
-
-                    return Request.CreateResponse(DataSourceLoader.Load(result.OrderBy(x => x.Reference), loadOptions));
+                    return Request.CreateResponse(DataSourceLoader.Load(result.Select(x => new { Name = x}).Distinct().OrderBy(x => x.Name), loadOptions));
                 }
             }
             catch (Exception ex)
@@ -439,7 +427,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = FidService.List_CounterParty(db);
+                    var result = FidService.List_FcaBankAccount(db);
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }

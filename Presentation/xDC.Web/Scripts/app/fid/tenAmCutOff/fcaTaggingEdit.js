@@ -39,7 +39,7 @@
             updateTradeItem: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem",
 
 
-            dsBankCodes: window.location.origin + "/api/fid/TcaTagging/EdwAccount/",
+            dsFcaAccount: window.location.origin + "/api/fid/TcaTagging/FcaAccount/",
             
         };
 
@@ -50,8 +50,8 @@
         var dsAccountLookup = function () {
             return {
                 store: DevExpress.data.AspNet.createStore({
-                    key: "reference",
-                    loadUrl: referenceUrl.dsBankCodes
+                    key: "name",
+                    loadUrl: referenceUrl.dsFcaAccount
                 }),
                 paginate: true,
                 pageSize: 20
@@ -95,8 +95,8 @@
                                     dataField: "inflowTo",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -113,8 +113,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -265,8 +265,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -282,8 +282,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -432,8 +432,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -449,8 +449,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -599,8 +599,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -616,8 +616,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -766,8 +766,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -783,8 +783,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -914,8 +914,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     }
                                 },
@@ -1007,8 +1007,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -1024,8 +1024,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -1141,8 +1141,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -1158,8 +1158,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -1284,8 +1284,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -1301,8 +1301,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -1427,8 +1427,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     }
                                 },
@@ -1515,8 +1515,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -1532,8 +1532,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -1658,8 +1658,8 @@
                                     caption: "Inflow To",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
@@ -1675,8 +1675,8 @@
                                     caption: "Outflow From",
                                     lookup: {
                                         dataSource: dsAccountLookup,
-                                        valueExpr: "reference",
-                                        displayExpr: "reference",
+                                        valueExpr: "name",
+                                        displayExpr: "name",
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {

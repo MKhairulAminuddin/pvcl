@@ -33,11 +33,11 @@ namespace xDC.Services.App
             return issuerList;
         }
 
-        public static List<EDW_FID_List> List_CounterParty(kashflowDBEntities db)
+        public static List<string> List_FcaBankAccount(kashflowDBEntities db)
         {
             // check for same date and same currency exist
-            var counterPartyList = db.EDW_FID_List.Where(x => x.Type == "COUNTERPARTY").ToList();
-            return counterPartyList;
+            var fcaBankAccounts = db.Config_FcaBankAccount.Select(x => x.AccountName3).ToList();
+            return fcaBankAccounts;
         }
 
         public static decimal Formula_OutflowProceeds()

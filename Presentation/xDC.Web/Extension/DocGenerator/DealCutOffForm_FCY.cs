@@ -131,6 +131,201 @@ namespace xDC_Web.Extension.DocGenerator
                         }
                     }
 
+                    if (item.Account == "CITI MFCA")
+                    {
+                        sheet["M2"].Value = dataItem.SelectedDate;
+
+                        if (item.Currency == "USD")
+                        {
+                            sheet["M7"].Value = item.Ob;
+                            sheet["M8"].Value = item.IF_DepositMaturity;
+                            sheet["M9"].Value = item.IF_MoneyMarket;
+                            sheet["M10"].Value = item.IF_Others;
+                            sheet["M11"].Value = item.OF_DepositPlacementRollover * -1;
+                            sheet["M12"].Value = item.OF_MoneyMarket * -1;
+                            sheet["M13"].Value = item.OF_Others * -1;
+                        }
+
+                        if (item.Currency == "GBP")
+                        {
+                            sheet["M18"].Value = item.Ob;
+                            sheet["M19"].Value = item.IF_DepositMaturity;
+                            sheet["M20"].Value = item.IF_MoneyMarket;
+                            sheet["M21"].Value = item.IF_Others;
+                            sheet["M22"].Value = item.OF_DepositPlacementRollover * -1;
+                            sheet["M23"].Value = item.OF_MoneyMarket * -1;
+                            sheet["M24"].Value = item.OF_Others * -1;
+                        }
+
+                        if (item.Currency == "AUD")
+                        {
+                            sheet["M29"].Value = item.Ob;
+                            sheet["M30"].Value = item.IF_DepositMaturity;
+                            sheet["M31"].Value = item.IF_MoneyMarket;
+                            sheet["M32"].Value = item.IF_Others;
+                            sheet["M33"].Value = item.OF_DepositPlacementRollover * -1;
+                            sheet["M34"].Value = item.OF_MoneyMarket * -1;
+                            sheet["M35"].Value = item.OF_Others * -1;
+                        }
+
+                        if (item.Currency == "EUR")
+                        {
+                            sheet["M40"].Value = item.Ob;
+                            sheet["M41"].Value = item.IF_DepositMaturity;
+                            sheet["M42"].Value = item.IF_MoneyMarket;
+                            sheet["M43"].Value = item.IF_Others;
+                            sheet["M44"].Value = item.OF_DepositPlacementRollover * -1;
+                            sheet["M45"].Value = item.OF_MoneyMarket * -1;
+                            sheet["M46"].Value = item.OF_Others * -1;
+                        }
+                    }
+
+                    if (item.Account == "Hong Leong Bank MFCA")
+                    {
+                        sheet["F52"].Value = dataItem.SelectedDate;
+
+                        if (item.Currency == "USD")
+                        {
+                            sheet["F57"].Value = item.Ob;
+                            sheet["F58"].Value = item.IF_DepositMaturity;
+                            sheet["F59"].Value = item.IF_MoneyMarket;
+                            sheet["F60"].Value = item.IF_Others;
+                            sheet["F61"].Value = item.OF_DepositPlacementRollover * -1;
+                            sheet["F62"].Value = item.OF_MoneyMarket * -1;
+                            sheet["F63"].Value = item.OF_Others * -1;
+                        }
+
+                        if (item.Currency == "GBP")
+                        {
+                            sheet["F68"].Value = item.Ob;
+                            sheet["F69"].Value = item.IF_DepositMaturity;
+                            sheet["F70"].Value = item.IF_MoneyMarket;
+                            sheet["F71"].Value = item.IF_Others;
+                            sheet["F72"].Value = item.OF_DepositPlacementRollover * -1;
+                            sheet["F73"].Value = item.OF_MoneyMarket * -1;
+                            sheet["F74"].Value = item.OF_Others * -1;
+                        }
+
+                        if (item.Currency == "AUD")
+                        {
+                            sheet["F79"].Value = item.Ob;
+                            sheet["F80"].Value = item.IF_DepositMaturity;
+                            sheet["F81"].Value = item.IF_MoneyMarket;
+                            sheet["F82"].Value = item.IF_Others;
+                            sheet["F83"].Value = item.OF_DepositPlacementRollover * -1;
+                            sheet["F84"].Value = item.OF_MoneyMarket * -1;
+                            sheet["F85"].Value = item.OF_Others * -1;
+                        }
+
+                        if (item.Currency == "EUR")
+                        {
+                            sheet["F90"].Value = item.Ob;
+                            sheet["F91"].Value = item.IF_DepositMaturity;
+                            sheet["F92"].Value = item.IF_MoneyMarket;
+                            sheet["F93"].Value = item.IF_Others;
+                            sheet["F94"].Value = item.OF_DepositPlacementRollover * -1;
+                            sheet["F95"].Value = item.OF_MoneyMarket * -1;
+                            sheet["F96"].Value = item.OF_Others * -1;
+                        }
+                    }
+
+                    if (item.Account == "JP Morgan MFCA")
+                    {
+                        sheet["M52"].Value = dataItem.SelectedDate;
+
+                        if (item.Currency == "USD")
+                        {
+                            sheet["M57"].Value = item.Ob;
+                            sheet["M58"].Value = item.IF_DepositMaturity;
+                            sheet["M59"].Value = item.IF_MoneyMarket;
+                            sheet["M60"].Value = item.IF_Others;
+                            sheet["M61"].Value = item.OF_DepositPlacementRollover * -1;
+                            sheet["M62"].Value = item.OF_MoneyMarket * -1;
+                            sheet["M63"].Value = item.OF_Others * -1;
+                        }
+
+                        if (item.Currency == "GBP")
+                        {
+                            sheet["M68"].Value = item.Ob;
+                            sheet["M69"].Value = item.IF_DepositMaturity;
+                            sheet["M70"].Value = item.IF_MoneyMarket;
+                            sheet["M71"].Value = item.IF_Others;
+                            sheet["M72"].Value = item.OF_DepositPlacementRollover * -1;
+                            sheet["M73"].Value = item.OF_MoneyMarket * -1;
+                            sheet["M74"].Value = item.OF_Others * -1;
+                        }
+
+                        if (item.Currency == "AUD")
+                        {
+                            sheet["M79"].Value = item.Ob;
+                            sheet["M80"].Value = item.IF_DepositMaturity;
+                            sheet["M81"].Value = item.IF_MoneyMarket;
+                            sheet["M82"].Value = item.IF_Others;
+                            sheet["M83"].Value = item.OF_DepositPlacementRollover * -1;
+                            sheet["M84"].Value = item.OF_MoneyMarket * -1;
+                            sheet["M85"].Value = item.OF_Others * -1;
+                        }
+
+                        if (item.Currency == "EUR")
+                        {
+                            sheet["M90"].Value = item.Ob;
+                            sheet["M91"].Value = item.IF_DepositMaturity;
+                            sheet["M92"].Value = item.IF_MoneyMarket;
+                            sheet["M93"].Value = item.IF_Others;
+                            sheet["M94"].Value = item.OF_DepositPlacementRollover * -1;
+                            sheet["M95"].Value = item.OF_MoneyMarket * -1;
+                            sheet["M96"].Value = item.OF_Others * -1;
+                        }
+                    }
+
+                    if (item.Account == "CIMB FCA")
+                    {
+                        sheet["F102"].Value = dataItem.SelectedDate;
+
+                        if (item.Currency == "USD")
+                        {
+                            sheet["F107"].Value = item.Ob;
+                            sheet["F108"].Value = item.IF_DepositMaturity;
+                            sheet["F109"].Value = item.IF_MoneyMarket;
+                            sheet["F110"].Value = item.IF_Others;
+                            sheet["F111"].Value = item.OF_DepositPlacementRollover * -1;
+                            sheet["F112"].Value = item.OF_MoneyMarket * -1;
+                            sheet["F113"].Value = item.OF_Others * -1;
+                        }
+
+                        if (item.Currency == "GBP")
+                        {
+                            sheet["F118"].Value = item.Ob;
+                            sheet["F119"].Value = item.IF_DepositMaturity;
+                            sheet["F120"].Value = item.IF_MoneyMarket;
+                            sheet["F121"].Value = item.IF_Others;
+                            sheet["F122"].Value = item.OF_DepositPlacementRollover * -1;
+                            sheet["F123"].Value = item.OF_MoneyMarket * -1;
+                            sheet["F124"].Value = item.OF_Others * -1;
+                        }
+
+                        if (item.Currency == "AUD")
+                        {
+                            sheet["F129"].Value = item.Ob;
+                            sheet["F130"].Value = item.IF_DepositMaturity;
+                            sheet["F131"].Value = item.IF_MoneyMarket;
+                            sheet["F132"].Value = item.IF_Others;
+                            sheet["F133"].Value = item.OF_DepositPlacementRollover * -1;
+                            sheet["F134"].Value = item.OF_MoneyMarket * -1;
+                            sheet["F135"].Value = item.OF_Others * -1;
+                        }
+
+                        if (item.Currency == "EUR")
+                        {
+                            sheet["F140"].Value = item.Ob;
+                            sheet["F141"].Value = item.IF_DepositMaturity;
+                            sheet["F142"].Value = item.IF_MoneyMarket;
+                            sheet["F143"].Value = item.IF_Others;
+                            sheet["F144"].Value = item.OF_DepositPlacementRollover * -1;
+                            sheet["F145"].Value = item.OF_MoneyMarket * -1;
+                            sheet["F146"].Value = item.OF_Others * -1;
+                        }
+                    }
                 }
 
 
@@ -216,7 +411,7 @@ namespace xDC_Web.Extension.DocGenerator
                     .Sum();
                 var OF_Others = db.FID_TS10_TradeItem
                     .Where(x => approvedIssdForms.Contains(x.FormId) && x.OutflowFrom == account.AccountName3)
-                    .Select(x => x.AmountPlus + x.Maturity + x.Sales + x.FirstLeg)
+                    .Select(x => x.AmountMinus + x.Purchase + x.SecondLeg)
                     .DefaultIfEmpty(0)
                     .Sum();
 
