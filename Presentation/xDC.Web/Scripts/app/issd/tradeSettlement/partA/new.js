@@ -286,7 +286,7 @@
                         },
                         1000);
                 } else {
-                    alert("Please select at least one approver!");
+                    alert("Please select an approver");
                 }
                 
                 e.preventDefault();

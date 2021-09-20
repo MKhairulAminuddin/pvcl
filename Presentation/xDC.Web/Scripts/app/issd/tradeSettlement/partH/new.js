@@ -239,9 +239,15 @@
             "click": function (e) {
                 tradeSettlement.saveAllGrids($othersGrid);
 
-                setTimeout(function () {
-                    postData(false);
-                }, 1000);
+                if ($approverDropdown.option("value") != null) {
+                    setTimeout(function () {
+                            postData(false);
+                        },
+                        1000);
+                } else {
+                    alert("Please select an approver");
+                }
+
                 e.preventDefault();
             }
         });

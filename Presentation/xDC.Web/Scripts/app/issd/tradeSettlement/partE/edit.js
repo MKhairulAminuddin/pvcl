@@ -225,9 +225,13 @@
         $("#submitForApprovalModalBtn").on({
             "click": function (e) {
                 tradeSettlement.saveAllGrids($altidGrid);
-                setTimeout(function() {
-                    postData(false, false);
-                }, 1000);
+
+                if ($approverDropdown.option("value") != null) {
+                    setTimeout(function () { postData(false, false); },
+                        1000);
+                } else {
+                    alert("Please select an approver");
+                }
 
                 e.preventDefault();
             }
