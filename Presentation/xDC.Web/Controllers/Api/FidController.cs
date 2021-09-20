@@ -232,35 +232,61 @@ namespace xDC_Web.Controllers.Api
                 {
                     var result = new List<TenAmCutOffItemVM>();
                     
-                    var opBalances = FcaTaggingSvc.GetOpeningBalance(db, reportDateParsed.Value);
-                    foreach (var opBalance in opBalances)
+                    var configAccount = db.Config_FcaBankAccount.ToList();
+                    configAccount.Add(new Config_FcaBankAccount
                     {
+                        AccountName1 = "RENTAS",
+                        AccountName2 = "RENTAS",
+                        AccountName3 = "RENTAS",
+                        Currency = "MYR"
+                    });
+                    configAccount.Add(new Config_FcaBankAccount
+                    {
+                        AccountName1 = "MMA",
+                        AccountName2 = "MMA",
+                        AccountName3 = "MMA",
+                        Currency = "MYR"
+                    });
+
+                    foreach (var account in configAccount)
+                    {
+                        var ob = FcaTaggingSvc.GetOpeningBalance(db, reportDateParsed.Value, account.Currency, account.AccountName2);
+                        
                         // create row for account and its opening balance. e.g. RENTAS - OB 20,000
                         var item = new TenAmCutOffItemVM
                         {
-                            Account = opBalance.Account,
-                            OpeningBalance = opBalance.Amount,
-                            Currency = opBalance.Currency
+                            Account = account.AccountName2,
+                            OpeningBalance = ob,
+                            Currency = account.Currency
                         };
                         result.Add(item);
-                    }
-                    
-                    foreach (var item in result)
-                    {
-                        // get total inflow based on assigned inflow account
-                        var form = db.FID_TS10.FirstOrDefault(x => DbFunctions.TruncateTime(x.SettlementDate) == reportDateParsed && x.Currency == item.Currency);
+
+                        var form = db.FID_TS10
+                            .FirstOrDefault(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(reportDateParsed)
+                                                 && x.Currency == item.Currency);
+
                         if (form != null)
                         {
-                            var tradeItemInflow = db.FID_TS10_TradeItem.Where(x => x.FormId == form.Id && x.InflowTo == item.Account).ToList();
+                            var tradeItemInflow = db.FID_TS10_TradeItem
+                                .Where(x => x.FormId == form.Id
+                                            && (x.InflowTo == account.AccountName2 ||
+                                                x.InflowTo == account.AccountName3))
+                                .ToList();
 
                             var tradeItemInflowGrouped = tradeItemInflow
-                                .GroupBy(x => new { x.FormId, x.InflowTo }).Select(x => new
+                                .GroupBy(x => new
+                                {
+                                    x.FormId,
+                                    x.InflowTo
+                                })
+                                .Select(x => new
                                 {
                                     FormId = x.Key.FormId,
                                     InflowAccount = x.Key.InflowTo,
                                     TotalInflow = x.Sum(y => y.AmountPlus) + x.Sum(y => y.FirstLeg) +
                                                   x.Sum(y => y.Maturity) + x.Sum(y => y.Sales)
-                                }).FirstOrDefault();
+                                })
+                                .FirstOrDefault();
 
                             if (tradeItemInflowGrouped != null)
                             {
@@ -268,16 +294,26 @@ namespace xDC_Web.Controllers.Api
                             }
 
                             // get total inflow based on assigned outflow account
-                            var tradeItemOutflow = db.FID_TS10_TradeItem.Where(x => x.FormId == form.Id && x.OutflowFrom == item.Account).ToList();
+                            var tradeItemOutflow = db.FID_TS10_TradeItem
+                                .Where(x => x.FormId == form.Id
+                                            && (x.OutflowFrom == account.AccountName2 ||
+                                                x.OutflowFrom == account.AccountName3))
+                                .ToList();
 
                             var tradeItemOutflowGrouped = tradeItemOutflow
-                                .GroupBy(x => new { x.FormId, x.OutflowFrom }).Select(x => new
+                                .GroupBy(x => new
+                                {
+                                    x.FormId,
+                                    x.OutflowFrom
+                                })
+                                .Select(x => new
                                 {
                                     FormId = x.Key.FormId,
                                     OutflowAccount = x.Key.OutflowFrom,
                                     TotalOutflow = x.Sum(y => y.Purchase) + x.Sum(y => y.SecondLeg) +
                                                    x.Sum(y => y.AmountMinus)
-                                }).FirstOrDefault();
+                                })
+                                .FirstOrDefault();
 
                             if (tradeItemOutflowGrouped != null)
                             {
@@ -287,11 +323,12 @@ namespace xDC_Web.Controllers.Api
 
                         item.Net = item.OpeningBalance + item.TotalInflow - item.TotalOutflow;
                     }
-
+                    
                     // AMSD - Inflow Funds
-                    var approvedAmsdForms = db.AMSD_IF.Where(x =>
-                        DbFunctions.TruncateTime(x.ApprovedDate) == DbFunctions.TruncateTime(reportDateParsed) &&
-                        x.FormStatus == Common.FormStatus.Approved).Select(x => x.Id);
+                    var approvedAmsdForms = db.AMSD_IF
+                        .Where(x => DbFunctions.TruncateTime(x.ApprovedDate) == DbFunctions.TruncateTime(reportDateParsed) 
+                                    && x.FormStatus == Common.FormStatus.Approved)
+                        .Select(x => x.Id);
 
                     if (approvedAmsdForms.Any())
                     {

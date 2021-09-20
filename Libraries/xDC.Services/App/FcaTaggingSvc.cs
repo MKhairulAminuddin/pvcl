@@ -70,6 +70,23 @@ namespace xDC.Services.App
             return result;
         }
 
+        public static double GetOpeningBalance(kashflowDBEntities db, DateTime settlementDate, string currency, string account)
+        {
+            var result = new List<TS_OpeningBalance>();
+
+            var ob = db.EDW_BankBalance
+                .AsNoTracking()
+                .Where(x =>
+                    DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate) 
+                    && x.Currency == currency
+                    && x.InstrumentType == account)
+                .Select(x => x.Amount ?? 0)
+                .DefaultIfEmpty(0)
+                .Sum();
+
+            return ob;
+        }
+
         public static TS_TotalFlow GetTotalFlow(kashflowDBEntities db, int formId, DateTime settlementDate, string currency)
         {
             var trades = new List<FID_TS10_TradeItem>();

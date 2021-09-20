@@ -52,7 +52,7 @@
         //#endregion
 
         // #region DataGrid
-        
+
         $grid = $("#grid").dxDataGrid({
             dataSource: [],
             columns: [
@@ -76,8 +76,9 @@
                 },
                 {
                     dataField: "totalInflow",
-                    headerCellTemplate: function (container) {
-                        container.append($("<div><strong>Total Inflow</strong><br/>(including Deposit Maturity Only)</div>"));
+                    headerCellTemplate: function(container) {
+                        container.append(
+                            $("<div><strong>Total Inflow</strong><br/>(including Deposit Maturity Only)</div>"));
                     },
                     dataType: "number",
                     format: {
@@ -87,8 +88,9 @@
                 },
                 {
                     dataField: "totalOutflow",
-                    headerCellTemplate: function (container) {
-                        container.append($("<div><strong>Total Outflow</strong><br/>(excluding MM investment value = T)</div>"));
+                    headerCellTemplate: function(container) {
+                        container.append($(
+                            "<div><strong>Total Outflow</strong><br/>(excluding MM investment value = T)</div>"));
                     },
                     dataType: "number",
                     format: {
@@ -98,8 +100,9 @@
                 },
                 {
                     dataField: "net",
-                    headerCellTemplate: function (container) {
-                        container.append($("<div><strong>Net</strong><br/>(including Deposit maturity)<br/><small>* available funds for MM investment</small></div>"));
+                    headerCellTemplate: function(container) {
+                        container.append($(
+                            "<div><strong>Net</strong><br/>(including Deposit maturity)<br/><small>* available funds for MM investment</small></div>"));
                     },
                     dataType: "number",
                     format: {
@@ -161,7 +164,10 @@
             },
             "export": {
                 enabled: true,
-            }
+            },
+            paging: {
+                enabled: false,
+            },
         }).dxDataGrid("instance");
         
         // #endregion DataGrid
