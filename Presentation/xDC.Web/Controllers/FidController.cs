@@ -326,7 +326,7 @@ namespace xDC_Web.Controllers
         }
 
         [HttpPost]
-        [Route("DealCutOffMyr/Print")]
+        [Route("DealCutOffFcy/Print")]
         public ActionResult DealCutOffFcy_Print(string TradeDate, bool isExportAsExcel)
         {
             try

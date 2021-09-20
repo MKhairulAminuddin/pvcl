@@ -213,22 +213,23 @@ namespace xDC_Web.Extension.DocGenerator
 
                 var title = "MONEY MARKET TRANSACTIONS WITH FINANCIAL INSTITUTIONS FOR ";
                 sheet2["C3"].Value = title + dataItem.SelectedDate.Value.ToString("dd/MM/yyyy");
+
+                var s2_maturity_startIndex = 5;
+                var s2_maturity_endIndex = 9;
+
+                MmiTab_Table(dataItem.SelectedDate.Value, dataItem.IF_MMI_Items, s2_maturity_startIndex, ref s2_maturity_endIndex, ref sheet2);
+
+                var s2_rollover_startIndex = s2_maturity_endIndex + 2;
+                var s2_rollover_endIndex = s2_maturity_endIndex + 6;
+
+                MmiTab_Table(dataItem.SelectedDate.Value, dataItem.OF_MMI_RolloverItems, s2_rollover_startIndex, ref s2_rollover_endIndex, ref sheet2);
+
+                var s2_newPlacement_startIndex = s2_rollover_endIndex + 2;
+                var s2_newPlacement_endIndex = s2_rollover_endIndex + 6;
+
+                MmiTab_Table(dataItem.SelectedDate.Value, dataItem.OF_MMI_NewPlacementItems, s2_newPlacement_startIndex, ref s2_newPlacement_endIndex, ref sheet2);
+
                 
-                var sheet2_startIndex = 8;
-                var sheet2_currentIndex = 8;
-                
-                MmiTab_MaturityTable(dataItem.SelectedDate.Value, dataItem.IF_MMI_Items, sheet2_startIndex, ref sheet2, ref sheet2_currentIndex);
-
-                sheet2_startIndex = (sheet2_currentIndex != sheet2_startIndex) ? sheet2_currentIndex += 5: 14;
-                sheet2_currentIndex = (sheet2_startIndex != 14) ? sheet2_currentIndex : 14;
-
-                MmiTab_MaturityTable(dataItem.SelectedDate.Value, dataItem.OF_MMI_RolloverItems, sheet2_startIndex, ref sheet2, ref sheet2_currentIndex);
-
-                sheet2_startIndex = (sheet2_currentIndex != sheet2_startIndex) ? sheet2_currentIndex += 5 : 20;
-                sheet2_currentIndex = (sheet2_startIndex != 20) ? sheet2_currentIndex : 20;
-
-                MmiTab_MaturityTable(dataItem.SelectedDate.Value, dataItem.OF_MMI_NewPlacementItems, sheet2_startIndex, ref sheet2, ref sheet2_currentIndex);
-
                 workbook.Calculate();
 
                 #endregion
@@ -240,14 +241,46 @@ namespace xDC_Web.Extension.DocGenerator
                 sheet3["E6"].Value = dataItem.MmaOb;
                 sheet3["E7"].Value = dataItem.TotalRhb;
 
-                sheet3["E13"].Value = dataItem.IF_Equity;
+                var s3_mgs_startIndex = 10;
+                var s3_mgs_endIndex = 14;
 
-                int s3StartIndex = 16;
-                int s3CurrentIndex = 16;
+                OthersTab_IfTable1(dataItem.IF_OthersTab_MGS_GII, s3_mgs_startIndex, ref s3_mgs_endIndex, ref sheet3);
 
-                OthersTab_IfTable(dataItem.IF_OthersTab_Others, s3StartIndex, ref sheet3, ref s3CurrentIndex);
+                var s3_pds_startIndex = s3_mgs_endIndex + 2;
+                var s3_pds_endIndex = s3_mgs_endIndex + 6;
 
+                OthersTab_IfTable1(dataItem.IF_OthersTab_PssCpNidBaBnm, s3_pds_startIndex, ref s3_pds_endIndex, ref sheet3);
 
+                var s3_equity_startIndex = s3_pds_endIndex + 2;
+                var s3_equity_endIndex = s3_pds_endIndex + 6;
+
+                sheet3["E"+ (s3_equity_startIndex+3)].Value = dataItem.IF_Equity;
+
+                var s3_others_startIndex = s3_equity_endIndex + 2;
+                var s3_others_endIndex = s3_equity_endIndex + 6;
+
+                OthersTab_IfTable2(dataItem.IF_OthersTab_Others, s3_others_startIndex, ref s3_others_endIndex, ref sheet3);
+
+                var s3_of_mgs_startIndex = s3_others_endIndex + 5;
+                var s3_of_mgs_endIndex = s3_others_endIndex + 9;
+
+                OthersTab_IfTable1(dataItem.OF_OthersTab_MGS_GII, s3_of_mgs_startIndex, ref s3_of_mgs_endIndex, ref sheet3);
+
+                var s3_of_pds_startIndex = s3_of_mgs_endIndex + 2;
+                var s3_of_pds_endIndex = s3_of_mgs_endIndex + 6;
+
+                OthersTab_IfTable1(dataItem.OF_OthersTab_PssCpNidBaBnm, s3_of_pds_startIndex, ref s3_of_pds_endIndex, ref sheet3);
+
+                var s3_of_equity_startIndex = s3_of_pds_endIndex + 2;
+                var s3_of_equity_endIndex = s3_of_pds_endIndex + 6;
+
+                sheet3["E" + (s3_of_equity_startIndex + 3)].Value = dataItem.OF_Equity;
+
+                var s3_of_others_startIndex = s3_of_equity_endIndex + 2;
+                var s3_of_others_endIndex = s3_of_equity_endIndex + 6;
+
+                OthersTab_IfTable2(dataItem.OF_OthersTab_Others, s3_of_others_startIndex, ref s3_of_others_endIndex, ref sheet3);
+                
                 workbook.Calculate();
 
                 #endregion
@@ -492,24 +525,287 @@ namespace xDC_Web.Extension.DocGenerator
 
             #endregion
 
-            #region Others Tab - IF Others
+            #region Others Tab - IF - MGS & GII - Sales, maturity or coupon
 
-            /*var ifTsOthers = db.ISSD_TradeSettlement
-                .Where(x => approvedTsForms.Contains(x.FormId) && x.InstrumentType != Common.TsItemCategory.Equity)
-                .Select(x => new MYR_DealCutOffData_OthersItem
+            var productTypes = new List<string>()
+            {
+                "PDS", "CP", "BA", "NID", "BA", "BNMN"
+            };
+            var othersTab_if_mgs = new List<MYR_DealCutOffData_OthersTab_Item1>();
+
+            // Sales - from FID Treasury IF MMI tab
+            var ifSales = db.FID_Treasury_MMI
+                .Where(x => treasuryApprovedForms.Contains(x.FormId) 
+                            && x.CashflowType == Common.Cashflow.Inflow
+                            && !productTypes.Contains(x.ProductType))
+                .Select(x => new MYR_DealCutOffData_OthersTab_Item1
                 {
-                    InstrumentType = x.InstrumentType,
-                    Bank = x.InstrumentCode,
+                    Bank = x.Issuer,
+                    StockCode = x.CertNoStockCode,
+                    TradeDate = x.ValueDate,
+                    SettlementDate = x.MaturityDate,
+                    NominalAmount = x.Nominal,
+                    Price = x.Price,
+                    Rate = (double)x.SellPurchaseRateYield,
+                    Proceed = x.Proceeds,
+                    Notes = x.ProductType
+                })
+                .ToList();
+
+            // coupon - from ISSD TS coupon
+            var ifCoupon = db.ISSD_TradeSettlement
+                .Where(x => approvedTsForms.Contains(x.FormId) 
+                            && x.InstrumentType == Common.TsItemCategory.Coupon
+                            && (x.InstrumentCode.Contains("MGS") || x.InstrumentCode.Contains("MGII"))
+                            && (x.AmountPlus + x.Maturity + x.Sales) > 0)
+                .Select(x => new MYR_DealCutOffData_OthersTab_Item1
+                {
+                    Bank = "MGS Coupon",
                     StockCode = x.StockCode,
                     TradeDate = null,
-                    SettlementDate = x.se,
-                    NominalAmount = x.,
-                    Price = 0,
-                    Rate = 0,
-                    Proceed = 0,
-                    Notes = null
+                    SettlementDate = dataObj.SelectedDate,
+                    NominalAmount = null,
+                    Price = null,
+                    Rate = null,
+                    Proceed = (x.AmountPlus + x.Maturity + x.Sales),
+                    Notes = x.InstrumentCode
                 })
-                .ToList();*/
+                .ToList();
+
+            if (ifSales.Any())
+            {
+                othersTab_if_mgs.AddRange(ifSales);
+            }
+            if (ifCoupon.Any())
+            {
+                othersTab_if_mgs.AddRange(ifCoupon);
+            }
+
+            dataObj.IF_OthersTab_MGS_GII = othersTab_if_mgs;
+
+            #endregion
+
+            #region Others Tab - IF - PDS / CP / NID / BA / BNMN - Sales, maturity or coupon
+
+            var othersTab_if_pds = new List<MYR_DealCutOffData_OthersTab_Item1>();
+
+            // Sales - from FID Treasury IF MMI tab
+            var othersTab_pds_item = db.FID_Treasury_MMI
+                .Where(x => treasuryApprovedForms.Contains(x.FormId) 
+                            && x.CashflowType == Common.Cashflow.Inflow
+                            && productTypes.Contains(x.ProductType))
+                .Select(x => new MYR_DealCutOffData_OthersTab_Item1
+                {
+                    Bank = x.Issuer,
+                    StockCode = x.CertNoStockCode,
+                    TradeDate = x.ValueDate,
+                    SettlementDate = x.MaturityDate,
+                    NominalAmount = x.Nominal,
+                    Price = x.Price,
+                    Rate = (double)x.SellPurchaseRateYield,
+                    Proceed = x.Proceeds,
+                    Notes = x.ProductType
+                })
+                .ToList();
+
+            // coupon - from ISSD TS coupon
+            var othersTab_pds_itemCoupon = db.ISSD_TradeSettlement
+                .Where(x => approvedTsForms.Contains(x.FormId)
+                            && x.InstrumentType == Common.TsItemCategory.Coupon
+                            && !x.InstrumentCode.Contains("MGS") 
+                            && !x.InstrumentCode.Contains("MGII")
+                            && (x.AmountPlus + x.Maturity + x.Sales) > 0)
+                .Select(x => new MYR_DealCutOffData_OthersTab_Item1
+                {
+                    Bank = "PDS Coupon",
+                    StockCode = x.StockCode,
+                    TradeDate = null,
+                    SettlementDate = dataObj.SelectedDate,
+                    NominalAmount = null,
+                    Price = null,
+                    Rate = null,
+                    Proceed = x.AmountPlus,
+                    Notes = x.InstrumentCode
+                })
+                .ToList();
+
+            if (othersTab_pds_item.Any())
+            {
+                othersTab_if_pds.AddRange(othersTab_pds_item);
+            }
+
+            if (othersTab_pds_itemCoupon.Any())
+            {
+                othersTab_if_pds.AddRange(othersTab_pds_itemCoupon);
+            }
+
+            dataObj.IF_OthersTab_PssCpNidBaBnm = othersTab_if_pds;
+
+            #endregion
+
+            #region Others Tab - IF - Others
+
+            var othersTab_if_others = new List<MYR_DealCutOffData_OthersTab_Item2>();
+
+            // Sales - from FID Treasury IF MMI tab
+            var othersTab_if_others_item = db.ISSD_TradeSettlement
+                .Where(x => approvedTsForms.Contains(x.FormId)
+                            && x.InstrumentType != Common.TsItemCategory.Coupon
+                            && x.InstrumentType != Common.TsItemCategory.Equity
+                            && (x.AmountPlus + x.FirstLeg + x.Maturity + x.Sales) > 0)
+                .Select(x => new MYR_DealCutOffData_OthersTab_Item2
+                {
+                    Items = x.InstrumentCode,
+                    Amount = (x.AmountPlus + x.FirstLeg + x.Maturity + x.Sales),
+                    Notes = x.InstrumentType
+                })
+                .ToList();
+
+            if (othersTab_if_others_item.Any())
+            {
+                othersTab_if_others.AddRange(othersTab_if_others_item);
+            }
+
+            dataObj.IF_OthersTab_Others = othersTab_if_others;
+
+            #endregion
+
+            #region Others Tab - OF - MGS/GII/Quasi Bond Purchase 
+            
+            var othersTab_of_mgs = new List<MYR_DealCutOffData_OthersTab_Item1>();
+
+            // Sales - from FID Treasury IF MMI tab
+            var othersTab_of_mgs_itemSales = db.FID_Treasury_MMI
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
+                            && x.CashflowType == Common.Cashflow.Outflow
+                            && !productTypes.Contains(x.ProductType))
+                .Select(x => new MYR_DealCutOffData_OthersTab_Item1
+                {
+                    Bank = x.Issuer,
+                    StockCode = x.CertNoStockCode,
+                    TradeDate = x.ValueDate,
+                    SettlementDate = x.MaturityDate,
+                    NominalAmount = x.Nominal,
+                    Price = x.Price,
+                    Rate = (double)x.SellPurchaseRateYield,
+                    Proceed = x.Proceeds,
+                    Notes = x.ProductType
+                })
+                .ToList();
+
+            // coupon - from ISSD TS bond
+            var othersTab_of_mgs_itemBond = db.ISSD_TradeSettlement
+                .Where(x => approvedTsForms.Contains(x.FormId)
+                            && x.InstrumentType == Common.TsItemCategory.Bond
+                            && (x.InstrumentCode.Contains("MGS") || x.InstrumentCode.Contains("MGII"))
+                            && (x.AmountMinus + x.Purchase) > 0)
+                .Select(x => new MYR_DealCutOffData_OthersTab_Item1
+                {
+                    Bank = "MGS Bond",
+                    StockCode = x.StockCode,
+                    TradeDate = null,
+                    SettlementDate = dataObj.SelectedDate,
+                    NominalAmount = null,
+                    Price = null,
+                    Rate = null,
+                    Proceed = (x.AmountMinus + x.Purchase),
+                    Notes = x.InstrumentCode
+                })
+                .ToList();
+
+            if (othersTab_of_mgs_itemSales.Any())
+            {
+                othersTab_of_mgs.AddRange(othersTab_of_mgs_itemSales);
+            }
+            if (othersTab_of_mgs_itemBond.Any())
+            {
+                othersTab_of_mgs.AddRange(othersTab_of_mgs_itemBond);
+            }
+
+            dataObj.OF_OthersTab_MGS_GII = othersTab_of_mgs;
+
+            #endregion
+
+            #region Others Tab - OF - PDS / CP / NID / BA / BNMN/REPO - Purchase 
+
+            var othersTab_of_pds = new List<MYR_DealCutOffData_OthersTab_Item1>();
+
+            // Sales - from FID Treasury IF MMI tab
+            var othersTab_of_pds_item = db.FID_Treasury_MMI
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
+                            && x.CashflowType == Common.Cashflow.Outflow
+                            && productTypes.Contains(x.ProductType))
+                .Select(x => new MYR_DealCutOffData_OthersTab_Item1
+                {
+                    Bank = x.Issuer,
+                    StockCode = x.CertNoStockCode,
+                    TradeDate = x.ValueDate,
+                    SettlementDate = x.MaturityDate,
+                    NominalAmount = x.Nominal,
+                    Price = x.Price,
+                    Rate = (double)x.SellPurchaseRateYield,
+                    Proceed = x.Proceeds,
+                    Notes = x.ProductType
+                })
+                .ToList();
+
+            // coupon - from ISSD TS coupon
+            var othersTab_of_pds_itemRepo = db.ISSD_TradeSettlement
+                .Where(x => approvedTsForms.Contains(x.FormId)
+                            && x.InstrumentType == Common.TsItemCategory.Repo
+                            && (x.AmountMinus + x.Purchase + x.SecondLeg) > 0)
+                .Select(x => new MYR_DealCutOffData_OthersTab_Item1
+                {
+                    Bank = "REPO",
+                    StockCode = x.StockCode,
+                    TradeDate = null,
+                    SettlementDate = dataObj.SelectedDate,
+                    NominalAmount = null,
+                    Price = null,
+                    Rate = null,
+                    Proceed = (x.AmountMinus + x.Purchase + x.SecondLeg),
+                    Notes = x.InstrumentCode
+                })
+                .ToList();
+
+            if (othersTab_of_pds_item.Any())
+            {
+                othersTab_of_pds.AddRange(othersTab_of_pds_item);
+            }
+
+            if (othersTab_of_pds_itemRepo.Any())
+            {
+                othersTab_of_pds.AddRange(othersTab_of_pds_itemRepo);
+            }
+
+            dataObj.OF_OthersTab_PssCpNidBaBnm = othersTab_of_pds;
+
+            #endregion
+
+            #region Others Tab - OF - Others
+
+            var othersTab_of_others = new List<MYR_DealCutOffData_OthersTab_Item2>();
+
+            // Sales - from FID Treasury IF MMI tab
+            var othersTab_of_others_item = db.ISSD_TradeSettlement
+                .Where(x => approvedTsForms.Contains(x.FormId)
+                            && x.InstrumentType != Common.TsItemCategory.Bond
+                            && x.InstrumentType != Common.TsItemCategory.Equity
+                            && (x.AmountMinus + x.SecondLeg + x.Purchase) > 0)
+                .Select(x => new MYR_DealCutOffData_OthersTab_Item2
+                {
+                    Items = x.InstrumentCode,
+                    Amount = (x.AmountMinus + x.SecondLeg + x.Purchase),
+                    Notes = x.InstrumentType
+                })
+                .ToList();
+
+            if (othersTab_of_others_item.Any())
+            {
+                othersTab_of_others.AddRange(othersTab_of_others_item);
+            }
+
+            dataObj.OF_OthersTab_Others = othersTab_of_others;
 
             #endregion
 
@@ -534,12 +830,14 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private void MmiTab_MaturityTable(DateTime selectedDate, List<MYR_DealCutOffData_Mmi> items, int startIndex, ref Worksheet sheet, ref int currentIndex)
+        private void MmiTab_Table(DateTime selectedDate, List<MYR_DealCutOffData_Mmi> items, int startIndex, ref int endIndex, ref Worksheet sheet)
         {
-            sheet["E" + (startIndex - 3)].Value = selectedDate;
+            sheet["E" + startIndex].Value = selectedDate;
 
             if (items.Any())
             {
+                var currentIndex = startIndex += 3;
+                
                 foreach (var item in items)
                 {
                     if (currentIndex != startIndex)
@@ -557,67 +855,85 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["K" + currentIndex].Value = item.PrincipalInterest;
                     sheet["L" + currentIndex].Value = item.ContactPerson;
                     sheet["M" + currentIndex].Value = item.Notes;
+                    
+                    currentIndex++;
+                }
+                
+                sheet["G" + currentIndex].Formula = "=SUM($G$" + startIndex + ":$G$" + (currentIndex - 1) + ")";
+                sheet["J" + currentIndex].Formula = "=SUM($J$" + startIndex + ":$J$" + (currentIndex - 1) + ")";
+                sheet["K" + currentIndex].Formula = "=SUM($K$" + startIndex + ":$K$" + (currentIndex - 1) + ")";
+
+                endIndex = currentIndex;
+            }
+        }
+
+        private void OthersTab_IfTable1(List<MYR_DealCutOffData_OthersTab_Item1> items, int startIndex, ref int endIndex, ref Worksheet sheet)
+        {
+            if (items.Any())
+            {
+                var currentIndex = startIndex += 3;
+
+                foreach (var item in items)
+                {
+                    if (currentIndex != startIndex)
+                    {
+                        sheet.Rows[currentIndex - 1].Insert(InsertCellsMode.ShiftCellsDown);
+                        sheet.Rows[currentIndex - 1].CopyFrom(sheet.Rows[startIndex - 1], PasteSpecial.All);
+                    }
+
+                    sheet["D" + currentIndex].Value = item.Bank;
+                    sheet["E" + currentIndex].Value = item.StockCode;
+                    sheet["F" + currentIndex].Value = item.TradeDate;
+                    sheet["G" + currentIndex].Value = item.SettlementDate;
+                    sheet["H" + currentIndex].Value = item.NominalAmount;
+                    sheet["I" + currentIndex].Value = item.Price;
+                    sheet["J" + currentIndex].Value = item.Rate;
+                    sheet["K" + currentIndex].Value = item.Proceed;
+                    sheet["L" + currentIndex].Value = item.Notes;
 
                     currentIndex++;
                 }
 
                 if (currentIndex != startIndex)
                 {
-                    sheet["G" + currentIndex].Formula = "=SUM($G$" + startIndex + ":$G$" + (currentIndex - 1) + ")";
-                    sheet["J" + currentIndex].Formula = "=SUM($J$" + startIndex + ":$J$" + (currentIndex - 1) + ")";
+                    sheet["H" + currentIndex].Formula = "=SUM($H$" + startIndex + ":$H$" + (currentIndex - 1) + ")";
                     sheet["K" + currentIndex].Formula = "=SUM($K$" + startIndex + ":$K$" + (currentIndex - 1) + ")";
                 }
+
+                endIndex = currentIndex;
             }
         }
 
-        private void OthersTab_IfTable(List<MYR_DealCutOffData_OthersItem> items, int startIndex, ref Worksheet sheet, ref int currentIndex)
+        private void OthersTab_IfTable2(List<MYR_DealCutOffData_OthersTab_Item2> items, int startIndex, ref int endIndex, ref Worksheet sheet)
         {
             if (items.Any())
             {
-                var availableGroup = items.GroupBy(x => x.InstrumentType);
+                var currentIndex = startIndex += 3;
 
-                foreach (var group in availableGroup)
+                foreach (var item in items)
                 {
-                    if (currentIndex == startIndex)
-                    {
-                        sheet["C16"].Value = group.Key;
-                    }
-                    else
-                    {
-                        sheet["C" + currentIndex].Value = group.Key;
-                    }
-
-                    foreach (var item in items)
-                    {
-                        if (currentIndex != startIndex)
-                        {
-                            sheet.Rows[currentIndex - 1].Insert(InsertCellsMode.ShiftCellsDown);
-                            sheet.Rows[currentIndex - 1].CopyFrom(sheet.Rows[startIndex - 1], PasteSpecial.All);
-                        }
-
-                        sheet["D" + currentIndex].Value = item.Bank;
-                        sheet["E" + currentIndex].Value = item.StockCode;
-                        sheet["F" + currentIndex].Value = item.TradeDate;
-                        sheet["G" + currentIndex].Value = item.SettlementDate;
-                        sheet["H" + currentIndex].Value = item.NominalAmount;
-                        sheet["I" + currentIndex].Value = item.Price;
-                        sheet["J" + currentIndex].Value = item.Rate;
-                        sheet["K" + currentIndex].Value = item.Proceed;
-                        sheet["L" + currentIndex].Value = item.Notes;
-
-                        currentIndex++;
-                    }
-
                     if (currentIndex != startIndex)
                     {
-                        sheet["H" + currentIndex].Formula = "=SUM($H$" + startIndex + ":$H$" + (currentIndex - 1) + ")";
-                        sheet["K" + currentIndex].Formula = "=SUM($K$" + startIndex + ":$K$" + (currentIndex - 1) + ")";
+                        sheet.Rows[currentIndex - 1].Insert(InsertCellsMode.ShiftCellsDown);
+                        sheet.Rows[currentIndex - 1].CopyFrom(sheet.Rows[startIndex - 1], PasteSpecial.All);
                     }
+
+                    sheet["D" + currentIndex].Value = item.Items;
+                    sheet["E" + currentIndex].Value = item.Amount;
+                    sheet["F" + currentIndex].Value = item.Notes;
+
+                    currentIndex++;
                 }
 
-                
+                if (currentIndex != startIndex)
+                {
+                    sheet["E" + currentIndex].Formula = "=SUM($E$" + startIndex + ":$E$" + (currentIndex - 1) + ")";
+                }
+
+                endIndex = currentIndex;
             }
         }
+        
     }
 
     public class MYR_DealCutOffData
@@ -669,21 +985,33 @@ namespace xDC_Web.Extension.DocGenerator
         public List<MYR_DealCutOffData_Mmi> OF_MMI_RolloverItems { get; set; }
         public List<MYR_DealCutOffData_Mmi> OF_MMI_NewPlacementItems { get; set; }
 
-        public List<MYR_DealCutOffData_OthersItem> IF_OthersTab_Others { get; set; }
+        public List<MYR_DealCutOffData_OthersTab_Item1> IF_OthersTab_MGS_GII { get; set; }
+        public List<MYR_DealCutOffData_OthersTab_Item1> IF_OthersTab_PssCpNidBaBnm { get; set; }
+        public List<MYR_DealCutOffData_OthersTab_Item2> IF_OthersTab_Others { get; set; }
+
+        public List<MYR_DealCutOffData_OthersTab_Item1> OF_OthersTab_MGS_GII { get; set; }
+        public List<MYR_DealCutOffData_OthersTab_Item1> OF_OthersTab_PssCpNidBaBnm { get; set; }
+        public List<MYR_DealCutOffData_OthersTab_Item2> OF_OthersTab_Others { get; set; }
 
     }
 
-    public class MYR_DealCutOffData_OthersItem
+    public class MYR_DealCutOffData_OthersTab_Item1
     {
-        public string InstrumentType { get; set; }
         public string Bank { get; set; }
         public string StockCode { get; set; }
-        public DateTime TradeDate { get; set; }
-        public DateTime SettlementDate { get; set; }
-        public double NominalAmount { get; set; }
-        public double Price { get; set; }
-        public double Rate { get; set; }
-        public double Proceed { get; set; }
+        public DateTime? TradeDate { get; set; }
+        public DateTime? SettlementDate { get; set; }
+        public double? NominalAmount { get; set; }
+        public double? Price { get; set; }
+        public double? Rate { get; set; }
+        public double? Proceed { get; set; }
+        public string Notes { get; set; }
+    }
+
+    public class MYR_DealCutOffData_OthersTab_Item2
+    {
+        public string Items { get; set; }
+        public double? Amount { get; set; }
         public string Notes { get; set; }
     }
 
