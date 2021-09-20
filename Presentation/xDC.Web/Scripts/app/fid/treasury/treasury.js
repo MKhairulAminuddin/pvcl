@@ -6,7 +6,7 @@
         loadAssetType: window.location.origin + "/api/common/Treasury/AssetType",
         loadProductType: window.location.origin + "/api/common/Treasury/ProductType",
         loadIssuer: window.location.origin + "/api/fid/Treasury/EdwIssuer/",
-        loadCounterParty: window.location.origin + "/api/fid/Treasury/EdwBankCounterParty/",
+        loadCounterParty: window.location.origin + "/api/fid/Treasury/EdwBankCounterParty/"
     };
 
     _treasury.tenor = function (maturityDate, valueDate) {
@@ -87,7 +87,7 @@
 
         switch (productType) {
         case "NID":
-            result = (rate * tenor * nominal / 36500).toFixed(4);
+            result = (rate * tenor * nominal / 36500);
             return result.toFixed(2.5);
 
         case "NIDC":
@@ -116,7 +116,7 @@
             return result.toFixed(2.5);
 
         case "NIDL":
-            result = (rate * tenor * nominal / 36500).toFixed(4);
+            result = (rate * tenor * nominal / 36500);
             return result.toFixed(2.5);
 
         default:
@@ -177,7 +177,7 @@
 
         case "NIDC":
             var price = (100 / (1 + (tenor * rate / 36500)));
-            result = (price * nominal / 100);
+            result = (price.toFixed(4) * nominal / 100);
             return result.toFixed(2.5);
             
         case "CP":

@@ -46,6 +46,191 @@
         //#endregion
 
         //#region Data Source & Functions
+
+        var sampleDataInflowMmi = [
+            {
+                productType: "NIDC",
+                valueDate: new Date(2021, 7, 3),
+                maturityDate: new Date(2021, 8, 3),
+                nominal: 50000000.00,
+                sellPurchaseRateYield: 2.050,
+                purchaseProceeds: 0,
+                certNoStockCode: "AMB111210"
+            },
+            {
+                productType: "NIDC",
+                valueDate: new Date(2021, 8, 3),
+                maturityDate: new Date(2021, 8, 24),
+                nominal: 20000000.00,
+                sellPurchaseRateYield: 1.870,
+                purchaseProceeds: 0,
+                certNoStockCode: "AMB111210"
+            },
+            {
+                productType: "NID",
+                valueDate: new Date(2020, 11, 17),
+                maturityDate: new Date(2021, 0, 20),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.05,
+                purchaseProceeds: 0,
+                certNoStockCode: "AMB111210"
+            },
+
+            {
+                productType: "CP",
+                valueDate: new Date(2021, 7, 15),
+                maturityDate: new Date(2021, 7, 30),
+                nominal: 5000000.00,
+                sellPurchaseRateYield: 2.000,
+                purchaseProceeds: 3000000.00,
+                certNoStockCode: "RA86899"
+            },
+            {
+                productType: "ICP",
+                valueDate: new Date(2021, 8, 3),
+                maturityDate: new Date(2021, 8, 30),
+                nominal: 3000000.00,
+                sellPurchaseRateYield: 2.150,
+                purchaseProceeds: 2000000.00,
+                certNoStockCode: "CD88934"
+            },
+            {
+                productType: "BNMN",
+                valueDate: new Date(2021, 8, 1),
+                maturityDate: new Date(2021, 9, 1),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 1.900,
+                purchaseProceeds: 5000000.00,
+                certNoStockCode: "364578"
+            },
+            {
+                issuer: "BNM",
+                productType: "MTB",
+                valueDate: new Date(2021, 8, 30),
+                maturityDate: new Date(2021, 9, 30),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.100,
+                purchaseProceeds: 5000000.00,
+                certNoStockCode: "543989"
+            },
+            {
+                productType: "NIDL",
+                valueDate: new Date(2020, 11, 17),
+                maturityDate: new Date(2021, 0, 22),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.050,
+                purchaseProceeds: 5000000.00,
+                certNoStockCode: "AMB111210"
+            }
+        ];
+
+        var sampleDataOutflowMmi = [
+            {
+                productType: "NID",
+                valueDate: new Date(2020, 11, 17),
+                maturityDate: new Date(2021, 0, 20),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.03,
+                certNoStockCode: "AMB111210"
+            },
+            {
+                productType: "NIDC",
+                valueDate: new Date(2021, 6, 29),
+                maturityDate: new Date(2021, 7, 30),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.060,
+                certNoStockCode: "10111"
+            },
+            {
+                productType: "NIDC",
+                valueDate: new Date(2021, 6, 29),
+                maturityDate: new Date(2021, 7, 30),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.060,
+                certNoStockCode: "10112"
+            },
+            {
+                productType: "CP",
+                valueDate: new Date(2021, 6, 29),
+                maturityDate: new Date(2021, 7, 30),
+                nominal: 5000000.00,
+                sellPurchaseRateYield: 2.000,
+                certNoStockCode: "RA86899"
+            },
+            {
+                productType: "ICP",
+                valueDate: new Date(2021, 6, 29),
+                maturityDate: new Date(2021, 8, 30),
+                nominal: 3000000.00,
+                sellPurchaseRateYield: 2.150,
+                certNoStockCode: "CD88934"
+            },
+            {
+                issuer: "BA",
+                productType: "MTB",
+                valueDate: new Date(2021, 6, 29),
+                maturityDate: new Date(2021, 9, 1),
+                nominal: 500000.00,
+                sellPurchaseRateYield: 2.200,
+                certNoStockCode: "BA7865"
+            },
+            {
+                productType: "AB-i",
+                valueDate: new Date(2021, 6, 29),
+                maturityDate: new Date(2021, 9, 30),
+                nominal: 1000000.00,
+                sellPurchaseRateYield: 2.300,
+                certNoStockCode: "BA89644"
+            },
+            {
+                issuer: "BNMN",
+                productType: "MTB",
+                valueDate: new Date(2021, 6, 29),
+                maturityDate: new Date(2021, 9, 1),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.000,
+                certNoStockCode: "364578"
+            },
+            {
+                productType: "MTB",
+                valueDate: new Date(2021, 6, 29),
+                maturityDate: new Date(2021, 9, 30),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.150,
+                certNoStockCode: "543989"
+            },
+            {
+                productType: "NIDL",
+                valueDate: new Date(2020, 10, 17),
+                maturityDate: new Date(2022, 0, 22),
+                nominal: 10000000.00,
+                sellPurchaseRateYield: 2.03,
+                certNoStockCode: "AMB111210"
+            }
+        ];
+
+        var sampleDataOutflowDeposit = [
+            {
+                maturityDate: new Date(2021, 7, 27),
+                valueDate: new Date(2021, 7, 20),
+                principal: 33026248.32,
+                ratePercent: 0.01,
+                assetType: "MMD",
+                notes: "New",
+                contactPerson: "Zaki"
+            },
+            {
+                maturityDate: new Date(2021, 8, 3),
+                valueDate: new Date(2021, 7, 27),
+                principal: 23149090.84,
+                ratePercent: 0.02,
+                assetType: "MMD",
+                notes: "New",
+                contactPerson: "Zaki"
+            }
+        ];
+
+
         var parseDepositArray = function (dataGridData) {
             if (dataGridData.length > 0) {
                 var x = dataGridData.map(function (x) {
@@ -706,6 +891,7 @@
                         hint: "Populate Sample Data",
                         onClick: function () {
                             $outflowDepositGrid.option("dataSource", sampleDataOutflowDeposit);
+                            $outflowDepositGrid.refresh();
                             app.toast("Grid Outflow Deposit populated with sample data", "warning", 4000);
                         }
                     },
@@ -973,6 +1159,7 @@
                         hint: "Populate Sample Data",
                         onClick: function () {
                             $inflowMmiGrid.option("dataSource", sampleDataInflowMmi);
+                            $inflowMmiGrid.refresh();
                             app.toast("Grid Inflow MMI populated with sample data", "warning", 4000);
                         }
                     },
@@ -1230,6 +1417,7 @@
                         hint: "Populate Sample Data",
                         onClick: function () {
                             $outflowMmiGrid.option("dataSource", sampleDataOutflowMmi);
+                            $outflowMmiGrid.refresh();
                             app.toast("Grid Outflow MMI populated with sample data", "warning", 4000);
                         }
                     },

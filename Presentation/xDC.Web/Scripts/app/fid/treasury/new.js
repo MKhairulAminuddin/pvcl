@@ -38,6 +38,24 @@
 
         var sampleDataInflowMmi = [
             {
+                productType: "NIDC",
+                valueDate: new Date(2021, 7, 3),
+                maturityDate: new Date(2021, 8, 3),
+                nominal: 50000000.00,
+                sellPurchaseRateYield: 2.050,
+                purchaseProceeds: 0,
+                certNoStockCode: "AMB111210"
+            },
+            {
+                productType: "NIDC",
+                valueDate: new Date(2021, 8, 3),
+                maturityDate: new Date(2021, 8, 24),
+                nominal: 20000000.00,
+                sellPurchaseRateYield: 1.870,
+                purchaseProceeds: 0,
+                certNoStockCode: "AMB111210"
+            },
+            {
                 productType: "NID",
                 valueDate: new Date(2020, 11, 17),
                 maturityDate: new Date(2021, 0, 20),
@@ -46,15 +64,7 @@
                 purchaseProceeds: 0,
                 certNoStockCode: "AMB111210"
             },
-            {
-                productType: "NIDC",
-                valueDate: new Date(2021, 7, 15),
-                maturityDate: new Date(2021, 8, 30),
-                nominal: 10000000.00,
-                sellPurchaseRateYield: 2.050,
-                purchaseProceeds: 5000000.00,
-                certNoStockCode: "AMB111210"
-            },
+            
             {
                 productType: "CP",
                 valueDate: new Date(2021, 7, 15),

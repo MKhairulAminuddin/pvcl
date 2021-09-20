@@ -464,7 +464,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = FidService.List_FcaBankAccount(db);
+                    var result = FidService.List_CounterParty(db);
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -949,7 +949,18 @@ namespace xDC_Web.Controllers.Api
                             }
                         }
                     }
-                    
+                    else
+                    {
+                        var existingInflowDeposit = db.FID_Treasury_Deposit.Where(x =>
+                            x.FormId == form.Id && x.CashflowType == Common.Cashflow.Inflow);
+
+                        // delete from existing
+                        if (existingInflowDeposit.Any())
+                        {
+                            db.FID_Treasury_Deposit.RemoveRange(existingInflowDeposit);
+                        }
+                    }
+
                     if (input.OutflowDeposit.Any())
                     {
                         var outflowDepositInGrid = input.OutflowDeposit;
@@ -1061,7 +1072,18 @@ namespace xDC_Web.Controllers.Api
                             }
                         }
                     }
-                    
+                    else
+                    {
+                        var existingOutflowDeposit = db.FID_Treasury_Deposit.Where(x =>
+                            x.FormId == form.Id && x.CashflowType == Common.Cashflow.Outflow);
+
+                        // delete from existing
+                        if (existingOutflowDeposit.Any())
+                        {
+                            db.FID_Treasury_Deposit.RemoveRange(existingOutflowDeposit);
+                        }
+                    }
+
                     if (input.InflowMoneyMarket.Any())
                     {
                         var inflowMmiInGrid = input.InflowMoneyMarket;
@@ -1175,7 +1197,18 @@ namespace xDC_Web.Controllers.Api
                             }
                         }
                     }
-                    
+                    else
+                    {
+                        var existingInflowMmi = db.FID_Treasury_MMI.Where(x =>
+                            x.FormId == form.Id && x.CashflowType == Common.Cashflow.Inflow);
+
+                        // delete from existing
+                        if (existingInflowMmi.Any())
+                        {
+                            db.FID_Treasury_MMI.RemoveRange(existingInflowMmi);
+                        }
+                    }
+
                     if (input.OutflowMoneyMarket.Any())
                     {
                         var outflowMmiInGrid = input.OutflowMoneyMarket;
@@ -1287,6 +1320,17 @@ namespace xDC_Web.Controllers.Api
                                     ModifiedDate = DateTime.Now
                                 });
                             }
+                        }
+                    }
+                    else
+                    {
+                        var existingInflowMmi = db.FID_Treasury_MMI.Where(x =>
+                            x.FormId == form.Id && x.CashflowType == Common.Cashflow.Outflow);
+
+                        // delete from existing
+                        if (existingInflowMmi.Any())
+                        {
+                            db.FID_Treasury_MMI.RemoveRange(existingInflowMmi);
                         }
                     }
                     
