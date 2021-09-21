@@ -7,7 +7,6 @@ namespace xDC_Web.ViewModels.Fid
 {
     public class Ts10AmHomeGridVM
     {
-        public int FormId { get; set; }
         public string Currency { get; set; }
         public DateTime SettlementDate { get; set; }
         public int CountPendingEquity { get; set; }

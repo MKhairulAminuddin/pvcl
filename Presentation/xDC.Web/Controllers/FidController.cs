@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -41,14 +42,20 @@ namespace xDC_Web.Controllers
             return View("TenAmCutOff/FcaTagging");
         }
 
-        [Route("FcaTagging/Edit/{formId}")]
-        public ActionResult FcaTaggingEdit(int formId)
+        [Route("FcaTagging/Edit/{settlementDateEpoch}/{currency}")]
+        public ActionResult FcaTaggingEdit(long settlementDateEpoch, string currency)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var form = db.FID_TS10.FirstOrDefault(x => x.Id == formId);
+                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+
+                    var form = db.ISSD_FormHeader
+                        .FirstOrDefault(x => x.FormStatus == Common.FormStatus.Approved
+                                             && x.SettlementDate != null
+                                             && DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate)
+                                             && x.Currency == currency);
 
                     if (form != null)
                     {

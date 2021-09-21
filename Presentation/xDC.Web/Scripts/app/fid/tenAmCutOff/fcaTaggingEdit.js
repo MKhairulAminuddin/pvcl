@@ -22,20 +22,20 @@
             $printBtn;
 
         var referenceUrl = {
-            getAvailableTrades: window.location.origin + "/api/fid/TcaTagging/AvailableTrades/" + window.location.pathname.split("/").pop(),
+            getAvailableTrades: window.location.origin + "/api/fid/TcaTagging/AvailableTrades/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
 
-            equityLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/equity/" + window.location.pathname.split("/").pop(),
-            bondLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/bond/" + window.location.pathname.split("/").pop(),
-            cpLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/cp/" + window.location.pathname.split("/").pop(),
-            notesPaperLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/notesPaper/" + window.location.pathname.split("/").pop(),
-            repoLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/repo/" + window.location.pathname.split("/").pop(),
-            couponLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/coupon/" + window.location.pathname.split("/").pop(),
-            feesLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/fees/" + window.location.pathname.split("/").pop(),
-            mtmLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/mtm/" + window.location.pathname.split("/").pop(),
-            fxLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/fxSettlement/" + window.location.pathname.split("/").pop(),
-            contributionLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/contributionCredited/" + window.location.pathname.split("/").pop(),
-            altidLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/altid/" + window.location.pathname.split("/").pop(),
-            othersLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/others/" + window.location.pathname.split("/").pop(),
+            equityLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/equity/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1] ,
+            bondLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/bond/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            cpLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/cp/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            notesPaperLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/notesPaper/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            repoLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/repo/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            couponLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/coupon/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            feesLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/fees/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            mtmLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/mtm/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            fxLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/fxSettlement/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            contributionLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/contributionCredited/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            altidLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/altid/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            othersLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/others/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
 
             updateTradeItem: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem",
 
@@ -101,7 +101,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.maturity == 0 && options.data.sales == 0) {
+                                        if (options.data.inflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
@@ -119,7 +119,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.purchase == 0) {
+                                        if (options.data.outflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
@@ -271,7 +271,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.maturity == 0 && options.data.sales == 0) {
+                                        if (options.data.inflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
@@ -288,7 +288,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.purchase == 0) {
+                                        if (options.data.outflowFrom== 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
@@ -438,7 +438,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.maturity == 0 && options.data.sales == 0) {
+                                        if (options.data.inflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
@@ -455,7 +455,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.purchase == 0) {
+                                        if (options.data.outflowFrom== 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
@@ -605,7 +605,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.maturity == 0 && options.data.sales == 0) {
+                                        if (options.data.inflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
@@ -622,7 +622,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.purchase == 0) {
+                                        if (options.data.outflowFrom== 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
@@ -772,7 +772,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.firstLeg == 0) {
+                                        if (options.data.inflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
@@ -789,7 +789,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.secondLeg == 0) {
+                                        if (options.data.outflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
@@ -918,6 +918,12 @@
                                         valueExpr: "name",
                                         displayExpr: "name",
                                         allowClearing: true
+                                    },
+                                    cellTemplate: function (container, options) {
+                                        if (options.data.inflowAmount == 0) {
+                                            container.addClass("dxDataGrid-cell-grey");
+                                        }
+                                        $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
                                     }
                                 },
                                 {
@@ -1013,7 +1019,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.amountPlus == 0) {
+                                        if (options.data.inflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
@@ -1030,7 +1036,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.amountMinus == 0) {
+                                        if (options.data.outflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
@@ -1147,7 +1153,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.amountMinus == 0) {
+                                        if (options.data.inflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
@@ -1164,7 +1170,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.amountMinus == 0) {
+                                        if (options.data.outflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
@@ -1290,7 +1296,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.amountPlus == 0) {
+                                        if (options.data.inflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
@@ -1307,7 +1313,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.amountMinus == 0) {
+                                        if (options.data.outflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
@@ -1431,6 +1437,12 @@
                                         valueExpr: "name",
                                         displayExpr: "name",
                                         allowClearing: true
+                                    },
+                                    cellTemplate: function (container, options) {
+                                        if (options.data.inflowAmount == 0) {
+                                            container.addClass("dxDataGrid-cell-grey");
+                                        }
+                                        $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
                                     }
                                 },
                                 {
@@ -1521,7 +1533,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.amountPlus == 0) {
+                                        if (options.data.inflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
@@ -1538,7 +1550,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.amountMinus == 0) {
+                                        if (options.data.outflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
@@ -1664,7 +1676,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.amountPlus == 0) {
+                                        if (options.data.inflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
@@ -1681,7 +1693,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.amountMinus == 0) {
+                                        if (options.data.outflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);

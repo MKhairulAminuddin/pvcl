@@ -29,5 +29,11 @@ namespace xDC.Infrastructure.Application
         public string Remarks { get; set; }
         public string ModifiedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
+        public double InflowAmount { get; set; }
+        public double OutflowAmount { get; set; }
+        public string InflowTo { get; set; }
+        public string OutflowFrom { get; set; }
+        public string AssignedBy { get; set; }
+        public Nullable<System.DateTime> AssignedDate { get; set; }
     }
 }

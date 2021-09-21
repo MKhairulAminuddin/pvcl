@@ -24,12 +24,12 @@
         <EntityTypeShape EntityType="kashflowDbModel.EDW_TradeItem" Width="1.5" PointX="19.125" PointY="11.875" />
         <EntityTypeShape EntityType="kashflowDbModel.AMSD_IF" Width="1.5" PointX="8.625" PointY="5.75" />
         <EntityTypeShape EntityType="kashflowDbModel.Form_Workflow" Width="1.5" PointX="0.5" PointY="4" />
-        <EntityTypeShape EntityType="kashflowDbModel.ISSD_TradeSettlement" Width="1.5" PointX="4.375" PointY="9.75" />
         <EntityTypeShape EntityType="kashflowDbModel.FID_TS10_TradeItem" Width="1.5" PointX="15.5" PointY="6" />
         <EntityTypeShape EntityType="kashflowDbModel.AMSD_IF_Item" Width="1.5" PointX="10.625" PointY="5.75" />
         <EntityTypeShape EntityType="kashflowDbModel.FID_Treasury_Deposit" Width="1.5" PointX="13" PointY="9.75" />
         <EntityTypeShape EntityType="kashflowDbModel.FID_Treasury_MMI" Width="1.5" PointX="11.375" PointY="9.75" />
         <EntityTypeShape EntityType="kashflowDbModel.Config_FcaBankAccount" Width="1.5" PointX="6.75" PointY="4.875" />
+        <EntityTypeShape EntityType="kashflowDbModel.ISSD_TradeSettlement" Width="1.5" PointX="2.5" PointY="9.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

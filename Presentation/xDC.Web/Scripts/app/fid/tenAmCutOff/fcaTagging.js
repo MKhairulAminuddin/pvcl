@@ -31,7 +31,7 @@
 
         $grid = $("#grid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
-                key: "formId",
+                //key: "formId",
                 loadUrl: referenceUrl.loadTcaTagging
             }),
             columns: [
@@ -107,7 +107,7 @@
                             hint: "Open Form",
                             icon: "fa fa-external-link",
                             onClick: function (e) {
-                                window.location.href = referenceUrl.editTcaTaggingPage + e.row.data.formId;
+                                window.location.href = referenceUrl.editTcaTaggingPage + moment(e.row.data.settlementDate).unix() + "/" + e.row.data.currency;
                                 e.event.preventDefault();
                             }
                         }
