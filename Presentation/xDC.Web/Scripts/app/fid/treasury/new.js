@@ -28,7 +28,9 @@
 
         var referenceUrl = {
             loadCurrencies: window.location.origin + "/api/common/GetTradeSettlementCurrencies",
+
             dsMaturity: window.location.origin + "/api/fid/Treasury/EdwMaturity/",
+            dsMmi: window.location.origin + "/api/fid/Treasury/EdwMmi/",
 
             dsApproverList: window.location.origin + "/api/common/approverList/treasury",
 

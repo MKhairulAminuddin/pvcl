@@ -483,8 +483,11 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var tradeDate = Common.ConvertEpochToDateTime(tradeDateEpoch);
-                    tradeDate = tradeDate.Value.Date;
-                    var result = db.EDW_Maturity.Where(x => DbFunctions.TruncateTime(x.Maturity_Date) == tradeDate && x.currency == currency).Select(
+
+                    var result = db.EDW_Maturity_Deposit
+                        .Where(x => DbFunctions.TruncateTime(x.Maturity_Date) == DbFunctions.TruncateTime(tradeDate)
+                                    && x.CURRENCY == currency)
+                        .Select(
                         x => new TreasuryDepositGridVm
                         {
                             Dealer = x.Operator,
@@ -520,6 +523,61 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
         }
+
+        /*[HttpGet]
+        [Route("Treasury/EdwMmi/{tradeDateEpoch}/{Currency}")]
+        public HttpResponseMessage Treasury_EdwMmi(long tradeDateEpoch, string currency, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var tradeDate = Common.ConvertEpochToDateTime(tradeDateEpoch);
+
+                    var result = db.EDW_Maturity_MM
+                        .Where(x => DbFunctions.TruncateTime(x.Maturity_Date) == DbFunctions.TruncateTime(tradeDate)
+                                    && x.CURRENCY == currency)
+                        .Select(x => new TreasuryMmiVM
+                        {
+                            CashflowType = Common.Cashflow.Inflow,
+                            Dealer = x.Operator,
+                            Issuer = null,
+                            ValueDate = x.Value_Date.Value,
+                            MaturityDate = x.Maturity_Date,
+                            HoldingDayTenor = 0,
+                            CounterParty = x.Bank,
+                            SellPurchaseRateYield = x.Rate.Value,
+                            Price = 0,
+                            IntDividendReceivable = 0,
+                            PurchaseProceeds = 0,
+                            Proceeds = 0,
+                            CertNoStockCode = null,
+                            ModifiedBy = null,
+                            ModifiedDate = default,
+                            Nominal = x.Principle.Value,
+                            ProductType = x.Asset_Type,
+
+                        })
+                        .ToList();
+
+                    foreach (var item in result)
+                    {
+                        var rate = (double)item.RatePercent / 100;
+                        var tenor = (double)item.Tenor / 365;
+
+                        item.IntProfitReceivable = item.Principal * tenor * rate;
+                        item.PrincipalIntProfitReceivable = item.Principal + item.IntProfitReceivable;
+                    }
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }*/
 
         [HttpGet]
         [Route("Treasury/EdwBankCounterParty")]
@@ -570,7 +628,7 @@ namespace xDC_Web.Controllers.Api
                 var minDate = DateTime.MinValue;
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.EDW_Maturity.GroupBy(x => x.Maturity_Date).Select(x => new
+                    var result = db.EDW_Maturity_Deposit.GroupBy(x => x.Maturity_Date).Select(x => new
                     {
                         day = x.Key.Day,
                         month = x.Key.Month,
@@ -599,7 +657,7 @@ namespace xDC_Web.Controllers.Api
                     var tradeDate = Common.ConvertEpochToDateTime(tradeDateEpoch);
                     tradeDate = tradeDate.Value.Date;
 
-                    var result = db.EDW_Maturity.Where(x => DbFunctions.TruncateTime(x.Value_Date.Value) == DbFunctions.TruncateTime(tradeDate)).Select(x => x.currency).Distinct().ToList();
+                    var result = db.EDW_Maturity_Deposit.Where(x => DbFunctions.TruncateTime(x.Value_Date.Value) == DbFunctions.TruncateTime(tradeDate)).Select(x => x.CURRENCY).Distinct().ToList();
 
                     return Request.CreateResponse(HttpStatusCode.OK, result);
                 }

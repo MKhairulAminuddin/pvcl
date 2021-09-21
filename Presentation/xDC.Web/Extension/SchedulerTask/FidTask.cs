@@ -234,7 +234,7 @@ namespace xDC_Web.Extension.SchedulerTask
 
                 using (var db = new kashflowDBEntities())
                 {
-                    var assetTypeFromEdw = db.EDW_Maturity.Select(x => x.Asset_Type).Distinct().ToList();
+                    var assetTypeFromEdw = db.EDW_Maturity_Deposit.Select(x => x.Asset_Type).Distinct().ToList();
 
                     foreach (var assetType in assetTypeFromEdw)
                     {

@@ -12,7 +12,7 @@ namespace xDC.Infrastructure.Application
     using System;
     using System.Collections.Generic;
     
-    public partial class EDW_Maturity
+    public partial class EDW_Maturity_Deposit
     {
         public string Operator { get; set; }
         public string Bank { get; set; }
@@ -23,6 +23,6 @@ namespace xDC.Infrastructure.Application
         public Nullable<decimal> Rate { get; set; }
         public string Asset_Type { get; set; }
         public string bank_code { get; set; }
-        public string currency { get; set; }
+        public string CURRENCY { get; set; }
     }
 }
