@@ -34,15 +34,12 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<App_Notification> App_Notification { get; set; }
         public virtual DbSet<ISSD_FormHeader> ISSD_FormHeader { get; set; }
         public virtual DbSet<Config_Application> Config_Application { get; set; }
-        public virtual DbSet<FID_TS10> FID_TS10 { get; set; }
-        public virtual DbSet<FID_TS10_Approval> FID_TS10_Approval { get; set; }
         public virtual DbSet<FID_Treasury> FID_Treasury { get; set; }
         public virtual DbSet<EDW_FID_List> EDW_FID_List { get; set; }
         public virtual DbSet<EDW_BankBalance> EDW_BankBalance { get; set; }
         public virtual DbSet<EDW_TradeItem> EDW_TradeItem { get; set; }
         public virtual DbSet<AMSD_IF> AMSD_IF { get; set; }
         public virtual DbSet<Form_Workflow> Form_Workflow { get; set; }
-        public virtual DbSet<FID_TS10_TradeItem> FID_TS10_TradeItem { get; set; }
         public virtual DbSet<AMSD_IF_Item> AMSD_IF_Item { get; set; }
         public virtual DbSet<FID_Treasury_Deposit> FID_Treasury_Deposit { get; set; }
         public virtual DbSet<FID_Treasury_MMI> FID_Treasury_MMI { get; set; }

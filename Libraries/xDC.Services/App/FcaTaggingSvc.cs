@@ -87,49 +87,38 @@ namespace xDC.Services.App
             return ob;
         }
 
-        public static TS_TotalFlow GetTotalFlow(kashflowDBEntities db, int formId, DateTime settlementDate, string currency)
+        public static double TotalInflow(kashflowDBEntities db, DateTime settlementDate, string currency)
         {
-            var trades = new List<FID_TS10_TradeItem>();
-            
-            var tradesFromId = db.FID_TS10_TradeItem.Where(x => x.FormId == formId).ToList();
-            if (tradesFromId.Any())
-            {
-                trades.AddRange(tradesFromId);
-            }
+            var approvedFormIds = db.ISSD_FormHeader
+                .Where(x => DbFunctions.TruncateTime(x.ApprovedDate) == DbFunctions.TruncateTime(settlementDate)
+                            && x.Currency == currency)
+                .Select(x => x.Id)
+                .ToList();
 
-            var totalFlow = trades.GroupBy(x => 1)
-                .Select(x => new
-                {
-                    totalMaturity = x.Sum(y => y.Maturity),
-                    totalSales = x.Sum(y => y.Sales),
-                    totalFirstLeg = x.Sum(y => y.FirstLeg),
-                    totalAmountPlus = x.Sum(y => y.AmountPlus),
+            var tradeSettlement = db.ISSD_TradeSettlement
+                .Where(x => approvedFormIds.Contains(x.FormId))
+                .Select(x => x.InflowAmount)
+                .DefaultIfEmpty(0)
+                .Sum();
 
-                    totalPurchase = x.Sum(y => y.Purchase),
-                    totalSecondLeg = x.Sum(y => y.SecondLeg),
-                    totalAmountMinus = x.Sum(y => y.AmountMinus)
-                })
-                .FirstOrDefault();
+            return tradeSettlement;
+        }
 
-            double cbInflow = 0;
-            double cbOutflow = 0;
+        public static double TotalOutflow(kashflowDBEntities db, DateTime settlementDate, string currency)
+        {
+            var approvedFormIds = db.ISSD_FormHeader
+                .Where(x => DbFunctions.TruncateTime(x.ApprovedDate) == DbFunctions.TruncateTime(settlementDate)
+                            && x.Currency == currency)
+                .Select(x => x.Id)
+                .ToList();
 
-            if (totalFlow != null)
-            {
-                cbInflow = totalFlow.totalMaturity + totalFlow.totalSales + totalFlow.totalFirstLeg +
-                           totalFlow.totalAmountPlus;
-                cbOutflow = totalFlow.totalPurchase + totalFlow.totalSecondLeg + totalFlow.totalAmountMinus;
-            }
-             
-            var result = new TS_TotalFlow()
-            {
-                Currency = currency,
-                SettlementDate = settlementDate,
-                Inflow = cbInflow,
-                Outflow = cbOutflow
-            };
+            var tradeSettlement = db.ISSD_TradeSettlement
+                .Where(x => approvedFormIds.Contains(x.FormId))
+                .Select(x => x.OutflowAmount)
+                .DefaultIfEmpty(0)
+                .Sum();
 
-            return result;
+            return tradeSettlement;
         }
     }
 }

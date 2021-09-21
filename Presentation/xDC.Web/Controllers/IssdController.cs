@@ -588,40 +588,30 @@ namespace xDC_Web.Controllers
                 using (var db = new kashflowDBEntities())
                 {
                     var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
-
-                    var form = db.ISSD_FormHeader
-                        .FirstOrDefault(x => x.FormStatus == Common.FormStatus.Approved
-                                             && x.SettlementDate != null
-                                             && DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate)
-                                             && x.Currency == currency);
-
-                    if (form != null)
+                    
+                    var model = new EditFcaAccountAssignmentVM
                     {
-                        var model = new EditFcaAccountAssignmentVM
-                        {
-                            Currency = form.Currency,
-                            OpeningBalance = new List<TS_OpeningBalance>()
-                        };
+                        Currency = currency,
+                        OpeningBalance = new List<TS_OpeningBalance>()
+                    };
 
-                        if (form.SettlementDate != null)
-                        {
-                            model.SettlementDate = form.SettlementDate.Value;
+                    if (settlementDate != null)
+                    {
+                        model.SettlementDate = settlementDate.Value;
 
-                            var ob = FcaTaggingSvc.GetOpeningBalance(db, form.SettlementDate.Value, form.Currency);
-                            model.OpeningBalance.AddRange(ob);
-                            var totalOb = model.OpeningBalance.Sum(x => x.Amount);
+                        var ob = FcaTaggingSvc.GetOpeningBalance(db, settlementDate.Value, currency);
+                        model.OpeningBalance.AddRange(ob);
+                        var totalOb = model.OpeningBalance.Sum(x => x.Amount);
 
-                            var totalFlow = FcaTaggingSvc.GetTotalFlow(db, form.Id, form.SettlementDate.Value, form.Currency);
+                        var totalInflow = FcaTaggingSvc.TotalInflow(db, settlementDate.Value, currency);
+                        var totalOutflow = FcaTaggingSvc.TotalOutflow(db, settlementDate.Value, currency);
 
-                            model.ClosingBalance = totalOb + totalFlow.Inflow - totalFlow.Outflow;
-                        }
-
+                        model.ClosingBalance = totalOb + totalInflow - totalOutflow;
                         return View("FcaTagging/FcaTaggingEdit", model);
-
                     }
                     else
                     {
-                        TempData["ErrorMessage"] = "Form Not found";
+                        TempData["ErrorMessage"] = "Invalid data - settlement date";
                         return View("Error");
                     }
                 }

@@ -328,6 +328,12 @@ namespace xDC_Web.Extension.DocGenerator
                     }
                 }
 
+                // details sheets
+                foreach (var account in dataItem.Accounts)
+                {
+                    workbook.Worksheets.Add(account.Account);
+                    workbook.Worksheets[account.Account].CopyFrom(workbook.Worksheets[1]);
+                }
 
 
                 workbook.Calculate();
@@ -398,20 +404,22 @@ namespace xDC_Web.Extension.DocGenerator
                     .DefaultIfEmpty(0)
                     .Sum();
 
-                var approvedIssdForms = db.FID_TS10
+                var approvedIssdForms = db.ISSD_FormHeader
                     .Where(x => x.FormStatus == Common.FormStatus.Approved
                                 && DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
                                 && x.Currency == account.Currency)
                     .Select(x => x.Id)
                     .ToList();
-                var IF_Others = db.FID_TS10_TradeItem
-                    .Where(x => approvedIssdForms.Contains(x.FormId) && x.InflowTo == account.AccountName3)
-                    .Select(x => x.AmountPlus + x.Maturity + x.Sales + x.FirstLeg)
+                var IF_Others = db.ISSD_TradeSettlement
+                    .Where(x => approvedIssdForms.Contains(x.FormId) 
+                                && x.InflowTo == account.AccountName3)
+                    .Select(x => x.InflowAmount)
                     .DefaultIfEmpty(0)
                     .Sum();
-                var OF_Others = db.FID_TS10_TradeItem
-                    .Where(x => approvedIssdForms.Contains(x.FormId) && x.OutflowFrom == account.AccountName3)
-                    .Select(x => x.AmountMinus + x.Purchase + x.SecondLeg)
+                var OF_Others = db.ISSD_TradeSettlement
+                    .Where(x => approvedIssdForms.Contains(x.FormId) 
+                                && x.OutflowFrom == account.AccountName3)
+                    .Select(x => x.OutflowAmount)
                     .DefaultIfEmpty(0)
                     .Sum();
 
