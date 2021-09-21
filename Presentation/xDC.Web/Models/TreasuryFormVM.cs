@@ -44,6 +44,7 @@ namespace xDC_Web.Models
         public string RepoTag { get; set; }
         public string ContactPerson { get; set; }
         public string Notes { get; set; }
+        public string FcaAccount { get; set; }
 
         public string ModifiedBy { get; set; }
         public DateTime ModifiedDate { get; set; }
@@ -67,6 +68,7 @@ namespace xDC_Web.Models
         public double PurchaseProceeds { get; set; }
         public double Proceeds { get; set; }
         public string CertNoStockCode { get; set; }
+        public string FcaAccount { get; set; }
 
         public string ModifiedBy { get; set; }
         public DateTime ModifiedDate { get; set; }

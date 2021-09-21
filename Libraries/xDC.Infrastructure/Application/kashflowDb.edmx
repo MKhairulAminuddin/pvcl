@@ -278,6 +278,7 @@ warning 6002: The table/view 'kashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="RepoTag" Type="nvarchar" MaxLength="50" />
           <Property Name="ContactPerson" Type="nvarchar" MaxLength="100" />
           <Property Name="Notes" Type="nvarchar" MaxLength="50" />
+          <Property Name="FcaAccount" Type="nvarchar" MaxLength="50" />
           <Property Name="ModifiedBy" Type="nvarchar" MaxLength="150" />
           <Property Name="ModifiedDate" Type="datetime" />
         </EntityType>
@@ -302,6 +303,7 @@ warning 6002: The table/view 'kashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="Proceeds" Type="float" Nullable="false" />
           <Property Name="PurchaseProceeds" Type="float" Nullable="false" />
           <Property Name="CertNoStockCode" Type="nvarchar" MaxLength="150" />
+          <Property Name="FcaAccount" Type="nvarchar" MaxLength="50" />
           <Property Name="ModifiedBy" Type="nvarchar" MaxLength="150" />
           <Property Name="ModifiedDate" Type="datetime" />
         </EntityType>
@@ -506,12 +508,12 @@ warning 6002: The table/view 'kashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="AMSD_IF" EntityType="kashflowDbModel.AMSD_IF" />
           <EntitySet Name="Form_Workflow" EntityType="kashflowDbModel.Form_Workflow" />
           <EntitySet Name="AMSD_IF_Item" EntityType="kashflowDbModel.AMSD_IF_Item" />
-          <EntitySet Name="FID_Treasury_Deposit" EntityType="kashflowDbModel.FID_Treasury_Deposit" />
-          <EntitySet Name="FID_Treasury_MMI" EntityType="kashflowDbModel.FID_Treasury_MMI" />
           <EntitySet Name="Config_FcaBankAccount" EntityType="kashflowDbModel.Config_FcaBankAccount" />
           <EntitySet Name="ISSD_TradeSettlement" EntityType="kashflowDbModel.ISSD_TradeSettlement" />
           <EntitySet Name="EDW_Maturity_Deposit" EntityType="kashflowDbModel.EDW_Maturity_Deposit" />
           <EntitySet Name="EDW_Maturity_MM" EntityType="kashflowDbModel.EDW_Maturity_MM" />
+          <EntitySet Name="FID_Treasury_Deposit" EntityType="kashflowDbModel.FID_Treasury_Deposit" />
+          <EntitySet Name="FID_Treasury_MMI" EntityType="kashflowDbModel.FID_Treasury_MMI" />
           </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -740,53 +742,6 @@ warning 6002: The table/view 'kashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
         </EntityType>
-        <EntityType Name="FID_Treasury_Deposit">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FormId" Type="Int32" Nullable="false" />
-          <Property Name="CashflowType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Dealer" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Bank" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="ValueDate" Type="DateTime" Precision="0" />
-          <Property Name="MaturityDate" Type="DateTime" Precision="0" />
-          <Property Name="Tenor" Type="Int32" />
-          <Property Name="Principal" Type="Double" Nullable="false" />
-          <Property Name="RatePercent" Type="Double" Nullable="false" />
-          <Property Name="IntProfitReceivable" Type="Double" Nullable="false" />
-          <Property Name="PrincipalIntProfitReceivable" Type="Double" Nullable="false" />
-          <Property Name="AssetType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="RepoTag" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ContactPerson" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Notes" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-        </EntityType>
-        <EntityType Name="FID_Treasury_MMI">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FormId" Type="Int32" Nullable="false" />
-          <Property Name="CashflowType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Dealer" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Issuer" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="ProductType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CounterParty" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ValueDate" Type="DateTime" Precision="0" />
-          <Property Name="MaturityDate" Type="DateTime" Precision="0" />
-          <Property Name="HoldingDayTenor" Type="Int32" />
-          <Property Name="Nominal" Type="Double" Nullable="false" />
-          <Property Name="SellPurchaseRateYield" Type="Decimal" Precision="18" Scale="4" />
-          <Property Name="Price" Type="Double" Nullable="false" />
-          <Property Name="IntDividendReceivable" Type="Double" Nullable="false" />
-          <Property Name="Proceeds" Type="Double" Nullable="false" />
-          <Property Name="PurchaseProceeds" Type="Double" Nullable="false" />
-          <Property Name="CertNoStockCode" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-        </EntityType>
         <EntityType Name="Config_FcaBankAccount">
           <Key>
             <PropertyRef Name="Id" />
@@ -858,6 +813,55 @@ warning 6002: The table/view 'kashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="bank_code" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
           <Property Name="CURRENCY" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="StockCode" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="FID_Treasury_Deposit">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FormId" Type="Int32" Nullable="false" />
+          <Property Name="CashflowType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Dealer" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Bank" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="ValueDate" Type="DateTime" Precision="0" />
+          <Property Name="MaturityDate" Type="DateTime" Precision="0" />
+          <Property Name="Tenor" Type="Int32" />
+          <Property Name="Principal" Type="Double" Nullable="false" />
+          <Property Name="RatePercent" Type="Double" Nullable="false" />
+          <Property Name="IntProfitReceivable" Type="Double" Nullable="false" />
+          <Property Name="PrincipalIntProfitReceivable" Type="Double" Nullable="false" />
+          <Property Name="AssetType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RepoTag" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ContactPerson" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Notes" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="FcaAccount" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="FID_Treasury_MMI">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FormId" Type="Int32" Nullable="false" />
+          <Property Name="CashflowType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Dealer" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Issuer" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="ProductType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CounterParty" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ValueDate" Type="DateTime" Precision="0" />
+          <Property Name="MaturityDate" Type="DateTime" Precision="0" />
+          <Property Name="HoldingDayTenor" Type="Int32" />
+          <Property Name="Nominal" Type="Double" Nullable="false" />
+          <Property Name="SellPurchaseRateYield" Type="Decimal" Precision="18" Scale="4" />
+          <Property Name="Price" Type="Double" Nullable="false" />
+          <Property Name="IntDividendReceivable" Type="Double" Nullable="false" />
+          <Property Name="Proceeds" Type="Double" Nullable="false" />
+          <Property Name="PurchaseProceeds" Type="Double" Nullable="false" />
+          <Property Name="CertNoStockCode" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="FcaAccount" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -1109,55 +1113,6 @@ warning 6002: The table/view 'kashflowDb.dbo.EDW_TradeItem' does not have a prim
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="FID_Treasury_Deposit">
-            <EntityTypeMapping TypeName="kashflowDbModel.FID_Treasury_Deposit">
-              <MappingFragment StoreEntitySet="FID_Treasury_Deposit">
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="Notes" ColumnName="Notes" />
-                <ScalarProperty Name="ContactPerson" ColumnName="ContactPerson" />
-                <ScalarProperty Name="RepoTag" ColumnName="RepoTag" />
-                <ScalarProperty Name="AssetType" ColumnName="AssetType" />
-                <ScalarProperty Name="PrincipalIntProfitReceivable" ColumnName="PrincipalIntProfitReceivable" />
-                <ScalarProperty Name="IntProfitReceivable" ColumnName="IntProfitReceivable" />
-                <ScalarProperty Name="RatePercent" ColumnName="RatePercent" />
-                <ScalarProperty Name="Principal" ColumnName="Principal" />
-                <ScalarProperty Name="Tenor" ColumnName="Tenor" />
-                <ScalarProperty Name="MaturityDate" ColumnName="MaturityDate" />
-                <ScalarProperty Name="ValueDate" ColumnName="ValueDate" />
-                <ScalarProperty Name="Bank" ColumnName="Bank" />
-                <ScalarProperty Name="Dealer" ColumnName="Dealer" />
-                <ScalarProperty Name="CashflowType" ColumnName="CashflowType" />
-                <ScalarProperty Name="FormId" ColumnName="FormId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="FID_Treasury_MMI">
-            <EntityTypeMapping TypeName="kashflowDbModel.FID_Treasury_MMI">
-              <MappingFragment StoreEntitySet="FID_Treasury_MMI">
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="CertNoStockCode" ColumnName="CertNoStockCode" />
-                <ScalarProperty Name="PurchaseProceeds" ColumnName="PurchaseProceeds" />
-                <ScalarProperty Name="Proceeds" ColumnName="Proceeds" />
-                <ScalarProperty Name="IntDividendReceivable" ColumnName="IntDividendReceivable" />
-                <ScalarProperty Name="Price" ColumnName="Price" />
-                <ScalarProperty Name="SellPurchaseRateYield" ColumnName="SellPurchaseRateYield" />
-                <ScalarProperty Name="Nominal" ColumnName="Nominal" />
-                <ScalarProperty Name="HoldingDayTenor" ColumnName="HoldingDayTenor" />
-                <ScalarProperty Name="MaturityDate" ColumnName="MaturityDate" />
-                <ScalarProperty Name="ValueDate" ColumnName="ValueDate" />
-                <ScalarProperty Name="CounterParty" ColumnName="CounterParty" />
-                <ScalarProperty Name="ProductType" ColumnName="ProductType" />
-                <ScalarProperty Name="Issuer" ColumnName="Issuer" />
-                <ScalarProperty Name="Dealer" ColumnName="Dealer" />
-                <ScalarProperty Name="CashflowType" ColumnName="CashflowType" />
-                <ScalarProperty Name="FormId" ColumnName="FormId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Config_FcaBankAccount">
             <EntityTypeMapping TypeName="kashflowDbModel.Config_FcaBankAccount">
               <MappingFragment StoreEntitySet="Config_FcaBankAccount">
@@ -1231,6 +1186,57 @@ warning 6002: The table/view 'kashflowDb.dbo.EDW_TradeItem' does not have a prim
                 <ScalarProperty Name="Value_Date" ColumnName="Value_Date" />
                 <ScalarProperty Name="Bank" ColumnName="Bank" />
                 <ScalarProperty Name="Operator" ColumnName="Operator" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FID_Treasury_Deposit">
+            <EntityTypeMapping TypeName="kashflowDbModel.FID_Treasury_Deposit">
+              <MappingFragment StoreEntitySet="FID_Treasury_Deposit">
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="FcaAccount" ColumnName="FcaAccount" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="ContactPerson" ColumnName="ContactPerson" />
+                <ScalarProperty Name="RepoTag" ColumnName="RepoTag" />
+                <ScalarProperty Name="AssetType" ColumnName="AssetType" />
+                <ScalarProperty Name="PrincipalIntProfitReceivable" ColumnName="PrincipalIntProfitReceivable" />
+                <ScalarProperty Name="IntProfitReceivable" ColumnName="IntProfitReceivable" />
+                <ScalarProperty Name="RatePercent" ColumnName="RatePercent" />
+                <ScalarProperty Name="Principal" ColumnName="Principal" />
+                <ScalarProperty Name="Tenor" ColumnName="Tenor" />
+                <ScalarProperty Name="MaturityDate" ColumnName="MaturityDate" />
+                <ScalarProperty Name="ValueDate" ColumnName="ValueDate" />
+                <ScalarProperty Name="Bank" ColumnName="Bank" />
+                <ScalarProperty Name="Dealer" ColumnName="Dealer" />
+                <ScalarProperty Name="CashflowType" ColumnName="CashflowType" />
+                <ScalarProperty Name="FormId" ColumnName="FormId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FID_Treasury_MMI">
+            <EntityTypeMapping TypeName="kashflowDbModel.FID_Treasury_MMI">
+              <MappingFragment StoreEntitySet="FID_Treasury_MMI">
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="FcaAccount" ColumnName="FcaAccount" />
+                <ScalarProperty Name="CertNoStockCode" ColumnName="CertNoStockCode" />
+                <ScalarProperty Name="PurchaseProceeds" ColumnName="PurchaseProceeds" />
+                <ScalarProperty Name="Proceeds" ColumnName="Proceeds" />
+                <ScalarProperty Name="IntDividendReceivable" ColumnName="IntDividendReceivable" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="SellPurchaseRateYield" ColumnName="SellPurchaseRateYield" />
+                <ScalarProperty Name="Nominal" ColumnName="Nominal" />
+                <ScalarProperty Name="HoldingDayTenor" ColumnName="HoldingDayTenor" />
+                <ScalarProperty Name="MaturityDate" ColumnName="MaturityDate" />
+                <ScalarProperty Name="ValueDate" ColumnName="ValueDate" />
+                <ScalarProperty Name="CounterParty" ColumnName="CounterParty" />
+                <ScalarProperty Name="ProductType" ColumnName="ProductType" />
+                <ScalarProperty Name="Issuer" ColumnName="Issuer" />
+                <ScalarProperty Name="Dealer" ColumnName="Dealer" />
+                <ScalarProperty Name="CashflowType" ColumnName="CashflowType" />
+                <ScalarProperty Name="FormId" ColumnName="FormId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

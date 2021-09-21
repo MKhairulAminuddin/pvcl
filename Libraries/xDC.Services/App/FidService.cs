@@ -25,6 +25,18 @@ namespace xDC.Services.App
             return fcaBankAccounts;
         }
 
+        public static List<string> List_FcaBankAccount(kashflowDBEntities db, string currency)
+        {
+            var fcaBankAccounts = db.Config_FcaBankAccount
+                .Where(x => x.Currency == currency)
+                .Select(x => x.AccountName3)
+                .Distinct()
+                .OrderBy(x => x)
+                .ToList();
+
+            return fcaBankAccounts;
+        }
+
         public static List<EDW_FID_List> List_CounterParty(kashflowDBEntities db)
         {
             // check for same date and same currency exist

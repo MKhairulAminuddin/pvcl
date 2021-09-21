@@ -31,6 +31,7 @@ namespace xDC.Infrastructure.Application
         public double Proceeds { get; set; }
         public double PurchaseProceeds { get; set; }
         public string CertNoStockCode { get; set; }
+        public string FcaAccount { get; set; }
         public string ModifiedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
     }

@@ -38,193 +38,12 @@
 
             dsApproverList: window.location.origin + "/api/common/approverList/treasury",
 
+            dsFcaAccount: window.location.origin + "/api/fid/TcaTagging/FcaAccount",
+
             postNewFormRequest: window.location.origin + "/api/fid/Treasury/New",
             postNewFormResponse: window.location.origin + "/fid/Treasury/View/"
         };
-
-        var sampleDataInflowMmi = [
-            {
-                productType: "NIDC",
-                valueDate: new Date(2021, 7, 3),
-                maturityDate: new Date(2021, 8, 3),
-                nominal: 50000000.00,
-                sellPurchaseRateYield: 2.050,
-                purchaseProceeds: 0,
-                certNoStockCode: "AMB111210"
-            },
-            {
-                productType: "NIDC",
-                valueDate: new Date(2021, 8, 3),
-                maturityDate: new Date(2021, 8, 24),
-                nominal: 20000000.00,
-                sellPurchaseRateYield: 1.870,
-                purchaseProceeds: 0,
-                certNoStockCode: "AMB111210"
-            },
-            {
-                productType: "NID",
-                valueDate: new Date(2020, 11, 17),
-                maturityDate: new Date(2021, 0, 20),
-                nominal: 10000000.00,
-                sellPurchaseRateYield: 2.05,
-                purchaseProceeds: 0,
-                certNoStockCode: "AMB111210"
-            },
-            
-            {
-                productType: "CP",
-                valueDate: new Date(2021, 7, 15),
-                maturityDate: new Date(2021, 7, 30),
-                nominal: 5000000.00,
-                sellPurchaseRateYield: 2.000,
-                purchaseProceeds: 3000000.00,
-                certNoStockCode: "RA86899"
-            },
-            {
-                productType: "ICP",
-                valueDate: new Date(2021, 8, 3),
-                maturityDate: new Date(2021, 8, 30),
-                nominal: 3000000.00,
-                sellPurchaseRateYield: 2.150,
-                purchaseProceeds: 2000000.00,
-                certNoStockCode: "CD88934"
-            },
-            {
-                productType: "BNMN",
-                valueDate: new Date(2021, 8, 1),
-                maturityDate: new Date(2021, 9, 1),
-                nominal: 10000000.00,
-                sellPurchaseRateYield: 1.900,
-                purchaseProceeds: 5000000.00,
-                certNoStockCode: "364578"
-            },
-            {
-                issuer: "BNM",
-                productType: "MTB",
-                valueDate: new Date(2021, 8, 30),
-                maturityDate: new Date(2021, 9, 30),
-                nominal: 10000000.00,
-                sellPurchaseRateYield: 2.100,
-                purchaseProceeds: 5000000.00,
-                certNoStockCode: "543989"
-            },
-            {
-                productType: "NIDL",
-                valueDate: new Date(2020, 11, 17),
-                maturityDate: new Date(2021, 0, 22),
-                nominal: 10000000.00,
-                sellPurchaseRateYield: 2.050,
-                purchaseProceeds: 5000000.00,
-                certNoStockCode: "AMB111210"
-            }
-        ];
-
-        var sampleDataOutflowMmi = [
-            {
-                productType: "NID",
-                valueDate: new Date(2020, 11, 17),
-                maturityDate: new Date(2021, 0, 20),
-                nominal: 10000000.00,
-                sellPurchaseRateYield: 2.03,
-                certNoStockCode: "AMB111210"
-            },
-            {
-                productType: "NIDC",
-                valueDate: new Date(2021, 6, 29),
-                maturityDate: new Date(2021, 7, 30),
-                nominal: 10000000.00,
-                sellPurchaseRateYield: 2.060,
-                certNoStockCode: "10111"
-            },
-            {
-                productType: "NIDC",
-                valueDate: new Date(2021, 6, 29),
-                maturityDate: new Date(2021, 7, 30),
-                nominal: 10000000.00,
-                sellPurchaseRateYield: 2.060,
-                certNoStockCode: "10112"
-            },
-            {
-                productType: "CP",
-                valueDate: new Date(2021, 6, 29),
-                maturityDate: new Date(2021, 7, 30),
-                nominal: 5000000.00,
-                sellPurchaseRateYield: 2.000,
-                certNoStockCode: "RA86899"
-            },
-            {
-                productType: "ICP",
-                valueDate: new Date(2021, 6, 29),
-                maturityDate: new Date(2021, 8, 30),
-                nominal: 3000000.00,
-                sellPurchaseRateYield: 2.150,
-                certNoStockCode: "CD88934"
-            },
-            {
-                issuer: "BA",
-                productType: "MTB",
-                valueDate: new Date(2021, 6, 29),
-                maturityDate: new Date(2021, 9, 1),
-                nominal: 500000.00,
-                sellPurchaseRateYield: 2.200,
-                certNoStockCode: "BA7865"
-            },
-            {
-                productType: "AB-i",
-                valueDate: new Date(2021, 6, 29),
-                maturityDate: new Date(2021, 9, 30),
-                nominal: 1000000.00,
-                sellPurchaseRateYield: 2.300,
-                certNoStockCode: "BA89644"
-            },
-            {
-                issuer: "BNMN",
-                productType: "MTB",
-                valueDate: new Date(2021, 6, 29),
-                maturityDate: new Date(2021, 9, 1),
-                nominal: 10000000.00,
-                sellPurchaseRateYield: 2.000,
-                certNoStockCode: "364578"
-            },
-            {
-                productType: "MTB",
-                valueDate: new Date(2021, 6, 29),
-                maturityDate: new Date(2021, 9, 30),
-                nominal: 10000000.00,
-                sellPurchaseRateYield: 2.150,
-                certNoStockCode: "543989"
-            },
-            {
-                productType: "NIDL",
-                valueDate: new Date(2020, 10, 17),
-                maturityDate: new Date(2022, 0, 22),
-                nominal: 10000000.00,
-                sellPurchaseRateYield: 2.03,
-                certNoStockCode: "AMB111210"
-            }
-        ];
-
-        var sampleDataOutflowDeposit = [
-            {
-                maturityDate: new Date(2021, 7, 27),
-                valueDate: new Date(2021, 7, 20),
-                principal: 33026248.32,
-                ratePercent: 0.01,
-                assetType: "MMD",
-                notes: "New",
-                contactPerson: "Zaki"
-            },
-            {
-                maturityDate: new Date(2021, 8, 3),
-                valueDate: new Date(2021, 7, 27),
-                principal: 23149090.84,
-                ratePercent: 0.02,
-                assetType: "MMD",
-                notes: "New",
-                contactPerson: "Zaki"
-            }
-        ];
-
+        
         //#endregion
 
         //#region Data Source & Functions
@@ -245,7 +64,8 @@
                             assetType: x.assetType,
                             repoTag: x.repoTag,
                             contactPerson: x.contactPerson,
-                            notes: x.notes
+                            notes: x.notes,
+                            fcaAccount: x.fcaAccount
                         };
                     }
                 });
@@ -274,7 +94,8 @@
                             productType: x.productType,
                             purchaseProceeds: x.purchaseProceeds,
                             sellPurchaseRateYield: x.sellPurchaseRateYield,
-                            valueDate: x.valueDate.toISOString()
+                            valueDate: x.valueDate.toISOString(),
+                            fcaAccount: x.fcaAccount
                         };
                     }
                 });
@@ -283,6 +104,17 @@
             } else {
                 return [];
             }
+        }
+
+        var dsAccountLookup = function () {
+            return {
+                store: DevExpress.data.AspNet.createStore({
+                    key: "name",
+                    loadUrl: referenceUrl.dsFcaAccount
+                }),
+                paginate: true,
+                pageSize: 20
+            };
         }
         
         var dsMaturity = function (tradeDateEpoch, currency) {
@@ -422,6 +254,7 @@
             displayExpr: "value",
             valueExpr: "value",
             placeHolder: "Currency..",
+            deferRendering: false,
             onValueChanged: function (data) {
                 if (data.value == "MYR") {
                     console.log("ohoi");
@@ -504,6 +337,7 @@
         // #region Data Grid
 
         $inflowDepositGrid = $("#inflowDepositGrid").dxDataGrid({
+            dataSource: [],
             columns: [
                 {
                     caption: "#",
@@ -649,6 +483,17 @@
                     }
                 },
                 {
+                    dataField: "fcaAccount",
+                    width: "150px",
+                    caption: "FCA",
+                    lookup: {
+                        dataSource: dsAccountLookup,
+                        valueExpr: "name",
+                        displayExpr: "name",
+                        allowClearing: true
+                    }
+                },
+                {
                     type: "buttons",
                     width: 110,
                     buttons: [
@@ -750,6 +595,7 @@
         }).dxDataGrid("instance");
 
         $outflowDepositGrid = $("#outflowDepositGrid").dxDataGrid({
+            dataSource: [],
             columns: [
                 {
                     caption: "#",
@@ -892,6 +738,17 @@
                     }
                 },
                 {
+                    dataField: "fcaAccount",
+                    width: "150px",
+                    caption: "FCA",
+                    lookup: {
+                        dataSource: dsAccountLookup,
+                        valueExpr: "name",
+                        displayExpr: "name",
+                        allowClearing: true
+                    }
+                },
+                {
                     type: "buttons",
                     width: 110,
                     buttons: [
@@ -990,6 +847,7 @@
         }).dxDataGrid("instance");
 
         $inflowMmiGrid = $("#inflowMmiGrid").dxDataGrid({
+            dataSource: [],
             columns: [
                 {
                     caption: "#",
@@ -1156,6 +1014,17 @@
                     caption: "Certificate No. / Stock Code"
                 },
                 {
+                    dataField: "fcaAccount",
+                    width: "150px",
+                    caption: "FCA",
+                    lookup: {
+                        dataSource: dsAccountLookup,
+                        valueExpr: "name",
+                        displayExpr: "name",
+                        allowClearing: true
+                    }
+                },
+                {
                     type: "buttons",
                     width: 110,
                     buttons: [
@@ -1263,6 +1132,7 @@
         }).dxDataGrid("instance");
 
         $outflowMmiGrid = $("#outflowMmiGrid").dxDataGrid({
+            dataSource: [],
             columns: [
                 {
                     caption: "#",
@@ -1419,6 +1289,17 @@
                     caption: "Certificate No. / Stock Code"
                 },
                 {
+                    dataField: "fcaAccount",
+                    width: "150px",
+                    caption: "FCA",
+                    lookup: {
+                        dataSource: dsAccountLookup,
+                        valueExpr: "name",
+                        displayExpr: "name",
+                        allowClearing: true
+                    }
+                },
+                {
                     type: "buttons",
                     width: 110,
                     buttons: [
@@ -1537,6 +1418,11 @@
             checkDwDataAvailibility($tradeDate.option("value"), data.value);
         });
 
+        $currencySelectBox.on("contentReady", function (e) {
+            
+            $currencySelectBox.option("value", e.component.getDataSource().items()[0].value);
+        });
+
         $("#saveAsDraftBtn").dxButton({
             onClick: function (e) {
                 app.saveAllGrids($inflowDepositGrid, $outflowDepositGrid, $inflowMmiGrid, $outflowMmiGrid);
@@ -1565,6 +1451,8 @@
                 e.preventDefault();
             }
         });
+
+        //$currencySelectBox.option("value", $currencySelectBox.getDataSource()[0]);
         
 
         //#endregion

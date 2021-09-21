@@ -273,6 +273,27 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [HttpGet]
+        [Route("FcaTagging/FcaAccount")]
+        public HttpResponseMessage FcaTagging_FcaAccount(string currency, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = FidService.List_FcaBankAccount(db, currency);
+
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
 
         [HttpGet]
         [Route("10AmCutOff/{reportDate}")]
@@ -808,6 +829,7 @@ namespace xDC_Web.Controllers.Api
                                 RepoTag = item.RepoTag,
                                 ContactPerson = item.ContactPerson,
                                 Notes = item.Notes,
+                                FcaAccount = item.FcaAccount,
                                 ModifiedBy = User.Identity.Name,
                                 ModifiedDate = DateTime.Now
                             });
@@ -838,7 +860,7 @@ namespace xDC_Web.Controllers.Api
                                 RepoTag = item.RepoTag,
                                 ContactPerson = item.ContactPerson,
                                 Notes = item.Notes,
-
+                                FcaAccount = item.FcaAccount,
                                 ModifiedBy = User.Identity.Name,
                                 ModifiedDate = DateTime.Now
                             });
@@ -870,7 +892,7 @@ namespace xDC_Web.Controllers.Api
                                 Proceeds = item.Proceeds,
                                 PurchaseProceeds = item.PurchaseProceeds,
                                 CertNoStockCode = item.CertNoStockCode,
-
+                                FcaAccount = item.FcaAccount,
                                 ModifiedBy = User.Identity.Name,
                                 ModifiedDate = DateTime.Now
                             });
@@ -902,7 +924,7 @@ namespace xDC_Web.Controllers.Api
                                 Proceeds = item.Proceeds,
                                 PurchaseProceeds = item.PurchaseProceeds,
                                 CertNoStockCode = item.CertNoStockCode,
-
+                                FcaAccount = item.FcaAccount,
                                 ModifiedBy = User.Identity.Name,
                                 ModifiedDate = DateTime.Now
                             });
@@ -1042,26 +1064,7 @@ namespace xDC_Web.Controllers.Api
                             else
                             {
                                 // add new
-                                db.FID_Treasury_Deposit.Add(new FID_Treasury_Deposit
-                                {
-                                    FormId = form.Id,
-                                    CashflowType = Common.Cashflow.Inflow,
-                                    Dealer = item.Dealer,
-                                    Bank = item.Bank,
-                                    ValueDate = item.ValueDate,
-                                    MaturityDate = item.MaturityDate,
-                                    Tenor = item.Tenor,
-                                    Principal = item.Principal,
-                                    RatePercent = item.RatePercent,
-                                    IntProfitReceivable = item.IntProfitReceivable,
-                                    PrincipalIntProfitReceivable = item.PrincipalIntProfitReceivable,
-                                    AssetType = item.AssetType,
-                                    RepoTag = item.RepoTag,
-                                    ContactPerson = item.ContactPerson,
-                                    Notes = item.Notes,
-                                    ModifiedBy = User.Identity.Name,
-                                    ModifiedDate = DateTime.Now
-                                });
+                                db.FID_Treasury_Deposit.Add(FID_Treasury_Deposit_ObjMap(form.Id, Common.Cashflow.Inflow, item));
                             }
                         }
                     }
@@ -1165,26 +1168,7 @@ namespace xDC_Web.Controllers.Api
                             else
                             {
                                 // add new
-                                db.FID_Treasury_Deposit.Add(new FID_Treasury_Deposit
-                                {
-                                    FormId = form.Id,
-                                    CashflowType = Common.Cashflow.Outflow,
-                                    Dealer = item.Dealer,
-                                    Bank = item.Bank,
-                                    ValueDate = item.ValueDate,
-                                    MaturityDate = item.MaturityDate,
-                                    Tenor = item.Tenor,
-                                    Principal = item.Principal,
-                                    RatePercent = item.RatePercent,
-                                    IntProfitReceivable = item.IntProfitReceivable,
-                                    PrincipalIntProfitReceivable = item.PrincipalIntProfitReceivable,
-                                    AssetType = item.AssetType,
-                                    RepoTag = item.RepoTag,
-                                    ContactPerson = item.ContactPerson,
-                                    Notes = item.Notes,
-                                    ModifiedBy = User.Identity.Name,
-                                    ModifiedDate = DateTime.Now
-                                });
+                                db.FID_Treasury_Deposit.Add(FID_Treasury_Deposit_ObjMap(form.Id, Common.Cashflow.Outflow, item));
                             }
                         }
                     }
@@ -1280,7 +1264,11 @@ namespace xDC_Web.Controllers.Api
                                     {
                                         foundItem.CertNoStockCode = item.CertNoStockCode;
                                     }
-                                    
+                                    if (foundItem.FcaAccount != item.FcaAccount)
+                                    {
+                                        foundItem.FcaAccount = item.FcaAccount;
+                                    }
+
                                     foundItem.ModifiedBy = User.Identity.Name;
                                     foundItem.ModifiedDate = DateTime.Now;
                                 }
@@ -1288,28 +1276,7 @@ namespace xDC_Web.Controllers.Api
                             else
                             {
                                 // add new
-                                db.FID_Treasury_MMI.Add(new FID_Treasury_MMI
-                                {
-                                    FormId = form.Id,
-                                    CashflowType = Common.Cashflow.Inflow,
-                                    Dealer = item.Dealer,
-                                    Issuer = item.Issuer,
-                                    ProductType = item.ProductType,
-                                    CounterParty = item.CounterParty,
-                                    ValueDate = item.ValueDate,
-                                    MaturityDate = item.MaturityDate,
-                                    HoldingDayTenor = item.HoldingDayTenor,
-                                    Nominal = item.Nominal,
-                                    SellPurchaseRateYield = item.SellPurchaseRateYield,
-                                    Price = item.Price,
-                                    IntDividendReceivable = item.IntDividendReceivable,
-                                    Proceeds = item.Proceeds,
-                                    PurchaseProceeds = item.PurchaseProceeds,
-                                    CertNoStockCode = item.CertNoStockCode,
-
-                                    ModifiedBy = User.Identity.Name,
-                                    ModifiedDate = DateTime.Now
-                                });
+                                db.FID_Treasury_MMI.Add(FID_Treasury_MMI_ObjMap(form.Id, Common.Cashflow.Inflow, item));
                             }
                         }
                     }
@@ -1413,28 +1380,7 @@ namespace xDC_Web.Controllers.Api
                             else
                             {
                                 // add new
-                                db.FID_Treasury_MMI.Add(new FID_Treasury_MMI
-                                {
-                                    FormId = form.Id,
-                                    CashflowType = Common.Cashflow.Outflow,
-                                    Dealer = item.Dealer,
-                                    Issuer = item.Issuer,
-                                    ProductType = item.ProductType,
-                                    CounterParty = item.CounterParty,
-                                    ValueDate = item.ValueDate,
-                                    MaturityDate = item.MaturityDate,
-                                    HoldingDayTenor = item.HoldingDayTenor,
-                                    Nominal = item.Nominal,
-                                    SellPurchaseRateYield = item.SellPurchaseRateYield,
-                                    Price = item.Price,
-                                    IntDividendReceivable = item.IntDividendReceivable,
-                                    Proceeds = item.Proceeds,
-                                    PurchaseProceeds = item.PurchaseProceeds,
-                                    CertNoStockCode = item.CertNoStockCode,
-
-                                    ModifiedBy = User.Identity.Name,
-                                    ModifiedDate = DateTime.Now
-                                });
+                                db.FID_Treasury_MMI.Add(FID_Treasury_MMI_ObjMap(form.Id, Common.Cashflow.Outflow, item));
                             }
                         }
                     }
@@ -1563,5 +1509,55 @@ namespace xDC_Web.Controllers.Api
 
         #endregion
 
+        private FID_Treasury_Deposit FID_Treasury_Deposit_ObjMap(int formId, string cashFlow, TreasuryDepositVM item)
+        {
+            return new FID_Treasury_Deposit
+            {
+                FormId = formId,
+                CashflowType = cashFlow,
+                Dealer = item.Dealer,
+                Bank = item.Bank,
+                ValueDate = item.ValueDate,
+                MaturityDate = item.MaturityDate,
+                Tenor = item.Tenor,
+                Principal = item.Principal,
+                RatePercent = item.RatePercent,
+                IntProfitReceivable = item.IntProfitReceivable,
+                PrincipalIntProfitReceivable = item.PrincipalIntProfitReceivable,
+                AssetType = item.AssetType,
+                RepoTag = item.RepoTag,
+                ContactPerson = item.ContactPerson,
+                Notes = item.Notes,
+                FcaAccount = item.FcaAccount,
+                ModifiedBy = User.Identity.Name,
+                ModifiedDate = DateTime.Now
+            };
+        }
+
+        private FID_Treasury_MMI FID_Treasury_MMI_ObjMap(int formId, string cashFlow, TreasuryMmiVM item)
+        {
+            return new FID_Treasury_MMI()
+            {
+                FormId = formId,
+                CashflowType = cashFlow,
+                Dealer = item.Dealer,
+                Issuer = item.Issuer,
+                ProductType = item.ProductType,
+                CounterParty = item.CounterParty,
+                ValueDate = item.ValueDate,
+                MaturityDate = item.MaturityDate,
+                HoldingDayTenor = item.HoldingDayTenor,
+                Nominal = item.Nominal,
+                SellPurchaseRateYield = item.SellPurchaseRateYield,
+                Price = item.Price,
+                IntDividendReceivable = item.IntDividendReceivable,
+                Proceeds = item.Proceeds,
+                PurchaseProceeds = item.PurchaseProceeds,
+                CertNoStockCode = item.CertNoStockCode,
+                FcaAccount = item.FcaAccount,
+                ModifiedBy = User.Identity.Name,
+                ModifiedDate = DateTime.Now
+            };
+        }
     }
 }

@@ -30,6 +30,7 @@ namespace xDC.Infrastructure.Application
         public string RepoTag { get; set; }
         public string ContactPerson { get; set; }
         public string Notes { get; set; }
+        public string FcaAccount { get; set; }
         public string ModifiedBy { get; set; }
         public Nullable<System.DateTime> ModifiedDate { get; set; }
     }

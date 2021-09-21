@@ -303,6 +303,10 @@
                     dataField: "notes",
                     caption: "Notes"
                 },
+                {
+                    dataField: "fcaAccount",
+                    caption: "FCA"
+                }
             ],
             summary: {
                 totalItems: [
@@ -413,6 +417,10 @@
                     dataField: "notes",
                     caption: "Notes"
                 },
+                {
+                    dataField: "fcaAccount",
+                    caption: "FCA"
+                }
             ],
             summary: {
                 totalItems: [
@@ -534,6 +542,10 @@
                 {
                     dataField: "certNoStockCode",
                     caption: "Certificate No. / Stock Code"
+                },
+                {
+                    dataField: "fcaAccount",
+                    caption: "FCA"
                 }
             ],
             summary: {
@@ -669,6 +681,10 @@
                 {
                     dataField: "certNoStockCode",
                     caption: "Certificate No. / Stock Code"
+                },
+                {
+                    dataField: "fcaAccount",
+                    caption: "FCA"
                 }
             ],
             summary: {
@@ -741,6 +757,10 @@
                 {
                     dataField: "workflowNotes",
                     caption: "Notes"
+                },
+                {
+                    dataField: "fcaAccount",
+                    caption: "FCA"
                 }
             ],
             showRowLines: true,
