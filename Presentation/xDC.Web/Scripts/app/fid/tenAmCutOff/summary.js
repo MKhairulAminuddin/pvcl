@@ -43,7 +43,7 @@
                         $grid.option("dataSource", data1.data);
                         $grid.repaint();
 
-                        app.toastEdwCount(data1.data, "");
+                        app.toast("Data fetched", "info");
                     });
             }
         }).dxDateBox("instance");

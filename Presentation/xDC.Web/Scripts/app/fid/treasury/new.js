@@ -417,7 +417,10 @@
             displayExpr: "value",
             valueExpr: "value",
             placeHolder: "Currency..",
-            onValueChanged:function(data) {
+            onValueChanged: function (data) {
+                if (data.value == "MYR") {
+                    console.log("ohoi");
+                }
                 $outflowDepositGrid.refresh();
             }
         })
@@ -485,8 +488,11 @@
                     caption: "Dealer",
                     allowEditing: false,
                     calculateCellValue: function (rowData) {
-                        rowData.dealer = window.currentUser;
-                        return window.currentUser;
+                        if (rowData.dealer) {
+                            return rowData.dealer;
+                        } else {
+                            return window.currentUser;
+                        }
                     }
                 },
                 {

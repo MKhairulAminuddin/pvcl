@@ -5,31 +5,18 @@
     ViewBag.Subtitle = "Summary";
 }
 
-<section class="content-header content-toolbar">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="left-container">
-                <div>
-                    <p>Date</p>
-                    <div id="dateSelectionBtn"></div>
-                </div>
-                <div>
-                    <div id="printBtn"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div id="right-toolbar-container" class="right-container">
-
-            </div>
-        </div>
-    </div>
-</section>
-
 <section class="content container-fluid">
     <div class="row">
         <div class="col-md-12">
             <div class="box box-solid">
+                <div class="box-header">
+                    <div class="left-container" style="display: inline-block">
+                        <div style="display: inline-block;font-weight: bold">Date : </div> <div style="display: inline-block" id="dateSelectionBtn"></div>
+                    </div>
+                    <div class="right-container">
+                        <div id="printBtn"></div>
+                    </div>
+                </div>
                 <div class="box-body">
                     <div id="grid"></div>
                 </div>
