@@ -1145,11 +1145,11 @@ namespace xDC_Web.Controllers.Api
                             SettlementDate = x.Key.SettlementDate.Value,
                             
                             CountPendingAltid = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Altid
-                                                             && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
+                                                             && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0)),
                             CountPendingOthers = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others
-                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
+                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 )),
                             CountPendingFees = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fees
-                                                            && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
+                                                            && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 )),
 
                             IssdOnly = (x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Altid) + x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others) + x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fees)) > 0
                         })
@@ -1201,11 +1201,11 @@ namespace xDC_Web.Controllers.Api
                             Others = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others) > 0,
                             
                             CountPendingAltid = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Altid
-                                                             && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
+                                                             && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0)),
                             CountPendingOthers = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others
-                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
+                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0)),
                             CountPendingFees = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fees
-                                                            && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0))
+                                                            && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0))
 
                         }).ToList();
 
