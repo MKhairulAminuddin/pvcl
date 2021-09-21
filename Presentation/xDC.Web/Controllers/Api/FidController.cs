@@ -348,8 +348,7 @@ namespace xDC_Web.Controllers.Api
                             
                             item.TotalOutflow = tradeItemOutflow;
                         }
-
-                        item.Net = item.OpeningBalance + item.TotalInflow - item.TotalOutflow;
+                        
                         resultRaw.Add(item);
                     }
                     
@@ -394,8 +393,7 @@ namespace xDC_Web.Controllers.Api
                             Account = x.Key.Account,
                             OpeningBalance = 0,
                             TotalInflow = x.Sum(y => y.TotalInflow),
-                            TotalOutflow = x.Sum(y => y.TotalOutflow),
-                            Net = x.Sum(y => y.Net)
+                            TotalOutflow = x.Sum(y => y.TotalOutflow)
                         })
                         .ToList();
 
@@ -406,8 +404,22 @@ namespace xDC_Web.Controllers.Api
 
                         item.OpeningBalance = ob;
                     }
-                    
 
+                    result = result.GroupBy(x => new
+                        {
+                            x.Account,
+                            x.Currency
+                        })
+                        .Select(x => new TenAmCutOffItemVM
+                        {
+                            Currency = x.Key.Currency,
+                            Account = x.Key.Account,
+                            OpeningBalance = x.Sum(y => y.OpeningBalance),
+                            TotalInflow = x.Sum(y => y.TotalInflow),
+                            TotalOutflow = x.Sum(y => y.TotalOutflow),
+                            Net = x.Sum(y => y.OpeningBalance) + x.Sum(y => y.TotalInflow) - x.Sum(y => y.TotalOutflow)
+                        })
+                        .ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
