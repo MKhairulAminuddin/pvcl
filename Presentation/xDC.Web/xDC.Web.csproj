@@ -670,6 +670,7 @@
     <Compile Include="ViewModels\Fid\DealCutOff\DealCutOffMyrTemplateModel.cs" />
     <Compile Include="ViewModels\Fid\DealCutOff\SpreadsheetPreviewModel.cs" />
     <Compile Include="ViewModels\Fid\EditFcaAccountAssignmentVM.cs" />
+    <Compile Include="ViewModels\Fid\Treasury\TreasuryEdwDataAvailability.cs" />
     <Compile Include="ViewModels\Fid\Treasury\TreasuryFormVM.cs" />
     <Compile Include="ViewModels\Fid\Treasury\TreasuryGridVm.cs" />
     <Compile Include="ViewModels\Fid\TenAmCutOffItemVM.cs" />

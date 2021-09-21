@@ -32,6 +32,7 @@ INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Tre
 
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'NID', 'System');
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'NIDC', 'System');
+INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'NIDCD', 'System');
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'NIDL', 'System');
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'CP', 'System');
 INSERT INTO [dbo].[Config_Dropdown] ([Key],[Value],[CreatedBy]) VALUES ('FID.Treasury.ProductType', 'ICP', 'System');

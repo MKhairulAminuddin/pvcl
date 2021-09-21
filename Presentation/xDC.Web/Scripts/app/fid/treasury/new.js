@@ -24,13 +24,17 @@
             $approverDropdown,
             $approvalNotes,
 
+            $edwAvailable,
+
             isSaveAsDraft = false;
 
         var referenceUrl = {
             loadCurrencies: window.location.origin + "/api/common/GetTradeSettlementCurrencies",
 
             dsMaturity: window.location.origin + "/api/fid/Treasury/EdwMaturity/",
-            dsMmi: window.location.origin + "/api/fid/Treasury/EdwMmi/",
+            dsMm: window.location.origin + "/api/fid/Treasury/EdwMmi/",
+
+            dsEdwAvailability: window.location.origin + "/api/fid/Treasury/EdwDataAvailability",
 
             dsApproverList: window.location.origin + "/api/common/approverList/treasury",
 
@@ -288,16 +292,29 @@
             });
         };
 
-        var populateDwData = function(tradeDate, currency) {
+        var dsMm = function (tradeDateEpoch, currency) {
+            return $.ajax({
+                url: referenceUrl.dsMm + "/" + moment(tradeDateEpoch).unix() + "/" + currency,
+                type: "get"
+            });
+        };
+
+        var dsEdwAvailability = function (tradeDateEpoch, currency) {
+            return $.ajax({
+                url: referenceUrl.dsEdwAvailability + "/" + moment(tradeDateEpoch).unix() + "/" + currency,
+                type: "get"
+            });
+        };
+
+        var checkDwDataAvailibility = function (tradeDate, currency) {
+            app.clearAllGrid($inflowDepositGrid, $inflowMmiGrid, $outflowDepositGrid, $outflowMmiGrid);
+
             if (tradeDate && currency) {
                 $.when(
-                    dsMaturity(tradeDate, currency)
+                    dsEdwAvailability(tradeDate, currency)
                     )
                     .done(function (data1) {
-                        $inflowDepositGrid.option("dataSource", data1.data);
-                        $inflowDepositGrid.repaint();
-                        app.toastEdwCount(data1.data, "inflow deposits");
-
+                        $edwAvailable.option("dataSource", data1);
                     })
                     .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
                         
@@ -306,9 +323,54 @@
 
                     });
             } else {
+                
+            }
+        }
+
+        var populateDwData = function (categoryType, tradeDate, currency) {
+            if (tradeDate && currency) {
+                if (categoryType == 1) {
+                    $.when(
+                        dsMaturity(tradeDate, currency)
+                    )
+                        .done(function (data1) {
+                            $inflowDepositGrid.option("dataSource", []);
+                            $inflowDepositGrid.option("dataSource", data1.data);
+                            $inflowDepositGrid.repaint();
+
+                            app.toastEdwCount(data1.data, "Inflow Deposit Maturity");
+                        })
+                        .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+
+                        })
+                        .then(function () {
+
+                        });
+                } else {
+                    $.when(
+                        dsMm(tradeDate, currency)
+                    )
+                        .done(function (data1) {
+                            $inflowMmiGrid.option("dataSource", []);
+                            $inflowMmiGrid.option("dataSource", data1.data);
+                            $inflowMmiGrid.repaint();
+
+                            app.toastEdwCount(data1.data, "Inflow Money Market");
+                        })
+                        .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+
+                        })
+                        .then(function () {
+
+                        });
+
+                }
+            } else {
                 dxGridUtils.clearGrid($inflowDepositGrid);
             }
         }
+
+
 
         function postData(isDraft) {
             var data = {
@@ -341,43 +403,6 @@
                 }
             });
         }
-
-        var availableMaturityDates;
-        
-        function calendarMarkerTemplate(data) {
-            var cssClass = "";
-            
-            $.each(availableMaturityDates, function (_, item) {
-                if (data.date.getDate() === item.day && data.date.getMonth() === item.month-1) {
-                    cssClass = "markDate";
-                    return false;
-                }
-            });
-            
-            return "<span class='" + cssClass + "'>" + data.text + "</span>";
-        }
-
-        var loadCalendarMarkers = function() {
-            $.ajax({
-                contentType: "application/json",
-                url: window.location.origin + "/api/fid/Treasury/EdwMaturity/AvailableMaturity",
-                method: "get",
-                success: function (response) {
-                    availableMaturityDates = response;
-                    $tradeDate.option("calendarOptions",
-                        {
-                            cellTemplate: calendarMarkerTemplate
-                        });
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
-                },
-                complete: function(data) {
-
-                }
-            });
-        }
-
         
         //#endregion
         
@@ -386,29 +411,7 @@
         $tradeDate = $("#tradeDate").dxDateBox({
             type: "date",
             displayFormat: "dd/MM/yyyy",
-            value: new Date(),
-            calendarOptions: {
-                cellTemplate: calendarMarkerTemplate
-            },
-            onValueChanged: function (data) {
-
-                $.ajax({
-                    contentType: "application/json",
-                    url: window.location.origin +
-                        "/api/fid/Treasury/EdwMaturity/AvailableMaturity/" +
-                        moment(data.value).unix(),
-                    method: "get",
-                    success: function(response) {
-                        
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        app.alertError(errorThrown + ": " + jqXHR.responseJSON);
-                    },
-                    complete: function(data) {
-
-                    }
-                });
-            }
+            value: new Date()
         }).dxDateBox("instance");
 
         $currencySelectBox = $("#currency").dxSelectBox({
@@ -428,6 +431,24 @@
         })
             .dxValidator({ validationRules: [{ type: "required", message: "Currency is required" }] })
             .dxSelectBox("instance");
+
+        $edwAvailable = $("#edwAvailable").dxList({
+            activeStateEnabled: false,
+            focusStateEnabled: false,
+            itemTemplate: function (data, index) {
+                var result = $("<div>");
+
+                $("<div>").text(data.name + " × " + data.numbers).appendTo(result);
+                $("<a>").append("<i class='fa fa-download'></i> Populate").on("dxclick", function (e) {
+
+                    populateDwData(data.categoryType, $tradeDate.option("value"), $currencySelectBox.option("value"));
+                    
+                    e.stopPropagation();
+                }).appendTo(result);
+
+                return result;
+            }
+        }).dxList("instance");
         
         $inflowTabpanel = $("#inflowTabpanel").dxTabPanel({
             dataSource: [
@@ -483,8 +504,15 @@
         // #region Data Grid
 
         $inflowDepositGrid = $("#inflowDepositGrid").dxDataGrid({
-            dataSource: [],
             columns: [
+                {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
                 {
                     dataField: "dealer",
                     caption: "Dealer",
@@ -705,11 +733,32 @@
             selection: {
                 mode: "single"
             },
+            onToolbarPreparing: function (e) {
+                var toolbarItems = e.toolbarOptions.items;
+                toolbarItems.push({
+                    widget: "dxButton",
+                    options: {
+                        icon: "fa fa-trash",
+                        hint: "Remove records",
+                        onClick: function () {
+                            $inflowDepositGrid.option("dataSource", []);
+                        }
+                    },
+                    location: "after"
+                });
+            },
         }).dxDataGrid("instance");
 
         $outflowDepositGrid = $("#outflowDepositGrid").dxDataGrid({
-            dataSource: [],
             columns: [
+                {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
                 {
                     dataField: "dealer",
                     caption: "Dealer",
@@ -926,11 +975,10 @@
                 toolbarItems.push({
                     widget: "dxButton",
                     options: {
-                        icon: "gift",
-                        hint: "Populate Sample Data",
+                        icon: "fa fa-trash",
+                        hint: "Remove records",
                         onClick: function () {
-                            $outflowDepositGrid.option("dataSource", sampleDataOutflowDeposit);
-                            app.toast("Grid Outflow Deposit populated with sample data", "warning", 4000);
+                            $outflowDepositGrid.option("dataSource", []);
                         }
                     },
                     location: "after"
@@ -942,8 +990,15 @@
         }).dxDataGrid("instance");
 
         $inflowMmiGrid = $("#inflowMmiGrid").dxDataGrid({
-            dataSource: [],
             columns: [
+                {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
                 {
                     dataField: "dealer",
                     caption: "Dealer",
@@ -1193,11 +1248,10 @@
                 toolbarItems.push({
                     widget: "dxButton",
                     options: {
-                        icon: "gift",
-                        hint: "Populate Sample Data",
+                        icon: "fa fa-trash",
+                        hint: "Remove records",
                         onClick: function () {
-                            $inflowMmiGrid.option("dataSource", sampleDataInflowMmi);
-                            app.toast("Grid Inflow MMI populated with sample data", "warning", 4000);
+                            $inflowMmiGrid.option("dataSource", []);
                         }
                     },
                     location: "after"
@@ -1209,8 +1263,15 @@
         }).dxDataGrid("instance");
 
         $outflowMmiGrid = $("#outflowMmiGrid").dxDataGrid({
-            dataSource: [],
             columns: [
+                {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
                 {
                     dataField: "dealer",
                     caption: "Dealer",
@@ -1450,11 +1511,10 @@
                 toolbarItems.push({
                     widget: "dxButton",
                     options: {
-                        icon: "gift",
-                        hint: "Populate Sample Data",
+                        icon: "fa fa-trash",
+                        hint: "Remove records",
                         onClick: function () {
-                            $outflowMmiGrid.option("dataSource", sampleDataOutflowMmi);
-                            app.toast("Grid Outflow MMI populated with sample data", "warning", 4000);
+                            $outflowMmiGrid.option("dataSource", []);
                         }
                     },
                     location: "after"
@@ -1470,11 +1530,11 @@
         //#region Events & Invocations
 
         $tradeDate.on("valueChanged", function (data) {
-            populateDwData(data.value, $currencySelectBox.option("value"));
+            checkDwDataAvailibility(data.value, $currencySelectBox.option("value"));
         });
 
         $currencySelectBox.on("valueChanged", function (data) {
-            populateDwData($tradeDate.option("value"), data.value);
+            checkDwDataAvailibility($tradeDate.option("value"), data.value);
         });
 
         $("#saveAsDraftBtn").dxButton({
@@ -1506,7 +1566,6 @@
             }
         });
         
-        loadCalendarMarkers();
 
         //#endregion
     });
