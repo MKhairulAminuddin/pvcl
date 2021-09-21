@@ -1,6 +1,7 @@
 ﻿(function ($, window, document) {
     $(function () {
         //#region Variable Definition
+        $('[data-toggle="tooltip"]').tooltip();
 
         var $tabpanel,
 

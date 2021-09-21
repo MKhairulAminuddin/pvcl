@@ -3,6 +3,7 @@
         //#region Variable Definition
 
         tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
+        $('[data-toggle="tooltip"]').tooltip();
 
         var $tabpanel,
 
