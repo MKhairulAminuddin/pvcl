@@ -295,6 +295,8 @@
     <Content Include="Scripts\app\fid\treasury\new.js" />
     <Content Include="Scripts\app\fid\treasury\view.js" />
     <Content Include="Scripts\app\fid\tenAmCutOff\summary.js" />
+    <Content Include="Scripts\app\issd\FcaTagging\fcaTagging.js" />
+    <Content Include="Scripts\app\issd\FcaTagging\fcaTaggingEdit.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\index.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partA\edit.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\partA\new.js" />
@@ -601,6 +603,8 @@
     <Content Include="Views\Fid\DealCutOff\Myr.cshtml" />
     <Content Include="Views\Shared\_MyrDealCutOff.cshtml" />
     <Content Include="Views\Fid\DealCutOff\Fcy.cshtml" />
+    <Content Include="Views\Issd\FcaTagging\FcaTagging.cshtml" />
+    <Content Include="Views\Issd\FcaTagging\FcaTaggingEdit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

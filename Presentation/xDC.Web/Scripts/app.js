@@ -199,5 +199,10 @@ var app = (function() {
         alertTag.html(html);
     }
 
+    _app.setSideMenuItemActive = function (url) {
+        $("ul.treeview-menu a[href='" + url + "']").parentsUntil(".sidebar-menu > .treeview-menu")
+            .addClass("active");
+    };
+
     return _app;
 }());

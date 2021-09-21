@@ -45,7 +45,7 @@ namespace xDC_Web.Controllers.Api
                             b => b.Id,
                             (a, b) => new { ts_item = a, ts_form = b }
                             )
-                        .Where(x => x.ts_form.FormStatus == Common.FormStatus.Approved && x.ts_form.SettlementDate != null)
+                        .Where(x => x.ts_form.FormStatus == Common.FormStatus.Approved && x.ts_form.SettlementDate != null && x.ts_form.Currency != "MYR")
                         .GroupBy(x => new
                         {
                             x.ts_form.SettlementDate, x.ts_form.Currency
@@ -286,8 +286,9 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var result = new List<TenAmCutOffItemVM>();
+                    var resultRaw = new List<TenAmCutOffItemVM>();
                     
-                    var configAccount = db.Config_FcaBankAccount.ToList();
+                    var configAccount = db.Config_FcaBankAccount.Where(x => x.Currency != "MYR").ToList();
                     configAccount.Add(new Config_FcaBankAccount
                     {
                         AccountName1 = "RENTAS",
@@ -302,81 +303,54 @@ namespace xDC_Web.Controllers.Api
                         AccountName3 = "MMA",
                         Currency = "MYR"
                     });
+                    
 
                     foreach (var account in configAccount)
                     {
-                        var ob = FcaTaggingSvc.GetOpeningBalance(db, reportDateParsed.Value, account.Currency, account.AccountName2);
-                        
                         // create row for account and its opening balance. e.g. RENTAS - OB 20,000
                         var item = new TenAmCutOffItemVM
                         {
                             Account = account.AccountName2,
-                            OpeningBalance = ob,
                             Currency = account.Currency
                         };
                         result.Add(item);
 
-                        var form = db.FID_TS10
-                            .FirstOrDefault(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(reportDateParsed)
-                                                 && x.Currency == item.Currency);
+                        var approvedTsIds = db.ISSD_FormHeader
+                            .Where(x => x.FormStatus == Common.FormStatus.Approved
+                                        && x.SettlementDate != null
+                                        && x.Currency == item.Currency
+                                        && DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(reportDateParsed))
+                            .Select(x => x.Id)
+                            .ToList();
 
-                        if (form != null)
+                        if (approvedTsIds.Any())
                         {
-                            var tradeItemInflow = db.FID_TS10_TradeItem
-                                .Where(x => x.FormId == form.Id
-                                            && (x.InflowTo == account.AccountName2 ||
-                                                x.InflowTo == account.AccountName3))
-                                .ToList();
-
-                            var tradeItemInflowGrouped = tradeItemInflow
-                                .GroupBy(x => new
-                                {
-                                    x.FormId,
-                                    x.InflowTo
-                                })
-                                .Select(x => new
-                                {
-                                    FormId = x.Key.FormId,
-                                    InflowAccount = x.Key.InflowTo,
-                                    TotalInflow = x.Sum(y => y.AmountPlus) + x.Sum(y => y.FirstLeg) +
-                                                  x.Sum(y => y.Maturity) + x.Sum(y => y.Sales)
-                                })
-                                .FirstOrDefault();
-
-                            if (tradeItemInflowGrouped != null)
-                            {
-                                item.TotalInflow = tradeItemInflowGrouped.TotalInflow;
-                            }
-
+                            var tradeItemInflow = db.ISSD_TradeSettlement
+                                .Where(x => approvedTsIds.Contains(x.FormId)
+                                            && x.InflowTo != null
+                                            && x.InflowTo == account.AccountName3
+                                            && x.InflowAmount > 0)
+                                .Select(l => l.InflowAmount)
+                                .DefaultIfEmpty(0)
+                                .Sum();
+                            
+                            item.TotalInflow = tradeItemInflow;
+                            
                             // get total inflow based on assigned outflow account
-                            var tradeItemOutflow = db.FID_TS10_TradeItem
-                                .Where(x => x.FormId == form.Id
-                                            && (x.OutflowFrom == account.AccountName2 ||
-                                                x.OutflowFrom == account.AccountName3))
-                                .ToList();
-
-                            var tradeItemOutflowGrouped = tradeItemOutflow
-                                .GroupBy(x => new
-                                {
-                                    x.FormId,
-                                    x.OutflowFrom
-                                })
-                                .Select(x => new
-                                {
-                                    FormId = x.Key.FormId,
-                                    OutflowAccount = x.Key.OutflowFrom,
-                                    TotalOutflow = x.Sum(y => y.Purchase) + x.Sum(y => y.SecondLeg) +
-                                                   x.Sum(y => y.AmountMinus)
-                                })
-                                .FirstOrDefault();
-
-                            if (tradeItemOutflowGrouped != null)
-                            {
-                                item.TotalOutflow = tradeItemOutflowGrouped.TotalOutflow;
-                            }
+                            var tradeItemOutflow = db.ISSD_TradeSettlement
+                                .Where(x => approvedTsIds.Contains(x.FormId)
+                                            && x.OutflowFrom != null
+                                            && x.OutflowFrom == account.AccountName3
+                                            && x.OutflowAmount > 0)
+                                .Select(l => l.OutflowAmount)
+                                .DefaultIfEmpty(0)
+                                .Sum();
+                            
+                            item.TotalOutflow = tradeItemOutflow;
                         }
 
                         item.Net = item.OpeningBalance + item.TotalInflow - item.TotalOutflow;
+                        resultRaw.Add(item);
                     }
                     
                     // AMSD - Inflow Funds
@@ -405,10 +379,34 @@ namespace xDC_Web.Controllers.Api
                                 OpeningBalance = fund.Amount,
                                 Net = fund.Amount
                             };
-                            result.Add(inflowFundsFromAmsd);
+                            resultRaw.Add(inflowFundsFromAmsd);
                         }
-                        
                     }
+
+                    result = resultRaw
+                        .GroupBy(x => new
+                        {
+                            x.Account, x.Currency
+                        })
+                        .Select(x => new TenAmCutOffItemVM
+                        {
+                            Currency = x.Key.Currency,
+                            Account = x.Key.Account,
+                            OpeningBalance = 0,
+                            TotalInflow = x.Sum(y => y.TotalInflow),
+                            TotalOutflow = x.Sum(y => y.TotalOutflow),
+                            Net = x.Sum(y => y.Net)
+                        })
+                        .ToList();
+
+                    foreach (var item in result)
+                    {
+                        // plug in opening balance
+                        var ob = FcaTaggingSvc.GetOpeningBalance(db, reportDateParsed.Value, item.Currency, item.Account);
+
+                        item.OpeningBalance = ob;
+                    }
+                    
 
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));

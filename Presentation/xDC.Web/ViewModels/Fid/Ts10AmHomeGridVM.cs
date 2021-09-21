@@ -21,6 +21,8 @@ namespace xDC_Web.ViewModels.Fid
         public int CountPendingContribution { get; set; }
         public int CountPendingAltid { get; set; }
         public int CountPendingOthers { get; set; }
+
+        public bool IssdOnly { get; set; }
     }
 
     public class Ts10AmAvailableTradeVM

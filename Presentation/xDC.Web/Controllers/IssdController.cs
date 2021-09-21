@@ -12,6 +12,7 @@ using xDC.Utils;
 using xDC_Web.Extension.DocGenerator;
 using xDC_Web.Models;
 using xDC_Web.ViewModels;
+using xDC_Web.ViewModels.Fid;
 
 namespace xDC_Web.Controllers
 {
@@ -568,6 +569,71 @@ namespace xDC_Web.Controllers
                 return View("Error");
             }
         }
+        #endregion
+
+
+        #region 10 AM Cut Off
+
+        [Route("FcaTagging")]
+        public ActionResult FcaTagging()
+        {
+            return View("FcaTagging/FcaTagging");
+        }
+
+        [Route("FcaTagging/Edit/{settlementDateEpoch}/{currency}")]
+        public ActionResult FcaTaggingEdit(long settlementDateEpoch, string currency)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+
+                    var form = db.ISSD_FormHeader
+                        .FirstOrDefault(x => x.FormStatus == Common.FormStatus.Approved
+                                             && x.SettlementDate != null
+                                             && DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate)
+                                             && x.Currency == currency);
+
+                    if (form != null)
+                    {
+                        var model = new EditFcaAccountAssignmentVM
+                        {
+                            Currency = form.Currency,
+                            OpeningBalance = new List<TS_OpeningBalance>()
+                        };
+
+                        if (form.SettlementDate != null)
+                        {
+                            model.SettlementDate = form.SettlementDate.Value;
+
+                            var ob = FcaTaggingSvc.GetOpeningBalance(db, form.SettlementDate.Value, form.Currency);
+                            model.OpeningBalance.AddRange(ob);
+                            var totalOb = model.OpeningBalance.Sum(x => x.Amount);
+
+                            var totalFlow = FcaTaggingSvc.GetTotalFlow(db, form.Id, form.SettlementDate.Value, form.Currency);
+
+                            model.ClosingBalance = totalOb + totalFlow.Inflow - totalFlow.Outflow;
+                        }
+
+                        return View("FcaTagging/FcaTaggingEdit", model);
+
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Form Not found";
+                        return View("Error");
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Error");
+            }
+        }
+
         #endregion
     }
 }

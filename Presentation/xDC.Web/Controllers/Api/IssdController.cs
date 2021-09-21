@@ -15,6 +15,7 @@ using xDC.Services;
 using xDC.Services.App;
 using xDC.Utils;
 using xDC_Web.Models;
+using xDC_Web.ViewModels.Fid;
 using xDC_Web.ViewModels.Iisd;
 
 namespace xDC_Web.Controllers.Api
@@ -322,227 +323,62 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.Equity.Any())
                     {
-                        foreach (var item in inputs.Equity)
-                        {
-                            newTrades.Add(new ISSD_TradeSettlement()
-                            {
-                                FormId = newFormHeader.Id,
-                                InstrumentType = Common.TsItemCategory.Equity,
-                                InstrumentCode = item.InstrumentCode,
-                                StockCode = item.StockCode,
-                                Maturity = item.Maturity,
-                                Sales = item.Sales,
-                                Purchase = item.Purchase,
-                                Remarks = item.Remarks,
-                                ModifiedBy = User.Identity.Name,
-                                ModifiedDate = DateTime.Now
-                            });
-                        }
+                        NewTsObjMapping(inputs.Equity, newFormHeader.Id, Common.TsItemCategory.Equity, ref newTrades);
                     }
 
                     if (inputs.Bond.Any())
                     {
-                        foreach (var item in inputs.Bond)
-                        {
-                            newTrades.Add(new ISSD_TradeSettlement()
-                            {
-                                FormId = newFormHeader.Id,
-                                InstrumentType = Common.TsItemCategory.Bond,
-                                InstrumentCode = item.InstrumentCode,
-                                StockCode = item.StockCode,
-                                Maturity = item.Maturity,
-                                Sales = item.Sales,
-                                Purchase = item.Purchase,
-                                Remarks = item.Remarks,
-                                ModifiedBy = User.Identity.Name,
-                                ModifiedDate = DateTime.Now
-                            });
-                        }
+                        NewTsObjMapping(inputs.Bond, newFormHeader.Id, Common.TsItemCategory.Bond, ref newTrades);
                     }
 
                     if (inputs.Cp.Any())
                     {
-                        foreach (var item in inputs.Cp)
-                        {
-                            newTrades.Add(new ISSD_TradeSettlement()
-                            {
-                                FormId = newFormHeader.Id,
-                                InstrumentType = Common.TsItemCategory.Cp,
-                                InstrumentCode = item.InstrumentCode,
-                                StockCode = item.StockCode,
-                                Maturity = item.Maturity,
-                                Sales = item.Sales,
-                                Purchase = item.Purchase,
-                                Remarks = item.Remarks,
-                                ModifiedBy = User.Identity.Name,
-                                ModifiedDate = DateTime.Now
-                            });
-                        }
+                        NewTsObjMapping(inputs.Cp, newFormHeader.Id, Common.TsItemCategory.Cp, ref newTrades);
                     }
 
                     if (inputs.NotesPaper.Any())
                     {
-                        foreach (var item in inputs.NotesPaper)
-                        {
-                            newTrades.Add(new ISSD_TradeSettlement()
-                            {
-                                FormId = newFormHeader.Id,
-                                InstrumentType = Common.TsItemCategory.NotesPapers,
-                                InstrumentCode = item.InstrumentCode,
-                                StockCode = item.StockCode,
-                                Maturity = item.Maturity,
-                                Sales = item.Sales,
-                                Purchase = item.Purchase,
-                                Remarks = item.Remarks,
-                                ModifiedBy = User.Identity.Name,
-                                ModifiedDate = DateTime.Now
-                            });
-                        }
+                        NewTsObjMapping(inputs.NotesPaper, newFormHeader.Id, Common.TsItemCategory.NotesPapers, ref newTrades);
                     }
 
                     if (inputs.Repo.Any())
                     {
-                        foreach (var item in inputs.Repo)
-                        {
-                            newTrades.Add(new ISSD_TradeSettlement()
-                            {
-                                FormId = newFormHeader.Id,
-                                InstrumentType = Common.TsItemCategory.Repo,
-                                InstrumentCode = item.InstrumentCode,
-                                StockCode = item.StockCode,
-                                FirstLeg = item.FirstLeg,
-                                SecondLeg = item.SecondLeg,
-                                Remarks = item.Remarks,
-                                ModifiedBy = User.Identity.Name,
-                                ModifiedDate = DateTime.Now
-                            });
-                        }
+                        NewTsObjMapping(inputs.Repo, newFormHeader.Id, Common.TsItemCategory.Repo, ref newTrades);
                     }
 
                     if (inputs.Coupon.Any())
                     {
-                        foreach (var item in inputs.Coupon)
-                        {
-                            newTrades.Add(new ISSD_TradeSettlement()
-                            {
-                                FormId = newFormHeader.Id,
-                                InstrumentType = Common.TsItemCategory.Coupon,
-                                InstrumentCode = item.InstrumentCode,
-                                StockCode = item.StockCode,
-                                AmountPlus = item.AmountPlus,
-                                Remarks = item.Remarks,
-                                ModifiedBy = User.Identity.Name,
-                                ModifiedDate = DateTime.Now
-                            });
-                        }
+                        NewTsObjMapping(inputs.Coupon, newFormHeader.Id, Common.TsItemCategory.Coupon, ref newTrades);
                     }
 
                     if (inputs.Fees.Any())
                     {
-                        foreach (var item in inputs.Fees)
-                        {
-                            newTrades.Add(new ISSD_TradeSettlement()
-                            {
-                                FormId = newFormHeader.Id,
-                                InstrumentType = Common.TsItemCategory.Fees,
-                                InstrumentCode = item.InstrumentCode,
-                                AmountPlus = item.AmountPlus,
-                                AmountMinus = item.AmountMinus,
-                                Remarks = item.Remarks,
-                                ModifiedBy = User.Identity.Name,
-                                ModifiedDate = DateTime.Now
-                            });
-                        }
+                        NewTsObjMapping(inputs.Fees, newFormHeader.Id, Common.TsItemCategory.Fees, ref newTrades);
                     }
 
                     if (inputs.Mtm.Any())
                     {
-                        foreach (var item in inputs.Mtm)
-                        {
-                            newTrades.Add(new ISSD_TradeSettlement()
-                            {
-                                FormId = newFormHeader.Id,
-                                InstrumentType = Common.TsItemCategory.Mtm,
-                                InstrumentCode = item.InstrumentCode,
-                                StockCode = item.StockCode,
-                                AmountPlus = item.AmountPlus,
-                                AmountMinus = item.AmountMinus,
-                                Remarks = item.Remarks,
-                                ModifiedBy = User.Identity.Name,
-                                ModifiedDate = DateTime.Now
-                            });
-                        }
+                        NewTsObjMapping(inputs.Mtm, newFormHeader.Id, Common.TsItemCategory.Mtm, ref newTrades);
                     }
 
                     if (inputs.FxSettlement.Any())
                     {
-                        foreach (var item in inputs.FxSettlement)
-                        {
-                            newTrades.Add(new ISSD_TradeSettlement()
-                            {
-                                FormId = newFormHeader.Id,
-                                InstrumentType = Common.TsItemCategory.Fx,
-                                InstrumentCode = item.InstrumentCode,
-                                AmountPlus = item.AmountPlus,
-                                AmountMinus = item.AmountMinus,
-                                Remarks = item.Remarks,
-                                ModifiedBy = User.Identity.Name,
-                                ModifiedDate = DateTime.Now
-                            });
-                        }
+                        NewTsObjMapping(inputs.FxSettlement, newFormHeader.Id, Common.TsItemCategory.Fx, ref newTrades);
                     }
 
                     if (inputs.ContributionCredited.Any())
                     {
-                        foreach (var item in inputs.ContributionCredited)
-                        {
-                            newTrades.Add(new ISSD_TradeSettlement()
-                            {
-                                FormId = newFormHeader.Id,
-                                InstrumentType = Common.TsItemCategory.Cn,
-                                InstrumentCode = item.InstrumentCode,
-                                AmountPlus = item.AmountPlus,
-                                Remarks = item.Remarks,
-                                ModifiedBy = User.Identity.Name,
-                                ModifiedDate = DateTime.Now
-                            });
-                        }
+                        NewTsObjMapping(inputs.ContributionCredited, newFormHeader.Id, Common.TsItemCategory.Cn, ref newTrades);
                     }
 
                     if (inputs.Altid.Any())
                     {
-                        foreach (var item in inputs.Altid)
-                        {
-                            newTrades.Add(new ISSD_TradeSettlement()
-                            {
-                                FormId = newFormHeader.Id,
-                                InstrumentType = Common.TsItemCategory.Altid,
-                                InstrumentCode = item.InstrumentCode,
-                                AmountPlus = item.AmountPlus,
-                                AmountMinus = item.AmountMinus,
-                                Remarks = item.Remarks,
-                                ModifiedBy = User.Identity.Name,
-                                ModifiedDate = DateTime.Now
-                            });
-                        }
+                        NewTsObjMapping(inputs.Altid, newFormHeader.Id, Common.TsItemCategory.Altid, ref newTrades);
                     }
 
                     if (inputs.Others.Any())
                     {
-                        foreach (var item in inputs.Others)
-                        {
-                            newTrades.Add(new ISSD_TradeSettlement()
-                            {
-                                FormId = newFormHeader.Id,
-                                InstrumentType = Common.TsItemCategory.Others,
-                                InstrumentCode = item.InstrumentCode,
-                                AmountPlus = item.AmountPlus,
-                                AmountMinus = item.AmountMinus,
-                                Remarks = item.Remarks,
-                                ModifiedBy = User.Identity.Name,
-                                ModifiedDate = DateTime.Now
-                            });
-                        }
+                        NewTsObjMapping(inputs.Others, newFormHeader.Id, Common.TsItemCategory.Others, ref newTrades);
                     }
                     
                     db.ISSD_TradeSettlement.AddRange(newTrades);
@@ -708,18 +544,7 @@ namespace xDC_Web.Controllers.Api
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
-                                {
-                                    FormId = inputs.Id,
-                                    InstrumentType = Common.TsItemCategory.Repo,
-                                    InstrumentCode = item.InstrumentCode,
-                                    StockCode = item.StockCode,
-                                    FirstLeg = item.FirstLeg,
-                                    SecondLeg = item.SecondLeg,
-                                    Remarks = item.Remarks,
-                                    ModifiedBy = User.Identity.Name,
-                                    ModifiedDate = DateTime.Now
-                                });
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Repo));
                             }
                         }
                     }
@@ -746,17 +571,7 @@ namespace xDC_Web.Controllers.Api
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
-                                {
-                                    FormId = inputs.Id,
-                                    InstrumentType = Common.TsItemCategory.Coupon,
-                                    InstrumentCode = item.InstrumentCode,
-                                    StockCode = item.StockCode,
-                                    AmountPlus = item.AmountPlus,
-                                    Remarks = item.Remarks,
-                                    ModifiedBy = User.Identity.Name,
-                                    ModifiedDate = DateTime.Now
-                                });
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Coupon));
                             }
                         }
                     }
@@ -786,18 +601,7 @@ namespace xDC_Web.Controllers.Api
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
-                                {
-                                    FormId = inputs.Id,
-                                    InstrumentType = Common.TsItemCategory.Mtm,
-                                    InstrumentCode = item.InstrumentCode,
-                                    StockCode = item.StockCode,
-                                    AmountPlus = item.AmountPlus,
-                                    AmountMinus = item.AmountMinus,
-                                    Remarks = item.Remarks,
-                                    ModifiedBy = User.Identity.Name,
-                                    ModifiedDate = DateTime.Now
-                                });
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Mtm));
                             }
                         }
                     }
@@ -827,18 +631,7 @@ namespace xDC_Web.Controllers.Api
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
-                                {
-                                    FormId = inputs.Id,
-                                    InstrumentType = Common.TsItemCategory.Fx,
-                                    InstrumentCode = item.InstrumentCode,
-                                    StockCode = item.StockCode,
-                                    AmountPlus = item.AmountPlus,
-                                    AmountMinus = item.AmountMinus,
-                                    Remarks = item.Remarks,
-                                    ModifiedBy = User.Identity.Name,
-                                    ModifiedDate = DateTime.Now
-                                });
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Fx));
                             }
                         }
                     }
@@ -867,18 +660,7 @@ namespace xDC_Web.Controllers.Api
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
-                                {
-                                    FormId = inputs.Id,
-                                    InstrumentType = Common.TsItemCategory.Altid,
-                                    InstrumentCode = item.InstrumentCode,
-                                    StockCode = item.StockCode,
-                                    AmountPlus = item.AmountPlus,
-                                    AmountMinus = item.AmountMinus,
-                                    Remarks = item.Remarks,
-                                    ModifiedBy = User.Identity.Name,
-                                    ModifiedDate = DateTime.Now
-                                });
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Altid));
                             }
                         }
                     }
@@ -907,18 +689,7 @@ namespace xDC_Web.Controllers.Api
                                     
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
-                                {
-                                    FormId = inputs.Id,
-                                    InstrumentType = Common.TsItemCategory.Cn,
-                                    InstrumentCode = item.InstrumentCode,
-                                    StockCode = item.StockCode,
-                                    AmountPlus = item.AmountPlus,
-                                    Remarks = item.Remarks,
-
-                                    ModifiedBy = User.Identity.Name,
-                                    ModifiedDate = DateTime.Now
-                                });
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Cn));
                             }
                         }
                     }
@@ -948,19 +719,7 @@ namespace xDC_Web.Controllers.Api
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
-                                {
-                                    FormId = inputs.Id,
-                                    InstrumentType = Common.TsItemCategory.Fees,
-                                    InstrumentCode = item.InstrumentCode,
-                                    StockCode = item.StockCode,
-                                    AmountPlus = item.AmountPlus,
-                                    AmountMinus = item.AmountMinus,
-                                    Remarks = item.Remarks,
-
-                                    ModifiedBy = User.Identity.Name,
-                                    ModifiedDate = DateTime.Now
-                                });
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Fees));
                             }
                         }
                     }
@@ -991,19 +750,7 @@ namespace xDC_Web.Controllers.Api
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(new ISSD_TradeSettlement()
-                                {
-                                    FormId = inputs.Id,
-                                    InstrumentType = Common.TsItemCategory.Others,
-                                    InstrumentCode = item.InstrumentCode,
-                                    StockCode = item.StockCode,
-                                    AmountPlus = item.AmountPlus,
-                                    AmountMinus = item.AmountMinus,
-                                    Remarks = item.Remarks,
-
-                                    ModifiedBy = User.Identity.Name,
-                                    ModifiedDate = DateTime.Now
-                                });
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Others));
                             }
                         }
                     }
@@ -1363,8 +1110,282 @@ namespace xDC_Web.Controllers.Api
             }
 
         }
+
+        #endregion
+
+
+        #region FCA Tagging
+
+        [HttpGet]
+        [Route("FcaTagging")]
+        public HttpResponseMessage FcaTaggingLandingPage(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var approvedTsForms = db.ISSD_FormHeader.Where(x => x.FormStatus == Common.FormStatus.Approved).Select(x => x.Id).ToList();
+
+                    var result = db.ISSD_TradeSettlement
+                        .Join(
+                            db.ISSD_FormHeader,
+                            a => a.FormId,
+                            b => b.Id,
+                            (a, b) => new { ts_item = a, ts_form = b }
+                            )
+                        .Where(x => x.ts_form.FormStatus == Common.FormStatus.Approved && x.ts_form.SettlementDate != null && x.ts_form.Currency != "MYR")
+                        .GroupBy(x => new
+                        {
+                            x.ts_form.SettlementDate,
+                            x.ts_form.Currency
+                        })
+                        .Select(x => new Ts10AmHomeGridVM
+                        {
+                            Currency = x.Key.Currency,
+                            SettlementDate = x.Key.SettlementDate.Value,
+                            
+                            CountPendingAltid = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Altid
+                                                             && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
+                            CountPendingOthers = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others
+                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
+                            CountPendingFees = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fees
+                                                            && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
+
+                            IssdOnly = (x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Altid) + x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others) + x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fees)) > 0
+                        })
+                        .ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result.Where(x => x.IssdOnly), loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("FcaTagging/AvailableTrades/{settlementDateEpoch}/{currency}")]
+        public HttpResponseMessage FcaTagging_AvailableTrades(long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+
+                    var result = db.ISSD_TradeSettlement
+                        .Join(
+                            db.ISSD_FormHeader,
+                            a => a.FormId,
+                            b => b.Id,
+                            (a, b) => new { ts_item = a, ts_form = b }
+                        )
+                        .Where(x => x.ts_form.FormStatus == Common.FormStatus.Approved
+                                    && x.ts_form.SettlementDate != null
+                                    && DbFunctions.TruncateTime(x.ts_form.SettlementDate) == DbFunctions.TruncateTime(settlementDate)
+                                    && x.ts_form.Currency == currency)
+                        .GroupBy(x => new
+                        {
+                            x.ts_form.SettlementDate,
+                            x.ts_form.Currency
+                        })
+                        .Select(x => new Ts10AmAvailableTradeVM()
+                        {
+                            SettlementDate = x.Key.SettlementDate.Value,
+                            Currency = x.Key.Currency,
+                            
+                            Fees = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fees) > 0,
+                            Altid = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Altid) > 0,
+                            Others = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others) > 0,
+                            
+                            CountPendingAltid = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Altid
+                                                             && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
+                            CountPendingOthers = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others
+                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
+                            CountPendingFees = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fees
+                                                            && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0))
+
+                        }).ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("FcaTaggingGrid/TradeItem/{tradeType}/{settlementDateEpoch}/{currency}")]
+        public HttpResponseMessage FcaTaggingGrid(string tradeType, long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+                    var tradeItemType = Common.TsCategoryUrlParamMapping(tradeType);
+
+                    if (string.IsNullOrEmpty(tradeItemType))
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid Trade Item Type");
+                    }
+
+                    var approvedIds = db.ISSD_FormHeader
+                        .Where(x => x.FormStatus == Common.FormStatus.Approved
+                                             && x.SettlementDate != null
+                                             && DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate)
+                                             && x.Currency == currency)
+                        .Select(x => x.Id)
+                        .ToList();
+
+                    if (!approvedIds.Any())
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not found");
+                    }
+
+                    var tradeItems =
+                        db.ISSD_TradeSettlement
+                            .Where(x => x.InstrumentType == tradeItemType && approvedIds.Contains(x.FormId))
+                            .ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(tradeItems, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("FcaTaggingGrid/TradeItem")]
+        public HttpResponseMessage FcaTaggingGridUpdate(FormDataCollection form)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var id = Convert.ToInt32(form.Get("key"));
+                var values = form.Get("values");
+
+                var existingRecord = db.ISSD_TradeSettlement.FirstOrDefault(o => o.Id == id);
+
+                JsonConvert.PopulateObject(values, existingRecord);
+
+                if (existingRecord != null)
+                {
+                    existingRecord.AssignedBy = User.Identity.Name;
+                    existingRecord.AssignedDate = DateTime.Now;
+                }
+
+                Validate(existingRecord);
+
+                if (!ModelState.IsValid)
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
+
+                db.SaveChanges();
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+
+        }
+
+        [HttpGet]
+        [Route("FcaTagging/FcaAccount")]
+        public HttpResponseMessage FcaTagging_FcaAccount(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = FidService.List_FcaBankAccount(db);
+
+                    result.Add("RENTAS");
+                    result.Add("MMA");
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result.Select(x => new { Name = x }).Distinct().OrderBy(x => x.Name), loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
         
         #endregion
 
+        private void NewTsObjMapping(List<Trades> trades, int formId, string category,ref List<ISSD_TradeSettlement> tsItemObj)
+        {
+            foreach (var item in trades)
+            {
+                tsItemObj.Add(new ISSD_TradeSettlement
+                {
+                    FormId = formId,
+                    InstrumentType = category,
+                    InstrumentCode = item.InstrumentCode,
+                    StockCode = null,
+                    Maturity = item.Maturity,
+                    Sales = item.Sales,
+                    Purchase = item.Sales,
+                    FirstLeg = item.FirstLeg,
+                    SecondLeg = item.SecondLeg,
+                    AmountPlus = item.AmountPlus,
+                    AmountMinus = item.AmountMinus,
+                    Remarks = item.Remarks,
+                    ModifiedBy = User.Identity.Name,
+                    ModifiedDate = DateTime.Now,
+
+                    InflowAmount = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg),
+                    OutflowAmount = (item.AmountMinus + item.Purchase + item.SecondLeg),
+
+                    InflowTo = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg) > 0
+                        ? "RENTAS"
+                        : null,
+                    OutflowFrom = (item.AmountMinus + item.Purchase + item.SecondLeg) > 0
+                        ? "RENTAS"
+                        : null,
+                    AssignedBy = null,
+                    AssignedDate = null
+                });
+            }
+        }
+
+        private ISSD_TradeSettlement NewTsObjMapping(Trades item, int formId, string category)
+        {
+            return new ISSD_TradeSettlement
+                {
+                    FormId = formId,
+                    InstrumentType = category,
+                    InstrumentCode = item.InstrumentCode,
+                    StockCode = null,
+                    Maturity = item.Maturity,
+                    Sales = item.Sales,
+                    Purchase = item.Sales,
+                    FirstLeg = item.FirstLeg,
+                    SecondLeg = item.SecondLeg,
+                    AmountPlus = item.AmountPlus,
+                    AmountMinus = item.AmountMinus,
+                    Remarks = item.Remarks,
+                    ModifiedBy = User.Identity.Name,
+                    ModifiedDate = DateTime.Now,
+
+                    InflowAmount = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg),
+                    OutflowAmount = (item.AmountMinus + item.Purchase + item.SecondLeg),
+
+                    InflowTo = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg) > 0
+                        ? "RENTAS"
+                        : null,
+                    OutflowFrom = (item.AmountMinus + item.Purchase + item.SecondLeg) > 0
+                        ? "RENTAS"
+                        : null,
+                    AssignedBy = null,
+                    AssignedDate = null
+                };
+            
+        }
     }
 }

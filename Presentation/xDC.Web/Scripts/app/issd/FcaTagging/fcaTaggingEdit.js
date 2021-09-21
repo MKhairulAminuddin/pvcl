@@ -1,7 +1,7 @@
 ﻿(function ($, window, document) {
     $(function () {
         //#region Variable Definition
-        app.setSideMenuItemActive("/fid/FcaTagging/Edit");
+        app.setSideMenuItemActive("/issd/FcaTagging");
         $('[data-toggle="tooltip"]').tooltip();
 
         var $tabpanel,
@@ -23,25 +23,16 @@
             $printBtn;
 
         var referenceUrl = {
-            getAvailableTrades: window.location.origin + "/api/fid/TcaTagging/AvailableTrades/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            getAvailableTrades: window.location.origin + "/api/issd/FcaTagging/AvailableTrades/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            
+            feesLoad: window.location.origin + "/api/issd/FcaTaggingGrid/tradeItem/fees/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            altidLoad: window.location.origin + "/api/issd/FcaTaggingGrid/tradeItem/altid/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            othersLoad: window.location.origin + "/api/issd/FcaTaggingGrid/tradeItem/others/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
 
-            equityLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/equity/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1] ,
-            bondLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/bond/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            cpLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/cp/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            notesPaperLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/notesPaper/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            repoLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/repo/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            couponLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/coupon/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            feesLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/fees/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            mtmLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/mtm/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            fxLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/fxSettlement/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            contributionLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/contributionCredited/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            altidLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/altid/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            othersLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/others/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-
-            updateTradeItem: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem",
+            updateTradeItem: window.location.origin + "/api/issd/FcaTaggingGrid/tradeItem",
 
 
-            dsFcaAccount: window.location.origin + "/api/fid/TcaTagging/FcaAccount/",
+            dsFcaAccount: window.location.origin + "/api/issd/FcaTagging/FcaAccount/"
             
         };
 

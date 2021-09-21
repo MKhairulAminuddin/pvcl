@@ -2,7 +2,7 @@
     $(function () {
         //#region Variable Definition
 
-        app.setSideMenuItemActive("/fid/FcaTagging");
+        app.setSideMenuItemActive("/issd/FcaTagging");
 
         var $tabpanel,
             $grid,
@@ -11,8 +11,8 @@
 
         var referenceUrl = {
 
-            loadTcaTagging: window.location.origin + "/api/fid/FcaTagging",
-            editTcaTaggingPage: window.location.origin + "/fid/FcaTagging/Edit/"
+            loadTcaTagging: window.location.origin + "/api/issd/FcaTagging",
+            editTcaTaggingPage: window.location.origin + "/issd/FcaTagging/Edit/"
 
         };
 
@@ -61,36 +61,8 @@
                 {
                     caption: "Pending Assignment",
                     cellTemplate: function (container, options) {
-
-                        if (options.data.countPendingEquity > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingEquity + " x Equity").appendTo(container);
-                        }
-                        if (options.data.countPendingBond > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingBond + " x Bond").appendTo(container);
-                        }
-                        if (options.data.countPendingCp > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingCp + " x CP").appendTo(container);
-                        }
-                        if (options.data.countPendingNotesPapers > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingNotesPapers + " x Notes & Papers").appendTo(container);
-                        }
-                        if (options.data.countPendingRepo > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingRepo + " x Repo").appendTo(container);
-                        }
-                        if (options.data.countPendingCoupon > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingCoupon + " x Coupon").appendTo(container);
-                        }
                         if (options.data.countPendingFees > 0) {
                             $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingFees + " x Fees").appendTo(container);
-                        }
-                        if (options.data.countPendingMtm > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingMtm + " x MTM").appendTo(container);
-                        }
-                        if (options.data.countPendingFx > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingFx + " x FX").appendTo(container);
-                        }
-                        if (options.data.countPendingContribution > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingContribution + " x Contribution").appendTo(container);
                         }
                         if (options.data.countPendingAltid > 0) {
                             $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingAltid + " x ALTID").appendTo(container);
