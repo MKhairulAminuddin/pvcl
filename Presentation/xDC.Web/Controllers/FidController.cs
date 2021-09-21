@@ -133,6 +133,7 @@ namespace xDC_Web.Controllers
                             ApprovedDate = form.ApprovedDate,
 
                             EnableSubmitForApproval = (form.FormStatus != Common.FormStatus.PendingApproval && form.ApprovedBy == null),
+                            EnableResubmitBtn = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected && form.ApprovedBy == null),
                             EnableSaveAsDraftBtn = (form.FormStatus == Common.FormStatus.Draft && form.ApprovedBy == null)
                         };
                         return View("Treasury/Edit", model);

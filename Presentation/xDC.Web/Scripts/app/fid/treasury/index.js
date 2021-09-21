@@ -220,6 +220,9 @@
             headerFilter: {
                 visible: true
             },
+            filterPanel: {
+                visible: true
+            },
             stateStoring: {
                 enabled: true,
                 type: "localStorage",

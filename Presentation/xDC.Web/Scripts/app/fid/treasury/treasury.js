@@ -52,6 +52,7 @@
             return result;
 
         case "NIDC":
+        case "NIDCD":
             var price = (100 / (1 + (tenor * rate / 36500))).toFixed(4);
             result = (nominal * price / 100);
             return result.toFixed(2.5);
@@ -91,6 +92,7 @@
             return result.toFixed(2.5);
 
         case "NIDC":
+        case "NIDCD":
             var proceedsNidc = _treasury.outflow_proceeds(productType, nominal, rate, tenor);
             result = (nominal - proceedsNidc);
             return result.toFixed(2.5);
@@ -134,6 +136,7 @@
             return result.toFixed(2.5);
 
         case "NIDC":
+        case "NIDCD":
             result = (100 / (1 + (tenor * rate / 36500)));
             return result.toFixed(4);
 
@@ -176,6 +179,7 @@
             return result.toFixed(2.5);
 
         case "NIDC":
+        case "NIDCD":
             var price = (100 / (1 + (tenor * rate / 36500)));
             result = (price.toFixed(4) * nominal / 100);
             return result.toFixed(2.5);
@@ -215,6 +219,7 @@
             return result.toFixed(2.5);
 
         case "NIDC":
+        case "NIDCD":
             var proceedsNidc = _treasury.inflow_proceeds(productType, nominal, rate, tenor);
             result = proceedsNidc - purchaseProceed;
             return result.toFixed(2.5);
@@ -259,6 +264,7 @@
             return result.toFixed(2.5);
 
         case "NIDC":
+        case "NIDCD":
             result = (100 / (1 + (tenor * rate / 36500)));
             return result.toFixed(4);
 

@@ -30,6 +30,18 @@
                                         .UseSubmitBehavior(true)
                                         )
                                 }
+                                
+                                @if (Model.EnableResubmitBtn)
+                                {
+                                    @(Html.DevExtreme().Button()
+                                        .ID("submitForApprovalBtn")
+                                        .Text("Resubmit for Approval")
+                                        .Icon("refresh")
+                                        .Type(ButtonType.Default)
+                                        .StylingMode(ButtonStylingMode.Contained)
+                                        .UseSubmitBehavior(true)
+                                        )
+                                }
 
                                 @if (Model.EnableSaveAsDraftBtn)
                                 {

@@ -821,21 +821,14 @@ namespace xDC_Web.Controllers.Api
                         return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not found!");
                     }
 
-                    if (string.IsNullOrEmpty(input.Approver))
-                    {
-                        form.PreparedBy = User.Identity.Name;
-                        form.PreparedDate = DateTime.Now;
-                    }
+                    form.PreparedBy = User.Identity.Name;
+                    form.PreparedDate = DateTime.Now;
 
                     if (input.Approver != null)
                     {
                         form.ApprovedBy = input.Approver;
                         form.ApprovedDate = null; // empty the date as this is new submission
                         form.FormStatus = Common.FormStatus.PendingApproval;
-
-                        new WorkflowService().SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
-                        new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
-                        new NotificationService().NotifyApprovalRequest(form.ApprovedBy, form.Id, form.PreparedBy, form.FormType);
                     }
                     
                     if (input.InflowDeposit.Any())
