@@ -20,7 +20,7 @@ namespace xDC_Web.Extension.DocGenerator
         private Color _inflowColor = System.Drawing.ColorTranslator.FromHtml("#3498DB");
         private Color _outFlowColor = System.Drawing.ColorTranslator.FromHtml("#E67E22");
 
-        public IWorkbook GenerateWorkbook(DateTime selectedDate)
+        public IWorkbook GenerateWorkbook(DateTime? selectedDate)
         {
             try
             {
@@ -78,6 +78,13 @@ namespace xDC_Web.Extension.DocGenerator
             workbook.BeginUpdate();
             try
             {
+                var sheetNames = new List<string>()
+                {
+                    "Maybank MFCA", "CITI MFCA", "Hong Leong Bank MFCA", "JP Morgan MFCA", "CIMB FCA"
+                };
+
+                #region Sheet 1
+
                 var sheet = workbook.Worksheets[0];
 
                 foreach (var item in dataItem.Accounts)
@@ -328,15 +335,74 @@ namespace xDC_Web.Extension.DocGenerator
                     }
                 }
 
-                // details sheets
-                foreach (var account in dataItem.Accounts)
-                {
-                    workbook.Worksheets.Add(account.Account);
-                    workbook.Worksheets[account.Account].CopyFrom(workbook.Worksheets[1]);
-                }
-
-
                 workbook.Calculate();
+
+                #endregion
+
+                #region Sheet 2 - "Maybank MFCA"
+
+                foreach (var sheetName in sheetNames)
+                {
+                    var currentSheet = workbook.Worksheets[sheetName];
+
+                    currentSheet["C2"].Value = string.Format("FOREIGN CURRENCY TRANSACTIONS VIA {0} FOR VALUE DATE {1:dd/MM/yyyy}",
+                        sheetName, dataItem.SelectedDate.Value);
+                    
+                    var accounts = dataItem.Accounts.Where(x => x.Account == sheetName).ToList();
+                    var IF_Deposit_items = new List<FCY_Item>();
+                    var IF_MM_items = new List<FCY_Item>();
+                    var IF_Others_items = new List<FCY_ItemOthers>();
+                    var OF_Deposit_items = new List<FCY_Item>();
+                    var OF_MM_items = new List<FCY_Item>();
+                    var OF_Others_items = new List<FCY_ItemOthers>();
+                    foreach (var account in accounts)
+                    {
+                        IF_Deposit_items.AddRange(account.Details_IF_Deposit_Maturity);
+                        IF_MM_items.AddRange(account.Details_IF_MM);
+                        IF_Others_items.AddRange(account.Details_IF_Others);
+
+                        OF_Deposit_items.AddRange(account.Details_OF_Deposit_Maturity);
+                        OF_MM_items.AddRange(account.Details_OF_MM);
+                        OF_Others_items.AddRange(account.Details_OF_Others);
+                    }
+
+                    var IF_Deposit_items_startIndex = 7;
+                    var IF_Deposit_items_endIndex = 10;
+
+                    DetailsTab_Table1(IF_Deposit_items, IF_Deposit_items_startIndex, ref IF_Deposit_items_endIndex, ref currentSheet);
+
+                    var IF_MM_items_startIndex = IF_Deposit_items_endIndex + 2;
+                    var IF_MM_items_endIndex = IF_Deposit_items_endIndex + 6;
+                    
+                    DetailsTab_Table1(IF_MM_items, IF_MM_items_startIndex, ref IF_MM_items_endIndex, ref currentSheet);
+
+                    var IF_Others_items_startIndex = IF_MM_items_endIndex + 2;
+                    var IF_Others_items_endIndex = IF_MM_items_endIndex + 6;
+
+                    DetailsTab_Table2(IF_Others_items, IF_Others_items_startIndex, ref IF_Others_items_endIndex, ref currentSheet);
+
+                    // OF
+
+                    var OF_Deposit_items_startIndex = IF_Others_items_endIndex + 3;
+                    var OF_Deposit_items_endIndex = IF_Others_items_endIndex + 7;
+
+                    DetailsTab_Table1(OF_Deposit_items, OF_Deposit_items_startIndex, ref OF_Deposit_items_endIndex, ref currentSheet);
+
+                    var OF_MM_items_startIndex = OF_Deposit_items_endIndex + 2;
+                    var OF_MM_items_endIndex = OF_Deposit_items_endIndex + 6;
+
+                    DetailsTab_Table1(OF_Deposit_items, OF_MM_items_startIndex, ref OF_MM_items_endIndex, ref currentSheet);
+
+                    var OF_Others_items_startIndex = OF_MM_items_endIndex + 2;
+                    var OF_Others_items_endIndex = OF_MM_items_endIndex + 6;
+
+                    DetailsTab_Table2(IF_Others_items, OF_Others_items_startIndex, ref OF_Others_items_endIndex, ref currentSheet);
+
+
+                    workbook.Calculate();
+                }
+                
+                #endregion
             }
             catch (Exception ex)
             {
@@ -350,11 +416,9 @@ namespace xDC_Web.Extension.DocGenerator
             return workbook;
         }
 
-        private FCY_DealCutOffData ConstructData(kashflowDBEntities db, DateTime selectedDate)
+        private FCY_DealCutOffData ConstructData(kashflowDBEntities db, DateTime? selectedDate)
         {
-            try
-            {
-                var accounts = db.Config_FcaBankAccount.Select(x => x.AccountName1).Distinct().ToList();
+                var accounts = db.Config_FcaBankAccount.Where(x => x.Currency != "MYR").Select(x => x.AccountName1).Distinct().ToList();
                 var currencies = new List<string>()
                 {
                     "USD", "AUD", "GBP", "EUR"
@@ -495,68 +559,294 @@ namespace xDC_Web.Extension.DocGenerator
                     }
                 }
 
+                // Details portion
+
+                foreach (var item in dataObj.Accounts)
+                {
+                    var availableAccount3 = db.Config_FcaBankAccount
+                        .Where(x => x.Currency == item.Currency && x.AccountName1 == item.Account)
+                        .Select(x => x.AccountName3)
+                        .ToList();
+
+                    if (availableAccount3.Any())
+                    {
+                        var approvedFidForms = db.FID_Treasury
+                            .Where(x => x.FormStatus == Common.FormStatus.Approved
+                                        && DbFunctions.TruncateTime(x.TradeDate) ==
+                                        DbFunctions.TruncateTime(selectedDate)
+                                        && x.Currency == item.Currency)
+                            .Select(x => x.Id)
+                            .ToList();
+
+                        if (approvedFidForms.Any())
+                        {
+                            var IF_DepositMaturity = db.FID_Treasury_Deposit
+                                .Where(x => x.CashflowType == Common.Cashflow.Inflow
+                                            && approvedFidForms.Contains(x.FormId)
+                                            && availableAccount3.Contains(x.FcaAccount))
+                                .ToList();
+
+                            if (IF_DepositMaturity.Any())
+                            {
+                                item.Details_IF_Deposit_Maturity = new List<FCY_Item>();
+
+                                foreach (var i in IF_DepositMaturity)
+                                {
+                                    item.Details_IF_Deposit_Maturity.Add(new FCY_Item
+                                    {
+                                        Item = i.Bank,
+                                        Currency = item.Currency,
+                                        TradeDate = selectedDate.Value,
+                                        MaturityDate = i.MaturityDate.Value,
+                                        ValueDate = i.ValueDate.Value,
+                                        Amount = i.Principal,
+                                        Tenor = i.Tenor.Value,
+                                        Rate = i.RatePercent,
+                                        Interest = i.IntProfitReceivable,
+                                        Principal_Interest = i.PrincipalIntProfitReceivable,
+                                        InstrumentType = i.AssetType,
+                                        Fca = i.FcaAccount,
+                                        ContactPerson = i.ContactPerson
+                                    });
+                                }
+                            }
+
+                            var IF_MoneyMarket = db.FID_Treasury_MMI
+                                .Where(x => x.CashflowType == Common.Cashflow.Inflow
+                                            && approvedFidForms.Contains(x.FormId)
+                                            && availableAccount3.Contains(x.FcaAccount))
+                                .ToList();
+
+                            if (IF_MoneyMarket.Any())
+                            {
+                                item.Details_IF_MM = new List<FCY_Item>();
+
+                                foreach (var i in IF_MoneyMarket)
+                                {
+                                    item.Details_IF_MM.Add(new FCY_Item
+                                    {
+                                        Item = i.CounterParty,
+                                        Currency = item.Currency,
+                                        TradeDate = selectedDate.Value,
+                                        MaturityDate = i.MaturityDate.Value,
+                                        ValueDate = i.ValueDate.Value,
+                                        Amount = i.Proceeds,
+                                        Tenor = i.HoldingDayTenor.Value,
+                                        Rate = (double)i.SellPurchaseRateYield.Value,
+                                        Interest = i.IntDividendReceivable,
+                                        Principal_Interest = i.IntDividendReceivable,
+                                        InstrumentType = i.ProductType,
+                                        Fca = i.FcaAccount,
+                                        ContactPerson = i.Dealer
+                                    });
+                                }
+                            }
+
+                            var OF_RolloverNewPlacement = db.FID_Treasury_Deposit
+                                .Where(x => x.CashflowType == Common.Cashflow.Outflow
+                                            && approvedFidForms.Contains(x.FormId)
+                                            && availableAccount3.Contains(x.FcaAccount))
+                                .ToList();
+
+                            if (OF_RolloverNewPlacement.Any())
+                            {
+                                item.Details_OF_Deposit_Maturity = new List<FCY_Item>();
+
+                                foreach (var i in OF_RolloverNewPlacement)
+                                {
+                                    item.Details_OF_Deposit_Maturity.Add(new FCY_Item
+                                    {
+                                        Item = i.Bank,
+                                        Currency = item.Currency,
+                                        TradeDate = selectedDate.Value,
+                                        MaturityDate = i.MaturityDate.Value,
+                                        ValueDate = i.ValueDate.Value,
+                                        Amount = i.Principal,
+                                        Tenor = i.Tenor.Value,
+                                        Rate = i.RatePercent,
+                                        Interest = i.IntProfitReceivable,
+                                        Principal_Interest = i.PrincipalIntProfitReceivable,
+                                        InstrumentType = i.AssetType,
+                                        Fca = i.FcaAccount,
+                                        ContactPerson = i.ContactPerson
+                                    });
+                                }
+                            }
+
+                            var OF_MoneyMarket = db.FID_Treasury_MMI
+                                .Where(x => x.CashflowType == Common.Cashflow.Outflow
+                                            && approvedFidForms.Contains(x.FormId)
+                                            && availableAccount3.Contains(x.FcaAccount))
+                                .ToList();
+
+                            if (OF_MoneyMarket.Any())
+                            {
+                                item.Details_OF_MM = new List<FCY_Item>();
+
+                                foreach (var i in OF_MoneyMarket)
+                                {
+                                    item.Details_IF_MM.Add(new FCY_Item
+                                    {
+                                        Item = i.CounterParty,
+                                        Currency = item.Currency,
+                                        TradeDate = selectedDate.Value,
+                                        MaturityDate = i.MaturityDate.Value,
+                                        ValueDate = i.ValueDate.Value,
+                                        Amount = i.Proceeds,
+                                        Tenor = i.HoldingDayTenor.Value,
+                                        Rate = (double)i.SellPurchaseRateYield.Value,
+                                        Interest = i.IntDividendReceivable,
+                                        Principal_Interest = i.IntDividendReceivable,
+                                        InstrumentType = i.ProductType,
+                                        Fca = i.FcaAccount,
+                                        ContactPerson = i.Dealer
+                                    });
+                                }
+                            }
+                        }
+
+                        var approvedTsForms = db.ISSD_FormHeader
+                            .Where(x => x.FormStatus == Common.FormStatus.Approved
+                                        && DbFunctions.TruncateTime(x.SettlementDate) ==
+                                        DbFunctions.TruncateTime(selectedDate)
+                                        && x.Currency == item.Currency)
+                            .Select(x => x.Id)
+                            .ToList();
+
+                        if (approvedTsForms.Any())
+                        {
+                            var IF_Others = db.ISSD_TradeSettlement
+                                .Where(x => x.InflowAmount > 0
+                                            && approvedTsForms.Contains(x.FormId)
+                                            && availableAccount3.Contains(x.InflowTo))
+                                .ToList();
+
+                            if (IF_Others.Any())
+                            {
+                                item.Details_IF_Others = new List<FCY_ItemOthers>();
+
+                                foreach (var i in IF_Others)
+                                {
+                                    item.Details_IF_Others.Add(new FCY_ItemOthers
+                                    {
+                                        Item = i.InstrumentCode,
+                                        Currency = item.Currency,
+                                        Notes = i.InstrumentType,
+                                        Fca = i.InflowTo,
+                                        Amount = i.InflowAmount
+                                    });
+                                }
+                            }
+
+                            var OF_Others = db.ISSD_TradeSettlement
+                                .Where(x => x.OutflowAmount > 0
+                                            && approvedTsForms.Contains(x.FormId)
+                                            && availableAccount3.Contains(x.OutflowFrom))
+                                .ToList();
+
+                            if (OF_Others.Any())
+                            {
+                                item.Details_OF_Others = new List<FCY_ItemOthers>();
+
+                                foreach (var i in IF_Others)
+                                {
+                                    item.Details_OF_Others.Add(new FCY_ItemOthers
+                                    {
+                                        Item = i.InstrumentCode,
+                                        Currency = item.Currency,
+                                        Notes = i.InstrumentType,
+                                        Fca = i.OutflowFrom,
+                                        Amount = i.OutflowAmount
+                                    });
+                                }
+                            }
+                        }
+                        
+                    }
+                }
+                
+
                 return dataObj;
-            }
-            catch (Exception ex)
+        }
+
+        private void DetailsTab_Table1(List<FCY_Item> items, int startIndex, ref int endIndex, ref Worksheet sheet)
+        {
+            if (items.Any())
             {
-                Logger.LogError(ex);
-                return new FCY_DealCutOffData();
+                var currentIndex = startIndex += 2;
+
+                foreach (var item in items)
+                {
+                    if (currentIndex != startIndex)
+                    {
+                        sheet.Rows[currentIndex - 1].Insert(InsertCellsMode.ShiftCellsDown);
+                        sheet.Rows[currentIndex - 1].CopyFrom(sheet.Rows[startIndex - 1], PasteSpecial.All);
+                    }
+
+                    sheet["D" + currentIndex].Value = item.Item;
+                    sheet["E" + currentIndex].Value = item.Currency;
+                    sheet["F" + currentIndex].Value = item.Notes;
+                    sheet["G" + currentIndex].Value = item.TradeDate;
+                    sheet["H" + currentIndex].Value = item.MaturityDate;
+                    sheet["I" + currentIndex].Value = item.ValueDate;
+                    sheet["J" + currentIndex].Value = item.Amount;
+                    sheet["K" + currentIndex].Value = item.Tenor;
+                    sheet["L" + currentIndex].Value = item.Rate;
+                    sheet["M" + currentIndex].Value = item.Interest;
+                    sheet["N" + currentIndex].Value = item.Principal_Interest;
+                    sheet["O" + currentIndex].Value = item.InstrumentType;
+                    sheet["P" + currentIndex].Value = item.Fca;
+                    sheet["Q" + currentIndex].Value = item.ContactPerson;
+
+                    currentIndex++;
+                }
+
+                if (currentIndex != startIndex)
+                {
+                    sheet["J" + currentIndex].Formula = "=SUM($J$" + startIndex + ":$J$" + (currentIndex - 1) + ")";
+                    sheet["N" + currentIndex].Formula = "=SUM($N$" + startIndex + ":$N$" + (currentIndex - 1) + ")";
+                }
+
+                endIndex = currentIndex;
             }
         }
 
-        private void SummaryTable(Worksheet sheet, DateTime selectedDate, FCY_DealCutOffData_Account item, int index, string columnAlphabet)
+        private void DetailsTab_Table2(List<FCY_ItemOthers> items, int startIndex, ref int endIndex, ref Worksheet sheet)
         {
-            sheet["F2"].Value = selectedDate;
-
-            if (item.Currency == "USD")
+            if (items.Any())
             {
-                sheet["7"].Value = item.Ob;
-                sheet["8"].Value = item.IF_DepositMaturity;
-                sheet["9"].Value = item.IF_MoneyMarket;
-                sheet["10"].Value = item.IF_Others;
-                sheet["11"].Value = item.OF_DepositPlacementRollover * -1;
-                sheet["12"].Value = item.OF_MoneyMarket * -1;
-                sheet["13"].Value = item.OF_Others * -1;
-            }
+                var currentIndex = startIndex += 2;
 
-            if (item.Currency == "GBP")
-            {
-                sheet["F18"].Value = item.Ob;
-                sheet["F19"].Value = item.IF_DepositMaturity;
-                sheet["F20"].Value = item.IF_MoneyMarket;
-                sheet["F21"].Value = item.IF_Others;
-                sheet["F22"].Value = item.OF_DepositPlacementRollover * -1;
-                sheet["F23"].Value = item.OF_MoneyMarket * -1;
-                sheet["F24"].Value = item.OF_Others * -1;
-            }
+                foreach (var item in items)
+                {
+                    if (currentIndex != startIndex)
+                    {
+                        sheet.Rows[currentIndex - 1].Insert(InsertCellsMode.ShiftCellsDown);
+                        sheet.Rows[currentIndex - 1].CopyFrom(sheet.Rows[startIndex - 1], PasteSpecial.All);
+                    }
 
-            if (item.Currency == "AUD")
-            {
-                sheet["F29"].Value = item.Ob;
-                sheet["F30"].Value = item.IF_DepositMaturity;
-                sheet["F31"].Value = item.IF_MoneyMarket;
-                sheet["F32"].Value = item.IF_Others;
-                sheet["F33"].Value = item.OF_DepositPlacementRollover * -1;
-                sheet["F34"].Value = item.OF_MoneyMarket * -1;
-                sheet["F35"].Value = item.OF_Others * -1;
-            }
+                    sheet["D" + currentIndex].Value = item.Item;
+                    sheet["E" + currentIndex].Value = item.Currency;
+                    sheet["F" + currentIndex].Value = item.Notes;
+                    sheet["G" + currentIndex].Value = item.Amount;
+                    sheet["H" + currentIndex].Value = item.Fca;
 
-            if (item.Currency == "EUR")
-            {
-                sheet["F40"].Value = item.Ob;
-                sheet["F41"].Value = item.IF_DepositMaturity;
-                sheet["F42"].Value = item.IF_MoneyMarket;
-                sheet["F43"].Value = item.IF_Others;
-                sheet["F44"].Value = item.OF_DepositPlacementRollover * -1;
-                sheet["F45"].Value = item.OF_MoneyMarket * -1;
-                sheet["F46"].Value = item.OF_Others * -1;
+                    currentIndex++;
+                }
+
+                if (currentIndex != startIndex)
+                {
+                    sheet["G" + currentIndex].Formula = "=SUM($G$" + startIndex + ":$G$" + (currentIndex - 1) + ")";
+                }
+
+                endIndex = currentIndex;
             }
         }
     }
 
     public class FCY_DealCutOffData
     {
-        public DateTime SelectedDate { get; set; }
+        public DateTime? SelectedDate { get; set; }
         public List<FCY_DealCutOffData_Account> Accounts { get; set; }
     }
 
@@ -572,5 +862,51 @@ namespace xDC_Web.Extension.DocGenerator
         public double OF_DepositPlacementRollover { get; set; }
         public double OF_MoneyMarket { get; set; }
         public double OF_Others { get; set; }
+
+        // details part
+        public List<FCY_Item> Details_IF_Deposit_Maturity { get; set; }
+        public List<FCY_Item> Details_IF_MM { get; set; }
+        public List<FCY_ItemOthers> Details_IF_Others { get; set; }
+
+        public List<FCY_Item> Details_OF_Deposit_Maturity { get; set; }
+        public List<FCY_Item> Details_OF_MM { get; set; }
+        public List<FCY_ItemOthers> Details_OF_Others { get; set; }
+
+        public FCY_DealCutOffData_Account()
+        {
+            this.Details_IF_Deposit_Maturity = new List<FCY_Item>();
+            this.Details_IF_MM = new List<FCY_Item>();
+            this.Details_IF_Others = new List<FCY_ItemOthers>();
+            this.Details_OF_Deposit_Maturity = new List<FCY_Item>();
+            this.Details_OF_MM = new List<FCY_Item>();
+            this.Details_OF_Others = new List<FCY_ItemOthers>();
+        }
+    }
+
+    public class FCY_Item
+    {
+        public string Item { get; set; }
+        public string Currency { get; set; }
+        public DateTime TradeDate { get; set; }
+        public DateTime MaturityDate { get; set; }
+        public DateTime ValueDate { get; set; }
+        public double Amount { get; set; }
+        public int Tenor { get; set; }
+        public double Rate { get; set; }
+        public double Interest { get; set; }
+        public double Principal_Interest { get; set; }
+        public string InstrumentType { get; set; }
+        public string Notes { get; set; }
+        public string Fca { get; set; }
+        public string ContactPerson { get; set; }
+    }
+
+    public class FCY_ItemOthers
+    {
+        public string Item { get; set; }
+        public string Currency { get; set; }
+        public string Notes { get; set; }
+        public string Fca { get; set; }
+        public double Amount { get; set; }
     }
 }

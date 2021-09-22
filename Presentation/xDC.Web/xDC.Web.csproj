@@ -602,9 +602,7 @@
     <Content Include="Views\Issd\TradeSettlement\PartH\View.cshtml" />
     <Content Include="Views\Shared\_ApprovalModal.cshtml" />
     <Content Include="Views\Shared\_RejectionModal.cshtml" />
-    <Content Include="Views\Fid\DealCutOff\Myr.cshtml" />
     <Content Include="Views\Shared\_MyrDealCutOff.cshtml" />
-    <Content Include="Views\Fid\DealCutOff\Fcy.cshtml" />
     <Content Include="Views\Issd\FcaTagging\FcaTagging.cshtml" />
     <Content Include="Views\Issd\FcaTagging\FcaTaggingEdit.cshtml" />
     <Content Include="Views\DealCutOff\Fcy.cshtml" />

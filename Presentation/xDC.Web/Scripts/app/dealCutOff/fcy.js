@@ -21,11 +21,20 @@
             var iframeElement0 = document.getElementById("sheet1");
             iframeElement0.src = "./DealCutOffFcyPreview?" + params + "&SheetIndex=0";
 
-            /*var iframeElement2 = document.getElementById("sheet2");
+            var iframeElement2 = document.getElementById("sheet2");
             iframeElement2.src = "./DealCutOffFcyPreview?" + params + "&SheetIndex=1";
 
             var iframeElement3 = document.getElementById("sheet3");
-            iframeElement3.src = "./DealCutOffFcyPreview?" + params + "&SheetIndex=2";*/
+            iframeElement3.src = "./DealCutOffFcyPreview?" + params + "&SheetIndex=2";
+
+            var iframeElement4 = document.getElementById("sheet4");
+            iframeElement4.src = "./DealCutOffFcyPreview?" + params + "&SheetIndex=3";
+
+            var iframeElement5 = document.getElementById("sheet5");
+            iframeElement5.src = "./DealCutOffFcyPreview?" + params + "&SheetIndex=4";
+
+            var iframeElement6 = document.getElementById("sheet6");
+            iframeElement6.src = "./DealCutOffFcyPreview?" + params + "&SheetIndex=5";
         }
 
         //#endregion
@@ -85,10 +94,14 @@
 
         var tabPanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
-                { title: "Summary"}
+                { titleId: "summaryTab", title: "Summary", template: "summaryTab" },
+                { titleId: "details1", title: "Details 1", template: "details1" },
+                { titleId: "details2", title: "Details 2", template: "details2" },
+                { titleId: "details3", title: "Details 3", template: "details3" },
+                { titleId: "details4", title: "Details 4", template: "details4" },
+                { titleId: "details5", title: "Details 5", template: "details5" }
             ],
             deferRendering: false,
-            //itemTitleTemplate: $("#dxPanelTitle"),
             showNavButtons: true
         });
 

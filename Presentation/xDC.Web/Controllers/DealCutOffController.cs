@@ -208,10 +208,10 @@ namespace xDC_Web.Controllers
 
         public ActionResult DealCutOffFcyPreview(string TradeDate, int SheetIndex)
         {
-            DateTime selectedDate = DateTime.Now;
+            DateTime? selectedDate = DateTime.Now;
             if (!string.IsNullOrEmpty(TradeDate))
             {
-                selectedDate = (DateTime)Common.ConvertEpochToDateTime(Convert.ToInt64(TradeDate));
+                selectedDate = Common.ConvertEpochToDateTime(Convert.ToInt64(TradeDate));
             }
 
             var previewModel = new SpreadsheetPreviewModel

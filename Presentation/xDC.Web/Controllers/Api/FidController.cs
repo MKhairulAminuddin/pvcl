@@ -45,7 +45,7 @@ namespace xDC_Web.Controllers.Api
                             b => b.Id,
                             (a, b) => new { ts_item = a, ts_form = b }
                             )
-                        .Where(x => x.ts_form.FormStatus == Common.FormStatus.Approved && x.ts_form.SettlementDate != null && x.ts_form.Currency != "MYR")
+                        .Where(x => x.ts_form.FormStatus == Common.FormStatus.Approved && x.ts_form.SettlementDate != null)
                         .GroupBy(x => new
                         {
                             x.ts_form.SettlementDate, x.ts_form.Currency
