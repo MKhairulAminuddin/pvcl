@@ -62,7 +62,7 @@ namespace xDC_Web.Models
         public DateTime MaturityDate { get; set; }
         public int HoldingDayTenor { get; set; }
         public double Nominal { get; set; }
-        public decimal SellPurchaseRateYield { get; set; }
+        public double SellPurchaseRateYield { get; set; }
         public double Price { get; set; }
         public double IntDividendReceivable { get; set; }
         public double PurchaseProceeds { get; set; }

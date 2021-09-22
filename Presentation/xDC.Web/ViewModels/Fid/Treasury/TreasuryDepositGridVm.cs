@@ -11,7 +11,7 @@ namespace xDC_Web.ViewModels.Fid.Treasury
         public DateTime MaturityDate { get; set; }
         public double Principal { get; set; }
         public int Tenor { get; set; }
-        public decimal RatePercent { get; set; }
+        public double RatePercent { get; set; }
         public double IntProfitReceivable { get; set; }
         public double PrincipalIntProfitReceivable { get; set; }
         public string AssetType { get; set; }

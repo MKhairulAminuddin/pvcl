@@ -25,7 +25,7 @@ namespace xDC.Infrastructure.Application
         public Nullable<System.DateTime> MaturityDate { get; set; }
         public Nullable<int> HoldingDayTenor { get; set; }
         public double Nominal { get; set; }
-        public Nullable<decimal> SellPurchaseRateYield { get; set; }
+        public double SellPurchaseRateYield { get; set; }
         public double Price { get; set; }
         public double IntDividendReceivable { get; set; }
         public double Proceeds { get; set; }

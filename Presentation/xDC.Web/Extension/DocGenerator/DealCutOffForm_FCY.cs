@@ -383,8 +383,8 @@ namespace xDC_Web.Extension.DocGenerator
 
                     // OF
 
-                    var OF_Deposit_items_startIndex = IF_Others_items_endIndex + 3;
-                    var OF_Deposit_items_endIndex = IF_Others_items_endIndex + 7;
+                    var OF_Deposit_items_startIndex = IF_Others_items_endIndex + 6;
+                    var OF_Deposit_items_endIndex = IF_Others_items_endIndex + 9;
 
                     DetailsTab_Table1(OF_Deposit_items, OF_Deposit_items_startIndex, ref OF_Deposit_items_endIndex, ref currentSheet);
 
@@ -632,7 +632,7 @@ namespace xDC_Web.Extension.DocGenerator
                                         ValueDate = i.ValueDate.Value,
                                         Amount = i.Proceeds,
                                         Tenor = i.HoldingDayTenor.Value,
-                                        Rate = (double)i.SellPurchaseRateYield.Value,
+                                        Rate = i.SellPurchaseRateYield,
                                         Interest = i.IntDividendReceivable,
                                         Principal_Interest = i.IntDividendReceivable,
                                         InstrumentType = i.ProductType,
@@ -694,7 +694,7 @@ namespace xDC_Web.Extension.DocGenerator
                                         ValueDate = i.ValueDate.Value,
                                         Amount = i.Proceeds,
                                         Tenor = i.HoldingDayTenor.Value,
-                                        Rate = (double)i.SellPurchaseRateYield.Value,
+                                        Rate = i.SellPurchaseRateYield,
                                         Interest = i.IntDividendReceivable,
                                         Principal_Interest = i.IntDividendReceivable,
                                         InstrumentType = i.ProductType,
@@ -783,28 +783,32 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet.Rows[currentIndex - 1].CopyFrom(sheet.Rows[startIndex - 1], PasteSpecial.All);
                     }
 
-                    sheet["D" + currentIndex].Value = item.Item;
-                    sheet["E" + currentIndex].Value = item.Currency;
-                    sheet["F" + currentIndex].Value = item.Notes;
-                    sheet["G" + currentIndex].Value = item.TradeDate;
-                    sheet["H" + currentIndex].Value = item.MaturityDate;
-                    sheet["I" + currentIndex].Value = item.ValueDate;
-                    sheet["J" + currentIndex].Value = item.Amount;
-                    sheet["K" + currentIndex].Value = item.Tenor;
-                    sheet["L" + currentIndex].Value = item.Rate;
-                    sheet["M" + currentIndex].Value = item.Interest;
-                    sheet["N" + currentIndex].Value = item.Principal_Interest;
-                    sheet["O" + currentIndex].Value = item.InstrumentType;
-                    sheet["P" + currentIndex].Value = item.Fca;
-                    sheet["Q" + currentIndex].Value = item.ContactPerson;
+                    sheet["C" + currentIndex].Value = item.Item;
+                    sheet["D" + currentIndex].Value = item.Currency;
+                    sheet["E" + currentIndex].Value = item.Notes;
+                    sheet["F" + currentIndex].Value = item.TradeDate;
+                    sheet["G" + currentIndex].Value = item.MaturityDate;
+                    sheet["H" + currentIndex].Value = item.ValueDate;
+                    sheet["I" + currentIndex].Value = item.Amount;
+                    sheet["J" + currentIndex].Value = item.Tenor;
+                    sheet["K" + currentIndex].Value = item.Rate;
+                    sheet["L" + currentIndex].Value = item.Interest;
+                    sheet["M" + currentIndex].Value = item.Principal_Interest;
+                    sheet["N" + currentIndex].Value = item.InstrumentType;
+                    sheet["O" + currentIndex].Value = item.Fca;
+                    sheet["P" + currentIndex].Value = item.ContactPerson;
 
                     currentIndex++;
                 }
 
                 if (currentIndex != startIndex)
                 {
-                    sheet["J" + currentIndex].Formula = "=SUM($J$" + startIndex + ":$J$" + (currentIndex - 1) + ")";
-                    sheet["N" + currentIndex].Formula = "=SUM($N$" + startIndex + ":$N$" + (currentIndex - 1) + ")";
+                    sheet["I" + currentIndex].Formula = "=SUM($I$" + startIndex + ":$I$" + (currentIndex - 1) + ")";
+                    sheet["M" + currentIndex].Formula = "=SUM($M$" + startIndex + ":$M$" + (currentIndex - 1) + ")";
+                }
+                else
+                {
+                    currentIndex++;
                 }
 
                 endIndex = currentIndex;
@@ -825,18 +829,18 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet.Rows[currentIndex - 1].CopyFrom(sheet.Rows[startIndex - 1], PasteSpecial.All);
                     }
 
-                    sheet["D" + currentIndex].Value = item.Item;
-                    sheet["E" + currentIndex].Value = item.Currency;
-                    sheet["F" + currentIndex].Value = item.Notes;
-                    sheet["G" + currentIndex].Value = item.Amount;
-                    sheet["H" + currentIndex].Value = item.Fca;
+                    sheet["C" + currentIndex].Value = item.Item;
+                    sheet["D" + currentIndex].Value = item.Currency;
+                    sheet["E" + currentIndex].Value = item.Notes;
+                    sheet["F" + currentIndex].Value = item.Amount;
+                    sheet["G" + currentIndex].Value = item.Fca;
 
                     currentIndex++;
                 }
 
                 if (currentIndex != startIndex)
                 {
-                    sheet["G" + currentIndex].Formula = "=SUM($G$" + startIndex + ":$G$" + (currentIndex - 1) + ")";
+                    sheet["F" + currentIndex].Formula = "=SUM($F$" + startIndex + ":$F$" + (currentIndex - 1) + ")";
                 }
 
                 endIndex = currentIndex;

@@ -16,13 +16,13 @@ namespace xDC.Infrastructure.Application
     {
         public string Operator { get; set; }
         public string Bank { get; set; }
-        public Nullable<System.DateTime> Value_Date { get; set; }
-        public System.DateTime Maturity_Date { get; set; }
-        public Nullable<double> Principle { get; set; }
-        public Nullable<int> Tenor { get; set; }
-        public Nullable<decimal> Rate { get; set; }
-        public string Asset_Type { get; set; }
-        public string bank_code { get; set; }
-        public string CURRENCY { get; set; }
+        public System.DateTime ValueDate { get; set; }
+        public System.DateTime MaturityDate { get; set; }
+        public double Principle { get; set; }
+        public int Tenor { get; set; }
+        public double Rate { get; set; }
+        public string AssetType { get; set; }
+        public string BankCode { get; set; }
+        public string Currency { get; set; }
     }
 }

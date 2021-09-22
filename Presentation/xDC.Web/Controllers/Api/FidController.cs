@@ -328,10 +328,9 @@ namespace xDC_Web.Controllers.Api
 
                     foreach (var account in configAccount)
                     {
-                        // create row for account and its opening balance. e.g. RENTAS - OB 20,000
                         var item = new TenAmCutOffItemVM
                         {
-                            Account = account.AccountName2,
+                            Account = account.AccountName1,
                             Currency = account.Currency
                         };
                         result.Add(item);
@@ -383,7 +382,10 @@ namespace xDC_Web.Controllers.Api
                     {
                         var inflowFunds = db.AMSD_IF_Item
                             .Where(x => approvedAmsdForms.Contains(x.FormId))
-                            .GroupBy(x => new { x.Bank })
+                            .GroupBy(x => new
+                            {
+                                x.Bank
+                            })
                             .Select(x => new
                             {
                                 Bank = x.Key.Bank,
@@ -396,7 +398,7 @@ namespace xDC_Web.Controllers.Api
                             {
                                 Account = fund.Bank,
                                 Currency = "MYR",
-                                OpeningBalance = fund.Amount,
+                                TotalInflow = fund.Amount,
                                 Net = fund.Amount
                             };
                             resultRaw.Add(inflowFundsFromAmsd);
@@ -406,7 +408,8 @@ namespace xDC_Web.Controllers.Api
                     result = resultRaw
                         .GroupBy(x => new
                         {
-                            x.Account, x.Currency
+                            x.Account, 
+                            x.Currency
                         })
                         .Select(x => new TenAmCutOffItemVM
                         {
@@ -420,10 +423,16 @@ namespace xDC_Web.Controllers.Api
 
                     foreach (var item in result)
                     {
-                        // plug in opening balance
-                        var ob = FcaTaggingSvc.GetOpeningBalance(db, reportDateParsed.Value, item.Currency, item.Account);
+                        var accountName2 = configAccount.Where(x => x.AccountName1 == item.Account)
+                            .Select(x => x.AccountName2).Distinct().FirstOrDefault();
 
-                        item.OpeningBalance = ob;
+                        if (accountName2 != null)
+                        {
+                            // plug in opening balance
+                            var ob = FcaTaggingSvc.GetOpeningBalance(db, reportDateParsed.Value, item.Currency, accountName2);
+
+                            item.OpeningBalance = ob;
+                        }
                     }
 
                     result = result.GroupBy(x => new
@@ -506,21 +515,21 @@ namespace xDC_Web.Controllers.Api
                     var tradeDate = Common.ConvertEpochToDateTime(tradeDateEpoch);
 
                     var result = db.EDW_Maturity_Deposit
-                        .Where(x => DbFunctions.TruncateTime(x.Maturity_Date) == DbFunctions.TruncateTime(tradeDate)
-                                    && x.CURRENCY == currency)
+                        .Where(x => DbFunctions.TruncateTime(x.MaturityDate) == DbFunctions.TruncateTime(tradeDate)
+                                    && x.Currency == currency)
                         .Select(
                         x => new TreasuryDepositGridVm
                         {
                             Dealer = x.Operator,
                             Bank = x.Bank,
-                            ValueDate = x.Value_Date.Value,
-                            MaturityDate = x.Maturity_Date,
-                            Principal = x.Principle.Value,
-                            Tenor = x.Tenor.Value,
-                            RatePercent = x.Rate.Value,
+                            ValueDate = x.ValueDate,
+                            MaturityDate = x.MaturityDate,
+                            Principal = x.Principle,
+                            Tenor = x.Tenor,
+                            RatePercent = x.Rate,
                             IntProfitReceivable = 0,
                             PrincipalIntProfitReceivable = 0,
-                            AssetType = x.Asset_Type,
+                            AssetType = x.AssetType,
                             RepoTag = null,
                             ContactPerson = null,
                             Notes = null
@@ -556,28 +565,26 @@ namespace xDC_Web.Controllers.Api
                     var tradeDate = Common.ConvertEpochToDateTime(tradeDateEpoch);
 
                     var result = db.EDW_Maturity_MM
-                        .Where(x => DbFunctions.TruncateTime(x.Value_Date) == DbFunctions.TruncateTime(tradeDate)
-                                    && x.CURRENCY == currency)
+                        .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(tradeDate)
+                                    && x.Currency == currency)
                         .Select(x => new TreasuryMmiVM
                         {
                             CashflowType = Common.Cashflow.Inflow,
                             Dealer = x.Operator,
-                            Issuer = null,
-                            ValueDate = x.Value_Date.Value,
-                            MaturityDate = x.Maturity_Date,
-                            HoldingDayTenor = (int)x.Tenor,
+                            Issuer = x.Issuer,
+                            ValueDate = x.ValueDate,
+                            MaturityDate = x.MaturityDate,
+                            HoldingDayTenor = x.Tenor,
                             CounterParty = x.Bank,
-                            SellPurchaseRateYield = x.Rate.Value,
-                            Price = 0,
+                            SellPurchaseRateYield = x.Rate,
+                            Price = x.Price,
                             IntDividendReceivable = 0,
                             PurchaseProceeds = 0,
                             Proceeds = 0,
                             CertNoStockCode = x.StockCode,
                             ModifiedBy = null,
-                            ModifiedDate = default,
-                            Nominal = x.Principle.Value,
-                            ProductType = x.Asset_Type,
-
+                            Nominal = x.Principle,
+                            ProductType = x.AssetType
                         })
                         .ToList();
 
@@ -653,12 +660,12 @@ namespace xDC_Web.Controllers.Api
                     var result = new List<TreasuryEdwDataAvailability>();
 
                     var deposit = db.EDW_Maturity_Deposit
-                        .Count(x => DbFunctions.TruncateTime(x.Maturity_Date) == DbFunctions.TruncateTime(tradeDate)
-                                    && x.CURRENCY == currency);
+                        .Count(x => DbFunctions.TruncateTime(x.MaturityDate) == DbFunctions.TruncateTime(tradeDate)
+                                    && x.Currency == currency);
 
                     var mm = db.EDW_Maturity_MM
-                        .Count(x => DbFunctions.TruncateTime(x.Value_Date) == DbFunctions.TruncateTime(tradeDate)
-                                    && x.CURRENCY == currency);
+                        .Count(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(tradeDate)
+                                    && x.Currency == currency);
 
                     if (deposit > 0)
                     {
