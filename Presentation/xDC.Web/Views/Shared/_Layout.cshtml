@@ -151,20 +151,13 @@
                                     </ul>
                                 </li>
                                 <li><a href="@Url.Action("Treasury", "Fid")"><i class="fa fa-circle-thin"></i> <span>Treasury</span></a></li>
-                                <li class="treeview">
-                                    <a href="#">
-                                        <i class="fa fa-circle-thin"></i> <span>Deal Cut Off</span>
-                                        <span class="pull-right-container">
-                                            <i class="fa fa-angle-left pull-right"></i>
-                                        </span>
-                                    </a>
-                                    <ul class="treeview-menu">
-                                        <li><a href="@Url.Action("DealCutOffMyr", "Fid")"><i class="fa fa-circle-thin"></i> <span>MYR</span></a></li>
-                                        <li><a href="@Url.Action("DealCutOffFcy", "Fid")"><i class="fa fa-circle-thin"></i> <span>FCY</span></a></li>
-                                    </ul>
-                                </li>
                             </ul>
                         </li>
+                    }
+                    @if (MenuSecurity.FidMenu || MenuSecurity.IssdMenu)
+                    {
+                        <li><a href="@Url.Action("DealCutOffMyr", "DealCutOff")"><i class="fa fa-circle-thin"></i> <span>DEAL CUT OFF MYR</span></a></li>
+                        <li><a href="@Url.Action("DealCutOffFcy", "DealCutOff")"><i class="fa fa-circle-thin"></i> <span>DEAL CUT OFF FCY</span></a></li>
                     }
                     @if (MenuSecurity.PowerUsersMenu)
                     {

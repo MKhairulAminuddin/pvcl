@@ -285,6 +285,8 @@
     <Content Include="Scripts\app\amsd\inflowFund\new.js" />
     <Content Include="Scripts\app\amsd\index.js" />
     <Content Include="Scripts\app.dxGrid.utils.js" />
+    <Content Include="Scripts\app\dealCutOff\fcy.js" />
+    <Content Include="Scripts\app\dealCutOff\myr.js" />
     <Content Include="Scripts\app\fid\dealCutOff\fcy.js" />
     <Content Include="Scripts\app\fid\dealCutOff\myr.js" />
     <Content Include="Scripts\app\fid\tenAmCutOff\fcaTagging.js" />
@@ -605,6 +607,8 @@
     <Content Include="Views\Fid\DealCutOff\Fcy.cshtml" />
     <Content Include="Views\Issd\FcaTagging\FcaTagging.cshtml" />
     <Content Include="Views\Issd\FcaTagging\FcaTaggingEdit.cshtml" />
+    <Content Include="Views\DealCutOff\Fcy.cshtml" />
+    <Content Include="Views\DealCutOff\Myr.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -633,6 +637,7 @@
     <Compile Include="Controllers\Api\IssdController.cs" />
     <Compile Include="Controllers\Api\SettingController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\DealCutOffController.cs" />
     <Compile Include="Controllers\FidController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IssdController.cs" />

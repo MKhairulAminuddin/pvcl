@@ -1,0 +1,38 @@
+﻿
+@{
+    ViewBag.Title = "Deal Cut Off";
+    ViewBag.Subtitle = "FCY";
+}
+
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-solid">
+                <div class="box-header">
+                    <div class="left-container" style="display: inline-block">
+                        <div style="display: inline-block;font-weight: bold">Trade Date : </div> <div style="display: inline-block" id="dateSelectionBtn"></div>
+                    </div>
+                    <div class="right-container">
+                        <div id="printBtn"></div>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div id="tabpanel-container">
+                        <div style="padding-top: 10px; overflow: auto">
+                            <div style="width: 100%">
+                                <iframe id="sheet1" style="width: 100%; height: 1200px; border-style: none;"> </iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+@section scripts
+{
+    <script src="~/Scripts/app/dealCutOff/fcy.js"></script>
+}
