@@ -1056,6 +1056,10 @@ namespace xDC_Web.Controllers.Api
                                     {
                                         foundItem.Notes = item.Notes;
                                     }
+                                    if (foundItem.FcaAccount != item.FcaAccount)
+                                    {
+                                        foundItem.FcaAccount = item.FcaAccount;
+                                    }
 
                                     foundItem.ModifiedBy = User.Identity.Name;
                                     foundItem.ModifiedDate = DateTime.Now;
@@ -1159,6 +1163,10 @@ namespace xDC_Web.Controllers.Api
                                     if (foundItem.Notes != item.Notes)
                                     {
                                         foundItem.Notes = item.Notes;
+                                    }
+                                    if (foundItem.FcaAccount != item.FcaAccount)
+                                    {
+                                        foundItem.FcaAccount = item.FcaAccount;
                                     }
 
                                     foundItem.ModifiedBy = User.Identity.Name;
@@ -1371,6 +1379,10 @@ namespace xDC_Web.Controllers.Api
                                     if (foundItem.CertNoStockCode != item.CertNoStockCode)
                                     {
                                         foundItem.CertNoStockCode = item.CertNoStockCode;
+                                    }
+                                    if (foundItem.FcaAccount != item.FcaAccount)
+                                    {
+                                        foundItem.FcaAccount = item.FcaAccount;
                                     }
 
                                     foundItem.ModifiedBy = User.Identity.Name;
