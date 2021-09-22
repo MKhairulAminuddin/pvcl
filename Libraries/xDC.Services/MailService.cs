@@ -99,6 +99,72 @@ namespace xDC.Services
             }
         }
 
+        public void NewApprovedInflowFund(int formId, List<AspNetUsers> fidAdmins)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
+
+                    if (form != null)
+                    {
+                        var inflowFunds = db.AMSD_IF_Item.Where(x => x.FormId == form.Id).ToList();
+
+                        var message = new MimeMessage()
+                        {
+                            Sender = new MailboxAddress(Config.SmtpSenderAccountName,
+                                Config.SmtpSenderAccount),
+                            Subject = "[Kashflow] New AMSD Inflow Funds Approved"
+                        };
+                        
+                        var bodyBuilder = new StringBuilder();
+                        bodyBuilder.Append($"<p>Hello there, </p>");
+                        bodyBuilder.AppendLine(
+                            $"There's new AMSD Inflow Funds approved. The details are as follows:");
+
+                        bodyBuilder.Append(
+                                    @"<table style='border-collapse: collapse;'>
+                                      <tr>
+                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Bank</th>
+                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount</th>
+                                      </tr>");
+                        var tableRows = string.Empty;
+                        foreach (var item in inflowFunds)
+                        {
+                            tableRows += string.Format(@"<tr>
+                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td>
+                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1:C}</td>
+                                          </tr>", item.Bank, item.Amount);
+                        }
+                        bodyBuilder.Append(tableRows);
+                        bodyBuilder.Append(@"</table>");
+
+
+                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                        {
+                            Text = bodyBuilder.ToString()
+                        };
+
+                        foreach (var admin in fidAdmins)
+                        {
+                            message.To.Add(new MailboxAddress(admin.FullName, admin.Email));
+                        }
+
+                        SendEmailToSmtp(message);
+                    }
+                    else
+                    {
+                        Logger.LogError("SendApprovalStatusEmail FAILED, form data error: " + formId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
         public void SubmitForApproval(int formId, string formType, string approvedBy, string notes)
         {
             try
@@ -304,6 +370,8 @@ namespace xDC.Services
                 Logger.LogError(ex);
             }
         }
+
+
 
 
         private void SendEmailToSmtp(MimeMessage message)

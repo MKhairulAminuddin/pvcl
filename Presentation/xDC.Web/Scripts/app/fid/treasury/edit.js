@@ -284,12 +284,23 @@
             dataSource: [],
             columns: [
                 {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
+                {
                     dataField: "dealer",
                     caption: "Dealer",
                     allowEditing: false,
                     calculateCellValue: function (rowData) {
-                        rowData.dealer = window.currentUser;
-                        return window.currentUser;
+                        if (rowData.dealer) {
+                            return rowData.dealer;
+                        } else {
+                            return window.currentUser;
+                        }
                     }
                 },
                 {
@@ -366,7 +377,7 @@
 
                         rowData.intProfitReceivable = treasury.outflow_depoInt(currency, principal, tenor, rate);
 
-                        return rowData.intProfitReceivable;
+                        return Number(rowData.intProfitReceivable);
                     },
                     allowEditing: false
                 },
@@ -385,7 +396,7 @@
                         var rate = rowData.ratePercent;
 
                         rowData.principalIntProfitReceivable = treasury.outflow_depo_PrincipalInt(currency, principal, tenor, rate);
-                        return rowData.principalIntProfitReceivable;
+                        return Number(rowData.principalIntProfitReceivable);
                     },
                     allowEditing: false
                 },
@@ -528,11 +539,22 @@
             dataSource: [],
             columns: [
                 {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
+                {
                     dataField: "dealer",
                     caption: "Dealer",
                     calculateCellValue: function (rowData) {
-                        rowData.dealer = window.currentUser;
-                        return window.currentUser;
+                        if (rowData.dealer) {
+                            return rowData.dealer;
+                        } else {
+                            return window.currentUser;
+                        }
                     },
                     allowEditing: false
                 },
@@ -600,7 +622,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 0
+                        precision: 2
                     },
                     calculateCellValue: function (rowData) {
                         var currency = $currencySelectBox.option("value");
@@ -610,7 +632,7 @@
 
                         rowData.intProfitReceivable = treasury.outflow_depoInt(currency, principal, tenor, rate);
 
-                        return rowData.intProfitReceivable;
+                        return Number(rowData.intProfitReceivable);
                     },
                     allowEditing: false
                 },
@@ -620,7 +642,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 0
+                        precision: 2
                     },
                     calculateCellValue: function (rowData) {
                         var currency = $currencySelectBox.option("value");
@@ -629,7 +651,7 @@
                         var rate = rowData.ratePercent;
 
                         rowData.principalIntProfitReceivable = treasury.outflow_depo_PrincipalInt(currency, principal, tenor, rate);
-                        return rowData.principalIntProfitReceivable;
+                        return Number(rowData.principalIntProfitReceivable);
                     },
                     allowEditing: false
                 },
@@ -772,12 +794,23 @@
             dataSource: [],
             columns: [
                 {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
+                {
                     dataField: "dealer",
                     caption: "Dealer",
                     allowEditing: false,
                     calculateCellValue: function (rowData) {
-                        rowData.dealer = window.currentUser;
-                        return window.currentUser;
+                        if (rowData.dealer) {
+                            return rowData.dealer;
+                        } else {
+                            return window.currentUser;
+                        }
                     }
                 },
                 {
@@ -847,7 +880,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 0
+                        precision: 2
                     }
                 },
                 {
@@ -862,7 +895,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 0
+                        precision: 4
                     },
                     calculateCellValue: function (rowData) {
                         rowData.price = treasury.inflow_price(
@@ -871,7 +904,7 @@
                             rowData.sellPurchaseRateYield,
                             treasury.tenor(rowData.maturityDate, rowData.valueDate)
                         );
-                        return rowData.price;
+                        return Number(rowData.price);
                     },
                     allowEditing: false
                 },
@@ -881,7 +914,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 0
+                        precision: 2
                     }
                 },
                 {
@@ -890,7 +923,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 0
+                        precision: 2
                     },
                     calculateCellValue: function (rowData) {
                         rowData.intDividendReceivable = treasury.inflow_intDiv(
@@ -900,7 +933,7 @@
                             treasury.tenor(rowData.maturityDate, rowData.valueDate),
                             rowData.purchaseProceeds
                         );
-                        return rowData.intDividendReceivable;
+                        return Number(rowData.intDividendReceivable);
                     },
                     allowEditing: false
                 },
@@ -910,7 +943,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 0
+                        precision: 2
                     },
                     calculateCellValue: function (rowData) {
                         rowData.proceeds = treasury.inflow_proceeds(
@@ -919,7 +952,7 @@
                             rowData.sellPurchaseRateYield,
                             treasury.tenor(rowData.maturityDate, rowData.valueDate)
                         );
-                        return rowData.proceeds;
+                        return Number(rowData.proceeds);
                     },
                     allowEditing: false
                 },
@@ -1049,12 +1082,23 @@
             dataSource: [],
             columns: [
                 {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: "30px"
+                },
+                {
                     dataField: "dealer",
                     caption: "Dealer",
                     allowEditing: false,
                     calculateCellValue: function (rowData) {
-                        rowData.dealer = window.currentUser;
-                        return window.currentUser;
+                        if (rowData.dealer) {
+                            return rowData.dealer;
+                        } else {
+                            return window.currentUser;
+                        }
                     }
                 },
                 {
@@ -1139,7 +1183,7 @@
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 0
+                        precision: 4
                     },
                     calculateCellValue: function (rowData) {
                         rowData.price = treasury.outflow_price(
@@ -1148,7 +1192,7 @@
                             rowData.sellPurchaseRateYield,
                             treasury.tenor(rowData.maturityDate, rowData.valueDate)
                         );
-                        return rowData.price;
+                        return Number(rowData.price);
                     },
                     allowEditing: false
                 },
@@ -1167,7 +1211,7 @@
                             rowData.sellPurchaseRateYield,
                             treasury.tenor(rowData.maturityDate, rowData.valueDate)
                         );
-                        return rowData.intDividendReceivable;
+                        return Number(rowData.intDividendReceivable);
                     },
                     allowEditing: false
                 },
@@ -1186,7 +1230,7 @@
                             rowData.sellPurchaseRateYield,
                             treasury.tenor(rowData.maturityDate, rowData.valueDate)
                         );
-                        return rowData.proceeds;
+                        return Number(rowData.proceeds);
                     },
                     allowEditing: false
                 },

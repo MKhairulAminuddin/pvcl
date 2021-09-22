@@ -61,51 +61,39 @@ namespace xDC.Services
             PushNotification(notificationObj);
         }
         
-        public void NotifyViolateCutOff(int formId, string formType, string action)
+        public void NotifyNewApproveInflowFund(int formId, string formType)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var cutOffTime =
-                        db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.AMSD_IF_CutOffTime);
+                    var message =
+                        $"New AMSD Inflow Fund approved. <a href='{Common.PushNotification_FormUrlMap(formType)}{formId}'>Form #{formId}</a>";
+                    
+                    var adminList = db.AspNetRoles.FirstOrDefault(x => x.Name == Config.Acl.PowerUser);
 
-                    if (cutOffTime != null)
+                    if (adminList != null)
                     {
-                        var cutOffTimeParsed = TimeSpan.Parse(cutOffTime.Value);
-                        var isViolateCutOffTime = DateTime.Now.TimeOfDay > cutOffTimeParsed;
-
-                        if (isViolateCutOffTime)
+                        foreach (var admin in adminList.AspNetUsers)
                         {
-                            var message =
-                                $"{formType} Form {action} violated agreed Cut Off time ({cutOffTimeParsed}). <a href='{Common.PushNotification_FormUrlMap(formType)}{formId}'>Form #{formId}</a>";
-                            
-                            var adminList = db.AspNetRoles.FirstOrDefault(x => x.Name == Config.Acl.PowerUser);
-
-                            if (adminList != null)
+                            var notificationObj = new App_Notification()
                             {
+                                Title = message,
+                                ShortMessage = message,
+                                Message = message,
+                                NotificationIconClass = "fa fa-usd",
+                                NotificationType = "bg-green",
+                                CreatedOn = DateTime.Now,
+                                UserId = admin.UserName
+                            };
 
-                                foreach (var admin in adminList.AspNetUsers)
-                                {
-                                    var notificationObj = new App_Notification()
-                                    {
-                                        Title = $"{formType} Form {action} violated Cut Off time",
-                                        ShortMessage = message,
-                                        Message = message,
-                                        NotificationIconClass = "fa fa-clock-o",
-                                        NotificationType = "bg-orange",
-                                        CreatedOn = DateTime.Now,
-                                        UserId = admin.UserName
-                                    };
-
-                                    PushNotification(notificationObj);
-                                }
-                            }
-                            else
-                            {
-                                Logger.LogError("PushInflowFundAfterCutOffSubmissionNotification no admin email");
-                            }
+                            PushNotification(notificationObj);
                         }
+                        new MailService().NewApprovedInflowFund(formId, adminList.AspNetUsers.ToList());
+                    }
+                    else
+                    {
+                        Logger.LogError("PushInflowFundAfterCutOffSubmissionNotification no admin email");
                     }
                 }
             }

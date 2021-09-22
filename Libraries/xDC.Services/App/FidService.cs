@@ -44,10 +44,14 @@ namespace xDC.Services.App
             return counterPartyList;
         }
 
-        public static decimal Formula_OutflowProceeds()
+        public static List<EDW_FID_List> List_CounterPartyIssuerCombined(kashflowDBEntities db)
         {
-
-            return 0;
+            // check for same date and same currency exist
+            var counterPartyList = db.EDW_FID_List.Select(x => new EDW_FID_List
+            {
+                Name = x.Name,
+            }).Distinct().ToList();
+            return counterPartyList;
         }
     }
 }

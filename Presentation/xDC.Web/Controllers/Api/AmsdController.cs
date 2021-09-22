@@ -189,7 +189,6 @@ namespace xDC_Web.Controllers.Api
                     if (form.FormStatus == Common.FormStatus.PendingApproval)
                     {
                         new NotificationService().NotifyApprovalRequest(form.ApprovedBy, form.Id, form.PreparedBy, form.FormType);
-                        new NotificationService().NotifyViolateCutOff(form.Id, form.FormType, Common.CutOffViolationAction.Submission);
                         new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
                         new WorkflowService().SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
                     }
@@ -298,7 +297,6 @@ namespace xDC_Web.Controllers.Api
                         if (form.FormStatus == Common.FormStatus.PendingApproval)
                         {
                             new NotificationService().NotifyApprovalRequest(form.ApprovedBy, form.Id, form.PreparedBy, form.FormType);
-                            new NotificationService().NotifyViolateCutOff(form.Id, form.FormType, Common.CutOffViolationAction.Submission);
                             new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
                             new WorkflowService().SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
                         }
@@ -385,9 +383,13 @@ namespace xDC_Web.Controllers.Api
 
                             new NotificationService().NotifyApprovalResult(form.PreparedBy, form.Id, form.ApprovedBy, form.FormType, form.FormStatus);
                             new MailService().SendApprovalStatus(form.Id, form.FormType, form.FormStatus, form.PreparedBy, input.ApprovalNote);
-                            new NotificationService().NotifyViolateCutOff(form.Id, form.FormType, Common.CutOffViolationAction.Approval);
                             new WorkflowService().ApprovalResponse(form.Id, form.FormStatus, input.ApprovalNote, form.FormType, form.PreparedBy, form.ApprovedBy);
 
+                            if (form.FormStatus == Common.FormStatus.Approved)
+                            {
+                                new NotificationService().NotifyNewApproveInflowFund(form.Id, form.FormType);
+                            }
+                            
                             return Request.CreateResponse(HttpStatusCode.Accepted, input.FormId);
                         }
                         else

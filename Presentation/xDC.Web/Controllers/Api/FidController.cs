@@ -587,16 +587,7 @@ namespace xDC_Web.Controllers.Api
                             ProductType = x.AssetType
                         })
                         .ToList();
-
-                    /*foreach (var item in result)
-                    {
-                        var rate = (double)item.SellPurchaseRateYield / 100;
-                        var tenor = (double)item.HoldingDayTenor / 365;
-
-                        item.IntDividendReceivable = item.Principal * tenor * rate;
-                        item. = item.Principal + item.IntProfitReceivable;
-                    }*/
-
+                    
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
             }
