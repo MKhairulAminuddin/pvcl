@@ -323,62 +323,62 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.Equity.Any())
                     {
-                        NewTsObjMapping(inputs.Equity, newFormHeader.Id, Common.TsItemCategory.Equity, ref newTrades);
+                        NewTsObjMapping(inputs.Equity, newFormHeader.Id, Common.TsItemCategory.Equity, inputs.Currency, ref newTrades);
                     }
 
                     if (inputs.Bond.Any())
                     {
-                        NewTsObjMapping(inputs.Bond, newFormHeader.Id, Common.TsItemCategory.Bond, ref newTrades);
+                        NewTsObjMapping(inputs.Bond, newFormHeader.Id, Common.TsItemCategory.Bond, inputs.Currency, ref newTrades);
                     }
 
                     if (inputs.Cp.Any())
                     {
-                        NewTsObjMapping(inputs.Cp, newFormHeader.Id, Common.TsItemCategory.Cp, ref newTrades);
+                        NewTsObjMapping(inputs.Cp, newFormHeader.Id, Common.TsItemCategory.Cp, inputs.Currency, ref newTrades);
                     }
 
                     if (inputs.NotesPaper.Any())
                     {
-                        NewTsObjMapping(inputs.NotesPaper, newFormHeader.Id, Common.TsItemCategory.NotesPapers, ref newTrades);
+                        NewTsObjMapping(inputs.NotesPaper, newFormHeader.Id, Common.TsItemCategory.NotesPapers, inputs.Currency, ref newTrades);
                     }
 
                     if (inputs.Repo.Any())
                     {
-                        NewTsObjMapping(inputs.Repo, newFormHeader.Id, Common.TsItemCategory.Repo, ref newTrades);
+                        NewTsObjMapping(inputs.Repo, newFormHeader.Id, Common.TsItemCategory.Repo, inputs.Currency, ref newTrades);
                     }
 
                     if (inputs.Coupon.Any())
                     {
-                        NewTsObjMapping(inputs.Coupon, newFormHeader.Id, Common.TsItemCategory.Coupon, ref newTrades);
+                        NewTsObjMapping(inputs.Coupon, newFormHeader.Id, Common.TsItemCategory.Coupon, inputs.Currency, ref newTrades);
                     }
 
                     if (inputs.Fees.Any())
                     {
-                        NewTsObjMapping(inputs.Fees, newFormHeader.Id, Common.TsItemCategory.Fees, ref newTrades);
+                        NewTsObjMapping(inputs.Fees, newFormHeader.Id, Common.TsItemCategory.Fees, inputs.Currency, ref newTrades);
                     }
 
                     if (inputs.Mtm.Any())
                     {
-                        NewTsObjMapping(inputs.Mtm, newFormHeader.Id, Common.TsItemCategory.Mtm, ref newTrades);
+                        NewTsObjMapping(inputs.Mtm, newFormHeader.Id, Common.TsItemCategory.Mtm, inputs.Currency, ref newTrades);
                     }
 
                     if (inputs.FxSettlement.Any())
                     {
-                        NewTsObjMapping(inputs.FxSettlement, newFormHeader.Id, Common.TsItemCategory.Fx, ref newTrades);
+                        NewTsObjMapping(inputs.FxSettlement, newFormHeader.Id, Common.TsItemCategory.Fx, inputs.Currency, ref newTrades);
                     }
 
                     if (inputs.ContributionCredited.Any())
                     {
-                        NewTsObjMapping(inputs.ContributionCredited, newFormHeader.Id, Common.TsItemCategory.Cn, ref newTrades);
+                        NewTsObjMapping(inputs.ContributionCredited, newFormHeader.Id, Common.TsItemCategory.Cn, inputs.Currency, ref newTrades);
                     }
 
                     if (inputs.Altid.Any())
                     {
-                        NewTsObjMapping(inputs.Altid, newFormHeader.Id, Common.TsItemCategory.Altid, ref newTrades);
+                        NewTsObjMapping(inputs.Altid, newFormHeader.Id, Common.TsItemCategory.Altid, inputs.Currency, ref newTrades);
                     }
 
                     if (inputs.Others.Any())
                     {
-                        NewTsObjMapping(inputs.Others, newFormHeader.Id, Common.TsItemCategory.Others, ref newTrades);
+                        NewTsObjMapping(inputs.Others, newFormHeader.Id, Common.TsItemCategory.Others, inputs.Currency, ref newTrades);
                     }
                     
                     db.ISSD_TradeSettlement.AddRange(newTrades);
@@ -544,7 +544,7 @@ namespace xDC_Web.Controllers.Api
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Repo));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Repo, inputs.Currency));
                             }
                         }
                     }
@@ -571,7 +571,7 @@ namespace xDC_Web.Controllers.Api
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Coupon));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Coupon, inputs.Currency));
                             }
                         }
                     }
@@ -601,7 +601,7 @@ namespace xDC_Web.Controllers.Api
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Mtm));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Mtm, inputs.Currency));
                             }
                         }
                     }
@@ -631,7 +631,7 @@ namespace xDC_Web.Controllers.Api
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Fx));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Fx, inputs.Currency));
                             }
                         }
                     }
@@ -660,7 +660,7 @@ namespace xDC_Web.Controllers.Api
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Altid));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Altid, inputs.Currency));
                             }
                         }
                     }
@@ -689,7 +689,7 @@ namespace xDC_Web.Controllers.Api
                                     
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Cn));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Cn, inputs.Currency));
                             }
                         }
                     }
@@ -719,7 +719,7 @@ namespace xDC_Web.Controllers.Api
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Fees));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Fees, inputs.Currency));
                             }
                         }
                     }
@@ -750,7 +750,7 @@ namespace xDC_Web.Controllers.Api
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Others));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Others, inputs.Currency));
                             }
                         }
                     }
@@ -1318,7 +1318,7 @@ namespace xDC_Web.Controllers.Api
         
         #endregion
 
-        private void NewTsObjMapping(List<Trades> trades, int formId, string category,ref List<ISSD_TradeSettlement> tsItemObj)
+        private void NewTsObjMapping(List<Trades> trades, int formId, string category, string currency, ref List<ISSD_TradeSettlement> tsItemObj)
         {
             foreach (var item in trades)
             {
@@ -1342,10 +1342,10 @@ namespace xDC_Web.Controllers.Api
                     InflowAmount = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg),
                     OutflowAmount = (item.AmountMinus + item.Purchase + item.SecondLeg),
 
-                    InflowTo = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg) > 0
+                    InflowTo = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg) > 0 && currency == "MYR"
                         ? "RENTAS"
                         : null,
-                    OutflowFrom = (item.AmountMinus + item.Purchase + item.SecondLeg) > 0
+                    OutflowFrom = (item.AmountMinus + item.Purchase + item.SecondLeg) > 0 && currency == "MYR"
                         ? "RENTAS"
                         : null,
                     AssignedBy = null,
@@ -1354,7 +1354,7 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
-        private ISSD_TradeSettlement NewTsObjMapping(Trades item, int formId, string category)
+        private ISSD_TradeSettlement NewTsObjMapping(Trades item, int formId, string category, string currency)
         {
             return new ISSD_TradeSettlement
                 {
@@ -1376,10 +1376,10 @@ namespace xDC_Web.Controllers.Api
                     InflowAmount = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg),
                     OutflowAmount = (item.AmountMinus + item.Purchase + item.SecondLeg),
 
-                    InflowTo = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg) > 0
+                    InflowTo = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg) > 0 && currency == "MYR"
                         ? "RENTAS"
                         : null,
-                    OutflowFrom = (item.AmountMinus + item.Purchase + item.SecondLeg) > 0
+                    OutflowFrom = (item.AmountMinus + item.Purchase + item.SecondLeg) > 0 && currency == "MYR"
                         ? "RENTAS"
                         : null,
                     AssignedBy = null,
