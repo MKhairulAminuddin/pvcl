@@ -1195,11 +1195,20 @@ namespace xDC_Web.Controllers.Api
                         {
                             SettlementDate = x.Key.SettlementDate.Value,
                             Currency = x.Key.Currency,
-                            
+
+                            Equity = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Equity) > 0,
+                            Bond = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Bond) > 0,
+                            Cp = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Cp) > 0,
+                            NotesPapers = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.NotesPapers) > 0,
+                            Repo = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Repo) > 0,
+                            Coupon = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Coupon) > 0,
                             Fees = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fees) > 0,
+                            Mtm = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Mtm) > 0,
+                            Fx = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fx) > 0,
+                            Contribution = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Cn) > 0,
                             Altid = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Altid) > 0,
                             Others = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others) > 0,
-                            
+
                             CountPendingAltid = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Altid
                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0)),
                             CountPendingOthers = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others
