@@ -78,7 +78,6 @@ namespace xDC_Web.Extension.DocGenerator
             workbook.BeginUpdate();
             try
             {
-                #region Sheet 1
 
                 var sheet = workbook.Worksheets[0];
 
@@ -86,7 +85,9 @@ namespace xDC_Web.Extension.DocGenerator
                     ? dataItem.SelectedDate.Value.ToString("dd/MM/yyyy")
                     : null;
 
-                #region 1 - IF: OB Rentas, MMA, RHB
+                #region Sheet 1 - Summary Cashflow
+                
+                #region IF: OB Rentas, MMA, RHB
 
                 sheet["J4"].Value = dataItem.RentasOb;
                 sheet["G8"].Value = dataItem.MmaOb;
@@ -94,7 +95,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                 #endregion
 
-                #region 2 - IF: Money Market
+                #region IF: Money Market
 
                 sheet["E13"].Value = dataItem.InflowDepoPrincipal;
                 sheet["E14"].Value = dataItem.InflowDepoInterest;
@@ -102,40 +103,43 @@ namespace xDC_Web.Extension.DocGenerator
 
                 #endregion
 
-                #region 3 - IF: Fixed Income
+                #region IF: Fixed Income
 
-                var currentRowIndex = 18;
+                sheet["E18"].Value = dataItem.IF_FixedIncome_Mgs;
+                sheet["E19"].Value = dataItem.IF_FixedIncome_NonMgs;
 
-                IterateFixedIncomeItem(dataItem.IF_Bond, Common.TsItemCategory.Bond, 18, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.IF_CP, Common.TsItemCategory.Cp, 18, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.IF_NP, Common.TsItemCategory.NotesPapers, 18, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.IF_REPO, Common.TsItemCategory.Repo, 18, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.IF_Coupon, Common.TsItemCategory.Coupon, 18, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.IF_Fees, Common.TsItemCategory.Fees, 18, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.IF_Mtm, Common.TsItemCategory.Mtm, 18, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.IF_Fx, Common.TsItemCategory.Fx, 18, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.IF_Cn, Common.TsItemCategory.Cn, 18, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.IF_Altid, Common.TsItemCategory.Altid, 18, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.IF_Others, Common.TsItemCategory.Others, 18, ref sheet, ref currentRowIndex);
+                #endregion
 
-                if (currentRowIndex == 18)
+                #region IF: Equity
+
+                sheet["E23"].Value = dataItem.IF_Equity;
+
+                #endregion
+
+                #region IF: Others
+
+                var startRowIndex = 27;
+                var currentRowIndex = 27;
+
+                IterateFixedIncomeItem(dataItem.IF_Others_CP, Common.TsItemCategory.Cp, startRowIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_Others_NP, Common.TsItemCategory.NotesPapers, startRowIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_Others_REPO, Common.TsItemCategory.Repo, startRowIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_Others_Fees, Common.TsItemCategory.Fees, startRowIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_Others_Mtm, Common.TsItemCategory.Mtm, startRowIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_Others_Fx, Common.TsItemCategory.Fx, startRowIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_Others_Cn, Common.TsItemCategory.Cn, startRowIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_Others_Altid, Common.TsItemCategory.Altid, startRowIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.IF_Others_Others, Common.TsItemCategory.Others, startRowIndex, ref sheet, ref currentRowIndex);
+
+                if (currentRowIndex == startRowIndex)
                 {
                     currentRowIndex += 1;
                 }
-                sheet["G" + currentRowIndex].Value = dataItem.IF_TotalFixedIncome;
+                sheet["G" + currentRowIndex].Value = dataItem.IF_Others_Total;
 
                 #endregion
 
-                #region 4 - IF: Equity
-
-                currentRowIndex += 3;
-                sheet["E" + currentRowIndex].Value = dataItem.IF_Equity;
-                currentRowIndex += 1;
-                sheet["G" + currentRowIndex].Value = dataItem.IF_Equity;
-
-                #endregion
-
-                #region 5 - IF: Net
+                #region IF: Net
 
                 currentRowIndex += 2;
                 sheet["G" + currentRowIndex].Value = dataItem.IF_Net;
@@ -143,7 +147,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                 #endregion
 
-                #region 6 - OF: Money Market
+                #region OF: Money Market
 
                 currentRowIndex += 10;
                 sheet["E" + currentRowIndex].Value = dataItem.OF_MM_Rollover;
@@ -154,41 +158,48 @@ namespace xDC_Web.Extension.DocGenerator
 
                 #endregion
 
-                #region 7 - OF: Fixed Income
+                #region OF: Fixed Income
 
-                int startIndex = currentRowIndex + 3;
                 currentRowIndex += 3;
-
-                IterateFixedIncomeItem(dataItem.OF_Bond, Common.TsItemCategory.Bond, startIndex, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.OF_CP, Common.TsItemCategory.Cp, startIndex, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.OF_NP, Common.TsItemCategory.NotesPapers, startIndex, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.OF_REPO, Common.TsItemCategory.Repo, startIndex, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.OF_Coupon, Common.TsItemCategory.Coupon, startIndex, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.OF_Fees, Common.TsItemCategory.Fees, startIndex, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.OF_Mtm, Common.TsItemCategory.Mtm, startIndex, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.OF_Fx, Common.TsItemCategory.Fx, startIndex, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.OF_Cn, Common.TsItemCategory.Cn, startIndex, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.OF_Altid, Common.TsItemCategory.Altid, startIndex, ref sheet, ref currentRowIndex);
-                IterateFixedIncomeItem(dataItem.OF_Others, Common.TsItemCategory.Others, startIndex, ref sheet, ref currentRowIndex);
-
-                if (currentRowIndex == startIndex)
-                {
-                    currentRowIndex += 1;
-                }
-                sheet["G" + currentRowIndex].Value = dataItem.OF_TotalFixedIncome;
+                sheet["E" + currentRowIndex].Value = dataItem.OF_FixedIncome_Mgs;
+                currentRowIndex += 1;
+                sheet["E" + currentRowIndex].Value = dataItem.OF_FixedIncome_NonMgs;
 
                 #endregion
 
-                #region 8 - OF: Equity
+                #region OF: Equity
 
-                currentRowIndex += 3;
+                currentRowIndex += 4;
                 sheet["E" + currentRowIndex].Value = dataItem.OF_Equity;
                 currentRowIndex += 1;
                 sheet["G" + currentRowIndex].Value = dataItem.OF_Equity;
 
                 #endregion
 
-                #region 9 - OF: Net
+                #region OF: Others
+
+                int startIndex = currentRowIndex + 3;
+                currentRowIndex += 3;
+
+                IterateFixedIncomeItem(dataItem.OF_Others_CP, Common.TsItemCategory.Cp, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_Others_NP, Common.TsItemCategory.NotesPapers, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_Others_REPO, Common.TsItemCategory.Repo, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_Others_Fees, Common.TsItemCategory.Fees, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_Others_Mtm, Common.TsItemCategory.Mtm, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_Others_Fx, Common.TsItemCategory.Fx, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_Others_Cn, Common.TsItemCategory.Cn, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_Others_Altid, Common.TsItemCategory.Altid, startIndex, ref sheet, ref currentRowIndex);
+                IterateFixedIncomeItem(dataItem.OF_Others_Others, Common.TsItemCategory.Others, startIndex, ref sheet, ref currentRowIndex);
+
+                if (currentRowIndex == startIndex)
+                {
+                    currentRowIndex += 1;
+                }
+                sheet["G" + currentRowIndex].Value = dataItem.OF_Others_Total;
+
+                #endregion
+
+                #region OF: Net
 
                 currentRowIndex += 2;
                 sheet["G" + currentRowIndex].Value = dataItem.OF_Net;
@@ -196,7 +207,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                 #endregion
 
-                #region 10 - Rentas + Inflow - Outflow
+                #region TOTAL - Rentas + Inflow - Outflow
 
                 currentRowIndex += 3;
                 sheet["J" + currentRowIndex].Value = dataItem.RentasOb + dataItem.IF_Net - dataItem.OF_Net;
@@ -350,15 +361,15 @@ namespace xDC_Web.Extension.DocGenerator
 
             var ifTotalPrincipal = db.FID_Treasury_Deposit
                 .Where(x => treasuryApprovedForms.Contains(x.FormId) && x.CashflowType == Common.Cashflow.Inflow)
-                .GroupBy(x => x.CashflowType)
-                .Select(x => x.Sum(y => y.Principal))
-                .FirstOrDefault();
+                .Select(x => x.Principal)
+                .DefaultIfEmpty(0)
+                .Sum();
 
             var ifTotalInterest = db.FID_Treasury_Deposit
                 .Where(x => treasuryApprovedForms.Contains(x.FormId) && x.CashflowType == Common.Cashflow.Inflow)
-                .GroupBy(x => x.CashflowType)
-                .Select(x => x.Sum(y => y.IntProfitReceivable))
-                .FirstOrDefault();
+                .Select(x => x.IntProfitReceivable)
+                .DefaultIfEmpty(0)
+                .Sum();
 
             var inflowTotalDepoPrincipalInterest = ifTotalPrincipal + ifTotalInterest;
 
@@ -376,19 +387,36 @@ namespace xDC_Web.Extension.DocGenerator
                 .Select(x => x.Id)
                 .ToList();
 
-            dataObj.IF_Bond = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Bond);
-            dataObj.IF_CP = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cp);
-            dataObj.IF_NP = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.NotesPapers);
-            dataObj.IF_REPO = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Repo);
-            dataObj.IF_Coupon = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Coupon);
-            dataObj.IF_Fees = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Fees);
-            dataObj.IF_Mtm = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Mtm);
-            dataObj.IF_Fx = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Fx);
-            dataObj.IF_Cn = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cn);
-            dataObj.IF_Altid = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Altid);
-            dataObj.IF_Others = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Others);
+            var couponBondMgs = db.ISSD_TradeSettlement
+                .Where(x => approvedTsForms.Contains(x.FormId)
+                            && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Bond)
+                            && (x.InstrumentCode.Contains("MGS") || x.InstrumentCode.Contains("MGII") || x.InstrumentCode.Contains("GII"))
+                            && (x.InflowAmount) > 0)
+                .Select(x => x.InflowAmount)
+                .DefaultIfEmpty(0)
+                .Sum();
+            
+            dataObj.IF_FixedIncome_Mgs = couponBondMgs;
 
-            dataObj.IF_TotalFixedIncome = TradeSettlementSvc.GetTotalInflowWithoutEquity(db, approvedTsForms);
+            var couponNonMgs = db.ISSD_TradeSettlement
+                .Where(x => approvedTsForms.Contains(x.FormId)
+                            && x.InstrumentType == Common.TsItemCategory.Coupon
+                            && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
+                            && (x.InflowAmount) > 0)
+                .Select(x => x.InflowAmount)
+                .DefaultIfEmpty(0)
+                .Sum();
+            
+            var treasuryMmIf = db.FID_Treasury_MMI
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
+                            && x.CashflowType == Common.Cashflow.Inflow)
+                .Select(x => x.Proceeds)
+                .DefaultIfEmpty(0)
+                .Sum();
+
+            dataObj.IF_FixedIncome_NonMgs = couponNonMgs + treasuryMmIf;
+
+            dataObj.IF_FixedIncome_Total = dataObj.IF_FixedIncome_Mgs + dataObj.IF_FixedIncome_NonMgs;
 
             #endregion
 
@@ -398,10 +426,30 @@ namespace xDC_Web.Extension.DocGenerator
 
             #endregion
 
+            #region 5 - IF Others
+            
+            dataObj.IF_Others_CP = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cp);
+            dataObj.IF_Others_NP = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.NotesPapers);
+            dataObj.IF_Others_REPO = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Repo);
+            dataObj.IF_Others_Fees = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Fees);
+            dataObj.IF_Others_Mtm = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Mtm);
+            dataObj.IF_Others_Fx = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Fx);
+            dataObj.IF_Others_Cn = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cn);
+            dataObj.IF_Others_Altid = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Altid);
+            dataObj.IF_Others_Others = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Others);
+
+            dataObj.IF_Others_Total = dataObj.IF_Others_CP + dataObj.IF_Others_NP + dataObj.IF_Others_REPO + dataObj.IF_Others_Fees +
+                                           dataObj.IF_Others_Mtm + dataObj.IF_Others_Fx + dataObj.IF_Others_Cn + dataObj.IF_Others_Altid +
+                                           dataObj.IF_Others_Others;
+
+            #endregion
+
             #region 5 - IF Net
 
-            dataObj.IF_Net = dataObj.IF_Equity + dataObj.IF_TotalFixedIncome +
-                             dataObj.InflowTotalDepoPrincipalInterest + dataObj.TotalRhb + dataObj.MmaOb;
+            dataObj.IF_Net = dataObj.TotalRhb + dataObj.MmaOb +
+                             dataObj.InflowTotalDepoPrincipalInterest +
+                             dataObj.IF_Equity + dataObj.IF_FixedIncome_Total +
+                             dataObj.IF_Others_Total;
 
             #endregion
 
@@ -411,35 +459,53 @@ namespace xDC_Web.Extension.DocGenerator
                 .Where(x => treasuryApprovedForms.Contains(x.FormId) 
                             && x.CashflowType == Common.Cashflow.Outflow
                             && x.Notes == "New")
-                .GroupBy(x => x.CashflowType)
-                .Select(x => x.Sum(y => y.Principal))
-                .FirstOrDefault();
+                .Select(x => x.Principal)
+                .DefaultIfEmpty(0)
+                .Sum();
 
             dataObj.OF_MM_Rollover = db.FID_Treasury_Deposit
                 .Where(x => treasuryApprovedForms.Contains(x.FormId) 
                             && x.CashflowType == Common.Cashflow.Outflow
                             && x.Notes == "r/o p+i")
-                .GroupBy(x => x.CashflowType)
-                .Select(x => x.Sum(y => y.IntProfitReceivable))
-                .FirstOrDefault();
+                .Select(x => x.IntProfitReceivable)
+                .DefaultIfEmpty(0)
+                .Sum();
 
             #endregion
 
             #region 7 - OF Fixed Income
 
-            dataObj.OF_Bond = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Bond);
-            dataObj.OF_CP = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cp);
-            dataObj.OF_NP = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.NotesPapers);
-            dataObj.OF_REPO = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Repo);
-            dataObj.OF_Coupon = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Coupon);
-            dataObj.OF_Fees = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Fees);
-            dataObj.OF_Mtm = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Mtm);
-            dataObj.OF_Fx = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Fx);
-            dataObj.OF_Cn = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cn);
-            dataObj.OF_Altid = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Altid);
-            dataObj.OF_Others = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Others);
 
-            dataObj.OF_TotalFixedIncome = TradeSettlementSvc.GetTotalOutflowWithoutEquity(db, approvedTsForms);
+            var of_couponBondMgs = db.ISSD_TradeSettlement
+                .Where(x => approvedTsForms.Contains(x.FormId)
+                            && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Bond)
+                            && (x.InstrumentCode.Contains("MGS") || x.InstrumentCode.Contains("MGII") || x.InstrumentCode.Contains("GII"))
+                            && (x.OutflowAmount) > 0)
+                .Select(x => x.OutflowAmount)
+                .DefaultIfEmpty(0)
+                .Sum();
+
+            dataObj.OF_FixedIncome_Mgs = of_couponBondMgs;
+
+            var of_couponBondNonMgs = db.ISSD_TradeSettlement
+                .Where(x => approvedTsForms.Contains(x.FormId)
+                            && x.InstrumentType == Common.TsItemCategory.Coupon
+                            && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
+                            && (x.InflowAmount) > 0)
+                .Select(x => x.InflowAmount)
+                .DefaultIfEmpty(0)
+                .Sum();
+
+            var treasuryMmOf = db.FID_Treasury_MMI
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
+                            && x.CashflowType == Common.Cashflow.Outflow)
+                .Select(x => x.Proceeds)
+                .DefaultIfEmpty(0)
+                .Sum();
+
+            dataObj.OF_FixedIncome_NonMgs = of_couponBondNonMgs + treasuryMmOf;
+
+            dataObj.OF_FixedIncome_Total = dataObj.OF_FixedIncome_Mgs + dataObj.OF_FixedIncome_NonMgs;
 
             #endregion
 
@@ -449,17 +515,38 @@ namespace xDC_Web.Extension.DocGenerator
 
             #endregion
 
-            #region 9 - OF Net
+            #region OF Others
+            
+            dataObj.OF_Others_CP = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cp);
+            dataObj.OF_Others_NP = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.NotesPapers);
+            dataObj.OF_Others_REPO = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Repo);
+            dataObj.OF_Others_Fees = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Fees);
+            dataObj.OF_Others_Mtm = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Mtm);
+            dataObj.OF_Others_Fx = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Fx);
+            dataObj.OF_Others_Cn = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cn);
+            dataObj.OF_Others_Altid = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Altid);
+            dataObj.OF_Others_Others = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Others);
 
-            dataObj.OF_Net = dataObj.OF_Equity + dataObj.OF_TotalFixedIncome +
-                             dataObj.OF_MM_NewPlacement + dataObj.OF_MM_Rollover;
+            dataObj.OF_Others_Total = dataObj.OF_Others_CP + dataObj.OF_Others_NP + dataObj.OF_Others_REPO + dataObj.OF_Others_Fees +
+                                      dataObj.OF_Others_Mtm + dataObj.OF_Others_Fx + dataObj.OF_Others_Cn + dataObj.OF_Others_Altid +
+                                      dataObj.OF_Others_Others;
 
             #endregion
 
-            #region 10 - MMI Inflow
+            #region 9 - OF Net
+
+            dataObj.OF_Net = dataObj.OF_Equity + dataObj.OF_FixedIncome_Total +
+                             dataObj.OF_MM_NewPlacement + dataObj.OF_MM_Rollover +
+                             dataObj.OF_Others_Total;
+
+            #endregion
+
+            #region Sheet 2 - Money Market
+
+            #region IF: Deposit Maturity
 
             var ifInflowItems = db.FID_Treasury_Deposit
-                .Where(x => treasuryApprovedForms.Contains(x.FormId) 
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Inflow)
                 .Select(x => new MYR_DealCutOffData_Mmi
                 {
@@ -480,10 +567,10 @@ namespace xDC_Web.Extension.DocGenerator
 
             #endregion
 
-            #region 11 - MMI OF Rollover & New Placement
+            #region OF Rollover & New Placement
 
             var ofInflowRolloverItems = db.FID_Treasury_Deposit
-                .Where(x => treasuryApprovedForms.Contains(x.FormId) 
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Outflow
                             && x.Notes == "r/o P+I")
                 .Select(x => new MYR_DealCutOffData_Mmi
@@ -525,6 +612,11 @@ namespace xDC_Web.Extension.DocGenerator
 
             #endregion
 
+            #endregion
+
+
+            #region Sheet 3 - Others
+
             #region Others Tab - IF - MGS & GII - Sales, maturity or coupon
 
             var productTypes = new List<string>()
@@ -533,49 +625,25 @@ namespace xDC_Web.Extension.DocGenerator
             };
             var othersTab_if_mgs = new List<MYR_DealCutOffData_OthersTab_Item1>();
 
-            // Sales - from FID Treasury IF MMI tab
-            var ifSales = db.FID_Treasury_MMI
-                .Where(x => treasuryApprovedForms.Contains(x.FormId) 
-                            && x.CashflowType == Common.Cashflow.Inflow
-                            && !productTypes.Contains(x.ProductType))
-                .Select(x => new MYR_DealCutOffData_OthersTab_Item1
-                {
-                    Bank = x.Issuer,
-                    StockCode = x.CertNoStockCode,
-                    TradeDate = x.ValueDate,
-                    SettlementDate = x.MaturityDate,
-                    NominalAmount = x.Nominal,
-                    Price = x.Price,
-                    Rate = (double)x.SellPurchaseRateYield,
-                    Proceed = x.Proceeds,
-                    Notes = x.ProductType
-                })
-                .ToList();
-
-            // coupon - from ISSD TS coupon
             var ifCoupon = db.ISSD_TradeSettlement
-                .Where(x => approvedTsForms.Contains(x.FormId) 
-                            && x.InstrumentType == Common.TsItemCategory.Coupon
-                            && (x.InstrumentCode.Contains("MGS") || x.InstrumentCode.Contains("MGII"))
-                            && (x.AmountPlus + x.Maturity + x.Sales) > 0)
+                .Where(x => approvedTsForms.Contains(x.FormId)
+                            && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Bond)
+                            && (x.InstrumentCode.Contains("MGS") || x.InstrumentCode.Contains("MGII") || x.InstrumentCode.Contains("GII"))
+                            && (x.InflowAmount) > 0)
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item1
                 {
-                    Bank = "MGS Coupon",
+                    Bank = x.InstrumentCode,
                     StockCode = x.StockCode,
                     TradeDate = null,
                     SettlementDate = dataObj.SelectedDate,
                     NominalAmount = null,
                     Price = null,
                     Rate = null,
-                    Proceed = (x.AmountPlus + x.Maturity + x.Sales),
-                    Notes = x.InstrumentCode
+                    Proceed = x.InflowAmount,
+                    Notes = x.InstrumentType
                 })
                 .ToList();
-
-            if (ifSales.Any())
-            {
-                othersTab_if_mgs.AddRange(ifSales);
-            }
+            
             if (ifCoupon.Any())
             {
                 othersTab_if_mgs.AddRange(ifCoupon);
@@ -589,11 +657,28 @@ namespace xDC_Web.Extension.DocGenerator
 
             var othersTab_if_pds = new List<MYR_DealCutOffData_OthersTab_Item1>();
 
-            // Sales - from FID Treasury IF MMI tab
+            var othersTab_pds_itemCoupon = db.ISSD_TradeSettlement
+                .Where(x => approvedTsForms.Contains(x.FormId)
+                            && x.InstrumentType == Common.TsItemCategory.Coupon
+                            && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
+                            && (x.InflowAmount) > 0)
+                .Select(x => new MYR_DealCutOffData_OthersTab_Item1
+                {
+                    Bank = x.InstrumentCode,
+                    StockCode = x.StockCode,
+                    TradeDate = null,
+                    SettlementDate = dataObj.SelectedDate,
+                    NominalAmount = null,
+                    Price = null,
+                    Rate = null,
+                    Proceed = x.AmountPlus,
+                    Notes = x.Remarks
+                })
+                .ToList();
+
             var othersTab_pds_item = db.FID_Treasury_MMI
-                .Where(x => treasuryApprovedForms.Contains(x.FormId) 
-                            && x.CashflowType == Common.Cashflow.Inflow
-                            && productTypes.Contains(x.ProductType))
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
+                            && x.CashflowType == Common.Cashflow.Inflow)
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item1
                 {
                     Bank = x.Issuer,
@@ -607,28 +692,7 @@ namespace xDC_Web.Extension.DocGenerator
                     Notes = x.ProductType
                 })
                 .ToList();
-
-            // coupon - from ISSD TS coupon
-            var othersTab_pds_itemCoupon = db.ISSD_TradeSettlement
-                .Where(x => approvedTsForms.Contains(x.FormId)
-                            && x.InstrumentType == Common.TsItemCategory.Coupon
-                            && !x.InstrumentCode.Contains("MGS") 
-                            && !x.InstrumentCode.Contains("MGII")
-                            && (x.AmountPlus + x.Maturity + x.Sales) > 0)
-                .Select(x => new MYR_DealCutOffData_OthersTab_Item1
-                {
-                    Bank = "PDS Coupon",
-                    StockCode = x.StockCode,
-                    TradeDate = null,
-                    SettlementDate = dataObj.SelectedDate,
-                    NominalAmount = null,
-                    Price = null,
-                    Rate = null,
-                    Proceed = x.AmountPlus,
-                    Notes = x.InstrumentCode
-                })
-                .ToList();
-
+            
             if (othersTab_pds_item.Any())
             {
                 othersTab_if_pds.AddRange(othersTab_pds_item);
@@ -646,17 +710,15 @@ namespace xDC_Web.Extension.DocGenerator
             #region Others Tab - IF - Others
 
             var othersTab_if_others = new List<MYR_DealCutOffData_OthersTab_Item2>();
-
-            // Sales - from FID Treasury IF MMI tab
+            
             var othersTab_if_others_item = db.ISSD_TradeSettlement
                 .Where(x => approvedTsForms.Contains(x.FormId)
-                            && x.InstrumentType != Common.TsItemCategory.Coupon
-                            && x.InstrumentType != Common.TsItemCategory.Equity
-                            && (x.AmountPlus + x.FirstLeg + x.Maturity + x.Sales) > 0)
+                            && (x.InstrumentType != Common.TsItemCategory.Coupon && x.InstrumentType != Common.TsItemCategory.Equity && x.InstrumentType != Common.TsItemCategory.Bond)
+                            && x.InflowAmount > 0)
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item2
                 {
                     Items = x.InstrumentCode,
-                    Amount = (x.AmountPlus + x.FirstLeg + x.Maturity + x.Sales),
+                    Amount = x.InflowAmount,
                     Notes = x.InstrumentType
                 })
                 .ToList();
@@ -671,52 +733,28 @@ namespace xDC_Web.Extension.DocGenerator
             #endregion
 
             #region Others Tab - OF - MGS/GII/Quasi Bond Purchase 
-            
+
             var othersTab_of_mgs = new List<MYR_DealCutOffData_OthersTab_Item1>();
 
-            // Sales - from FID Treasury IF MMI tab
-            var othersTab_of_mgs_itemSales = db.FID_Treasury_MMI
-                .Where(x => treasuryApprovedForms.Contains(x.FormId)
-                            && x.CashflowType == Common.Cashflow.Outflow
-                            && !productTypes.Contains(x.ProductType))
-                .Select(x => new MYR_DealCutOffData_OthersTab_Item1
-                {
-                    Bank = x.Issuer,
-                    StockCode = x.CertNoStockCode,
-                    TradeDate = x.ValueDate,
-                    SettlementDate = x.MaturityDate,
-                    NominalAmount = x.Nominal,
-                    Price = x.Price,
-                    Rate = (double)x.SellPurchaseRateYield,
-                    Proceed = x.Proceeds,
-                    Notes = x.ProductType
-                })
-                .ToList();
-
-            // coupon - from ISSD TS bond
             var othersTab_of_mgs_itemBond = db.ISSD_TradeSettlement
                 .Where(x => approvedTsForms.Contains(x.FormId)
-                            && x.InstrumentType == Common.TsItemCategory.Bond
-                            && (x.InstrumentCode.Contains("MGS") || x.InstrumentCode.Contains("MGII"))
-                            && (x.AmountMinus + x.Purchase) > 0)
+                            && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Bond)
+                            && (x.InstrumentCode.Contains("MGS") || x.InstrumentCode.Contains("MGII") || x.InstrumentCode.Contains("GII"))
+                            && (x.OutflowAmount) > 0)
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item1
                 {
-                    Bank = "MGS Bond",
+                    Bank = x.InstrumentCode,
                     StockCode = x.StockCode,
                     TradeDate = null,
                     SettlementDate = dataObj.SelectedDate,
                     NominalAmount = null,
                     Price = null,
                     Rate = null,
-                    Proceed = (x.AmountMinus + x.Purchase),
-                    Notes = x.InstrumentCode
+                    Proceed = x.OutflowAmount,
+                    Notes = x.InstrumentType
                 })
                 .ToList();
-
-            if (othersTab_of_mgs_itemSales.Any())
-            {
-                othersTab_of_mgs.AddRange(othersTab_of_mgs_itemSales);
-            }
+            
             if (othersTab_of_mgs_itemBond.Any())
             {
                 othersTab_of_mgs.AddRange(othersTab_of_mgs_itemBond);
@@ -753,18 +791,19 @@ namespace xDC_Web.Extension.DocGenerator
             var othersTab_of_pds_itemRepo = db.ISSD_TradeSettlement
                 .Where(x => approvedTsForms.Contains(x.FormId)
                             && x.InstrumentType == Common.TsItemCategory.Repo
-                            && (x.AmountMinus + x.Purchase + x.SecondLeg) > 0)
+                            && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
+                            && (x.OutflowAmount) > 0)
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item1
                 {
-                    Bank = "REPO",
+                    Bank = x.InstrumentCode,
                     StockCode = x.StockCode,
                     TradeDate = null,
                     SettlementDate = dataObj.SelectedDate,
                     NominalAmount = null,
                     Price = null,
                     Rate = null,
-                    Proceed = (x.AmountMinus + x.Purchase + x.SecondLeg),
-                    Notes = x.InstrumentCode
+                    Proceed = x.OutflowAmount,
+                    Notes = x.InstrumentType
                 })
                 .ToList();
 
@@ -785,17 +824,15 @@ namespace xDC_Web.Extension.DocGenerator
             #region Others Tab - OF - Others
 
             var othersTab_of_others = new List<MYR_DealCutOffData_OthersTab_Item2>();
-
-            // Sales - from FID Treasury IF MMI tab
+            
             var othersTab_of_others_item = db.ISSD_TradeSettlement
                 .Where(x => approvedTsForms.Contains(x.FormId)
-                            && x.InstrumentType != Common.TsItemCategory.Bond
-                            && x.InstrumentType != Common.TsItemCategory.Equity
-                            && (x.AmountMinus + x.SecondLeg + x.Purchase) > 0)
+                            && (x.InstrumentType != Common.TsItemCategory.Coupon && x.InstrumentType != Common.TsItemCategory.Equity && x.InstrumentType != Common.TsItemCategory.Bond && x.InstrumentType != Common.TsItemCategory.Repo)
+                            && x.OutflowAmount > 0)
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item2
                 {
                     Items = x.InstrumentCode,
-                    Amount = (x.AmountMinus + x.SecondLeg + x.Purchase),
+                    Amount = x.OutflowAmount,
                     Notes = x.InstrumentType
                 })
                 .ToList();
@@ -808,6 +845,11 @@ namespace xDC_Web.Extension.DocGenerator
             dataObj.OF_OthersTab_Others = othersTab_of_others;
 
             #endregion
+
+            #endregion
+
+
+
 
             return dataObj;
 
@@ -826,7 +868,6 @@ namespace xDC_Web.Extension.DocGenerator
                 sheet["C" + currentRowIndex].Value = category;
                 sheet["E" + currentRowIndex].Value = amount;
                 currentRowIndex++;
-                
             }
         }
 
@@ -946,37 +987,42 @@ namespace xDC_Web.Extension.DocGenerator
         public double InflowDepoInterest { get; set; }
         public double InflowTotalDepoPrincipalInterest { get; set; }
 
-        public double IF_Bond { get; set; }
-        public double IF_CP { get; set; }
-        public double IF_NP { get; set; }
-        public double IF_REPO { get; set; }
-        public double IF_Coupon { get; set; }
-        public double IF_Fees { get; set; }
-        public double IF_Mtm { get; set; }
-        public double IF_Fx { get; set; }
-        public double IF_Cn { get; set; }
-        public double IF_Altid { get; set; }
-        public double IF_Others { get; set; }
-        public double IF_TotalFixedIncome { get; set; }
+        public double IF_FixedIncome_Mgs { get; set; }
+        public double IF_FixedIncome_NonMgs { get; set; }
+        public double IF_FixedIncome_Total { get; set; }
+        
 
+        public double IF_Others_CP { get; set; }
+        public double IF_Others_NP { get; set; }
+        public double IF_Others_REPO { get; set; }
+        public double IF_Others_Fees { get; set; }
+        public double IF_Others_Mtm { get; set; }
+        public double IF_Others_Fx { get; set; }
+        public double IF_Others_Cn { get; set; }
+        public double IF_Others_Altid { get; set; }
+        public double IF_Others_Others { get; set; }
+        public double IF_Others_Total { get; set; }
+        
         public double IF_Equity { get; set; }
         public double IF_Net { get; set; }
 
         public double OF_MM_Rollover { get; set; }
         public double OF_MM_NewPlacement { get; set; }
 
-        public double OF_Bond { get; set; }
-        public double OF_CP { get; set; }
-        public double OF_NP { get; set; }
-        public double OF_REPO { get; set; }
-        public double OF_Coupon { get; set; }
-        public double OF_Fees { get; set; }
-        public double OF_Mtm { get; set; }
-        public double OF_Fx { get; set; }
-        public double OF_Cn { get; set; }
-        public double OF_Altid { get; set; }
-        public double OF_Others { get; set; }
-        public double OF_TotalFixedIncome { get; set; }
+        public double OF_FixedIncome_Mgs { get; set; }
+        public double OF_FixedIncome_NonMgs { get; set; }
+        public double OF_FixedIncome_Total { get; set; }
+
+        public double OF_Others_CP { get; set; }
+        public double OF_Others_NP { get; set; }
+        public double OF_Others_REPO { get; set; }
+        public double OF_Others_Fees { get; set; }
+        public double OF_Others_Mtm { get; set; }
+        public double OF_Others_Fx { get; set; }
+        public double OF_Others_Cn { get; set; }
+        public double OF_Others_Altid { get; set; }
+        public double OF_Others_Others { get; set; }
+        public double OF_Others_Total { get; set; }
 
         public double OF_Equity { get; set; }
         public double OF_Net { get; set; }
