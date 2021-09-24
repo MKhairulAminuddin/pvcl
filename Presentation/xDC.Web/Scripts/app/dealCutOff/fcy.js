@@ -95,11 +95,11 @@
         var tabPanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
                 { titleId: "summaryTab", title: "Summary", template: "summaryTab" },
-                { titleId: "details1", title: "Details 1", template: "details1" },
-                { titleId: "details2", title: "Details 2", template: "details2" },
-                { titleId: "details3", title: "Details 3", template: "details3" },
-                { titleId: "details4", title: "Details 4", template: "details4" },
-                { titleId: "details5", title: "Details 5", template: "details5" }
+                { titleId: "details1", title: "CIMB FCA", template: "details1" },
+                { titleId: "details2", title: "CITI MFCA", template: "details2" },
+                { titleId: "details3", title: "Hong Leong Bank MFCA", template: "details3" },
+                { titleId: "details4", title: "JP Morgan MFCA", template: "details4" },
+                { titleId: "details5", title: "Maybank MFCA", template: "details5" }
             ],
             deferRendering: false,
             showNavButtons: true

@@ -369,10 +369,10 @@ namespace xDC_Web.Extension.DocGenerator
                     var IF_Deposit_items_startIndex = 7;
                     var IF_Deposit_items_endIndex = 10;
 
-                    DetailsTab_Table1(IF_Deposit_items, IF_Deposit_items_startIndex, ref IF_Deposit_items_endIndex, ref currentSheet);
+                    DetailsTab_Table1(IF_Deposit_items, IF_Deposit_items_startIndex, ref IF_Deposit_items_endIndex, ref currentSheet, false, true);
 
                     var IF_MM_items_startIndex = IF_Deposit_items_endIndex + 2;
-                    var IF_MM_items_endIndex = IF_Deposit_items_endIndex + 6;
+                    var IF_MM_items_endIndex = IF_Deposit_items_endIndex + 5;
                     
                     DetailsTab_Table1(IF_MM_items, IF_MM_items_startIndex, ref IF_MM_items_endIndex, ref currentSheet);
 
@@ -386,17 +386,17 @@ namespace xDC_Web.Extension.DocGenerator
                     var OF_Deposit_items_startIndex = IF_Others_items_endIndex + 6;
                     var OF_Deposit_items_endIndex = IF_Others_items_endIndex + 9;
 
-                    DetailsTab_Table1(OF_Deposit_items, OF_Deposit_items_startIndex, ref OF_Deposit_items_endIndex, ref currentSheet, true);
+                    DetailsTab_Table1(OF_Deposit_items, OF_Deposit_items_startIndex, ref OF_Deposit_items_endIndex, ref currentSheet, true, true);
 
                     var OF_MM_items_startIndex = OF_Deposit_items_endIndex + 2;
-                    var OF_MM_items_endIndex = OF_Deposit_items_endIndex + 6;
+                    var OF_MM_items_endIndex = OF_Deposit_items_endIndex + 5;
 
                     DetailsTab_Table1(OF_MM_items, OF_MM_items_startIndex, ref OF_MM_items_endIndex, ref currentSheet, true);
 
                     var OF_Others_items_startIndex = OF_MM_items_endIndex + 2;
-                    var OF_Others_items_endIndex = OF_MM_items_endIndex + 6;
+                    var OF_Others_items_endIndex = OF_MM_items_endIndex + 5;
 
-                    DetailsTab_Table2(IF_Others_items, OF_Others_items_startIndex, ref OF_Others_items_endIndex, ref currentSheet);
+                    DetailsTab_Table2(OF_Others_items, OF_Others_items_startIndex, ref OF_Others_items_endIndex, ref currentSheet);
 
 
                     workbook.Calculate();
@@ -572,8 +572,7 @@ namespace xDC_Web.Extension.DocGenerator
                     {
                         var approvedFidForms = db.FID_Treasury
                             .Where(x => x.FormStatus == Common.FormStatus.Approved
-                                        && DbFunctions.TruncateTime(x.TradeDate) ==
-                                        DbFunctions.TruncateTime(selectedDate)
+                                        && DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate)
                                         && x.Currency == item.Currency)
                             .Select(x => x.Id)
                             .ToList();
@@ -710,8 +709,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                         var approvedTsForms = db.ISSD_FormHeader
                             .Where(x => x.FormStatus == Common.FormStatus.Approved
-                                        && DbFunctions.TruncateTime(x.SettlementDate) ==
-                                        DbFunctions.TruncateTime(selectedDate)
+                                        && DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
                                         && x.Currency == item.Currency)
                             .Select(x => x.Id)
                             .ToList();
@@ -751,7 +749,7 @@ namespace xDC_Web.Extension.DocGenerator
                             {
                                 item.Details_OF_Others = new List<FCY_ItemOthers>();
 
-                                foreach (var i in IF_Others)
+                                foreach (var i in OF_Others)
                                 {
                                     item.Details_OF_Others.Add(new FCY_ItemOthers
                                     {
@@ -777,7 +775,7 @@ namespace xDC_Web.Extension.DocGenerator
                 return dataObj;
         }
 
-        private void DetailsTab_Table1(List<FCY_Item> items, int startIndex, ref int endIndex, ref Worksheet sheet, bool withDealer = false)
+        private void DetailsTab_Table1(List<FCY_Item> items, int startIndex, ref int endIndex, ref Worksheet sheet, bool withDealer = false, bool isDepositTable = false)
         {
             if (items.Any())
             {
@@ -813,17 +811,14 @@ namespace xDC_Web.Extension.DocGenerator
 
                     currentIndex++;
                 }
-
-                if (currentIndex != startIndex)
+                
+                sheet["I" + currentIndex].Formula = "=SUM($I$" + startIndex + ":$I$" + (currentIndex - 1) + ")";
+                if (isDepositTable)
                 {
-                    sheet["I" + currentIndex].Formula = "=SUM($I$" + startIndex + ":$I$" + (currentIndex - 1) + ")";
-                    sheet["M" + currentIndex].Formula = "=SUM($M$" + startIndex + ":$M$" + (currentIndex - 1) + ")";
+                    sheet["L" + currentIndex].Formula = "=SUM($L$" + startIndex + ":$L$" + (currentIndex - 1) + ")";
                 }
-                else
-                {
-                    currentIndex++;
-                }
-
+                sheet["M" + currentIndex].Formula = "=SUM($M$" + startIndex + ":$M$" + (currentIndex - 1) + ")";
+                
                 endIndex = currentIndex;
             }
         }
@@ -851,15 +846,8 @@ namespace xDC_Web.Extension.DocGenerator
                     currentIndex++;
                 }
 
-                if (currentIndex != startIndex)
-                {
-                    sheet["F" + currentIndex].Formula = "=SUM($F$" + startIndex + ":$F$" + (currentIndex - 1) + ")";
-                }
-                else
-                {
-                    currentIndex++;
-                }
-
+                sheet["F" + currentIndex].Formula = "=SUM($F$" + startIndex + ":$F$" + (currentIndex - 1) + ")";
+                
                 endIndex = currentIndex;
             }
         }
