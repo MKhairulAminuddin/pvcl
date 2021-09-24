@@ -20,6 +20,7 @@ namespace xDC_Web.Extension.DocGenerator
         private Color _tableHeaderPrimaryColor = System.Drawing.ColorTranslator.FromHtml("#5b8efb");
         private Color _inflowColor = System.Drawing.ColorTranslator.FromHtml("#E8F5E9");
         private Color _outFlowColor = System.Drawing.ColorTranslator.FromHtml("#FFEBEE");
+        private Color _otherColor = System.Drawing.ColorTranslator.FromHtml("#FFFDE7");
 
         public string GenerateFile(int formId, bool isExportAsExcel)
         {
@@ -33,14 +34,7 @@ namespace xDC_Web.Extension.DocGenerator
                     {
                         var tradeItems = db.ISSD_TradeSettlement.Where(x => x.FormId == formId).ToList();
                         
-                        var getFormWorkflow = db.Form_Workflow
-                            .Where(x => x.FormId == form.Id)
-                            .OrderByDescending(x => x.RecordedDate)
-                            .ToList();
-
-                        var openingBalance = TradeSettlementSvc.GetOpeningBalance(db, form.SettlementDate.Value, form.Currency);
-
-                        IWorkbook workbook = GenerateDocument(form, getFormWorkflow, tradeItems, openingBalance);
+                        IWorkbook workbook = GenerateDocument(form, tradeItems);
                         var randomFileName = Common.DownloadedFileName.ISSD_TS + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                         if (isExportAsExcel)
@@ -95,8 +89,11 @@ namespace xDC_Web.Extension.DocGenerator
                         var worflows = new List<Form_Workflow>();
                         foreach (var formId in associatedFormIdParts)
                         {
-                            var workflow = db.Form_Workflow.Where(x => (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected) &&
-                                            x.FormId == formId).OrderByDescending(x => x.RecordedDate).FirstOrDefault();
+                            var workflow = db.Form_Workflow
+                                .Where(x => x.WorkflowStatus == Common.FormStatus.Approved
+                                            && x.FormId == formId)
+                                .OrderByDescending(x => x.RecordedDate)
+                                .FirstOrDefault();
                             
                             if (workflow != null)
                             {
@@ -142,7 +139,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private IWorkbook GenerateDocument(ISSD_FormHeader formHeader, List<Form_Workflow> formWorkflow, List<ISSD_TradeSettlement> trades, List<TS_OpeningBalance> ob = null)
+        private IWorkbook GenerateDocument(ISSD_FormHeader formHeader, List<ISSD_TradeSettlement> trades)
         {
             IWorkbook workbook = new Workbook();
             workbook.Options.Culture = new CultureInfo("en-US");
@@ -156,39 +153,27 @@ namespace xDC_Web.Extension.DocGenerator
                 if (formHeader.SettlementDate != null)
                     sheet["B2"].Value = formHeader.SettlementDate.Value.ToString("dd/MM/yyyy");
                 sheet["B3"].Value = formHeader.Currency;
-                
-                int tradeItemStartRow = 7;
-                // Opening Balance
-                if (ob != null && ob.Any())
-                {
-                    sheet["A5"].Value = "Opening Balance:";
-                    sheet["A5"].Font.Bold = true;
-                    sheet["A5:B5"].Merge();
+                sheet["B4"].Value = formHeader.FormType;
 
-                    var headerStartRow = tradeItemStartRow;
-                    
-                    foreach (var item in ob)
-                    {
-                        sheet["A" + tradeItemStartRow].Value = item.Account;
-                        sheet["B" + tradeItemStartRow].Value = item.Amount;
-                        sheet["B" + tradeItemStartRow].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                        tradeItemStartRow++;
-                    }
-                    
-                    tradeItemStartRow += 2;
-                }
+                sheet["J2"].Value = formHeader.PreparedBy;
+                sheet["J3"].Value = formHeader.PreparedDate?.ToString("dd/MM/yyyy");
+
+                sheet["J4"].Value = formHeader.ApprovedBy;
+                sheet["J5"].Value = formHeader.ApprovedDate?.ToString("dd/MM/yyyy");
+
+                sheet["J6"].Value = formHeader.FormStatus;
+                
+                int tradeItemStartRow = 10;
 
                 Content_TradeItems(workbook, sheet, trades, tradeItemStartRow, out tradeItemStartRow);
-
-                Content_WorkflowItems(sheet, formWorkflow, tradeItemStartRow, out tradeItemStartRow);
-
+                
                 var footerRowNumber = tradeItemStartRow + 4;
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Merge();
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Value = "Generated on " + DateTime.Now.ToString("dd/MM/yyyy HH:ss") + " by "+ HttpContext.Current.User.Identity.Name;
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Italic = true;
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Size = 10;
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Color = Color.LightSlateGray;
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Alignment.Horizontal =
+                sheet["A" + footerRowNumber + ":J" + footerRowNumber].Merge();
+                sheet["A" + footerRowNumber + ":J" + footerRowNumber].Value = "Generated on " + DateTime.Now.ToString("dd/MM/yyyy HH:ss") + " by "+ HttpContext.Current.User.Identity.Name;
+                sheet["A" + footerRowNumber + ":J" + footerRowNumber].Font.Italic = true;
+                sheet["A" + footerRowNumber + ":J" + footerRowNumber].Font.Size = 10;
+                sheet["A" + footerRowNumber + ":J" + footerRowNumber].Font.Color = Color.LightSlateGray;
+                sheet["A" + footerRowNumber + ":J" + footerRowNumber].Alignment.Horizontal =
                     SpreadsheetHorizontalAlignment.Right;
 
 
@@ -231,6 +216,11 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["A" + tradeItemStartRow].Value = item.Account;
                         sheet["B" + tradeItemStartRow].Value = item.Amount;
                         sheet["B" + tradeItemStartRow].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                        sheet["A" + tradeItemStartRow].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
+                        sheet["B" + tradeItemStartRow].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
+                        sheet["B" + tradeItemStartRow].FillColor = _otherColor;
+
                         tradeItemStartRow++;
                     }
 
@@ -270,11 +260,6 @@ namespace xDC_Web.Extension.DocGenerator
         
         private void Content_TradeItems(IWorkbook workbook, Worksheet sheet, List<ISSD_TradeSettlement> trades, int tradeItemStartRow, out int currentRowIndex)
         {
-            sheet["A" + tradeItemStartRow].Value = "Daily Trade Settlement:";
-            sheet["A" + tradeItemStartRow].Font.Bold = true;
-            sheet["A" + tradeItemStartRow + ":B" + tradeItemStartRow].Merge();
-            tradeItemStartRow += 2;
-
             // equity
             var equity = trades.Where(x => x.InstrumentType == Common.TsItemCategory.Equity).ToList();
             if (equity.Any())
@@ -657,10 +642,13 @@ namespace xDC_Web.Extension.DocGenerator
         {
             var workflowRowNumber = currentRow + 2;
 
-            sheet["A" + workflowRowNumber].Value = "Workflow Approval :";
-            sheet["A" + workflowRowNumber].Font.Bold = true;
-            workflowRowNumber += 2;
-
+            if (formWorkflow.Any())
+            {
+                sheet["A" + workflowRowNumber].Value = "Workflow Approval :";
+                sheet["A" + workflowRowNumber].Font.Bold = true;
+                workflowRowNumber += 2;
+            }
+            
             var workflowPartA = formWorkflow.FirstOrDefault(x => x.FormType == Common.FormType.ISSD_TS_A);
             if (workflowPartA != null)
             {
@@ -691,12 +679,12 @@ namespace xDC_Web.Extension.DocGenerator
             {
                 GenerateWorkflowBox(sheet, workflowRowNumber, workflowPartF.FormType, workflowPartF.RequestBy, workflowPartF.WorkflowStatus, workflowPartF.RecordedDate, out workflowRowNumber);
             }
-            var workflowPartG = formWorkflow.FirstOrDefault(x => x.FormType == Common.FormType.ISSD_TS_E);
+            var workflowPartG = formWorkflow.FirstOrDefault(x => x.FormType == Common.FormType.ISSD_TS_G);
             if (workflowPartG != null)
             {
                 GenerateWorkflowBox(sheet, workflowRowNumber, workflowPartG.FormType, workflowPartG.RequestBy, workflowPartG.WorkflowStatus, workflowPartG.RecordedDate, out workflowRowNumber);
             }
-            var workflowPartH = formWorkflow.FirstOrDefault(x => x.FormType == Common.FormType.ISSD_TS_E);
+            var workflowPartH = formWorkflow.FirstOrDefault(x => x.FormType == Common.FormType.ISSD_TS_H);
             if (workflowPartH != null)
             {
                 GenerateWorkflowBox(sheet, workflowRowNumber, workflowPartH.FormType, workflowPartH.RequestBy, workflowPartH.WorkflowStatus, workflowPartH.RecordedDate, out workflowRowNumber);
@@ -709,19 +697,23 @@ namespace xDC_Web.Extension.DocGenerator
         {
             sheet["A" + currentRowNumber].Value = "Form Type";
             sheet["B" + currentRowNumber].Value = formType;
-            sheet["B" + currentRowNumber].FillColor = Color.LightGoldenrodYellow;
+            sheet["B" + currentRowNumber].FillColor = _otherColor;
+            sheet["A" + currentRowNumber + ":B" + currentRowNumber].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
             currentRowNumber += 1;
             sheet["A" + currentRowNumber].Value = "Approver";
             sheet["B" + currentRowNumber].Value = approvedBy;
-            sheet["B" + currentRowNumber].FillColor = Color.LightGoldenrodYellow;
+            sheet["B" + currentRowNumber].FillColor = _otherColor;
+            sheet["A" + currentRowNumber + ":B" + currentRowNumber].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
             currentRowNumber += 1;
             sheet["A" + currentRowNumber].Value = "Status";
             sheet["B" + currentRowNumber].Value = wfStatus;
-            sheet["B" + currentRowNumber].FillColor = Color.LightGoldenrodYellow;
+            sheet["B" + currentRowNumber].FillColor = _otherColor;
+            sheet["A" + currentRowNumber + ":B" + currentRowNumber].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
             currentRowNumber += 1;
             sheet["A" + currentRowNumber].Value = "Approved Date";
-            sheet["B" + currentRowNumber].Value = (wfStatus == Common.FormStatus.Approved || wfStatus == Common.FormStatus.Rejected)? recordedDate?.ToString("dd/MM/yyyy HH:mm") : null;
-            sheet["B" + currentRowNumber].FillColor = Color.LightGoldenrodYellow;
+            sheet["B" + currentRowNumber].Value = (wfStatus == Common.FormStatus.Approved || wfStatus == Common.FormStatus.Rejected)? recordedDate?.ToString("dd/MM/yyyy hh:mm tt") : null;
+            sheet["B" + currentRowNumber].FillColor = _otherColor;
+            sheet["A" + currentRowNumber + ":B" + currentRowNumber].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
             currentRowNumber += 2;
 
             nextRowNumber = currentRowNumber;
