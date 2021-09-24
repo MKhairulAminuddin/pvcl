@@ -1151,11 +1151,14 @@ namespace xDC_Web.Controllers.Api
                             CountPendingFees = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fees
                                                             && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 )),
 
-                            IssdOnly = (x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Altid) + x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others) + x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fees)) > 0
+                            CountPendingMtm = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Mtm
+                                                             && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0)),
+                            CountPendingFx = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fx
+                                                           && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0))
                         })
                         .ToList();
 
-                    return Request.CreateResponse(DataSourceLoader.Load(result.Where(x => x.IssdOnly), loadOptions));
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
             }
             catch (Exception ex)
@@ -1214,7 +1217,11 @@ namespace xDC_Web.Controllers.Api
                             CountPendingOthers = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others
                                                               && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0)),
                             CountPendingFees = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fees
-                                                            && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0))
+                                                            && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0)),
+                            CountPendingFx = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fx
+                                                             && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0)),
+                            CountPendingMtm = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Mtm
+                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0))
 
                         }).ToList();
 

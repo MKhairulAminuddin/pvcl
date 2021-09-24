@@ -31,10 +31,10 @@
             notesPaperLoad: window.location.origin + "/api/issd/FcaTaggingGrid/tradeItem/notesPaper/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
             repoLoad: window.location.origin + "/api/issd/FcaTaggingGrid/tradeItem/repo/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
             couponLoad: window.location.origin + "/api/issd/FcaTaggingGrid/tradeItem/coupon/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            contributionLoad: window.location.origin + "/api/issd/FcaTaggingGrid/tradeItem/contributionCredited/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+
             mtmLoad: window.location.origin + "/api/issd/FcaTaggingGrid/tradeItem/mtm/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
             fxLoad: window.location.origin + "/api/issd/FcaTaggingGrid/tradeItem/fxSettlement/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            contributionLoad: window.location.origin + "/api/issd/FcaTaggingGrid/tradeItem/contributionCredited/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            
             feesLoad: window.location.origin + "/api/issd/FcaTaggingGrid/tradeItem/fees/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
             altidLoad: window.location.origin + "/api/issd/FcaTaggingGrid/tradeItem/altid/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
             othersLoad: window.location.origin + "/api/issd/FcaTaggingGrid/tradeItem/others/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
@@ -110,9 +110,7 @@
                                     width: "150px",
                                     caption: "Outflow From",
                                     cellTemplate: function (container, options) {
-                                        if (options.data.outflowAmount == 0) {
-                                            container.addClass("dxDataGrid-cell-grey");
-                                        }
+                                        container.addClass("dxDataGrid-cell-grey");
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
                                     },
                                     allowEditing: false
@@ -248,9 +246,7 @@
                                     width: "150px",
                                     caption: "Outflow From",
                                     cellTemplate: function (container, options) {
-                                        if (options.data.outflowAmount == 0) {
-                                            container.addClass("dxDataGrid-cell-grey");
-                                        }
+                                        container.addClass("dxDataGrid-cell-grey");
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
                                     },
                                     allowEditing: false
@@ -386,9 +382,7 @@
                                     width: "150px",
                                     caption: "Outflow From",
                                     cellTemplate: function (container, options) {
-                                        if (options.data.outflowAmount == 0) {
-                                            container.addClass("dxDataGrid-cell-grey");
-                                        }
+                                        container.addClass("dxDataGrid-cell-grey");
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
                                     },
                                     allowEditing: false
@@ -524,9 +518,7 @@
                                     width: "150px",
                                     caption: "Outflow From",
                                     cellTemplate: function (container, options) {
-                                        if (options.data.outflowAmount == 0) {
-                                            container.addClass("dxDataGrid-cell-grey");
-                                        }
+                                        container.addClass("dxDataGrid-cell-grey");
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
                                     },
                                     allowEditing: false
@@ -662,9 +654,7 @@
                                     width: "150px",
                                     caption: "Outflow From",
                                     cellTemplate: function (container, options) {
-                                        if (options.data.outflowAmount == 0) {
-                                            container.addClass("dxDataGrid-cell-grey");
-                                        }
+                                        container.addClass("dxDataGrid-cell-grey");
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
                                     },
                                     allowEditing: false
@@ -840,6 +830,90 @@
                 tabPanelItems.push(newItem);
             }
 
+            if (response.data[0].contribution) {
+                var newItem = {
+                    title: "Contribution Credited",
+                    template: function (itemData, itemIndex, element) {
+                        var newTabView = $("<div id='contributionCreditedGrid' class='grid-container-tabview' style='width: 100%'/>");
+                        newTabView.dxDataGrid({
+                            dataSource: DevExpress.data.AspNet.createStore({
+                                key: "id",
+                                loadUrl: referenceUrl.contributionLoad,
+                                updateUrl: referenceUrl.updateTradeItem
+                            }),
+                            columns: [
+                                {
+                                    dataField: "inflowTo",
+                                    width: "150px",
+                                    caption: "Inflow To",
+                                    cellTemplate: function (container, options) {
+                                        if (options.data.inflowAmount == 0) {
+                                            container.addClass("dxDataGrid-cell-grey");
+                                        }
+                                        $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
+                                    },
+                                    allowEditing: false
+                                },
+                                {
+                                    dataField: "instrumentCode",
+                                    caption: "Contribution Credited",
+                                    allowEditing: false
+                                },
+                                {
+                                    dataField: "amountPlus",
+                                    caption: "Amount (+)",
+                                    dataType: "number",
+                                    format: {
+                                        type: "fixedPoint",
+                                        precision: 2
+                                    },
+                                    allowEditing: false
+                                },
+                                {
+                                    dataField: "assignedBy",
+                                    caption: "Assigned By",
+                                    allowEditing: false,
+                                    visible: false
+                                },
+                                {
+                                    dataField: "assignedDate",
+                                    caption: "Assigned Date",
+                                    dataType: "datetime",
+                                    format: "dd/MM/yyyy HH:mm a",
+                                    allowEditing: false,
+                                    visible: false
+                                }
+                            ],
+                            summary: {
+                                totalItems: [
+                                    {
+                                        column: "instrumentCode",
+                                        displayFormat: "TOTAL"
+                                    },
+                                    {
+                                        column: "amountPlus",
+                                        summaryType: "sum",
+                                        displayFormat: "{0}",
+                                        valueFormat: {
+                                            type: "fixedPoint",
+                                            precision: 2
+                                        }
+                                    }
+                                ]
+                            },
+                            showBorders: true
+                        });
+                        $contributionCreditedGrid = newTabView.dxDataGrid("instance");
+                        newTabView.appendTo(element);
+                    }
+                };
+                if (response.data[0].countPendingContribution > 0) {
+                    newItem.badge = response.data[0].countPendingContribution;
+                }
+                tabPanelItems.push(newItem);
+            }
+
+
             if (response.data[0].mtm) {
                 var newItem = {
                     title: "Receipts/Payments (MTM)",
@@ -869,9 +943,7 @@
                                     width: "150px",
                                     caption: "Outflow From",
                                     cellTemplate: function (container, options) {
-                                        if (options.data.outflowAmount == 0) {
-                                            container.addClass("dxDataGrid-cell-grey");
-                                        }
+                                        container.addClass("dxDataGrid-cell-grey");
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
                                     },
                                     allowEditing: false
@@ -983,9 +1055,7 @@
                                     width: "150px",
                                     caption: "Outflow From",
                                     cellTemplate: function (container, options) {
-                                        if (options.data.outflowAmount == 0) {
-                                            container.addClass("dxDataGrid-cell-grey");
-                                        }
+                                        container.addClass("dxDataGrid-cell-grey");
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
                                     },
                                     allowEditing: false
@@ -1067,91 +1137,6 @@
                 }
                 tabPanelItems.push(newItem);
             }
-
-            if (response.data[0].contribution) {
-                var newItem = {
-                    title: "Contribution Credited",
-                    template: function (itemData, itemIndex, element) {
-                        var newTabView = $("<div id='contributionCreditedGrid' class='grid-container-tabview' style='width: 100%'/>");
-                        newTabView.dxDataGrid({
-                            dataSource: DevExpress.data.AspNet.createStore({
-                                key: "id",
-                                loadUrl: referenceUrl.contributionLoad,
-                                updateUrl: referenceUrl.updateTradeItem
-                            }),
-                            columns: [
-                                {
-                                    dataField: "inflowTo",
-                                    width: "150px",
-                                    caption: "Inflow To",
-                                    cellTemplate: function (container, options) {
-                                        if (options.data.inflowAmount == 0) {
-                                            container.addClass("dxDataGrid-cell-grey");
-                                        }
-                                        $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
-                                    },
-                                    allowEditing: false
-                                },
-                                {
-                                    dataField: "instrumentCode",
-                                    caption: "Contribution Credited",
-                                    allowEditing: false
-                                },
-                                {
-                                    dataField: "amountPlus",
-                                    caption: "Amount (+)",
-                                    dataType: "number",
-                                    format: {
-                                        type: "fixedPoint",
-                                        precision: 2
-                                    },
-                                    allowEditing: false
-                                },
-                                {
-                                    dataField: "assignedBy",
-                                    caption: "Assigned By",
-                                    allowEditing: false,
-                                    visible: false
-                                },
-                                {
-                                    dataField: "assignedDate",
-                                    caption: "Assigned Date",
-                                    dataType: "datetime",
-                                    format: "dd/MM/yyyy HH:mm a",
-                                    allowEditing: false,
-                                    visible: false
-                                }
-                            ],
-                            summary: {
-                                totalItems: [
-                                    {
-                                        column: "instrumentCode",
-                                        displayFormat: "TOTAL"
-                                    },
-                                    {
-                                        column: "amountPlus",
-                                        summaryType: "sum",
-                                        displayFormat: "{0}",
-                                        valueFormat: {
-                                            type: "fixedPoint",
-                                            precision: 2
-                                        }
-                                    }
-                                ]
-                            },
-                            showBorders: true
-                        });
-                        $contributionCreditedGrid = newTabView.dxDataGrid("instance");
-                        newTabView.appendTo(element);
-                    }
-                };
-                if (response.data[0].countPendingContribution > 0) {
-                    newItem.badge = response.data[0].countPendingContribution;
-                }
-                tabPanelItems.push(newItem);
-            }
-
-
             
             if (response.data[0].fees) {
                 var newItem = {
@@ -1314,9 +1299,7 @@
                                     width: "150px",
                                     caption: "Outflow From",
                                     cellTemplate: function (container, options) {
-                                        if (options.data.outflowAmount == 0) {
-                                            container.addClass("dxDataGrid-cell-grey");
-                                        }
+                                        container.addClass("dxDataGrid-cell-grey");
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
                                     },
                                     allowEditing: false
@@ -1452,9 +1435,7 @@
                                     width: "150px",
                                     caption: "Outflow From",
                                     cellTemplate: function (container, options) {
-                                        if (options.data.outflowAmount == 0) {
-                                            container.addClass("dxDataGrid-cell-grey");
-                                        }
+                                        container.addClass("dxDataGrid-cell-grey");
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
                                     },
                                     allowEditing: false
