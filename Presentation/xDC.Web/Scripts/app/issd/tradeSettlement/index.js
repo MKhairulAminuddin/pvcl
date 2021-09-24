@@ -198,6 +198,7 @@
                                 return e.row.data.enablePrint;
                             },
                             onClick: function (e) {
+                                app.toast("Generating...");
                                 var data = {
                                     id: e.row.data.id,
                                     isExportAsExcel: true
@@ -230,7 +231,7 @@
                                 return e.row.data.enablePrint;
                             },
                             onClick: function (e) {
-
+                                app.toast("Generating...");
                                 var data = {
                                     id: e.row.data.id,
                                     isExportAsExcel: false
@@ -414,6 +415,7 @@
                                 return (!e.row.data.isDraft);
                             },
                             onClick: function (e) {
+                                app.toast("Generating...");
                                 var data = {
                                     settlementDate: moment(e.row.data.formDate).unix(),
                                     currency: e.row.data.currency,
@@ -447,7 +449,7 @@
                                 return (!e.row.data.isDraft);
                             },
                             onClick: function (e) {
-
+                                app.toast("Generating...");
                                 var data = {
                                     settlementDate: moment(e.row.data.formDate).unix(),
                                     currency: e.row.data.currency,

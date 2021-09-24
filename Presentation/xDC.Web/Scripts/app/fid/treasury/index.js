@@ -116,9 +116,6 @@
                             hint: "View",
                             icon: "fa fa-eye",
                             cssClass: "dx-datagrid-command-btn",
-                            /*visible: function (e) {
-                                return (e.row.data.isViewAllowed);
-                            },*/
                             onClick: function (e) {
                                 window.location.href = window.location.origin + "/fid/Treasury/View/" + e.row.data.id;
                                 e.event.preventDefault();
@@ -128,9 +125,6 @@
                             hint: "Download as Excel",
                             icon: "fa fa-file-excel-o",
                             cssClass: "dx-datagrid-command-btn text-green",
-                            /*visible: function (e) {
-                                return (e.row.data.isDownloadAllowed);
-                            },*/
                             onClick: function (e) {
                                 app.toast("Generating...");
 
@@ -163,9 +157,6 @@
                             hint: "Download as PDF",
                             icon: "fa fa-file-pdf-o",
                             cssClass: "dx-datagrid-command-btn text-orange",
-                            /*visible: function (e) {
-                                return (e.row.data.isDownloadAllowed);
-                            },*/
                             onClick: function (e) {
 
                                 app.toast("Generating...");
