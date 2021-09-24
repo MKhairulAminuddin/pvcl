@@ -11,7 +11,9 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Services;
 using xDC.Utils;
+using xDC_Web.Models;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -342,7 +344,91 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
-        
+
+        [HttpPost]
+        [Route("reassignApprover")]
+        public HttpResponseMessage ReassignApproval([FromBody] NewApprover input)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formType = Common.FormTypeMapping(input.FormType);
+                    var permittedApprover = db.Config_Approver
+                        .FirstOrDefault(x =>
+                            x.FormType == formType && x.Username != User.Identity.Name && x.Username == input.Approver);
+
+                    if (formType!= null && permittedApprover != null)
+                    {
+                        switch (formType)
+                        {
+                            case Common.FormType.AMSD_IF:
+                                var amsdForm = db.AMSD_IF.FirstOrDefault(x => x.Id == input.FormId);
+                                if (amsdForm != null)
+                                {
+                                    amsdForm.ApprovedBy = permittedApprover.Username;
+                                    amsdForm.ApprovedDate = null;
+                                    db.SaveChanges();
+
+                                    new WorkflowService().ReassignWorkflow(input.FormId, amsdForm.FormType);
+                                    new MailService().SubmitForApproval(input.FormId, amsdForm.FormType, permittedApprover.Username, null);
+                                    new NotificationService().NotifyApprovalRequest(permittedApprover.Username, input.FormId, User.Identity.Name, amsdForm.FormType);
+                                    return Request.CreateResponse(HttpStatusCode.Accepted);
+                                }
+                                else
+                                {
+                                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Reassignment failed...");
+                                }
+                            case Common.FormType.FID_TREASURY:
+                                var treasuryForm = db.FID_Treasury.FirstOrDefault(x => x.Id == input.FormId);
+                                if (treasuryForm != null)
+                                {
+                                    treasuryForm.ApprovedBy = permittedApprover.Username;
+                                    treasuryForm.ApprovedDate = null;
+                                    db.SaveChanges();
+
+                                    new WorkflowService().ReassignWorkflow(input.FormId, treasuryForm.FormType);
+                                    new MailService().SubmitForApproval(input.FormId, treasuryForm.FormType, permittedApprover.Username, null);
+                                    new NotificationService().NotifyApprovalRequest(permittedApprover.Username, input.FormId, User.Identity.Name, treasuryForm.FormType);
+                                    return Request.CreateResponse(HttpStatusCode.Accepted);
+                                }
+                                else
+                                {
+                                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Reassignment failed...");
+                                }
+                            case Common.FormType.ISSD_TS:
+                                var tsForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == input.FormId);
+                                if (tsForm != null)
+                                {
+                                    tsForm.ApprovedBy = permittedApprover.Username;
+                                    tsForm.ApprovedDate = null;
+                                    db.SaveChanges();
+
+                                    new WorkflowService().ReassignWorkflow(input.FormId, tsForm.FormType);
+                                    new MailService().SubmitForApproval(input.FormId, tsForm.FormType, permittedApprover.Username, null);
+                                    new NotificationService().NotifyApprovalRequest(permittedApprover.Username, input.FormId, User.Identity.Name, tsForm.FormType);
+                                    return Request.CreateResponse(HttpStatusCode.Accepted);
+                                }
+                                else
+                                {
+                                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Reassignment failed...");
+                                }
+                            default:
+                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Reassignment failed...");
+                        }
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Reassignment failed...");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
         #endregion
 
         #region My Notification
@@ -443,6 +529,11 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        #endregion
+
+
+        #region Private Function
 
         #endregion
     }

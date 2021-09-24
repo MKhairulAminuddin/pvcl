@@ -19,9 +19,11 @@
 
             $viewWorkflowBtn,
             $workflowGrid,
+            $approverDropdown,
             $viewWorkflowModal = $("#viewWorkflowModal"),
             $approvalNoteModal = $("#approvalNoteModal"),
-            $rejectionNoteModal = $("#rejectionNoteModal");
+            $rejectionNoteModal = $("#rejectionNoteModal"),
+            $approvalReassignModal = $("#approvalReassignModal");
 
         var referenceUrl = {
             loadWorkflow: window.location.origin + "/api/common/GetWorkflow/11/" + app.getUrlId(),
@@ -46,6 +48,17 @@
         //#endregion
 
         //#region Data Source & Functions
+
+        var dsApproverList = function () {
+            return {
+                store: DevExpress.data.AspNet.createStore({
+                    key: "id",
+                    loadUrl: window.location.origin + "/api/common/approverList/treasury"
+                }),
+                paginate: true,
+                pageSize: 20
+            };
+        }
         
         var dsInflowDeposit = function () {
             return $.ajax({
@@ -145,6 +158,58 @@
 
         //#region Other Widgets
 
+        $approverDropdown = $("#newApproverDropdown").dxSelectBox({
+            dataSource: dsApproverList(),
+            displayExpr: "displayName",
+            valueExpr: "username",
+            searchEnabled: true,
+            itemTemplate: function (data) {
+                return "<div class='active-directory-dropdown'>" +
+                    "<p class='active-directory-title'>" + data.displayName + "</p>" +
+                    "<p class='active-directory-subtitle'>" + data.title + ", " + data.department + "</p>" +
+                    "<p class='active-directory-subtitle'>" + data.email + "</p>" +
+                    "</div>";
+            }
+        }).dxSelectBox("instance");
+
+        $("#approvalReassignModalBtn").dxButton({
+            onClick: function (e) {
+                if ($approverDropdown.option("value") != null) {
+                    //reassign
+                    app.toast("Reassinging...");
+
+                    var data = {
+                        formId: app.getUrlId(),
+                        approver: $approverDropdown.option("value"),
+                        formType: 11
+                    };
+
+                    $.ajax({
+                        type: "POST",
+                        url: window.location.origin + "/api/common/reassignApprover",
+                        data: data,
+                        dataType: "text",
+                        success: function (data) {
+                            setTimeout(function () {
+                                app.toast("Reassigned to new approver", "success");
+                                location.reload();
+                            }, 2000);
+                        },
+                        fail: function (jqXHR, textStatus, errorThrown) {
+                            app.alertError("Reassignment failed..");
+                        },
+                        complete: function (data) {
+                            $approverDropdown.option("value", "");
+                            $approvalReassignModal.modal("hide");
+                        }
+                    });
+
+                } else {
+                    alert("Please select one approver to reassign to.");
+                }
+            }
+        });
+        
         $viewWorkflowBtn = $("#viewWorkflowBtn").dxButton({
             stylingMode: "contained",
             text: "Workflow",
@@ -217,7 +282,9 @@
             itemTitleTemplate: $("#dxPanelTitle"),
             showNavButtons: true
         });
-        
+
+
+
         //#endregion
 
         // #region Data Grid
@@ -776,6 +843,13 @@
         // #endregion Data Grid
 
         //#region Events & Invocations
+
+        $("#reassignBtn").dxButton({
+            onClick: function (e) {
+                $approvalReassignModal.modal("show");
+                e.event.preventDefault();
+            }
+        }); 
         
         $("#submitForApprovalBtn").dxButton({
             onClick: function (e) {

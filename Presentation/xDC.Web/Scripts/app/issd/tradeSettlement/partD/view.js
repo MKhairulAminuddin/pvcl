@@ -13,7 +13,8 @@
             $tradeSettlementForm,
             $currencySelectBox,
             $approverDropdown,
-            $printBtn;
+            $printBtn,
+            $approvalReassignModal = $("#approvalReassignModal");
 
         var referenceUrl = {
             adminEdit: window.location.origin + "/issd/TradeSettlement/PartC/Edit/",
@@ -74,6 +75,58 @@
         //#endregion
         
         //#region Other Widgets
+
+        $approverDropdown = $("#newApproverDropdown").dxSelectBox({
+            dataSource: dsApproverList(),
+            displayExpr: "displayName",
+            valueExpr: "username",
+            searchEnabled: true,
+            itemTemplate: function (data) {
+                return "<div class='active-directory-dropdown'>" +
+                    "<p class='active-directory-title'>" + data.displayName + "</p>" +
+                    "<p class='active-directory-subtitle'>" + data.title + ", " + data.department + "</p>" +
+                    "<p class='active-directory-subtitle'>" + data.email + "</p>" +
+                    "</div>";
+            }
+        }).dxSelectBox("instance");
+
+        $("#approvalReassignModalBtn").dxButton({
+            onClick: function (e) {
+                if ($approverDropdown.option("value") != null) {
+                    //reassign
+                    app.toast("Reassinging...");
+
+                    var data = {
+                        formId: app.getUrlId(),
+                        approver: $approverDropdown.option("value"),
+                        formType: 2
+                    };
+
+                    $.ajax({
+                        type: "POST",
+                        url: window.location.origin + "/api/common/reassignApprover",
+                        data: data,
+                        dataType: "text",
+                        success: function (data) {
+                            setTimeout(function () {
+                                app.toast("Reassigned to new approver", "success");
+                                location.reload();
+                            }, 2000);
+                        },
+                        fail: function (jqXHR, textStatus, errorThrown) {
+                            app.alertError("Reassignment failed..");
+                        },
+                        complete: function (data) {
+                            $approverDropdown.option("value", "");
+                            $approvalReassignModal.modal("hide");
+                        }
+                    });
+
+                } else {
+                    alert("Please select one approver to reassign to.");
+                }
+            }
+        });
         
         $printBtn = $("#printBtn").dxDropDownButton(tradeSettlement.printBtnWidgetSetting).dxDropDownButton("instance");
         
@@ -307,6 +360,13 @@
         // #endregion DataGrid
         
         //#region Events
+
+        $("#reassignBtn").dxButton({
+            onClick: function (e) {
+                $approvalReassignModal.modal("show");
+                e.event.preventDefault();
+            }
+        });
 
         $("#viewWorkflowBtn").on({
             "click": function (e) {

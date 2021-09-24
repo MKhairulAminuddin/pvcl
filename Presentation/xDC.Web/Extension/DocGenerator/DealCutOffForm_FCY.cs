@@ -345,7 +345,7 @@ namespace xDC_Web.Extension.DocGenerator
                 {
                     var currentSheet = workbook.Worksheets[sheetName];
 
-                    currentSheet["C2"].Value = string.Format("FOREIGN CURRENCY TRANSACTIONS VIA {0} FOR VALUE DATE {1:dd/MM/yyyy}",
+                    currentSheet["B2"].Value = string.Format("FOREIGN CURRENCY TRANSACTIONS VIA {0} FOR VALUE DATE {1:dd/MM/yyyy}",
                         sheetName, dataItem.SelectedDate.Value);
                     
                     var accounts = dataItem.Accounts.Where(x => x.Account == sheetName).ToList();
@@ -377,7 +377,7 @@ namespace xDC_Web.Extension.DocGenerator
                     DetailsTab_Table1(IF_MM_items, IF_MM_items_startIndex, ref IF_MM_items_endIndex, ref currentSheet);
 
                     var IF_Others_items_startIndex = IF_MM_items_endIndex + 2;
-                    var IF_Others_items_endIndex = IF_MM_items_endIndex + 6;
+                    var IF_Others_items_endIndex = IF_MM_items_endIndex + 5;
 
                     DetailsTab_Table2(IF_Others_items, IF_Others_items_startIndex, ref IF_Others_items_endIndex, ref currentSheet);
 
@@ -386,12 +386,12 @@ namespace xDC_Web.Extension.DocGenerator
                     var OF_Deposit_items_startIndex = IF_Others_items_endIndex + 6;
                     var OF_Deposit_items_endIndex = IF_Others_items_endIndex + 9;
 
-                    DetailsTab_Table1(OF_Deposit_items, OF_Deposit_items_startIndex, ref OF_Deposit_items_endIndex, ref currentSheet);
+                    DetailsTab_Table1(OF_Deposit_items, OF_Deposit_items_startIndex, ref OF_Deposit_items_endIndex, ref currentSheet, true);
 
                     var OF_MM_items_startIndex = OF_Deposit_items_endIndex + 2;
                     var OF_MM_items_endIndex = OF_Deposit_items_endIndex + 6;
 
-                    DetailsTab_Table1(OF_Deposit_items, OF_MM_items_startIndex, ref OF_MM_items_endIndex, ref currentSheet);
+                    DetailsTab_Table1(OF_MM_items, OF_MM_items_startIndex, ref OF_MM_items_endIndex, ref currentSheet, true);
 
                     var OF_Others_items_startIndex = OF_MM_items_endIndex + 2;
                     var OF_Others_items_endIndex = OF_MM_items_endIndex + 6;
@@ -559,7 +559,7 @@ namespace xDC_Web.Extension.DocGenerator
                     }
                 }
 
-                // Details portion
+                #region Sheet Others - Details
 
                 foreach (var item in dataObj.Accounts)
                 {
@@ -668,7 +668,8 @@ namespace xDC_Web.Extension.DocGenerator
                                         Principal_Interest = i.PrincipalIntProfitReceivable,
                                         InstrumentType = i.AssetType,
                                         Fca = i.FcaAccount,
-                                        ContactPerson = i.ContactPerson
+                                        ContactPerson = i.ContactPerson,
+                                        Dealer = i.Dealer
                                     });
                                 }
                             }
@@ -685,7 +686,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                                 foreach (var i in OF_MoneyMarket)
                                 {
-                                    item.Details_IF_MM.Add(new FCY_Item
+                                    item.Details_OF_MM.Add(new FCY_Item
                                     {
                                         Item = i.CounterParty,
                                         Currency = item.Currency,
@@ -699,11 +700,13 @@ namespace xDC_Web.Extension.DocGenerator
                                         Principal_Interest = i.IntDividendReceivable,
                                         InstrumentType = i.ProductType,
                                         Fca = i.FcaAccount,
-                                        ContactPerson = i.Dealer
+                                        Dealer = i.Dealer
                                     });
                                 }
                             }
                         }
+
+                        #region Others Portion
 
                         var approvedTsForms = db.ISSD_FormHeader
                             .Where(x => x.FormStatus == Common.FormStatus.Approved
@@ -761,15 +764,20 @@ namespace xDC_Web.Extension.DocGenerator
                                 }
                             }
                         }
-                        
+
+                        #endregion
                     }
                 }
-                
+
+                #endregion
+
+
+
 
                 return dataObj;
         }
 
-        private void DetailsTab_Table1(List<FCY_Item> items, int startIndex, ref int endIndex, ref Worksheet sheet)
+        private void DetailsTab_Table1(List<FCY_Item> items, int startIndex, ref int endIndex, ref Worksheet sheet, bool withDealer = false)
         {
             if (items.Any())
             {
@@ -797,6 +805,11 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["N" + currentIndex].Value = item.InstrumentType;
                     sheet["O" + currentIndex].Value = item.Fca;
                     sheet["P" + currentIndex].Value = item.ContactPerson;
+
+                    if (withDealer)
+                    {
+                        sheet["Q" + currentIndex].Value = item.Dealer;
+                    }
 
                     currentIndex++;
                 }
@@ -841,6 +854,10 @@ namespace xDC_Web.Extension.DocGenerator
                 if (currentIndex != startIndex)
                 {
                     sheet["F" + currentIndex].Formula = "=SUM($F$" + startIndex + ":$F$" + (currentIndex - 1) + ")";
+                }
+                else
+                {
+                    currentIndex++;
                 }
 
                 endIndex = currentIndex;
@@ -903,6 +920,7 @@ namespace xDC_Web.Extension.DocGenerator
         public string Notes { get; set; }
         public string Fca { get; set; }
         public string ContactPerson { get; set; }
+        public string Dealer { get; set; }
     }
 
     public class FCY_ItemOthers

@@ -24,5 +24,6 @@ namespace xDC_Web.ViewModels.Fid.Treasury
         public bool EnableSubmitForApproval { get; set; }
         public bool EnableResubmitBtn { get; set; }
         public bool EnableSaveAsDraftBtn { get; set; }
+        public bool EnableReassign { get; set; }
     }
 }

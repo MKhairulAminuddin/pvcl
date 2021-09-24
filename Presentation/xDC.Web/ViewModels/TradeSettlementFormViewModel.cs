@@ -29,6 +29,7 @@ namespace xDC_Web.ViewModels
         public bool EnableResubmit { get; set; }
         public bool EnableSubmitForApproval { get; set; }
         public bool EnableApproveRejectBtn { get; set; }
+        public bool EnableReassign { get; set; }
 
         
         public bool IsAdminEdited { get; set; }

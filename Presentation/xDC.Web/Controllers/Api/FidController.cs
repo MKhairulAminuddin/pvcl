@@ -1519,6 +1519,8 @@ namespace xDC_Web.Controllers.Api
 
         #endregion
 
+        #region Private Functions
+
         private FID_Treasury_Deposit FID_Treasury_Deposit_ObjMap(int formId, string cashFlow, TreasuryDepositVM item)
         {
             return new FID_Treasury_Deposit
@@ -1569,5 +1571,8 @@ namespace xDC_Web.Controllers.Api
                 ModifiedDate = DateTime.Now
             };
         }
+
+        #endregion
+
     }
 }

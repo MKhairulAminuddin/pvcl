@@ -15,37 +15,48 @@
             <form id="treasuryForm">
                 <div class="box box-solid">
                     <div class="box-header">
-                        @(Html.DevExtreme().Button()
-                            .Type(ButtonType.Back)
-                            .StylingMode(ButtonStylingMode.Contained)
-                            .OnClick(@<text> function(){ window.location = "@Url.Action("Treasury", "Fid")"; } </text>)
-                            )
-
-                        @if (Model.EnableApproveBtn)
-                        {
+                        <div class="left-container">
                             @(Html.DevExtreme().Button()
-                                .ID("approveBtn")
-                                .Text("Approve")
-                                .Icon("check")
-                                .Type(ButtonType.Success)
+                                .Type(ButtonType.Back)
                                 .StylingMode(ButtonStylingMode.Contained)
+                                .OnClick(@<text> function(){ window.location = "@Url.Action("Treasury", "Fid")"; } </text>)
                                 )
-                        }
-                        @if (Model.EnableRejectBtn)
-                        {
-                            @(Html.DevExtreme().Button()
-                                .ID("rejectBtn")
-                                .Text("Reject")
-                                .Icon("remove")
-                                .Type(ButtonType.Danger)
-                                .StylingMode(ButtonStylingMode.Contained)
-                                )
-                        }
 
-                        <div id="printBtn"></div>
-
-                        <div id="viewWorkflowBtn"></div>
-
+                            @if (Model.EnableApproveBtn)
+                            {
+                                @(Html.DevExtreme().Button()
+                                    .ID("approveBtn")
+                                    .Text("Approve")
+                                    .Icon("check")
+                                    .Type(ButtonType.Success)
+                                    .StylingMode(ButtonStylingMode.Contained)
+                                    )
+                            }
+                            @if (Model.EnableRejectBtn)
+                            {
+                                @(Html.DevExtreme().Button()
+                                    .ID("rejectBtn")
+                                    .Text("Reject")
+                                    .Icon("remove")
+                                    .Type(ButtonType.Danger)
+                                    .StylingMode(ButtonStylingMode.Contained)
+                                    )
+                            }
+                            @if (Model.EnableReassign)
+                            {
+                                @(Html.DevExtreme().Button()
+                                    .ID("reassignBtn")
+                                    .Text("Reassign Approval")
+                                    .Icon("fa fa-random")
+                                    .Type(ButtonType.Default)
+                                    .StylingMode(ButtonStylingMode.Contained)
+                                    )
+                            }
+                            <div id="viewWorkflowBtn"></div>
+                        </div>
+                        <div class="right-container pull-right">
+                            <div id="printBtn"></div>
+                        </div>
                     </div>
                     <div class="box-body">
                         <div class="dx-fieldset">
@@ -201,6 +212,7 @@
 @Html.Partial("_ApprovalModal")
 @Html.Partial("_RejectionModal")
 @Html.Partial("_WorkflowInfoModal")
+@Html.Partial("_ApprovalReassignModal")
 
 <script type="text/html" id="dxPanelTitle">
     <div style="margin: 4px 0">

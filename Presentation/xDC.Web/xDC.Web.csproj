@@ -607,6 +607,7 @@
     <Content Include="Views\Issd\FcaTagging\FcaTaggingEdit.cshtml" />
     <Content Include="Views\DealCutOff\Fcy.cshtml" />
     <Content Include="Views\DealCutOff\Myr.cshtml" />
+    <Content Include="Views\Shared\_ApprovalReassignModal.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -667,6 +668,7 @@
     <Compile Include="Models\MailMerge\AmsdInflowFundFormPreviewModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MailMerge\SpreadsheetPreviewModel.cs" />
+    <Compile Include="Models\NewApprover.cs" />
     <Compile Include="Models\Trades.cs" />
     <Compile Include="Models\TreasuryFormVM.cs" />
     <Compile Include="ViewModels\Fid\DealCutOff\SpreadsheetModelBase.cs" />

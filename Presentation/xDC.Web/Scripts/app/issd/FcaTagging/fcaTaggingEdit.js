@@ -207,12 +207,6 @@
                                     }
                                 ]
                             },
-                            editing: {
-                                mode: "batch",
-                                allowUpdating: true,
-                                allowDeleting: false,
-                                allowAdding: false
-                            },
                             showBorders: true
                         });
                         $equityGrid = newTabView.dxDataGrid("instance");
@@ -350,12 +344,6 @@
                                         }
                                     }
                                 ]
-                            },
-                            editing: {
-                                mode: "batch",
-                                allowUpdating: true,
-                                allowDeleting: false,
-                                allowAdding: false
                             },
                             showBorders: true
                         });
@@ -495,12 +483,6 @@
                                     }
                                 ]
                             },
-                            editing: {
-                                mode: "batch",
-                                allowUpdating: true,
-                                allowDeleting: false,
-                                allowAdding: false
-                            },
                             showBorders: true
                         });
                         $cpGrid = newTabView.dxDataGrid("instance");
@@ -639,12 +621,6 @@
                                     }
                                 ]
                             },
-                            editing: {
-                                mode: "batch",
-                                allowUpdating: true,
-                                allowDeleting: false,
-                                allowAdding: false
-                            },
                             showBorders: true
                         });
                         $notesPaperGrid = newTabView.dxDataGrid("instance");
@@ -764,12 +740,6 @@
                                     }
                                 ]
                             },
-                            editing: {
-                                mode: "batch",
-                                allowUpdating: true,
-                                allowDeleting: false,
-                                allowAdding: false
-                            },
                             showBorders: true
                         });
                         $repoGrid = newTabView.dxDataGrid("instance");
@@ -857,12 +827,6 @@
                                         }
                                     }
                                 ]
-                            },
-                            editing: {
-                                mode: "batch",
-                                allowUpdating: true,
-                                allowDeleting: false,
-                                allowAdding: false
                             },
                             showBorders: true
                         });
@@ -978,12 +942,6 @@
                                     }
                                 ]
                             },
-                            editing: {
-                                mode: "batch",
-                                allowUpdating: true,
-                                allowDeleting: false,
-                                allowAdding: false
-                            },
                             showBorders: true
                         });
                         $mtmGrid = newTabView.dxDataGrid("instance");
@@ -1098,12 +1056,6 @@
                                     }
                                 ]
                             },
-                            editing: {
-                                mode: "batch",
-                                allowUpdating: true,
-                                allowDeleting: false,
-                                allowAdding: false
-                            },
                             showBorders: true
                         });
                         $fxSettlementGrid = newTabView.dxDataGrid("instance");
@@ -1187,12 +1139,6 @@
                                     }
                                 ]
                             },
-                            editing: {
-                                mode: "batch",
-                                allowUpdating: true,
-                                allowDeleting: false,
-                                allowAdding: false
-                            },
                             showBorders: true
                         });
                         $contributionCreditedGrid = newTabView.dxDataGrid("instance");
@@ -1205,12 +1151,13 @@
                 tabPanelItems.push(newItem);
             }
 
+
             
             if (response.data[0].fees) {
                 var newItem = {
                     title: "Fees",
                     template: function (itemData, itemIndex, element) {
-                        const newTabView = $("<div id='feesGrid' class='grid-container-tabview' style='width: 100%'/>");
+                        var newTabView = $("<div id='feesGrid' class='grid-container-tabview' style='width: 100%'/>");
                         newTabView.dxDataGrid({
                             dataSource: DevExpress.data.AspNet.createStore({
                                 key: "id",
@@ -1242,7 +1189,8 @@
                                     cellTemplate: function (container, options) {
                                         container.addClass("dxDataGrid-cell-grey");
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
-                                    }
+                                    },
+                                    allowEditing: false
                                 },
                                 {
                                     dataField: "instrumentCode",
@@ -1309,13 +1257,13 @@
                             },
                             onEditorPreparing: function (e) {
                                 if (e.parentType === "dataRow" && e.dataField === "inflowTo") {
-                                    if (e.row.data.amountPlus == 0) {
+                                    if (e.row.data.inflowAmount == 0) {
                                         e.editorOptions.disabled = true;
                                     }
                                 }
 
                                 if (e.parentType === "dataRow" && e.dataField === "outflowFrom") {
-                                    if (e.row.data.amountMinus == 0) {
+                                    if (e.row.data.outflowAmount == 0) {
                                         e.editorOptions.disabled = true;
                                     }
                                 }
@@ -1336,7 +1284,7 @@
                 var newItem = {
                     title: "ALTID",
                     template: function (itemData, itemIndex, element) {
-                        const newTabView = $("<div id='altidGrid' class='grid-container-tabview' style='width: 100%'/>")
+                        var newTabView = $("<div id='altidGrid' class='grid-container-tabview' style='width: 100%'/>");
                         newTabView.dxDataGrid({
                             dataSource: DevExpress.data.AspNet.createStore({
                                 key: "id",
@@ -1366,9 +1314,12 @@
                                     width: "150px",
                                     caption: "Outflow From",
                                     cellTemplate: function (container, options) {
-                                        container.addClass("dxDataGrid-cell-grey");
+                                        if (options.data.outflowAmount == 0) {
+                                            container.addClass("dxDataGrid-cell-grey");
+                                        }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
-                                    }
+                                    },
+                                    allowEditing: false
                                 },
                                 {
                                     dataField: "instrumentCode",
@@ -1471,7 +1422,7 @@
                 var newItem = {
                     title: "Others",
                     template: function (itemData, itemIndex, element) {
-                        const newTabView = $("<div id='othersGrid' class='grid-container-tabview' style='width: 100%'/>")
+                        var newTabView = $("<div id='othersGrid' class='grid-container-tabview' style='width: 100%'/>");
                         newTabView.dxDataGrid({
                             dataSource: DevExpress.data.AspNet.createStore({
                                 key: "id",
@@ -1501,9 +1452,12 @@
                                     width: "150px",
                                     caption: "Outflow From",
                                     cellTemplate: function (container, options) {
-                                        container.addClass("dxDataGrid-cell-grey");
+                                        if (options.data.outflowAmount == 0) {
+                                            container.addClass("dxDataGrid-cell-grey");
+                                        }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
-                                    }
+                                    },
+                                    allowEditing: false
                                 },
                                 {
                                     dataField: "instrumentCode",
@@ -1579,13 +1533,13 @@
                             },
                             onEditorPreparing: function (e) {
                                 if (e.parentType === "dataRow" && e.dataField === "inflowTo") {
-                                    if (e.row.data.amountPlus == 0) {
+                                    if (e.row.data.inflowAmount == 0) {
                                         e.editorOptions.disabled = true;
                                     }
                                 }
 
                                 if (e.parentType === "dataRow" && e.dataField === "outflowFrom") {
-                                    if (e.row.data.amountMinus == 0) {
+                                    if (e.row.data.outflowAmount == 0) {
                                         e.editorOptions.disabled = true;
                                     }
                                 }

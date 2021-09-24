@@ -98,6 +98,50 @@ namespace xDC.Services
             }
         }
 
+        public void ReassignWorkflow(int formId, string formType)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formWorkflow = new Form_Workflow()
+                    {
+                        FormId = formId,
+                        FormType = formType,
+                        WorkflowStatus = Common.FormStatus.PendingApproval,
+                        WorkflowNotes = "Reassign Approval",
+                        RecordedDate = DateTime.Now
+                    };
+
+                    if (formType == Common.FormType.AMSD_IF)
+                    {
+                        var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
+                        formWorkflow.RequestBy = form.PreparedBy;
+                        formWorkflow.RequestTo = form.ApprovedBy;
+                    }
+                    else if (formType == Common.FormType.FID_TREASURY)
+                    {
+                        var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
+                        formWorkflow.RequestBy = form.PreparedBy;
+                        formWorkflow.RequestTo = form.ApprovedBy;
+                    }
+                    else
+                    {
+                        var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId && x.FormType == formType);
+                        formWorkflow.RequestBy = form.PreparedBy;
+                        formWorkflow.RequestTo = form.ApprovedBy;
+                    }
+
+                    db.Form_Workflow.Add(formWorkflow);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
         public List<Form_Workflow> GetWorkflow(int formId)
         {
             try

@@ -415,7 +415,8 @@ namespace xDC_Web.Controllers
                 AdminEditedBy = form.AdminEdittedBy,
                 AdminEditedDate = form.AdminEdittedDate,
                 
-                EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Issd) && form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval)
+                EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Issd) && form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval),
+                EnableReassign = (form.FormStatus == Common.FormStatus.PendingApproval && form.ApprovedBy != User.Identity.Name)
             };
         }
 

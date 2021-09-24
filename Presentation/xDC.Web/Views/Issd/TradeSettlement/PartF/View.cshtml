@@ -15,36 +15,55 @@
         <div class="col-md-12">
             <div class="box box-solid">
                 <div class="box-header">
-                    @(Html.DevExtreme().Button()
-                        .Type(ButtonType.Back)
-                        .StylingMode(ButtonStylingMode.Contained)
-                        .OnClick(@<text> function(){ window.location = "@Url.Action("TradeSettlement", "Issd")"; } </text>)
-                        )
-                    @if (Model.EnableApproveRejectBtn)
-                    {
+                    <div class="left-container">
                         @(Html.DevExtreme().Button()
-                            .ID("approveBtn")
-                            .Text("Approve")
-                            .Icon("check")
-                            .Type(ButtonType.Success)
+                            .Type(ButtonType.Back)
                             .StylingMode(ButtonStylingMode.Contained)
+                            .OnClick(@<text> function(){ window.location = "@Url.Action("TradeSettlement", "Issd")"; } </text>)
                             )
+
+                        @if (Model.EnableApproveRejectBtn)
+                        {
+                            @(Html.DevExtreme().Button()
+                                .ID("approveBtn")
+                                .Text("Approve")
+                                .Icon("check")
+                                .Type(ButtonType.Success)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                )
+
+                            @(Html.DevExtreme().Button()
+                                .ID("rejectBtn")
+                                .Text("Reject")
+                                .Icon("remove")
+                                .Type(ButtonType.Normal)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                )
+                        }
+
+                        @if (Model.EnableReassign)
+                        {
+                            @(Html.DevExtreme().Button()
+                                .ID("reassignBtn")
+                                .Text("Reassign Approval")
+                                .Icon("fa fa-random")
+                                .Type(ButtonType.Default)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                )
+                        }
+
                         @(Html.DevExtreme().Button()
-                            .ID("rejectBtn")
-                            .Text("Reject")
-                            .Icon("remove")
+                            .ID("viewWorkflowBtn")
+                            .Text("Workflow Information")
+                            .Icon("detailslayout")
                             .Type(ButtonType.Normal)
                             .StylingMode(ButtonStylingMode.Contained)
                             )
-                    }
-                    <div id="printBtn"></div>
-                    @(Html.DevExtreme().Button()
-                        .ID("viewWorkflowBtn")
-                        .Text("Workflow Information")
-                        .Icon("detailslayout")
-                        .Type(ButtonType.Normal)
-                        .StylingMode(ButtonStylingMode.Contained)
-                        )
+                    </div>
+
+                    <div class="right-container pull-right">
+                        <div id="printBtn"></div>
+                    </div>
                 </div>
                 <div class="box-body">
                     <div class="row">
@@ -175,6 +194,7 @@
 @Html.Partial("TradeSettlement/_TsApprovalModal")
 @Html.Partial("TradeSettlement/_TsRejectionModal")
 @Html.Partial("_WorkflowInfoModal")
+@Html.Partial("_ApprovalReassignModal")
 
 <script type="text/html" id="dxPanelTitle">
     <div style="margin: 4px 0">

@@ -172,6 +172,7 @@ namespace xDC_Web.Controllers
 
                             ApprovePermission = form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval,
                             EnableAdminEditBtn = User.IsInRole(Config.Acl.PowerUser),
+                            EnableReassign = (form.FormStatus == Common.FormStatus.PendingApproval && form.ApprovedBy != User.Identity.Name),
 
                             IsApprovedOrRejected = isApprovedOrRejected,
                             ApprovalOrRejectionNotes = getFormWorkflow?.WorkflowNotes

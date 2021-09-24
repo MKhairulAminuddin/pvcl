@@ -131,7 +131,8 @@ namespace xDC_Web.Controllers
 
                             EnableSubmitForApproval = (form.FormStatus != Common.FormStatus.PendingApproval && form.ApprovedBy == null),
                             EnableResubmitBtn = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected && form.ApprovedBy == null),
-                            EnableSaveAsDraftBtn = (form.FormStatus == Common.FormStatus.Draft && form.ApprovedBy == null)
+                            EnableSaveAsDraftBtn = (form.FormStatus == Common.FormStatus.Draft && form.ApprovedBy == null),
+                            EnableReassign = (form.FormStatus == Common.FormStatus.PendingApproval && form.ApprovedBy != User.Identity.Name)
                         };
                         return View("Treasury/Edit", model);
                     }
@@ -184,6 +185,7 @@ namespace xDC_Web.Controllers
 
                             EnableApproveBtn = form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval,
                             EnableRejectBtn = form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval,
+                            EnableReassign = (form.FormStatus == Common.FormStatus.PendingApproval && form.ApprovedBy != User.Identity.Name)
                         };
                         return View("Treasury/View", formVm);
                     }

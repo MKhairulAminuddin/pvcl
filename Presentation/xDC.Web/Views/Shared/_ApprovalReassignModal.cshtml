@@ -1,0 +1,38 @@
+﻿<div id="approvalReassignModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title">Reassign Approval:</h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>New Approver :</p>
+                        <div id="newApproverDropdown"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div>
+                    @(Html.DevExtreme().Button()
+                        .ID("approvalReassignModalBtn")
+                        .Text("Proceed")
+                        .Type(ButtonType.Default)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        )
+                    @(Html.DevExtreme().Button()
+                        .Text("Close")
+                        .Type(ButtonType.Normal)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        .OnClick(@<text> function(){ $('#approvalReassignModal').modal('hide'); } </text>)
+                        )
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

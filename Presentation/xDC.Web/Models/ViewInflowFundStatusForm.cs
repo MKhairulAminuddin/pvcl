@@ -26,6 +26,7 @@ namespace xDC_Web.Models
         public bool ApprovePermission { get; set; }
         public bool EnableAdminEditBtn { get; set; }
         public bool EnableSaveAsDraftBtn { get; set; }
+        public bool EnableReassign { get; set; }
 
         public bool IsApprovedOrRejected { get; set; }
         public string ApprovalOrRejectionNotes { get; set; }
