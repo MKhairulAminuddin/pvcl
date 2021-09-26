@@ -27,6 +27,17 @@
 
         //#region Data Source & Functions
 
+        var dsApproverList = function () {
+            return {
+                store: DevExpress.data.AspNet.createStore({
+                    key: "id",
+                    loadUrl: window.location.origin + "/api/common/GetTradeSettlementApprover"
+                }),
+                paginate: true,
+                pageSize: 20
+            };
+        }
+
         var populateData = function() {
             $.when(
                     tradeSettlement.dsTradeItem("mtm"),
