@@ -204,17 +204,10 @@ namespace xDC.Services.App
                 DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate.Date) 
                 && x.Currency == currency 
                 && x.FormType == formType);
-
-            var isTMinus = settlementDate.Date < DateTime.Now.Date;
-
+            
             if (isSameDateFormExist)
             {
-                errorMessage = "Similar form has been created. Use that instead";
-                return true;
-            }
-            else if (isTMinus)
-            {
-                errorMessage = "Submission for Settlement Date T-n is not allowed";
+                errorMessage = "Similar form with same Form Part, Currency and Settlement has been already created. Use that instead";
                 return true;
             }
             else
@@ -223,7 +216,6 @@ namespace xDC.Services.App
                 return false;
             }
         }
-
 
         public static double GetTotalInflowByCategory(kashflowDBEntities db, List<int> approvedFormIds, string category)
         {
@@ -243,22 +235,7 @@ namespace xDC.Services.App
 
             return result;
         }
-
-        public static double GetTotalInflowWithoutEquity(kashflowDBEntities db, List<int> approvedFormIds)
-        {
-            if (approvedFormIds.Any())
-            {
-                var result = db.ISSD_TradeSettlement
-                    .Where(x => approvedFormIds.Contains(x.FormId) && x.InstrumentType != Common.TsItemCategory.Equity)
-                    .Sum(x => x.Sales + x.Maturity + x.AmountPlus + x.FirstLeg);
-                return result;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
+        
         public static double GetTotalOutflowByCategory(kashflowDBEntities db, List<int> approvedFormIds, string category)
         {
             var result = db.ISSD_TradeSettlement
@@ -276,20 +253,6 @@ namespace xDC.Services.App
 
             return result;
         }
-
-        public static double GetTotalOutflowWithoutEquity(kashflowDBEntities db, List<int> approvedFormIds)
-        {
-            if (approvedFormIds.Any())
-            {
-                var result = db.ISSD_TradeSettlement
-                    .Where(x => approvedFormIds.Contains(x.FormId) && x.InstrumentType != Common.TsItemCategory.Equity)
-                    .Sum(x => x.Purchase + x.AmountMinus + x.SecondLeg);
-                return result;
-            }
-            else
-            {
-                return 0;
-            }
-        }
+        
     }
 }

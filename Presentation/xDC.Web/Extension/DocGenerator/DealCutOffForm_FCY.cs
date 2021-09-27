@@ -604,8 +604,10 @@ namespace xDC_Web.Extension.DocGenerator
                                         Interest = i.IntProfitReceivable,
                                         Principal_Interest = i.PrincipalIntProfitReceivable,
                                         InstrumentType = i.AssetType,
+                                        Notes = i.Notes,
                                         Fca = i.FcaAccount,
-                                        ContactPerson = i.ContactPerson
+                                        ContactPerson = i.ContactPerson,
+                                        Dealer = i.Dealer
                                     });
                                 }
                             }
@@ -666,9 +668,10 @@ namespace xDC_Web.Extension.DocGenerator
                                         Interest = i.IntProfitReceivable,
                                         Principal_Interest = i.PrincipalIntProfitReceivable,
                                         InstrumentType = i.AssetType,
+                                        Notes = i.Notes,
                                         Fca = i.FcaAccount,
                                         ContactPerson = i.ContactPerson,
-                                        Dealer = i.Dealer
+                                        Dealer = i.Dealer,
                                     });
                                 }
                             }
