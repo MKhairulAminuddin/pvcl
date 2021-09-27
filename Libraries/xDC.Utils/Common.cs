@@ -73,6 +73,7 @@ namespace xDC.Utils
             public const string FID_Treasury = "~/App_Data/Treasury Template.xltx";
             public const string FID_DealCutOff_MYR = "~/App_Data/Deal Cut Off MYR Template.xltx";
             public const string FID_DealCutOff_FCY = "~/App_Data/Deal Cut Off FCY Template.xltx";
+            public const string FID_TenAmDealCutOff = "~/App_Data/10am Deal Cut Off.xltx";
         }
 
         public static class DownloadedFileName
@@ -83,6 +84,7 @@ namespace xDC.Utils
             public const string FID_Treasury = "FID Treasury - ";
             public const string FID_DealCutOff_MYR = "FID Deal Cut Off MYR - ";
             public const string FID_DealCutOff_FCY = "FID Deal Cut Off FCY - ";
+            public const string FID_TenAmDealCutOff = "10am Deal Cut Off - ";
         }
 
         public static string ConvertIndexToContentType(int value)

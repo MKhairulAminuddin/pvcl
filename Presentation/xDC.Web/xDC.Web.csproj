@@ -287,8 +287,6 @@
     <Content Include="Scripts\app.dxGrid.utils.js" />
     <Content Include="Scripts\app\dealCutOff\fcy.js" />
     <Content Include="Scripts\app\dealCutOff\myr.js" />
-    <Content Include="Scripts\app\fid\dealCutOff\fcy.js" />
-    <Content Include="Scripts\app\fid\dealCutOff\myr.js" />
     <Content Include="Scripts\app\fid\tenAmCutOff\fcaTagging.js" />
     <Content Include="Scripts\app\fid\tenAmCutOff\fcaTaggingEdit.js" />
     <Content Include="Scripts\app\fid\treasury\edit.js" />
@@ -296,7 +294,7 @@
     <Content Include="Scripts\app\fid\treasury\index.js" />
     <Content Include="Scripts\app\fid\treasury\new.js" />
     <Content Include="Scripts\app\fid\treasury\view.js" />
-    <Content Include="Scripts\app\fid\tenAmCutOff\summary.js" />
+    <Content Include="Scripts\app\tenAmDealCutOff\index.js" />
     <Content Include="Scripts\app\issd\FcaTagging\fcaTagging.js" />
     <Content Include="Scripts\app\issd\FcaTagging\fcaTaggingEdit.js" />
     <Content Include="Scripts\app\issd\tradeSettlement\index.js" />
@@ -380,6 +378,7 @@
     <Content Include="App_Data\Treasury Template.xltx" />
     <Content Include="App_Data\Deal Cut Off MYR Template.xltx" />
     <Content Include="App_Data\Deal Cut Off FCY Template.xltx" />
+    <Content Include="App_Data\10am Deal Cut Off.xltx" />
     <None Include="Scripts\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.5.1.js" />
     <Content Include="Scripts\jquery-3.5.1.min.js" />
@@ -577,7 +576,7 @@
     <Content Include="Views\Issd\TradeSettlement\PartE\Edit.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartE\New.cshtml" />
     <Content Include="Views\Issd\TradeSettlement\PartE\View.cshtml" />
-    <Content Include="Views\Fid\TenAmCutOff\Summary.cshtml" />
+    <Content Include="Views\TenAmDealCutOff\Index.cshtml" />
     <Content Include="Views\Fid\TenAmCutOff\FcaTagging.cshtml" />
     <Content Include="Views\Shared\_PageTitle.cshtml" />
     <Content Include="Views\Fid\TenAmCutOff\FcaTaggingEdit.cshtml" />
@@ -635,6 +634,7 @@
     <Compile Include="Controllers\Api\FidController.cs" />
     <Compile Include="Controllers\Api\IssdController.cs" />
     <Compile Include="Controllers\Api\SettingController.cs" />
+    <Compile Include="Controllers\Api\TenAmDealCutOffController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\DealCutOffController.cs" />
     <Compile Include="Controllers\FidController.cs" />
@@ -642,12 +642,14 @@
     <Compile Include="Controllers\IssdController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\SettingController.cs" />
+    <Compile Include="Controllers\TenAmDealCutOffController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Extension\AdAuthentication.cs" />
     <Compile Include="Extension\CustomAttribute\InflowFundFormPermissionAttribute.cs" />
     <Compile Include="Extension\CustomAttribute\KashflowAuthorize.cs" />
     <Compile Include="Extension\CustomHtmlHelper\xDC_HtmlHelperTest.cs" />
     <Compile Include="Extension\DocGenerator\DealCutOffForm_FCY.cs" />
+    <Compile Include="Extension\DocGenerator\TenAmDealCutOffDoc.cs" />
     <Compile Include="Extension\DocGenerator\DealCutOffForm_MYR.cs" />
     <Compile Include="Extension\DocGenerator\DocGeneratorBase.cs" />
     <Compile Include="Extension\DocGenerator\TreasuryFormDoc.cs" />

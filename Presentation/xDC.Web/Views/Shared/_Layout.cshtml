@@ -138,26 +138,16 @@
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li class="treeview">
-                                    <a href="#">
-                                        <i class="fa fa-circle-thin"></i> <span>10am Cut Off</span>
-                                        <span class="pull-right-container">
-                                            <i class="fa fa-angle-left pull-right"></i>
-                                        </span>
-                                    </a>
-                                    <ul class="treeview-menu">
-                                        <li><a href="@Url.Action("Summary", "Fid")"><i class="fa fa-circle-thin"></i> <span>Summary</span></a></li>
-                                        <li><a href="@Url.Action("FcaTagging", "Fid")"><i class="fa fa-circle-thin"></i> <span>FCA Tagging</span></a></li>
-                                    </ul>
-                                </li>
+                                <li><a href="@Url.Action("FcaTagging", "Fid")"><i class="fa fa-circle-thin"></i> <span>FCA Tagging</span></a></li>
                                 <li><a href="@Url.Action("Treasury", "Fid")"><i class="fa fa-circle-thin"></i> <span>Treasury</span></a></li>
                             </ul>
                         </li>
                     }
                     @if (MenuSecurity.FidMenu || MenuSecurity.IssdMenu)
                     {
-                        <li><a href="@Url.Action("DealCutOffMyr", "DealCutOff")"><i class="fa fa-circle-thin"></i> <span>DEAL CUT OFF MYR</span></a></li>
-                        <li><a href="@Url.Action("DealCutOffFcy", "DealCutOff")"><i class="fa fa-circle-thin"></i> <span>DEAL CUT OFF FCY</span></a></li>
+                        <li><a href="@Url.Action("Index", "TenAmDealCutOff")"><i class="fa fa-circle-thin"></i> <span>10am Deal Cut Off</span></a></li>
+                        <li><a href="@Url.Action("DealCutOffMyr", "DealCutOff")"><i class="fa fa-circle-thin"></i> <span>Deal Cut Off (MYR)</span></a></li>
+                        <li><a href="@Url.Action("DealCutOffFcy", "DealCutOff")"><i class="fa fa-circle-thin"></i> <span>Deal Cut Off (FCY)</span></a></li>
                     }
                     @if (MenuSecurity.PowerUsersMenu)
                     {
@@ -172,8 +162,6 @@
                                 <li><a href="@Url.Action("DropdownConfig","Setting")"><i class="fa fa-circle-thin"></i> <span>Dropdown</span></a></li>
                                 <li><a href="@Url.Action("NotificationConfig","Setting")"><i class="fa fa-circle-thin"></i> <span>Notification</span></a></li>
                                 <li><a href="@Url.Action("ApproverManagement","Setting")"><i class="fa fa-circle-thin"></i> <span>Approver</span></a></li>
-                                @*<li><a href="@Url.Action("Workflow","Setting")"><i class="fa fa-circle-thin"></i> <span>Workflow</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>
-                    <li><a href="@Url.Action("AuditTrail","Setting")"><i class="fa fa-circle-thin"></i> <span>Audit Trail</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>*@
                             </ul>
                         </li>
                     }
@@ -190,8 +178,6 @@
                                 <li><a href="@Url.Action("UserManagement","Admin")"><i class="fa fa-circle-thin"></i> <span>Users</span></a></li>
                                 <li><a href="@Url.Action("ApplicationConfig","Admin")"><i class="fa fa-circle-thin"></i> <span>Application Config</span></a></li>
                                 <li><a href="@Url.Action("Utility","Admin")"><i class="fa fa-circle-thin"></i> <span>Utility</span></a></li>
-                                @*<li><a href="@Url.Action("SystemInformation","Admin")"><i class="fa fa-circle-thin"></i> <span>System Information</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>
-                    <li><a href="@Url.Action("SystemLogs","Admin")"><i class="fa fa-circle-thin"></i> <span>System Logs</span> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></a></li>*@
                                 <li><a href="~/hangfire"><i class="fa fa-circle-thin"></i> <span>Task Scheduler</span></a></li>
                             </ul>
                         </li>

@@ -5,10 +5,11 @@
         var $tabpanel,
             $grid,
             $dateSelectionBtn,
-            $printBtn;
+            $printBtn,
+            $refreshBtn;
 
         var referenceUrl = {
-            load10amCutOff: window.location.origin + "/api/fid/10AmCutOff/"
+            load10amCutOff: window.location.origin + "/api/TenAmDealCutOff/Summary/"
         };
 
         //#endregion
@@ -47,6 +48,62 @@
                     });
             }
         }).dxDateBox("instance");
+
+        $refreshBtn = $("#refreshBtn").dxButton({
+            icon: "refresh",
+            onClick: function (e) {
+                $.when(ds($dateSelectionBtn.option("value")))
+                    .done(function (data1) {
+                        $grid.option("dataSource", data1.data);
+                        $grid.repaint();
+
+                        app.toast("Refreshed", "info");
+                    });
+            }
+        }).dxButton("instance");
+
+        $printBtn = $("#printBtn").dxDropDownButton({
+            text: "Print",
+            icon: "print",
+            type: "normal",
+            stylingMode: "contained",
+            dropDownOptions: {
+                width: 230
+            },
+            displayExpr: "name",
+            keyExpr: "id",
+            items: [
+                { id: 1, name: "Excel Workbook (*.xlsx)", icon: "fa fa-file-excel-o" },
+                { id: 2, name: "PDF", icon: "fa fa-file-pdf-o" }
+            ],
+            onItemClick: function (e) {
+                app.toast("Generating...");
+
+                var data = {
+                    SelectedDateEpoch: moment($dateSelectionBtn.option("value")).unix(),
+                    isExportAsExcel: (e.itemData.id == 1)
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: window.location.origin + "/TenAmDealCutOff/Print",
+                    data: data,
+                    dataType: "text",
+                    success: function (data) {
+                        var url = window.location.origin + "/TenAmDealCutOff/Printed/" + data;
+                        window.location = url;
+                    },
+                    fail: function (jqXHR, textStatus, errorThrown) {
+                        app.alertError(textStatus + ": " + errorThrown);
+                    },
+                    complete: function (data) {
+
+                    }
+                });
+
+                e.event.preventDefault();
+            }
+        }).dxDropDownButton("instance");
         
 
         //#endregion
@@ -162,11 +219,8 @@
             grouping: {
                 autoExpandAll: true,
             },
-            "export": {
-                enabled: true,
-            },
             paging: {
-                enabled: false,
+                enabled: false
             },
         }).dxDataGrid("instance");
         

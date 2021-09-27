@@ -29,13 +29,7 @@ namespace xDC_Web.Controllers
         }
 
         #region 10 AM Cut Off
-
-        [Route("Summary")]
-        public ActionResult Summary()
-        {
-            return View("TenAmCutOff/Summary");
-        }
-
+        
         [Route("FcaTagging")]
         public ActionResult FcaTagging()
         {
