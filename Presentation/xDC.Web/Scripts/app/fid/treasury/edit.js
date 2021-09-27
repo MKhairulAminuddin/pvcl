@@ -473,7 +473,7 @@
                         displayFormat: "{0}",
                         valueFormat: {
                             type: "fixedPoint",
-                            precision: 0
+                            precision: 2
                         }
                     },
                     {
@@ -728,7 +728,7 @@
                         displayFormat: "{0}",
                         valueFormat: {
                             type: "fixedPoint",
-                            precision: 0
+                            precision: 2
                         }
                     },
                     {
@@ -1007,7 +1007,7 @@
                         displayFormat: "{0}",
                         valueFormat: {
                             type: "fixedPoint",
-                            precision: 0
+                            precision: 2
                         }
                     },
                     {
@@ -1285,7 +1285,7 @@
                         displayFormat: "{0}",
                         valueFormat: {
                             type: "fixedPoint",
-                            precision: 0
+                            precision: 2
                         }
                     },
                     {
