@@ -5,15 +5,42 @@
         var $issdGrid, $issdGridFilterBtn, $newFormBtn, $consolidatedTradeSettlementGrid;
 
         var statuses = [
-            "All",
-            "Trade Settlement (Part A)",
-            "Trade Settlement (Part B)",
-            "Trade Settlement (Part C)",
-            "Trade Settlement (Part D)",
-            "Trade Settlement (Part E)",
-            "Trade Settlement (Part F)",
-            "Trade Settlement (Part G)",
-            "Trade Settlement (Part H)"
+            {
+                "RefName": "All",
+                "DisplayName": "All"
+            },
+            {
+                "RefName": "Trade Settlement (Part A)",
+                "DisplayName": "A - Equity"
+            },
+            {
+                "RefName": "Trade Settlement (Part B)",
+                "DisplayName": "B - Bond, CP, Notes/Papers, Coupon"
+            },
+            {
+                "RefName": "Trade Settlement (Part C)",
+                "DisplayName": "C - REPO"
+            },
+            {
+                "RefName": "Trade Settlement (Part D)",
+                "DisplayName": "D - MTM, FX"
+            },
+            {
+                "RefName": "Trade Settlement (Part E)",
+                "DisplayName": "E - ALTID"
+            },
+            {
+                "RefName": "Trade Settlement (Part F)",
+                "DisplayName": "F - Fees"
+            },
+            {
+                "RefName": "Trade Settlement (Part G)",
+                "DisplayName": "G - Contribution"
+            },
+            {
+                "RefName": "Trade Settlement (Part H)",
+                "DisplayName": "H - Others"
+            }
         ];
         
         $issdGrid = $("#issdGrid").dxDataGrid({
@@ -303,12 +330,15 @@
 
         $issdGridFilterBtn = $("#filterformBtn").dxSelectBox({
             dataSource: statuses,
-            value: statuses[0],
+            value: statuses[0].RefName,
+            displayExpr: "DisplayName",
+            valueExpr: "RefName",
             onValueChanged: function (data) {
-                if (data.value == "All")
+                if (data.value == "All") {
                     $issdGrid.clearFilter();
-                else
+                } else {
                     $issdGrid.filter(["formType", "=", data.value]);
+                }
             }
         });
 
