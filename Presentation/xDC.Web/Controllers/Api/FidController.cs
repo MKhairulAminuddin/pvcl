@@ -324,7 +324,8 @@ namespace xDC_Web.Controllers.Api
                         AccountName3 = "MMA",
                         Currency = "MYR"
                     });
-                    
+
+                    #region 1 - ISSD Trade Settlement TRX
 
                     foreach (var account in configAccount)
                     {
@@ -353,9 +354,9 @@ namespace xDC_Web.Controllers.Api
                                 .Select(l => l.InflowAmount)
                                 .DefaultIfEmpty(0)
                                 .Sum();
-                            
+
                             item.TotalInflow = tradeItemInflow;
-                            
+
                             // get total inflow based on assigned outflow account
                             var tradeItemOutflow = db.ISSD_TradeSettlement
                                 .Where(x => approvedTsIds.Contains(x.FormId)
@@ -365,16 +366,147 @@ namespace xDC_Web.Controllers.Api
                                 .Select(l => l.OutflowAmount)
                                 .DefaultIfEmpty(0)
                                 .Sum();
-                            
+
                             item.TotalOutflow = tradeItemOutflow;
                         }
-                        
+
                         resultRaw.Add(item);
                     }
+
+                    #endregion
+
+                    #region 2 - FID Treasury TRX (MYR)
+
+                    var fidTreasuryMyr = new TenAmCutOffItemVM
+                    {
+                        Account = "RENTAS",
+                        Currency = "MYR"
+                    };
                     
-                    // AMSD - Inflow Funds
+                    var approvedFidTreasuryIds = db.FID_Treasury
+                        .Where(x => x.FormStatus == Common.FormStatus.Approved
+                                    && x.TradeDate != null
+                                    && x.Currency == "MYR"
+                                    && DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(reportDateParsed))
+                        .Select(x => x.Id)
+                        .ToList();
+
+                    if (approvedFidTreasuryIds.Any())
+                    {
+                        var inflowDeposit = db.FID_Treasury_Deposit
+                            .Where(x => approvedFidTreasuryIds.Contains(x.FormId)
+                                        && x.PrincipalIntProfitReceivable > 0
+                                        && x.CashflowType == Common.Cashflow.Inflow)
+                            .Select(l => l.PrincipalIntProfitReceivable)
+                            .DefaultIfEmpty(0)
+                            .Sum();
+                        
+                        var inflowMmi = db.FID_Treasury_MMI
+                            .Where(x => approvedFidTreasuryIds.Contains(x.FormId)
+                                        && x.CashflowType == Common.Cashflow.Inflow
+                                        && x.Proceeds > 0)
+                            .Select(l => l.Proceeds)
+                            .DefaultIfEmpty(0)
+                            .Sum();
+                        
+                        var outflowDeposit = db.FID_Treasury_Deposit
+                            .Where(x => approvedFidTreasuryIds.Contains(x.FormId)
+                                        && x.PrincipalIntProfitReceivable > 0
+                                        && x.CashflowType == Common.Cashflow.Outflow)
+                            .Select(l => l.PrincipalIntProfitReceivable)
+                            .DefaultIfEmpty(0)
+                            .Sum();
+                        
+                        var outflowMmi = db.FID_Treasury_MMI
+                            .Where(x => approvedFidTreasuryIds.Contains(x.FormId)
+                                        && x.CashflowType == Common.Cashflow.Outflow
+                                        && x.Proceeds > 0)
+                            .Select(l => l.Proceeds)
+                            .DefaultIfEmpty(0)
+                            .Sum();
+
+                        fidTreasuryMyr.TotalInflow += inflowDeposit;
+                        fidTreasuryMyr.TotalInflow += inflowMmi;
+                        fidTreasuryMyr.TotalOutflow += outflowDeposit;
+                        fidTreasuryMyr.TotalOutflow += outflowMmi;
+                    }
+
+                    resultRaw.Add(fidTreasuryMyr);
+
+                    #endregion
+
+                    #region 3 - FID Treasury TRX (FCY)
+
+                    foreach (var account in configAccount.Where(x => x.Currency != "MYR"))
+                    {
+                        var fidTreasuryFcy = new TenAmCutOffItemVM
+                        {
+                            Account = account.AccountName1,
+                            Currency = account.Currency
+                        };
+
+                        var approvedFidTreasuryIdsFcy = db.FID_Treasury
+                            .Where(x => x.FormStatus == Common.FormStatus.Approved
+                                        && x.TradeDate != null
+                                        && x.Currency == account.Currency
+                                        && DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(reportDateParsed))
+                            .Select(x => x.Id)
+                            .ToList();
+
+                        if (approvedFidTreasuryIdsFcy.Any())
+                        {
+                            var inflowDeposit = db.FID_Treasury_Deposit
+                                .Where(x => approvedFidTreasuryIdsFcy.Contains(x.FormId)
+                                            && x.PrincipalIntProfitReceivable > 0
+                                            && x.CashflowType == Common.Cashflow.Inflow
+                                            && x.FcaAccount == account.AccountName3)
+                                .Select(l => l.PrincipalIntProfitReceivable)
+                                .DefaultIfEmpty(0)
+                                .Sum();
+                            
+                            var inflowMmi = db.FID_Treasury_MMI
+                                .Where(x => approvedFidTreasuryIdsFcy.Contains(x.FormId)
+                                            && x.CashflowType == Common.Cashflow.Inflow
+                                            && x.Proceeds > 0
+                                            && x.FcaAccount == account.AccountName3)
+                                .Select(l => l.Proceeds)
+                                .DefaultIfEmpty(0)
+                                .Sum();
+                            
+                            var outflowDeposit = db.FID_Treasury_Deposit
+                                .Where(x => approvedFidTreasuryIdsFcy.Contains(x.FormId)
+                                            && x.PrincipalIntProfitReceivable > 0
+                                            && x.CashflowType == Common.Cashflow.Outflow
+                                            && x.FcaAccount == account.AccountName3)
+                                .Select(l => l.PrincipalIntProfitReceivable)
+                                .DefaultIfEmpty(0)
+                                .Sum();
+                            
+                            var outflowMmi = db.FID_Treasury_MMI
+                                .Where(x => approvedFidTreasuryIdsFcy.Contains(x.FormId)
+                                            && x.CashflowType == Common.Cashflow.Outflow
+                                            && x.Proceeds > 0
+                                            && x.FcaAccount == account.AccountName3)
+                                .Select(l => l.Proceeds)
+                                .DefaultIfEmpty(0)
+                                .Sum();
+                            
+                            fidTreasuryFcy.TotalInflow += inflowDeposit;
+                            fidTreasuryFcy.TotalInflow += inflowMmi;
+                            fidTreasuryFcy.TotalOutflow += outflowDeposit;
+                            fidTreasuryFcy.TotalOutflow += outflowMmi;
+                        }
+
+                        resultRaw.Add(fidTreasuryFcy);
+                    }
+
+
+                    #endregion
+
+                    #region 4 - AMSD Inflow Fund
+
                     var approvedAmsdForms = db.AMSD_IF
-                        .Where(x => DbFunctions.TruncateTime(x.ApprovedDate) == DbFunctions.TruncateTime(reportDateParsed) 
+                        .Where(x => DbFunctions.TruncateTime(x.ApprovedDate) == DbFunctions.TruncateTime(reportDateParsed)
                                     && x.FormStatus == Common.FormStatus.Approved)
                         .Select(x => x.Id);
 
@@ -404,11 +536,14 @@ namespace xDC_Web.Controllers.Api
                             resultRaw.Add(inflowFundsFromAmsd);
                         }
                     }
+                    #endregion
+
+                    #region 5 - Opening Balance
 
                     result = resultRaw
                         .GroupBy(x => new
                         {
-                            x.Account, 
+                            x.Account,
                             x.Currency
                         })
                         .Select(x => new TenAmCutOffItemVM
@@ -435,6 +570,8 @@ namespace xDC_Web.Controllers.Api
                         }
                     }
 
+                    #endregion
+                    
                     result = result.GroupBy(x => new
                         {
                             x.Account,
