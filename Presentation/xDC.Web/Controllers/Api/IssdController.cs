@@ -799,6 +799,7 @@ namespace xDC_Web.Controllers.Api
                             db.SaveChanges();
 
                             TradeSettlementSvc.NotifyPreparer(form.Id, form.FormType, form.FormStatus, form.PreparedBy, form.ApprovedBy, input.ApprovalNote);
+                            new MailService().TS_IncomingFund(form.Id, form.FormType, form.Currency);
 
                             return Request.CreateResponse(HttpStatusCode.Accepted, formId);
                         }

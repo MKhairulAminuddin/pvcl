@@ -263,7 +263,7 @@ namespace xDC.Utils
         /// woi
         /// </param>
         /// <returns></returns>
-        public static string Email_FormUrlMap(string formType)
+        public static string  Email_FormUrlMap(string formType)
         {
             switch (formType)
             {
@@ -366,6 +366,86 @@ namespace xDC.Utils
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddDays(addDays);
             var result = epoch.ToLocalTime().AddSeconds(unixTime);
             return result;
+        }
+
+        /// <summary>
+        /// https://stackoverflow.com/a/36476600/2343
+        /// </summary>
+        public class Table : IDisposable
+        {
+            private StringBuilder _sb;
+
+            public Table(StringBuilder sb, string id = "default", string classValue = "")
+            {
+                _sb = sb;
+                _sb.Append($"<table id=\"{id}\" style='border-collapse: collapse;' class=\"{classValue}\">\n");
+            }
+
+            public void Dispose()
+            {
+                _sb.Append("</table>");
+            }
+
+            public Row AddRow()
+            {
+                return new Row(_sb);
+            }
+
+            public Row AddHeaderRow()
+            {
+                return new Row(_sb, true);
+            }
+
+            public void StartTableBody()
+            {
+                _sb.Append("<tbody>");
+
+            }
+
+            public void EndTableBody()
+            {
+                _sb.Append("</tbody>");
+
+            }
+        }
+
+        public class Row : IDisposable
+        {
+            private StringBuilder _sb;
+            private bool _isHeader;
+            public Row(StringBuilder sb, bool isHeader = false)
+            {
+                _sb = sb;
+                _isHeader = isHeader;
+                if (_isHeader)
+                {
+                    _sb.Append("<thead style='border: 1px solid #999;padding: 8px;font-weight: bold;background-color: #5B8EFB;color: white'>\n");
+                }
+                _sb.Append("\t<tr>\n");
+            }
+
+            public void Dispose()
+            {
+                _sb.Append("\t</tr>\n");
+                if (_isHeader)
+                {
+                    _sb.Append("</thead>\n");
+                }
+            }
+
+            public void AddCell(string innerText)
+            {
+                _sb.Append("\t\t<td style='border: 1px solid #999;padding: 8px;'>\n");
+                _sb.Append("\t\t\t" + innerText);
+                _sb.Append("\t\t</td>\n");
+            }
+
+            public void AddCell_IntegerType(string innerText)
+            {
+                _sb.Append("\t\t<td style='border: 1px solid #999;padding: 8px;text-align: right;width:180px'>\n");
+                _sb.Append("\t\t\t" + innerText);
+                _sb.Append("\t\t</td>\n");
+            }
         }
     }
 }
