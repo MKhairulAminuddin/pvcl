@@ -502,7 +502,7 @@ namespace xDC_Web.Extension.DocGenerator
                                 .Where(x => x.CashflowType == Common.Cashflow.Outflow
                                             && approvedFidForms.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
-                                .Select(x => x.PrincipalIntProfitReceivable)
+                                .Select(x => x.Principal)
                                 .DefaultIfEmpty(0)
                                 .Sum();
                             var OF_MoneyMarket = db.FID_Treasury_MMI
@@ -856,7 +856,8 @@ namespace xDC_Web.Extension.DocGenerator
         }
     }
 
-    public class FCY_DealCutOffData
+    public class 
+        FCY_DealCutOffData
     {
         public DateTime? SelectedDate { get; set; }
         public List<FCY_DealCutOffData_Account> Accounts { get; set; }

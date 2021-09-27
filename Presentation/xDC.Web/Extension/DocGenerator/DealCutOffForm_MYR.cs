@@ -491,8 +491,8 @@ namespace xDC_Web.Extension.DocGenerator
                 .Where(x => approvedTsForms.Contains(x.FormId)
                             && x.InstrumentType == Common.TsItemCategory.Coupon
                             && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
-                            && (x.InflowAmount) > 0)
-                .Select(x => x.InflowAmount)
+                            && (x.OutflowAmount) > 0)
+                .Select(x => x.OutflowAmount)
                 .DefaultIfEmpty(0)
                 .Sum();
 
