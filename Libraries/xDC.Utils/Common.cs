@@ -440,9 +440,21 @@ namespace xDC.Utils
                 _sb.Append("\t\t</td>\n");
             }
 
-            public void AddCell_IntegerType(string innerText)
+            public void AddCell_IntegerType(string innerText, bool isGreen)
             {
-                _sb.Append("\t\t<td style='border: 1px solid #999;padding: 8px;text-align: right;width:180px'>\n");
+                if (isGreen)
+                {
+                    _sb.Append(innerText == "0.00"
+                        ? "\t\t<td style='border: 1px solid #999;padding: 8px;text-align: right;width:180px;'>\n"
+                        : "\t\t<td style='border: 1px solid #999;padding: 8px;text-align: right;width:180px;color:#16A085'>\n");
+                }
+                else
+                {
+                    _sb.Append(innerText == "0.00"
+                        ? "\t\t<td style='border: 1px solid #999;padding: 8px;text-align: right;width:180px;'>\n"
+                        : "\t\t<td style='border: 1px solid #999;padding: 8px;text-align: right;width:180px;color:#E74C3C'>\n");
+                }
+                
                 _sb.Append("\t\t\t" + innerText);
                 _sb.Append("\t\t</td>\n");
             }

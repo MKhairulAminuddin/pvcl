@@ -348,7 +348,7 @@ namespace xDC.Services
                                 using (var row = table.AddHeaderRow())
                                 {
                                     row.AddCell("Type");
-                                    row.AddCell("Portfolio");
+                                    row.AddCell("Details");
                                     row.AddCell("Stock Code/ ISIN");
                                     row.AddCell("Maturity (+)");
                                     row.AddCell("Sales (+)");
@@ -363,9 +363,9 @@ namespace xDC.Services
                                         row.AddCell(item.InstrumentType);
                                         row.AddCell(item.InstrumentCode);
                                         row.AddCell(item.StockCode);
-                                        row.AddCell_IntegerType(item.Maturity.ToString("N"));
-                                        row.AddCell_IntegerType(item.Sales.ToString("N"));
-                                        row.AddCell_IntegerType(item.Purchase.ToString("N"));
+                                        row.AddCell_IntegerType(item.Maturity.ToString("N"), true);
+                                        row.AddCell_IntegerType(item.Sales.ToString("N"), true);
+                                        row.AddCell_IntegerType(item.Purchase.ToString("N"), false);
                                         row.AddCell(item.Remarks);
                                     }
                                 }
@@ -380,7 +380,7 @@ namespace xDC.Services
                                 using (var row = table.AddHeaderRow())
                                 {
                                     row.AddCell("Type");
-                                    row.AddCell("Portfolio");
+                                    row.AddCell("Details");
                                     row.AddCell("Stock Code/ ISIN");
                                     row.AddCell("1st Leg (+)");
                                     row.AddCell("2nd Leg (-)");
@@ -394,8 +394,8 @@ namespace xDC.Services
                                         row.AddCell(item.InstrumentType);
                                         row.AddCell(item.InstrumentCode);
                                         row.AddCell(item.StockCode);
-                                        row.AddCell_IntegerType(item.FirstLeg.ToString("N"));
-                                        row.AddCell_IntegerType(item.SecondLeg.ToString("N"));
+                                        row.AddCell_IntegerType(item.FirstLeg.ToString("N"), true);
+                                        row.AddCell_IntegerType(item.SecondLeg.ToString("N"), false);
                                         row.AddCell(item.Remarks);
                                     }
                                 }
@@ -408,10 +408,10 @@ namespace xDC.Services
                                 using (var row = table.AddHeaderRow())
                                 {
                                     row.AddCell("Type");
-                                    row.AddCell("Portfolio");
+                                    row.AddCell("Details");
                                     row.AddCell("Stock Code/ ISIN");
-                                    row.AddCell_IntegerType("Amount (+)");
-                                    row.AddCell_IntegerType("Amount (-)");
+                                    row.AddCell_IntegerType("Amount (+)", true);
+                                    row.AddCell_IntegerType("Amount (-)", false);
                                     row.AddCell("Remarks");
                                 }
 
