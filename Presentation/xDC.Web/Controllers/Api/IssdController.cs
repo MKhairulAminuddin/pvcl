@@ -71,7 +71,7 @@ namespace xDC_Web.Controllers.Api
                             ApprovedDate = item.ApprovedDate,
 
                             EnableEdit = TradeSettlementSvc.EnableEdit(item.FormStatus, item.ApprovedBy, User.Identity.Name),
-                            EnableDelete = TradeSettlementSvc.EnableDelete(item.FormStatus),
+                            EnableDelete = item.FormStatus != Common.FormStatus.PendingApproval && item.ApprovedBy != User.Identity.Name,
                             EnablePrint = TradeSettlementSvc.EnablePrint(item.FormStatus),
 
                             IsRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatus.Rejected),

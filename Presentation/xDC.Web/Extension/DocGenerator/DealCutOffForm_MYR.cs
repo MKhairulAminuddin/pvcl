@@ -489,7 +489,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             var of_couponBondNonMgs = db.ISSD_TradeSettlement
                 .Where(x => approvedTsForms.Contains(x.FormId)
-                            && x.InstrumentType == Common.TsItemCategory.Coupon
+                            && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Repo)
                             && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
                             && (x.OutflowAmount) > 0)
                 .Select(x => x.OutflowAmount)
@@ -498,7 +498,8 @@ namespace xDC_Web.Extension.DocGenerator
 
             var treasuryMmOf = db.FID_Treasury_MMI
                 .Where(x => treasuryApprovedForms.Contains(x.FormId)
-                            && x.CashflowType == Common.Cashflow.Outflow)
+                            && x.CashflowType == Common.Cashflow.Outflow
+                            )
                 .Select(x => x.Proceeds)
                 .DefaultIfEmpty(0)
                 .Sum();
@@ -618,11 +619,7 @@ namespace xDC_Web.Extension.DocGenerator
             #region Sheet 3 - Others
 
             #region Others Tab - IF - MGS & GII - Sales, maturity or coupon
-
-            var productTypes = new List<string>()
-            {
-                "PDS", "CP", "BA", "NID", "BA", "BNMN"
-            };
+            
             var othersTab_if_mgs = new List<MYR_DealCutOffData_OthersTab_Item1>();
 
             var ifCoupon = db.ISSD_TradeSettlement
@@ -772,7 +769,7 @@ namespace xDC_Web.Extension.DocGenerator
             var othersTab_of_pds_item = db.FID_Treasury_MMI
                 .Where(x => treasuryApprovedForms.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Outflow
-                            && productTypes.Contains(x.ProductType))
+                            )
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item1
                 {
                     Bank = x.Issuer,
@@ -781,7 +778,7 @@ namespace xDC_Web.Extension.DocGenerator
                     SettlementDate = x.MaturityDate,
                     NominalAmount = x.Nominal,
                     Price = x.Price,
-                    Rate = (double)x.SellPurchaseRateYield,
+                    Rate = x.SellPurchaseRateYield,
                     Proceed = x.Proceeds,
                     Notes = x.ProductType
                 })
@@ -790,7 +787,7 @@ namespace xDC_Web.Extension.DocGenerator
             // coupon - from ISSD TS coupon
             var othersTab_of_pds_itemRepo = db.ISSD_TradeSettlement
                 .Where(x => approvedTsForms.Contains(x.FormId)
-                            && x.InstrumentType == Common.TsItemCategory.Repo
+                            && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Repo)
                             && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
                             && (x.OutflowAmount) > 0)
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item1

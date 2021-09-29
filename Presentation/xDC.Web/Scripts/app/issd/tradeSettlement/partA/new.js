@@ -58,6 +58,11 @@
         }
 
         function postData(isDraft) {
+            if (isDraft) {
+                app.toast("Saving....", "info", 3000);
+            } else {
+                app.toast("Submitting for approval....", "info", 3000);
+            }
             
             var data = {
                 currency: $currencySelectBox.option("value"),

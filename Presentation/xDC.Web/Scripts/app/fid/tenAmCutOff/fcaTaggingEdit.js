@@ -1,7 +1,7 @@
 ﻿(function ($, window, document) {
     $(function () {
         //#region Variable Definition
-        app.setSideMenuItemActive("/fid/FcaTagging/Edit");
+        app.setSideMenuItemActive("/issd/FcaTagging");
         $('[data-toggle="tooltip"]').tooltip();
 
         var $tabpanel,

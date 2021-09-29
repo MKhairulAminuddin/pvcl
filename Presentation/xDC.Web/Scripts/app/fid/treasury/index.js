@@ -26,7 +26,7 @@
                 {
                     dataField: "tradeDate",
                     caption: "Trade Date",
-                    dataType: "datetime",
+                    dataType: "date",
                     format: "dd/MM/yyyy",
                     sortIndex: 0,
                     sortOrder: "desc"
@@ -43,7 +43,7 @@
                 {
                     dataField: "preparedDate",
                     caption: "Prepared Date",
-                    dataType: "datetime",
+                    dataType: "date",
                     format: "dd/MM/yyyy HH:mm",
                     sortIndex: 1,
                     sortOrder: "desc"
@@ -55,7 +55,7 @@
                 {
                     dataField: "approvedDate",
                     caption: "Approved Date",
-                    dataType: "datetime",
+                    dataType: "date",
                     format: "dd/MM/yyyy HH:mm"
                 },
                 {
@@ -208,8 +208,21 @@
             sorting: {
                 mode: "multiple"
             },
+            searchPanel: {
+                visible: true
+            },
             headerFilter: {
                 visible: true
+            },
+            paging: {
+                pageSize: 10
+            },
+            pager: {
+                visible: true,
+                allowedPageSizes: [10, 20, 50, "all"],
+                showPageSizeSelector: true,
+                showInfo: true,
+                showNavigationButtons: true
             },
             filterPanel: {
                 visible: true

@@ -305,6 +305,9 @@
             sorting: {
                 mode: "multiple"
             },
+            searchPanel: {
+                visible: true
+            },
             headerFilter: {
                 visible: true
             },

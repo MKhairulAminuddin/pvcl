@@ -64,7 +64,6 @@
         };
 
         function postData(isDraft) {
-            
             var data = {
                 currency: $currencySelectBox.option("value"),
                 settlementDateEpoch: moment($settlementDateBox.option("value")).unix(),
@@ -371,6 +370,10 @@
                 tradeSettlement.saveAllGrids($mtmGrid, $fxSettlementGrid);
 
                 if ($approverDropdown.option("value") != null) {
+
+                    app.toast("Submitting for approval....", "info", 3000);
+
+
                     setTimeout(function () {
                             postData(false);
                         },
