@@ -135,9 +135,9 @@ namespace xDC_Web.Controllers.Api
 
                         var outflowDeposit = db.FID_Treasury_Deposit
                             .Where(x => approvedFidTreasuryIds.Contains(x.FormId)
-                                        && x.PrincipalIntProfitReceivable > 0
+                                        && x.Principal > 0
                                         && x.CashflowType == Common.Cashflow.Outflow)
-                            .Select(l => l.PrincipalIntProfitReceivable)
+                            .Select(l => l.Principal)
                             .DefaultIfEmpty(0)
                             .Sum();
 
@@ -199,10 +199,10 @@ namespace xDC_Web.Controllers.Api
 
                             var outflowDeposit = db.FID_Treasury_Deposit
                                 .Where(x => approvedFidTreasuryIdsFcy.Contains(x.FormId)
-                                            && x.PrincipalIntProfitReceivable > 0
+                                            && x.Principal > 0
                                             && x.CashflowType == Common.Cashflow.Outflow
                                             && x.FcaAccount == account.AccountName3)
-                                .Select(l => l.PrincipalIntProfitReceivable)
+                                .Select(l => l.Principal)
                                 .DefaultIfEmpty(0)
                                 .Sum();
 
