@@ -1,4 +1,5 @@
-﻿@model xDC_Web.Models.LoginViewModel
+﻿@using xDC.Utils
+@model xDC_Web.Models.LoginViewModel
 
 @{
     ViewBag.Title = "Sign In";
@@ -11,7 +12,14 @@
     <div class="login-box-body">
         
         <div class="login-logo">
-            <p><b>@HttpContext.Current.Application["AppName"]</b></p>
+            <p>
+                <b>@HttpContext.Current.Application["AppName"]</b>
+                @if (!Config.IsLive)
+                {
+                    <br/>
+                    <small>UAT Environment</small>
+                }
+            </p>
         </div>
 
         @using (Html.BeginForm("Index", "Login", new {ReturnUrl = ViewBag.ReturnUrl}, FormMethod.Post, new {role = "form"}))

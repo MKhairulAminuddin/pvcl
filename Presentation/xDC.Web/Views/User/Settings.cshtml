@@ -1,0 +1,73 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "User Settings";
+}
+
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-solid">
+                <div class="box-body">
+                    <div id="tabpanel-container">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+@section scripts
+{
+    <script>
+        $(function() {
+            DevExpress.setTemplateEngine("underscore");
+
+            var dataSource = DevExpress.data.AspNet.createStore({
+                loadUrl: window.location.origin + "/api/user/profile"
+            });
+
+            var tabPanel = $("#tabpanel-container").dxTabPanel({
+                height: 260,
+                items: [
+                    {
+                        title: 'Profile',
+                        icon: 'fa fa-user-circle-o',
+                        template: function (itemData, itemIndex, element) {
+                            
+                            var formDiv = $("<div style='padding:15px'>");
+                            formDiv.dxForm({
+                                items: ["username", "email", "title", "department"]
+                            });
+                            formDiv.appendTo(element);
+                        }
+                    },
+                    {
+                        title: 'Push Notification',
+                        icon: 'fa fa-bell-o'
+                    },
+                    {
+                        title: 'Email Notification',
+                        icon: 'fa fa-envelope-o'
+                    },
+                    {
+                        title: 'Activity Logs',
+                        icon: 'fa fa-list-ol'
+                    }
+                ],
+                selectedIndex: 0,
+                loop: false,
+                animationEnabled: true,
+                swipeEnabled: true,
+                onSelectionChanged: function(e) {
+                    $(".selected-index")
+                        .text(e.component.option("selectedIndex") + 1);
+                }
+            }).dxTabPanel("instance");
+
+
+        });
+    </script>
+}
+

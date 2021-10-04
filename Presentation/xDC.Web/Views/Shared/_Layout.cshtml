@@ -69,7 +69,7 @@
                                         </li>
                                         <li class="footer">
                                             <div class="footer-item">
-                                                <a href="@Url.Action("Notification", "My")">See all</a>
+                                                <a href="@Url.Action("Notification", "User")">See all</a>
                                             </div>
                                             <div class="footer-item" style="float: right">
                                                 <a id="dismissNotificationBtn">Dismiss</a>
@@ -89,7 +89,7 @@
                                             @xDC_HtmlHelper.LoggedInUser()
                                         </li>
 
-                                        <li class="dropdown-item"><a href="#"><i class="fa fa-wrench"></i> Settings</a></li>
+                                        <li class="dropdown-item"><a><i class="fa fa-cog"></i> User Settings</a></li>
                                         <li class="dropdown-item"><a href="#" onclick="app.clearUserPreference(); return false;"><i class="fa fa-refresh"></i> Clear User Pref.</a></li>
                                         <li class="dropdown-item">
                                             <a href="javascript:document.getElementById('logoutForm').submit()"><i class="fa fa-sign-out"></i> Sign Out</a>

@@ -19,9 +19,8 @@ namespace xDC.Utils
         public static string SmtpSenderAccountName => ConfigurationManager.AppSettings["Smtp.SenderAccountName"];
 
         public static string EmailApplicationUrl => ConfigurationManager.AppSettings["Email.ApplicationUrl"];
-
-        public static string UrlAmsdInflowFundsStatus => ConfigurationManager.AppSettings["Url.AMSD.InflowFundsFormStatus"];
-
+        public static bool IsLive => Convert.ToBoolean(ConfigurationManager.AppSettings["Environment.IsLive"]);
+        
         public static class Acl
         {
             public const  string Administrator = "Administrator";

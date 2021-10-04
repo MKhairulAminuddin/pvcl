@@ -15,6 +15,8 @@ namespace xDC.Services
 {
     public class MailService
     {
+        private string SubjectAppend => !Config.IsLive ? "[UAT - Kashflow]" : "[Kashflow]";
+
         public void TestSendEmailToSmtp(string recipient)
         {
             try
@@ -26,7 +28,7 @@ namespace xDC.Services
                     var message = new MimeMessage()
                     {
                         Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                        Subject = "[Kashflow] Test Email",
+                        Subject = $"{SubjectAppend} Test Email",
                         To =
                         {
                             new MailboxAddress(recipient, recipient)
@@ -69,7 +71,7 @@ namespace xDC.Services
                         {
                             Sender = new MailboxAddress(Config.SmtpSenderAccountName,
                                 Config.SmtpSenderAccount),
-                            Subject = "[Kashflow] New AMSD Inflow Funds Approved"
+                            Subject = $"{SubjectAppend} New AMSD Inflow Funds Approved"
                         };
                         
                         var bodyBuilder = new StringBuilder();
@@ -207,7 +209,7 @@ namespace xDC.Services
                                 var message = new MimeMessage()
                                 {
                                     Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                                    Subject = "[Kashflow] Contribution Credited submitted in " + getForm.FormType
+                                    Subject = $"{SubjectAppend} Contribution Credited submitted in {getForm.FormType}"
                                 };
 
                                 message.To.AddRange(cnEmailListAddress);
@@ -304,8 +306,7 @@ namespace xDC.Services
         /// </summary>
         /// <param name="formId"></param>
         /// <param name="formType"></param>
-        /// <param name="approvedBy"></param>
-        /// <param name="notes"></param>
+        /// <param name="currency"></param>
         public void TS_IncomingFund(int formId, string formType, string currency)
         {
             try
@@ -318,7 +319,7 @@ namespace xDC.Services
                     var message = new MimeMessage()
                     {
                         Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                        Subject = "[Kashflow] Approved ISSD Trade Settlement "
+                        Subject = $"{SubjectAppend} Approved ISSD Trade Settlement "
                     };
 
                     foreach (var fidUser in fidUsers)
@@ -455,10 +456,7 @@ namespace xDC.Services
                 Logger.LogError(ex);
             }
         }
-
-
-
-
+        
         private void SendEmailToSmtp(MimeMessage message)
         {
             try
@@ -483,7 +481,7 @@ namespace xDC.Services
             var message = new MimeMessage()
             {
                 Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                Subject = "[Kashflow] Request for Approval " + formType,
+                Subject = $"{SubjectAppend} Request for Approval {formType}",
                 To =
                 {
                     new MailboxAddress(approverName, approverMail)
@@ -517,7 +515,7 @@ namespace xDC.Services
             var message = new MimeMessage()
             {
                 Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                Subject = $"[Kashflow] Approval Status for submitted {formType} form",
+                Subject = $"{SubjectAppend} Approval Status for submitted {formType} form",
                 To =
                 {
                     new MailboxAddress(preparerName, preparerMail)
@@ -557,7 +555,7 @@ namespace xDC.Services
             var message = new MimeMessage()
             {
                 Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                Subject = $"[Kashflow] Submitted {form.FormType} form amended"
+                Subject = $"{SubjectAppend} Submitted {form.FormType} form amended"
             };
             message.To.AddRange(powerUsers);
 
@@ -586,7 +584,7 @@ namespace xDC.Services
             var message = new MimeMessage()
             {
                 Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                Subject = "[Kashflow] Approved ISSD Trade Settlement "
+                Subject = $"{SubjectAppend} Approved ISSD Trade Settlement "
             };
 
             foreach (var fidUser in fidUsers)
@@ -795,7 +793,7 @@ namespace xDC.Services
             var message = new MimeMessage()
             {
                 Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                Subject = "[Kashflow] Incoming Funds dated " + DateTime.Now.ToString("dd/MM/yyyy"),
+                Subject = $"{SubjectAppend} Incoming Funds dated {DateTime.Now:dd/MM/yyyy}",
                 To =
                 {
                     new MailboxAddress(approverName, approverMail)
