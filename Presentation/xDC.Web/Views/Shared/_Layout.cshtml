@@ -1,3 +1,4 @@
+@using xDC.Utils
 @using xDC_Web.Extension
 <!DOCTYPE html>
 
@@ -43,6 +44,17 @@
                             @Html.AntiForgeryToken()
 
                             <ul class="nav navbar-nav">
+                                
+                                @if (!Config.IsLive)
+                                {
+                                    <li class="dropdown notifications-menu">
+                                        <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                                            <span>UAT Environment</span>
+                                        </a>
+                                    </li>
+                                    
+                                }
+
                                 <li class="dropdown notifications-menu">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
                                         <i class="fa fa-bell-o"></i>
@@ -60,10 +72,10 @@
                                                             </span>
 
                                                             <span style="display: block; font-size: smaller; color: #7F8C8D; margin-left: 18px">
-                                                                <%= moment(createdOn).fromNow()  %>
+                                                                <%= moment(createdOn).fromNow() %>
                                                             </span>
-                                                    </a>
-                                                </li>
+                                                        </a>
+                                                    </li>
                                                 </script>
                                             </ul>
                                         </li>
@@ -90,7 +102,7 @@
                                         </li>
 
                                         <li class="dropdown-item"><a><i class="fa fa-cog"></i> User Settings</a></li>
-                                        <li class="dropdown-item"><a href="#" onclick="app.clearUserPreference(); return false;"><i class="fa fa-refresh"></i> Clear User Pref.</a></li>
+                                        <li class="dropdown-item"><a href="#" onclick="app.clearUserPreference();return false;"><i class="fa fa-refresh"></i> Clear User Pref.</a></li>
                                         <li class="dropdown-item">
                                             <a href="javascript:document.getElementById('logoutForm').submit()"><i class="fa fa-sign-out"></i> Sign Out</a>
                                         </li>
