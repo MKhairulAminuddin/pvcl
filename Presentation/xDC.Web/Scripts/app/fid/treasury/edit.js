@@ -56,8 +56,8 @@
                         return {
                             dealer: x.dealer,
                             bank: x.bank,
-                            valueDate: x.valueDate.toISOString(),
-                            maturityDate: x.maturityDate.toISOString(),
+                            valueDate: (x.valueDate instanceof Date) ? x.valueDate.toISOString() : x.valueDate,
+                            maturityDate: (x.maturityDate instanceof Date) ? x.maturityDate.toISOString() : x.maturityDate,
                             principal: x.principal,
                             tenor: x.tenor,
                             ratePercent: x.ratePercent,
@@ -89,14 +89,14 @@
                             holdingDayTenor: x.holdingDayTenor,
                             intDividendReceivable: x.intDividendReceivable,
                             issuer: x.issuer,
-                            maturityDate: x.maturityDate.toISOString(),
+                            maturityDate: (x.maturityDate instanceof Date) ? x.maturityDate.toISOString() : x.maturityDate,
                             nominal: x.nominal,
                             price: x.price,
                             proceeds: x.proceeds,
                             productType: x.productType,
                             purchaseProceeds: x.purchaseProceeds,
                             sellPurchaseRateYield: x.sellPurchaseRateYield,
-                            valueDate: x.valueDate.toISOString(),
+                            valueDate: (x.valueDate instanceof Date) ? x.valueDate.toISOString() : x.valueDate,
                             fcaAccount: x.fcaAccount
                         };
                     }
@@ -194,11 +194,11 @@
             
             var data = {
                 id: app.getUrlId(),
-                inflowDeposit: $inflowDepositGrid.getDataSource().items(),
-                outflowDeposit: $outflowDepositGrid.getDataSource().items(),
+                inflowDeposit: parseDepositArray($inflowDepositGrid.getDataSource().items()),
+                outflowDeposit: parseDepositArray($outflowDepositGrid.getDataSource().items()),
 
-                inflowMoneyMarket: $inflowMmiGrid.getDataSource().items(),
-                outflowMoneyMarket: $outflowMmiGrid.getDataSource().items(),
+                inflowMoneyMarket: parseMmiArray($inflowMmiGrid.getDataSource().items()),
+                outflowMoneyMarket: parseMmiArray($outflowMmiGrid.getDataSource().items()),
 
                 approver: (isDraft) ? null : $approverDropdown.option("value"),
                 approvalNotes: (isDraft) ? null : $approvalNotes.option("value")
@@ -448,7 +448,8 @@
                             onClick: function (e) {
                                 e.component.byKey(e.row.key).done((source) => {
                                     var clone = Object.assign({}, source);
-                                    clone.ID = Math.round(Math.random() * 1000);
+                                    clone.id = null;
+
                                     e.component
                                         .getDataSource()
                                         .store()
@@ -703,12 +704,14 @@
                             onClick: function (e) {
                                 e.component.byKey(e.row.key).done((source) => {
                                     var clone = Object.assign({}, source);
-                                    clone.ID = Math.round(Math.random() * 1000);
+                                    clone.id = null;
+
                                     e.component
                                         .getDataSource()
                                         .store()
                                         .insert(clone)
                                         .done(() => e.component.refresh());
+
                                 }).then(() => {
                                     app.toast("Copied", "info");
                                 });
@@ -982,7 +985,8 @@
                             onClick: function (e) {
                                 e.component.byKey(e.row.key).done((source) => {
                                     var clone = Object.assign({}, source);
-                                    clone.ID = Math.round(Math.random() * 1000);
+                                    clone.id = null;
+
                                     e.component
                                         .getDataSource()
                                         .store()
@@ -1260,7 +1264,8 @@
                             onClick: function (e) {
                                 e.component.byKey(e.row.key).done((source) => {
                                     var clone = Object.assign({}, source);
-                                    clone.ID = Math.round(Math.random() * 1000);
+                                    clone.id = null;
+
                                     e.component
                                         .getDataSource()
                                         .store()
