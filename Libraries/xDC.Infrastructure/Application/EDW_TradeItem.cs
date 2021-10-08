@@ -19,7 +19,7 @@ namespace xDC.Infrastructure.Application
         public string StockCode { get; set; }
         public string ISIN { get; set; }
         public string Type { get; set; }
-        public Nullable<double> Amount { get; set; }
+        public double Amount { get; set; }
         public Nullable<System.DateTime> TradeDate { get; set; }
         public Nullable<System.DateTime> SettlementDate { get; set; }
         public string Currency { get; set; }

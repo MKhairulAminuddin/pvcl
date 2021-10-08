@@ -145,7 +145,8 @@
                         dataSource: fundTypeStore,
                         valueExpr: "value",
                         displayExpr: "value"
-                    }
+                    },
+                    validationRules: [{ type: "required" }]
                 },
                 {
                     dataField: "bank",
@@ -154,7 +155,8 @@
                         dataSource: bankStore,
                         valueExpr: "value",
                         displayExpr: "value"
-                    }
+                    },
+                    validationRules: [{ type: "required" }]
                 },
                 {
                     dataField: "amount",

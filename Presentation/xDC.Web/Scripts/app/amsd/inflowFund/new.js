@@ -137,7 +137,8 @@
                         dataSource: fundTypeStore,
                         valueExpr: "value",
                         displayExpr: "value"
-                    }
+                    },
+                    validationRules: [{ type: "required" }]
                 },
                 {
                     dataField: "bank",
@@ -146,7 +147,8 @@
                         dataSource: bankStore,
                         valueExpr: "value",
                         displayExpr: "value"
-                    }
+                    },
+                    validationRules: [{ type: "required" }]
                 },
                 {
                     dataField: "amount",
@@ -168,6 +170,11 @@
             },
             onRowUpdated: function (e) {
                 console.log(e);
+            },
+            onRowValidating: function (e) {
+                if (!e.isValid) {
+                    app.alertError("Row contained invalid data. See cell with red border.");
+                }
             },
             summary: {
                 totalItems: [

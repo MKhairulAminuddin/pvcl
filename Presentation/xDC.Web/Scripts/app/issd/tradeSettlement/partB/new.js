@@ -561,19 +561,13 @@
             function (e) {
                 tradeSettlement.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $couponGrid);
 
-                if (tradeSettlement.val_isTMinus1($settlementDateBox.option("value"))) {
-                    alert("T-n only available for viewing..");
+                if (isSaveAsDraft) {
+                    setTimeout(function () {
+                        postData(true);
+                    }, 1000);
                 }
                 else {
-                    if (isSaveAsDraft) {
-                        // new clean draft
-                        setTimeout(function () {
-                            postData(true);
-                        }, 1000);
-                    }
-                    else {
-                        $selectApproverModal.modal('show');
-                    }
+                    $selectApproverModal.modal('show');
                 }
 
                 e.preventDefault();
@@ -586,8 +580,6 @@
                 if ($approverDropdown.option("value") != null) {
 
                     app.toast("Submitting for approval....", "info", 3000);
-
-
                     setTimeout(function () {
                             postData(false);
                         },

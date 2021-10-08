@@ -971,6 +971,8 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
+                    var excludeRepoCoupon = new List<string>()
+                        { Common.TsItemCategory.Repo, Common.TsItemCategory.Coupon };
                     var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
 
                     if (settlementDate != null)
@@ -985,17 +987,16 @@ namespace xDC_Web.Controllers.Api
                         var finalResult = new List<ISSD_TradeSettlement>();
                         foreach (var item in result)
                         {
-                            var tradeItem = new ISSD_TradeSettlement
-                            {
-                                InstrumentType = item.InstrumentType,
-                                InstrumentCode = item.InstrumentName,
-                                StockCode = string.IsNullOrEmpty(item.ISIN) ? item.StockCode : string.Concat(item.StockCode, " / " + item.ISIN),
-                                Maturity = (double)(item.Type == "M" && item.InstrumentType != Common.TsItemCategory.Repo ? item.Amount : 0),
-                                Sales = (double)((item.Type == "S" && item.InstrumentType != Common.TsItemCategory.Repo) ? item.Amount : 0),
-                                Purchase = (double)(item.Type == "P" && item.InstrumentType != Common.TsItemCategory.Repo ? item.Amount : 0),
-                                SecondLeg = (double)(item.InstrumentType == Common.TsItemCategory.Repo ? item.Amount : 0),
-                                AmountPlus = (double)(item.InstrumentType == Common.TsItemCategory.Coupon ? item.Amount : 0),
-                            };
+                            var tradeItem = new ISSD_TradeSettlement();
+                            tradeItem.InstrumentType = item.InstrumentType;
+                            tradeItem.InstrumentCode = item.InstrumentName;
+                            tradeItem.StockCode = string.IsNullOrEmpty(item.ISIN) ? item.StockCode : string.Concat(item.StockCode, " / " + item.ISIN);
+
+                            tradeItem.Maturity = item.Type == "M" && !excludeRepoCoupon.Contains(item.InstrumentType) ? item.Amount : 0;
+                            tradeItem.Sales = item.Type == "S" && !excludeRepoCoupon.Contains(item.InstrumentType) ? item.Amount : 0;
+                            tradeItem.Purchase = item.Type == "P" && !excludeRepoCoupon.Contains(item.InstrumentType) ? item.Amount : 0;
+                            tradeItem.SecondLeg = item.InstrumentType == Common.TsItemCategory.Repo ? item.Amount : 0;
+                            tradeItem.AmountPlus = item.InstrumentType == Common.TsItemCategory.Coupon ? item.Amount : 0;
 
                             finalResult.Add(tradeItem);
                         }

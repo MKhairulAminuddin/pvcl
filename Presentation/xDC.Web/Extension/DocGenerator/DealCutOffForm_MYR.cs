@@ -323,17 +323,17 @@ namespace xDC_Web.Extension.DocGenerator
             //1. Opening Balance RENTAS from EDW
             var rentasOb = db.EDW_BankBalance
                 .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate) && x.Currency == "MYR" && x.InstrumentType == "RENTAS")
-                .GroupBy(x => new { x.Currency, x.InstrumentType, x.SettlementDate })
-                .Select(x => x.Sum(y => y.Amount))
-                .FirstOrDefault();
+                .Select(x => x.Amount)
+                .DefaultIfEmpty(0)
+                .Sum();
             dataObj.RentasOb = rentasOb ?? 0;
 
             //2. Opening Balance MMA from EDW
             var mmaOb = db.EDW_BankBalance
                 .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate) && x.Currency == "MYR" && x.InstrumentType == "MMA")
-                .GroupBy(x => new { x.Currency, x.InstrumentType, x.SettlementDate })
-                .Select(x => x.Sum(y => y.Amount))
-                .FirstOrDefault();
+                .Select(x => x.Amount)
+                .DefaultIfEmpty(0)
+                .Sum();
             dataObj.MmaOb = mmaOb ?? 0;
 
             //3. AMSD Inflow Fund RHB
@@ -343,9 +343,10 @@ namespace xDC_Web.Extension.DocGenerator
                 .ToList();
             var totalRhb = db.AMSD_IF_Item
                 .Where(x => amsdApprovedForms.Contains(x.FormId))
-                .GroupBy(x => x.FundType)
-                .Select(x => x.Sum(y => y.Amount))
-                .FirstOrDefault();
+                .Select(x => x.Amount)
+                .DefaultIfEmpty(0)
+                .Sum();
+
             dataObj.TotalRhb = totalRhb;
 
             #endregion
@@ -398,6 +399,12 @@ namespace xDC_Web.Extension.DocGenerator
             
             dataObj.IF_FixedIncome_Mgs = couponBondMgs;
 
+            var couponNonMgs1 = db.ISSD_TradeSettlement
+                .Where(x => approvedTsForms.Contains(x.FormId)
+                            && x.InstrumentType == Common.TsItemCategory.Coupon
+                            && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
+                            && (x.InflowAmount) > 0).ToList();
+
             var couponNonMgs = db.ISSD_TradeSettlement
                 .Where(x => approvedTsForms.Contains(x.FormId)
                             && x.InstrumentType == Common.TsItemCategory.Coupon
@@ -406,7 +413,7 @@ namespace xDC_Web.Extension.DocGenerator
                 .Select(x => x.InflowAmount)
                 .DefaultIfEmpty(0)
                 .Sum();
-            
+
             var treasuryMmIf = db.FID_Treasury_MMI
                 .Where(x => treasuryApprovedForms.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Inflow)
@@ -684,7 +691,7 @@ namespace xDC_Web.Extension.DocGenerator
                     SettlementDate = x.MaturityDate,
                     NominalAmount = x.Nominal,
                     Price = x.Price,
-                    Rate = (double)x.SellPurchaseRateYield,
+                    Rate = x.SellPurchaseRateYield,
                     Proceed = x.Proceeds,
                     Notes = x.ProductType
                 })

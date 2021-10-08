@@ -237,7 +237,7 @@ namespace xDC_Web.Controllers.Api
                     if (approvedAmsdForms.Any())
                     {
                         var inflowFunds = db.AMSD_IF_Item
-                            .Where(x => approvedAmsdForms.Contains(x.FormId))
+                            .Where(x => approvedAmsdForms.Contains(x.FormId) && x.Bank != null)
                             .GroupBy(x => new
                             {
                                 x.Bank

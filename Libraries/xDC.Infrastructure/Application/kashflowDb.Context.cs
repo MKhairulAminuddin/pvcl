@@ -37,7 +37,6 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<FID_Treasury> FID_Treasury { get; set; }
         public virtual DbSet<EDW_FID_List> EDW_FID_List { get; set; }
         public virtual DbSet<EDW_BankBalance> EDW_BankBalance { get; set; }
-        public virtual DbSet<EDW_TradeItem> EDW_TradeItem { get; set; }
         public virtual DbSet<AMSD_IF> AMSD_IF { get; set; }
         public virtual DbSet<Form_Workflow> Form_Workflow { get; set; }
         public virtual DbSet<AMSD_IF_Item> AMSD_IF_Item { get; set; }
@@ -47,5 +46,6 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<EDW_Maturity_Deposit> EDW_Maturity_Deposit { get; set; }
         public virtual DbSet<EDW_Maturity_MM> EDW_Maturity_MM { get; set; }
         public virtual DbSet<FID_Treasury_MMI> FID_Treasury_MMI { get; set; }
+        public virtual DbSet<EDW_TradeItem> EDW_TradeItem { get; set; }
     }
 }
