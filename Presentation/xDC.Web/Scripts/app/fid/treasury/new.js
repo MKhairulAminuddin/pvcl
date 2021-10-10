@@ -509,7 +509,8 @@
                             onClick: function (e) {
                                 e.component.byKey(e.row.key).done((source) => {
                                     var clone = Object.assign({}, source);
-                                    clone.ID = Math.round(Math.random() * 1000);
+                                    clone.id = null;
+
                                     e.component
                                         .getDataSource()
                                         .store()
@@ -763,7 +764,8 @@
                             onClick: function (e) {
                                 e.component.byKey(e.row.key).done((source) => {
                                     var clone = Object.assign({}, source);
-                                    clone.ID = Math.round(Math.random() * 1000);
+                                    clone.id = null;
+
                                     e.component
                                         .getDataSource()
                                         .store()
@@ -1042,7 +1044,8 @@
                             onClick: function (e) {
                                 e.component.byKey(e.row.key).done((source) => {
                                     var clone = Object.assign({}, source);
-                                    clone.ID = Math.round(Math.random() * 1000);
+                                    clone.id = null;
+
                                     e.component
                                         .getDataSource()
                                         .store()
@@ -1317,7 +1320,8 @@
                             onClick: function (e) {
                                 e.component.byKey(e.row.key).done((source) => {
                                     var clone = Object.assign({}, source);
-                                    clone.ID = Math.round(Math.random() * 1000);
+                                    clone.id = null;
+
                                     e.component
                                         .getDataSource()
                                         .store()
