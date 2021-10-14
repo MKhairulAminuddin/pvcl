@@ -566,7 +566,8 @@ namespace xDC_Web.Extension.DocGenerator
                     PrincipalInterest = x.PrincipalIntProfitReceivable,
                     Rate = x.RatePercent,
                     ContactPerson = x.ContactPerson,
-                    Notes = x.Notes
+                    Notes = x.Notes,
+                    AssetType = x.AssetType
                 })
                 .OrderBy(x => x.MaturityDate)
                 .ToList();
@@ -591,7 +592,8 @@ namespace xDC_Web.Extension.DocGenerator
                     PrincipalInterest = x.PrincipalIntProfitReceivable,
                     Rate = x.RatePercent,
                     ContactPerson = x.ContactPerson,
-                    Notes = x.Notes
+                    Notes = x.Notes,
+                    AssetType = x.AssetType
                 })
                 .OrderBy(x => x.MaturityDate)
                 .ToList();
@@ -612,7 +614,8 @@ namespace xDC_Web.Extension.DocGenerator
                     PrincipalInterest = x.PrincipalIntProfitReceivable,
                     Rate = x.RatePercent,
                     ContactPerson = x.ContactPerson,
-                    Notes = x.Notes
+                    Notes = x.Notes,
+                    AssetType = x.AssetType
                 })
                 .ToList();
 
@@ -898,8 +901,9 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["I" + currentIndex].Value = item.Rate;
                     sheet["J" + currentIndex].Value = item.Interest;
                     sheet["K" + currentIndex].Value = item.PrincipalInterest;
-                    sheet["L" + currentIndex].Value = item.ContactPerson;
-                    sheet["M" + currentIndex].Value = item.Notes;
+                    sheet["L" + currentIndex].Value = item.AssetType;
+                    sheet["M" + currentIndex].Value = item.ContactPerson;
+                    sheet["N" + currentIndex].Value = item.Notes;
                     
                     currentIndex++;
                 }
@@ -1077,6 +1081,7 @@ namespace xDC_Web.Extension.DocGenerator
         public double PrincipalInterest { get; set; }
         public string ContactPerson { get; set; }
         public string Notes { get; set; }
+        public string AssetType { get; set; }
     }
 
 }
