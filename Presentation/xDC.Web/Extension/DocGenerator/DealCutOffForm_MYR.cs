@@ -399,15 +399,9 @@ namespace xDC_Web.Extension.DocGenerator
             
             dataObj.IF_FixedIncome_Mgs = couponBondMgs;
 
-            var couponNonMgs1 = db.ISSD_TradeSettlement
-                .Where(x => approvedTsForms.Contains(x.FormId)
-                            && x.InstrumentType == Common.TsItemCategory.Coupon
-                            && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
-                            && (x.InflowAmount) > 0).ToList();
-
             var couponNonMgs = db.ISSD_TradeSettlement
                 .Where(x => approvedTsForms.Contains(x.FormId)
-                            && x.InstrumentType == Common.TsItemCategory.Coupon
+                            && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Bond)
                             && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
                             && (x.InflowAmount) > 0)
                 .Select(x => x.InflowAmount)
@@ -496,7 +490,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             var of_couponBondNonMgs = db.ISSD_TradeSettlement
                 .Where(x => approvedTsForms.Contains(x.FormId)
-                            && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Repo)
+                            && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Bond || x.InstrumentType == Common.TsItemCategory.Repo)
                             && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
                             && (x.OutflowAmount) > 0)
                 .Select(x => x.OutflowAmount)
@@ -666,7 +660,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             var othersTab_pds_itemCoupon = db.ISSD_TradeSettlement
                 .Where(x => approvedTsForms.Contains(x.FormId)
-                            && x.InstrumentType == Common.TsItemCategory.Coupon
+                            && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Bond)
                             && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
                             && (x.InflowAmount) > 0)
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item1
@@ -797,7 +791,7 @@ namespace xDC_Web.Extension.DocGenerator
             // coupon - from ISSD TS coupon
             var othersTab_of_pds_itemRepo = db.ISSD_TradeSettlement
                 .Where(x => approvedTsForms.Contains(x.FormId)
-                            && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Repo)
+                            && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Bond || x.InstrumentType == Common.TsItemCategory.Repo)
                             && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
                             && (x.OutflowAmount) > 0)
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item1
