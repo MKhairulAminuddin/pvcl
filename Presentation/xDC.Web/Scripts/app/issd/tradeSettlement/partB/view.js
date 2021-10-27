@@ -2,7 +2,7 @@
     $(function () {
         //#region Variable Definition
         
-        tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
+        ts.setSideMenuItemActive("/issd/TradeSettlement");
 
         var $tabpanel,
             $bondGrid,
@@ -43,10 +43,10 @@
 
         var populateData = function () {
             $.when(
-                    tradeSettlement.dsTradeItem("bond"),
-                    tradeSettlement.dsTradeItem("cp"),
-                    tradeSettlement.dsTradeItem("notesPaper"),
-                    tradeSettlement.dsTradeItem("coupon")
+                    ts.dsTradeItem("bond"),
+                    ts.dsTradeItem("cp"),
+                    ts.dsTradeItem("notesPaper"),
+                    ts.dsTradeItem("coupon")
                 )
                 .done(function (bond, cp, notesPaper, coupon) {
                     $bondGrid.option("dataSource", bond[0].data);
@@ -61,7 +61,7 @@
                     $couponGrid.option("dataSource", coupon[0].data);
                     $couponGrid.repaint();
 
-                    tradeSettlement.defineTabBadgeNumbers([
+                    ts.defineTabBadgeNumbers([
                         { titleId: "titleBadge2", dxDataGrid: $bondGrid },
                         { titleId: "titleBadge3", dxDataGrid: $cpGrid },
                         { titleId: "titleBadge4", dxDataGrid: $notesPaperGrid },
@@ -79,7 +79,7 @@
                     ? $("#approvalNoteTextBox").dxTextArea("instance").option("value")
                     : $("#rejectionNoteTextBox").dxTextArea("instance").option("value"),
                 approvalStatus: isToApprove,
-                formId: tradeSettlement.getIdFromQueryString
+                formId: ts.getIdFromQueryString
             };
             
             $.ajax({
@@ -152,7 +152,7 @@
             }
         });
         
-        $printBtn = $("#printBtn").dxDropDownButton(tradeSettlement.printBtnWidgetSetting).dxDropDownButton("instance");
+        $printBtn = $("#printBtn").dxDropDownButton(ts.printBtnWidgetSetting).dxDropDownButton("instance");
         
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
@@ -558,7 +558,7 @@
         }).dxDataGrid("instance");
 
         $workflowGrid = $("#workflowGrid").dxDataGrid({
-            dataSource: tradeSettlement.dsWorflowInformation(4),
+            dataSource: ts.dsWorflowInformation(4),
             columns: [
                 {
                     dataField: "recordedDate",
@@ -614,7 +614,7 @@
 
         $("#adminEditBtn").on({
             "click": function (e) {
-                window.location.href = referenceUrl.adminEdit + tradeSettlement.getIdFromQueryString;
+                window.location.href = referenceUrl.adminEdit + ts.getIdFromQueryString;
                 e.preventDefault();
             }
         });

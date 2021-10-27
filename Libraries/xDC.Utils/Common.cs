@@ -183,6 +183,51 @@ namespace xDC.Utils
             return finalValue;
         }
 
+        public static string TsReverseInstrumentTypeMapping(string value)
+        {
+            var finalValue = string.Empty;
+            switch (value)
+            {
+                case TsItemCategory.Equity:
+                    finalValue = "equity";
+                    break;
+                case TsItemCategory.Bond:
+                    finalValue = "bond";
+                    break;
+                case TsItemCategory.Cp:
+                    finalValue = "cp";
+                    break;
+                case TsItemCategory.NotesPapers:
+                    finalValue = "notesPaper";
+                    break;
+                case TsItemCategory.Repo:
+                    finalValue = "repo";
+                    break;
+                case TsItemCategory.Coupon:
+                    finalValue = "coupon";
+                    break;
+                case TsItemCategory.Mtm:
+                    finalValue = "mtm";
+                    break;
+                case TsItemCategory.Fx:
+                    finalValue = "fxSettlement";
+                    break;
+                case TsItemCategory.Altid:
+                    finalValue = "altid";
+                    break;
+                case TsItemCategory.Fees:
+                    finalValue = "fees";
+                    break;
+                case TsItemCategory.Cn:
+                    finalValue = "contributionCredited";
+                    break;
+                case TsItemCategory.Others:
+                    finalValue = "others";
+                    break;
+            }
+            return finalValue;
+        }
+
         /// <summary>
         /// Get form type
         /// </summary>

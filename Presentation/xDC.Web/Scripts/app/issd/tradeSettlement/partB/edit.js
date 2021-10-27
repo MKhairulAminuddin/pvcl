@@ -3,7 +3,7 @@
     $(function() {
         //#region Variable Definition
 
-        tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
+        ts.setSideMenuItemActive("/issd/TradeSettlement");
 
         var $tabpanel,
             $bondGrid,
@@ -35,10 +35,10 @@
 
         var populateData = function() {
             $.when(
-                    tradeSettlement.dsTradeItem("bond"),
-                    tradeSettlement.dsTradeItem("cp"),
-                    tradeSettlement.dsTradeItem("notesPaper"),
-                    tradeSettlement.dsTradeItem("coupon")
+                    ts.dsTradeItem("bond"),
+                    ts.dsTradeItem("cp"),
+                    ts.dsTradeItem("notesPaper"),
+                    ts.dsTradeItem("coupon")
                 )
                 .done(function (bond, cp, notesPaper, coupon) {
                     $bondGrid.option("dataSource", bond[0].data);
@@ -53,7 +53,7 @@
                     $couponGrid.option("dataSource", coupon[0].data);
                     $couponGrid.repaint();
 
-                    tradeSettlement.defineTabBadgeNumbers([
+                    ts.defineTabBadgeNumbers([
                         { titleId: "titleBadge2", dxDataGrid: $bondGrid },
                         { titleId: "titleBadge3", dxDataGrid: $cpGrid },
                         { titleId: "titleBadge4", dxDataGrid: $notesPaperGrid },
@@ -68,7 +68,7 @@
         function postData(isDraft, isAdminEdit) {
 
             var data = {
-                id: tradeSettlement.getIdFromQueryString,
+                id: ts.getIdFromQueryString,
                 formType: formTypeId,
                 isSaveAsDraft: isDraft,
                 isSaveAdminEdit: isAdminEdit,
@@ -115,9 +115,9 @@
             showNavButtons: true
         });
 
-        $approverDropdown = $("#approverDropdown").dxSelectBox(tradeSettlement.submitApproverSelectBox).dxSelectBox("instance");
+        $approverDropdown = $("#approverDropdown").dxSelectBox(ts.submitApproverSelectBox).dxSelectBox("instance");
 
-        $approvalNotes = $("#approvalNotes").dxTextArea(tradeSettlement.submitApprovalNotesTextArea).dxTextArea("instance");
+        $approvalNotes = $("#approvalNotes").dxTextArea(ts.submitApprovalNotesTextArea).dxTextArea("instance");
 
         //#endregion
 
@@ -530,7 +530,7 @@
                 ]
             },
             onSaved: function () {
-                tradeSettlement.defineTabBadgeNumbers([
+                ts.defineTabBadgeNumbers([
                     { titleId: "titleBadge6", dxDataGrid: $couponGrid }
                 ]);
             },
@@ -563,7 +563,7 @@
 
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function(e) {
-                tradeSettlement.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $couponGrid);
+                ts.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $couponGrid);
                 
                 if (isDraft || isAdminEdit) {
                     setTimeout(function() {
@@ -579,7 +579,7 @@
 
         $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                tradeSettlement.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $couponGrid);
+                ts.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $couponGrid);
 
                 if ($approverDropdown.option("value") != null) {
                     app.toast("Submitting for approval....", "info", 3000);

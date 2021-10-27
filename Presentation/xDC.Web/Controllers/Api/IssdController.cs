@@ -959,7 +959,70 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [HttpGet]
+        [Route("ts/EdwAvailability/{part}/{settlementDateEpoch}/{currency}")]
+        public HttpResponseMessage TS_EdwAvailability(string part,long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+                    
+                    var instrumentTypes = new List<string>();
+                    if (part == "a")
+                    {
+                        instrumentTypes.Add(Common.TsItemCategory.Equity);
+                    }
+                    if (part == "b")
+                    {
+                        instrumentTypes.Add(Common.TsItemCategory.Bond);
+                        instrumentTypes.Add(Common.TsItemCategory.Cp);
+                        instrumentTypes.Add(Common.TsItemCategory.NotesPapers);
+                        instrumentTypes.Add(Common.TsItemCategory.Coupon);
+                    }
+                    if (part == "c")
+                    {
+                        instrumentTypes.Add(Common.TsItemCategory.Repo);
+                    }
 
+
+                    var trades = db.EDW_TradeItem
+                        .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate)
+                                    && x.Currency == currency
+                                    && instrumentTypes.Contains(x.InstrumentType))
+                        .GroupBy(x => x.InstrumentType)
+                        .Select(x => new
+                        {
+                            name = x.Key,
+                            count = x.Count()
+                        })
+                        .ToList();
+                    
+                    var result = new List<TsEdwAvailability>();
+                    if (trades.Count > 0)
+                    {
+                        foreach (var trade in trades)
+                        {
+                            result.Add(new TsEdwAvailability
+                            {
+                                Name = trade.name + " " + currency,
+                                Numbers = trade.count,
+                                CategoryType = Common.TsReverseInstrumentTypeMapping(trade.name)
+                            });
+                        }
+                    }
+
+                    return Request.CreateResponse(HttpStatusCode.OK, result);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
 
         #region Trade Settlement Grid
 

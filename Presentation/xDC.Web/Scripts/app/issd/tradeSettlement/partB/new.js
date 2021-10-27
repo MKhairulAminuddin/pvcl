@@ -3,7 +3,7 @@
     $(function () {
         //#region Variable Definition
         
-        tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
+        ts.setSideMenuItemActive("/issd/TradeSettlement");
         
         var $tabpanel,
             $bondGrid,
@@ -16,6 +16,7 @@
 
             $settlementDateBox,
             $currencySelectBox,
+            $edwAvailable,
 
             $saveAsDraftBtn,
             $submitForApprovalBtn,
@@ -30,54 +31,128 @@
         var referenceUrl = {
             postNewFormRequest: window.location.origin + "/api/issd/TradeSettlement/New",
             postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartB/View/",
+            dsEdwAvailability: window.location.origin + "/api/issd/ts/EdwAvailability/b"
         };
         
         //#endregion
 
         //#region Data Source & Functions
-
-        var populateDwData = function(settlementDate, currency) {
-            if (settlementDate && currency) {
+        
+        var populateDwData = function (categoryType, settlementDate, currency) {
+            if (categoryType == "bond") {
                 $.when(
-                        tradeSettlement.dsTradeItemEdw("BOND", settlementDate, currency),
-                        tradeSettlement.dsTradeItemEdw("COMMERCIAL PAPER", settlementDate, currency),
-                        tradeSettlement.dsTradeItemEdw("NOTES AND PAPERS", settlementDate, currency),
-                        tradeSettlement.dsTradeItemEdw("COUPON", settlementDate, currency)
+                        ts.dsTradeItemEdw("BOND", settlementDate, currency)
                     )
-                    .done(function(bond, cp, notesPapers, coupon) {
-                        $bondGrid.option("dataSource", bond[0].data);
+                    .done(function(data1) {
+                        $bondGrid.option("dataSource", []);
+                        $bondGrid.option("dataSource", data1.data);
                         $bondGrid.repaint();
-                        app.toastEdwCount(bond[0].data, "Bond");
 
-                        $cpGrid.option("dataSource", cp[0].data);
-                        $cpGrid.repaint();
-                        app.toastEdwCount(cp[0].data, "Commercial Paper");
-
-                        $notesPaperGrid.option("dataSource", notesPapers[0].data);
-                        $notesPaperGrid.repaint();
-                        app.toastEdwCount(notesPapers[0].data, "Notes/Papers");
-
-                        $couponGrid.option("dataSource", coupon[0].data);
-                        $couponGrid.repaint();
-                        app.toastEdwCount(coupon[0].data, "Coupon");
-
-                        tradeSettlement.defineTabBadgeNumbers([
-                            { titleId: "titleBadge2", dxDataGrid: $bondGrid },
-                            { titleId: "titleBadge3", dxDataGrid: $cpGrid },
-                            { titleId: "titleBadge4", dxDataGrid: $notesPaperGrid },
-                            { titleId: "titleBadge6", dxDataGrid: $couponGrid }
-                        ]);
+                        app.toastEdwCount(data1.data, "BOND");
                     })
                     .always(function(dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-                        
+
                     })
                     .then(function() {
 
                     });
-            } else {
-                app.clearAllGrid($bondGrid, $cpGrid, $notesPaperGrid, $couponGrid);
             }
+            if (categoryType == "cp") {
+                $.when(
+                        ts.dsTradeItemEdw("COMMERCIAL PAPER", settlementDate, currency)
+                    )
+                    .done(function(data1) {
+                        $cpGrid.option("dataSource", []);
+                        $cpGrid.option("dataSource", data1.data);
+                        $cpGrid.repaint();
+
+                        app.toastEdwCount(data1.data, "COMMERCIAL PAPER");
+                    })
+                    .always(function(dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+
+                    })
+                    .then(function() {
+
+                    });
+            }
+            if (categoryType == "notesPaper") {
+                $.when(
+                        ts.dsTradeItemEdw("NOTES AND PAPERS", settlementDate, currency)
+                    )
+                    .done(function(data1) {
+                        $notesPaperGrid.option("dataSource", []);
+                        $notesPaperGrid.option("dataSource", data1.data);
+                        $notesPaperGrid.repaint();
+
+                        app.toastEdwCount(data1.data, "NOTES AND PAPERS");
+                    })
+                    .always(function(dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+
+                    })
+                    .then(function() {
+
+                    });
+            }
+            if (categoryType == "coupon") {
+                $.when(
+                        ts.dsTradeItemEdw("COUPON", settlementDate, currency)
+                    )
+                    .done(function(data1) {
+                        $couponGrid.option("dataSource", []);
+                        $couponGrid.option("dataSource", data1.data);
+                        $couponGrid.repaint();
+
+                        app.toastEdwCount(data1.data, "COUPON");
+                    })
+                    .always(function(dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+
+                    })
+                    .then(function() {
+
+                    });
+            }
+
+            ts.defineTabBadgeNumbers([
+                { titleId: "titleBadge2", dxDataGrid: $bondGrid },
+                { titleId: "titleBadge3", dxDataGrid: $cpGrid },
+                { titleId: "titleBadge4", dxDataGrid: $notesPaperGrid },
+                { titleId: "titleBadge6", dxDataGrid: $couponGrid }
+            ]);
+        }
+
+        var dsEdwAvailability = function (tradeDateEpoch, currency) {
+            return $.ajax({
+                url: referenceUrl.dsEdwAvailability + "/" + moment(tradeDateEpoch).unix() + "/" + currency,
+                type: "get"
+            });
         };
+
+        var checkDwDataAvailability = function (settlementDate, currency) {
+            app.clearAllGrid($bondGrid, $cpGrid, $notesPaperGrid, $couponGrid);
+            ts.defineTabBadgeNumbers([
+                { titleId: "titleBadge2", dxDataGrid: $bondGrid },
+                { titleId: "titleBadge3", dxDataGrid: $cpGrid },
+                { titleId: "titleBadge4", dxDataGrid: $notesPaperGrid },
+                { titleId: "titleBadge6", dxDataGrid: $couponGrid }
+            ]);
+
+            if (settlementDate && currency) {
+                $.when(
+                    dsEdwAvailability(settlementDate, currency)
+                    )
+                    .done(function (data1) {
+                        $edwAvailable.option("dataSource", data1);
+                    })
+                    .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+
+                    })
+                    .then(function () {
+
+                    });
+            } else {
+
+            }
+        }
 
         function postData(isDraft) {
             var data = {
@@ -116,7 +191,7 @@
         
         //#region Other Widgets
 
-        $settlementDateBox = $("#settlementDateBox").dxDateBox(tradeSettlement.settlementDateBox).dxValidator({
+        $settlementDateBox = $("#settlementDateBox").dxDateBox(ts.settlementDateBox).dxValidator({
             validationRules: [
                 {
                     type: "required",
@@ -125,7 +200,7 @@
             ]
         }).dxDateBox("instance");
 
-        $currencySelectBox = $("#currencySelectBox").dxSelectBox(tradeSettlement.currencySelectBox)
+        $currencySelectBox = $("#currencySelectBox").dxSelectBox(ts.currencySelectBox)
             .dxValidator({
                 validationRules: [
                     {
@@ -135,6 +210,24 @@
                 ]
             })
             .dxSelectBox("instance");
+
+        $edwAvailable = $("#edwAvailable").dxList({
+            activeStateEnabled: false,
+            focusStateEnabled: false,
+            itemTemplate: function (data, index) {
+                var result = $("<div>");
+
+                $("<div>").text(data.name + " × " + data.numbers).appendTo(result);
+                $("<a>").append("<i class='fa fa-download'></i> Populate").on("dxclick", function (e) {
+
+                    populateDwData(data.categoryType, $settlementDateBox.option("value"), $currencySelectBox.option("value"));
+
+                    e.stopPropagation();
+                }).appendTo(result);
+
+                return result;
+            }
+        }).dxList("instance");
 
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
@@ -148,9 +241,9 @@
             showNavButtons: true
         });
 
-        $approverDropdown = $("#approverDropdown").dxSelectBox(tradeSettlement.submitApproverSelectBox).dxSelectBox("instance");
+        $approverDropdown = $("#approverDropdown").dxSelectBox(ts.submitApproverSelectBox).dxSelectBox("instance");
 
-        $approvalNotes = $("#approvalNotes").dxTextArea(tradeSettlement.submitApprovalNotesTextArea).dxTextArea("instance");
+        $approvalNotes = $("#approvalNotes").dxTextArea(ts.submitApprovalNotesTextArea).dxTextArea("instance");
         
         //#endregion
         
@@ -169,13 +262,11 @@
                 },
                 {
                     dataField: "instrumentCode",
-                    caption: "Bond",
-                    allowEditing: false
+                    caption: "Bond"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    allowEditing: false
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "maturity",
@@ -184,8 +275,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "sales",
@@ -194,8 +284,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "purchase",
@@ -204,8 +293,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "remarks",
@@ -251,8 +339,8 @@
             editing: {
                 mode: "batch",
                 allowUpdating: true,
-                allowDeleting: false,
-                allowAdding: false
+                allowDeleting: true,
+                allowAdding: true
             },
             paging: {
                 enabled: false
@@ -272,13 +360,11 @@
                 },
                 {
                     dataField: "instrumentCode",
-                    caption: "CP",
-                    allowEditing: false
+                    caption: "CP"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    allowEditing: false
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "maturity",
@@ -287,8 +373,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "sales",
@@ -297,8 +382,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "purchase",
@@ -307,8 +391,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "remarks",
@@ -354,8 +437,8 @@
             editing: {
                 mode: "batch",
                 allowUpdating: true,
-                allowDeleting: false,
-                allowAdding: false
+                allowDeleting: true,
+                allowAdding: true
             },
             paging: {
                 enabled: false
@@ -375,13 +458,11 @@
                 },
                 {
                     dataField: "instrumentCode",
-                    caption: "Notes & Papers",
-                    allowEditing: false
+                    caption: "Notes & Papers"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    allowEditing: false
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "maturity",
@@ -390,8 +471,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "sales",
@@ -400,8 +480,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "purchase",
@@ -410,8 +489,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "remarks",
@@ -457,8 +535,8 @@
             editing: {
                 mode: "batch",
                 allowUpdating: true,
-                allowDeleting: false,
-                allowAdding: false
+                allowDeleting: true,
+                allowAdding: true
             },
             paging: {
                 enabled: false
@@ -517,7 +595,7 @@
                 ]
             },
             onSaved: function () {
-                tradeSettlement.defineTabBadgeNumbers([
+                ts.defineTabBadgeNumbers([
                     { titleId: "titleBadge6", dxDataGrid: $couponGrid }
                 ]);
             },
@@ -537,11 +615,11 @@
         //#region Events
 
         $settlementDateBox.on("valueChanged", function (data) {
-            populateDwData(data.value, $currencySelectBox.option("value"));
+            checkDwDataAvailability(data.value, $currencySelectBox.option("value"));
         });
 
         $currencySelectBox.on("valueChanged", function (data) {
-            populateDwData($settlementDateBox.option("value"), data.value);
+            checkDwDataAvailability($settlementDateBox.option("value"), data.value);
         });
 
 
@@ -559,7 +637,7 @@
 
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function (e) {
-                tradeSettlement.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $couponGrid);
+                ts.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $couponGrid);
 
                 if (isSaveAsDraft) {
                     setTimeout(function () {
@@ -575,7 +653,7 @@
 
         $submitForApprovalModalBtn = $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                tradeSettlement.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $couponGrid);
+                ts.saveAllGrids($bondGrid, $cpGrid, $notesPaperGrid, $couponGrid);
 
                 if ($approverDropdown.option("value") != null) {
 

@@ -1,18 +1,18 @@
-﻿var tradeSettlement = (function () {
-    var _tradeSettlement = {};
+﻿var ts = (function () {
+    var _ts = {};
 
     var _getIdFromQueryString = window.location.pathname.split("/").pop();
 
-    _tradeSettlement.myFunction = function () {
+    _ts.myFunction = function () {
         return null;
     }
 
-    _tradeSettlement.mvc = {
+    _ts.mvc = {
         printed: window.location.origin + "/issd/ViewPrinted/",
         print: window.location.origin + "/issd/Print"
     };
 
-    _tradeSettlement.api = {
+    _ts.api = {
         loadWorkflowHistory: function(formTypeId) {
             return window.location.origin + "/api/common/GetWorkflow/" + formTypeId + "/" + _getIdFromQueryString;
         },
@@ -73,90 +73,90 @@
 
 
 
-    _tradeSettlement.dsTradeItemEdw = function(instrumentType, settlementDate, currency) {
+    _ts.dsTradeItemEdw = function(instrumentType, settlementDate, currency) {
         return $.ajax({
-            url: _tradeSettlement.api.loadTradeItemEdw(instrumentType, settlementDate, currency),
+            url: _ts.api.loadTradeItemEdw(instrumentType, settlementDate, currency),
             type: "get"
         });
     };
 
-    _tradeSettlement.dsOpeningBalanceEdw = function (settlementDate, currency) {
+    _ts.dsOpeningBalanceEdw = function (settlementDate, currency) {
         return $.ajax({
-            url: _tradeSettlement.api.loadOpeningBalanceEdw(settlementDate, currency),
+            url: _ts.api.loadOpeningBalanceEdw(settlementDate, currency),
             type: "get"
         });
     };
 
-    _tradeSettlement.dsTradeItem = function (instrumentType) {
+    _ts.dsTradeItem = function (instrumentType) {
         return $.ajax({
-            url: _tradeSettlement.api.loadTradeItem(instrumentType),
+            url: _ts.api.loadTradeItem(instrumentType),
             type: "get"
         });
     }
 
-    _tradeSettlement.dsOpeningBalance = function () {
+    _ts.dsOpeningBalance = function () {
         return $.ajax({
-            url: _tradeSettlement.api.loadOpeningBalance(),
+            url: _ts.api.loadOpeningBalance(),
             type: "get"
         });
     }
 
-    _tradeSettlement.dsApprovedTradeItems = function (formId, instrumentType) {
+    _ts.dsApprovedTradeItems = function (formId, instrumentType) {
         return DevExpress.data.AspNet.createStore({
             key: "id",
-            loadUrl: _tradeSettlement.api.loadApprovedTradeItems(formId, instrumentType)
+            loadUrl: _ts.api.loadApprovedTradeItems(formId, instrumentType)
         });
     }
 
-    _tradeSettlement.dsTradeItemConsolidated = function (instrumentType) {
+    _ts.dsTradeItemConsolidated = function (instrumentType) {
         return $.ajax({
-            url: _tradeSettlement.api.loadTradeItemConsolidated(instrumentType),
+            url: _ts.api.loadTradeItemConsolidated(instrumentType),
             type: "get"
         });
     }
 
-    _tradeSettlement.dsOpeningBalanceConsolidated = function () {
+    _ts.dsOpeningBalanceConsolidated = function () {
         return $.ajax({
-            url: _tradeSettlement.api.loadOpeningBalanceConsolidated(),
+            url: _ts.api.loadOpeningBalanceConsolidated(),
             type: "get"
         });
     }
 
-    _tradeSettlement.dsCurrency = function () {
+    _ts.dsCurrency = function () {
         return {
             store: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: _tradeSettlement.api.loadCurrencies
+                loadUrl: _ts.api.loadCurrencies
             }),
             paginate: true,
             pageSize: 20
         };
     }
 
-    _tradeSettlement.dsWorflowInformation = function (formTypeId) {
+    _ts.dsWorflowInformation = function (formTypeId) {
         return {
             store: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: _tradeSettlement.api.loadWorkflowHistory(formTypeId)
+                loadUrl: _ts.api.loadWorkflowHistory(formTypeId)
             }),
             paginate: true,
             pageSize: 20
         };
     }
 
-    _tradeSettlement.dsApproverList = function () {
+    _ts.dsApproverList = function () {
         return {
             store: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: _tradeSettlement.api.loadApprover
+                loadUrl: _ts.api.loadApprover
             }),
             paginate: true,
             pageSize: 20
         };
     }
 
-    _tradeSettlement.submitApproverSelectBox = {
-        dataSource: _tradeSettlement.dsApproverList(),
+    _ts.submitApproverSelectBox = {
+        dataSource: _ts.dsApproverList(),
         displayExpr: "displayName",
         valueExpr: "username",
         searchEnabled: true,
@@ -169,38 +169,38 @@
         }
     };
 
-    _tradeSettlement.submitApprovalNotesTextArea = {
+    _ts.submitApprovalNotesTextArea = {
         height: 90
     };
 
-    _tradeSettlement.settlementDateBox = {
+    _ts.settlementDateBox = {
         type: "date",
         displayFormat: "dd/MM/yyyy",
         value: new Date()
     };
 
-    _tradeSettlement.settlementDateBoxReadOnly = {
+    _ts.settlementDateBoxReadOnly = {
         type: "date",
         displayFormat: "dd/MM/yyyy",
         readOnly: true
     };
 
-    _tradeSettlement.currencySelectBox = {
-        dataSource: _tradeSettlement.dsCurrency(),
+    _ts.currencySelectBox = {
+        dataSource: _ts.dsCurrency(),
         displayExpr: "value",
         valueExpr: "value",
         placeHolder: "Currency.."
     };
 
-    _tradeSettlement.currencySelectBoxReadOnly = {
-        dataSource: _tradeSettlement.dsCurrency(),
+    _ts.currencySelectBoxReadOnly = {
+        dataSource: _ts.dsCurrency(),
         displayExpr: "value",
         valueExpr: "value",
         placeHolder: "Currency..",
         readOnly: true
     };
 
-    _tradeSettlement.toast = function(message, toastType) {
+    _ts.toast = function(message, toastType) {
         var top = 0;
         var lastOffset = $(".dx-toast-content").last().offset();
         if (lastOffset != null) {
@@ -230,19 +230,19 @@
         });
     };
 
-    _tradeSettlement.requestPrintForm = function (formType, formId, isExcel) {
+    _ts.requestPrintForm = function (formType, formId, isExcel) {
         switch (formType) {
             case "TradeSettlement":
                 return $.ajax({
                     type: "POST",
-                    url: _tradeSettlement.mvc.print,
+                    url: _ts.mvc.print,
                     data: {
                         id: formId,
                         isExportAsExcel: isExcel
                     },
                     dataType: "text",
                     success: function (data) {
-                        var url = _tradeSettlement.mvc.printed + data;
+                        var url = _ts.mvc.printed + data;
                         window.location = url;
                     },
                     fail: function (jqXHR, textStatus, errorThrown) {
@@ -258,7 +258,7 @@
         }
     }
 
-    _tradeSettlement.printBtnWidgetSettingConsolidated = {
+    _ts.printBtnWidgetSettingConsolidated = {
         text: "Print",
         icon: "print",
         type: "normal",
@@ -323,7 +323,7 @@
         }
     };
 
-    _tradeSettlement.printBtnWidgetSetting = {
+    _ts.printBtnWidgetSetting = {
         text: "Print",
         icon: "print",
         type: "normal",
@@ -337,21 +337,21 @@
         ],
         onItemClick: function(e) {
             if (e.itemData == "Excel Workbook") {
-                _tradeSettlement.requestPrintForm("TradeSettlement", _getIdFromQueryString, true);
+                _ts.requestPrintForm("TradeSettlement", _getIdFromQueryString, true);
                 e.event.preventDefault();
             } else {
-                _tradeSettlement.requestPrintForm("TradeSettlement", _getIdFromQueryString, false);
+                _ts.requestPrintForm("TradeSettlement", _getIdFromQueryString, false);
                 e.event.preventDefault();
             }
         }
     };
     
-    _tradeSettlement.setSideMenuItemActive = function(url) {
+    _ts.setSideMenuItemActive = function(url) {
         $("ul.treeview-menu a[href='" + url + "']").parentsUntil(".sidebar-menu > .treeview-menu")
             .addClass('active');
     };
 
-    _tradeSettlement.tabBadgeItemCount = function (countTagId, gridInstance) {
+    _ts.tabBadgeItemCount = function (countTagId, gridInstance) {
         if (gridInstance != undefined) {
             var count = gridInstance.getDataSource().items().length;
 
@@ -366,22 +366,22 @@
         
     };
 
-    _tradeSettlement.defineTabBadgeNumbers = function(obj) {
+    _ts.defineTabBadgeNumbers = function(obj) {
         setTimeout(function() {
                 obj.forEach((item) => {
-                    _tradeSettlement.tabBadgeItemCount(item.titleId, item.dxDataGrid);
+                    _ts.tabBadgeItemCount(item.titleId, item.dxDataGrid);
                 });
             },
             1000);
     };
 
-    _tradeSettlement.saveAllGrids = function() {
+    _ts.saveAllGrids = function() {
         for (var i = 0; i < arguments.length; i++) {
             arguments[i].saveEditData();
         }
     };
 
-    _tradeSettlement.val_isTMinus1 = function(settlementDate) {
+    _ts.val_isTMinus1 = function(settlementDate) {
         if (moment().subtract(1, "days").isAfter(settlementDate)) {
             return true;
         } else {
@@ -389,9 +389,7 @@
         }
     }
 
-    _tradeSettlement.getIdFromQueryString = _getIdFromQueryString;
-
-
-
-    return _tradeSettlement;
+    _ts.getIdFromQueryString = _getIdFromQueryString;
+    
+    return _ts;
 }());
