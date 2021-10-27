@@ -20,19 +20,19 @@ namespace xDC_Web.Extension.DocGenerator
         private Color _inflowColor = System.Drawing.ColorTranslator.FromHtml("#3498DB");
         private Color _outFlowColor = System.Drawing.ColorTranslator.FromHtml("#E67E22");
 
-        public IWorkbook GenerateWorkbook(DateTime? selectedDate)
+        public IWorkbook GenerateWorkbook(DateTime? selectedDate, bool viewApproved)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
 
-                    var dataObj = ConstructData(db, selectedDate);
+                    var dataObj = ConstructData(db, selectedDate, viewApproved);
 
                     IWorkbook workbook = new Workbook();
                     workbook.Options.Culture = new CultureInfo("en-US");
                     workbook.LoadDocument(MapPath(Common.ExcelTemplateLocation.FID_DealCutOff_FCY));
-                    workbook = GenerateDocument(workbook, dataObj);
+                    workbook = GenerateDocument(workbook, dataObj, viewApproved);
 
                     return workbook;
 
@@ -45,11 +45,11 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        public string GenerateFile(DateTime selectedDate, bool isExportAsExcel)
+        public string GenerateFile(DateTime selectedDate, bool isExportAsExcel, bool viewApproved)
         {
             try
             {
-                IWorkbook workbook = GenerateWorkbook(selectedDate);
+                IWorkbook workbook = GenerateWorkbook(selectedDate, viewApproved);
                 var randomFileName = Common.DownloadedFileName.FID_DealCutOff_FCY + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                 if (isExportAsExcel)
@@ -73,7 +73,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private IWorkbook GenerateDocument(IWorkbook workbook, FCY_DealCutOffData dataItem)
+        private IWorkbook GenerateDocument(IWorkbook workbook, FCY_DealCutOffData dataItem, bool viewApproved)
         {
             workbook.BeginUpdate();
             try
@@ -86,6 +86,16 @@ namespace xDC_Web.Extension.DocGenerator
                 #region Sheet 1
 
                 var sheet = workbook.Worksheets[0];
+
+                if (!viewApproved)
+                {
+                    sheet["B1:E1"].Merge();
+                    sheet["B1"].Value = Config.FormViewAllSubmittedData;
+                    sheet["B1"].Font.Italic = true;
+                    sheet["B1"].Font.Bold = true;
+                    sheet["B1"].Font.Color = Color.Red;
+                    sheet["B1"].Font.Size = 10;
+                }
 
                 foreach (var item in dataItem.Accounts)
                 {
@@ -345,6 +355,16 @@ namespace xDC_Web.Extension.DocGenerator
                 {
                     var currentSheet = workbook.Worksheets[sheetName];
 
+                    if (!viewApproved)
+                    {
+                        currentSheet["B1:E1"].Merge();
+                        currentSheet["B1"].Value = Config.FormViewAllSubmittedData;
+                        currentSheet["B1"].Font.Italic = true;
+                        currentSheet["B1"].Font.Bold = true;
+                        currentSheet["B1"].Font.Color = Color.Red;
+                        currentSheet["B1"].Font.Size = 10;
+                    }
+
                     currentSheet["B2"].Value = string.Format("FOREIGN CURRENCY TRANSACTIONS VIA {0} FOR VALUE DATE {1:dd/MM/yyyy}",
                         sheetName, dataItem.SelectedDate.Value);
                     
@@ -416,9 +436,14 @@ namespace xDC_Web.Extension.DocGenerator
             return workbook;
         }
 
-        private FCY_DealCutOffData ConstructData(kashflowDBEntities db, DateTime? selectedDate)
+        private FCY_DealCutOffData ConstructData(kashflowDBEntities db, DateTime? selectedDate, bool viewApproved)
         {
-                var accounts = db.Config_FcaBankAccount.Where(x => x.Currency != "MYR").Select(x => x.AccountName1).Distinct().ToList();
+                var accounts = db.Config_FcaBankAccount
+                    .Where(x => x.Currency != "MYR")
+                    .Select(x => x.AccountName1)
+                    .Distinct()
+                    .ToList();
+
                 var currencies = new List<string>()
                 {
                     "USD", "AUD", "GBP", "EUR"
@@ -473,18 +498,25 @@ namespace xDC_Web.Extension.DocGenerator
 
                     if (availableAccount3.Any())
                     {
-                        var approvedFidForms = db.FID_Treasury
-                            .Where(x => x.FormStatus == Common.FormStatus.Approved
-                                        && DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate)
-                                        && x.Currency == item.Currency)
-                            .Select(x => x.Id)
-                            .ToList();
+                        var treasuryFormIds = (viewApproved)?
+                            db.FID_Treasury
+                                .Where(x => DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate)
+                                            && x.Currency == item.Currency
+                                            && x.FormStatus == Common.FormStatus.Approved)
+                                .Select(x => x.Id)
+                                .ToList():
+                            db.FID_Treasury
+                                .Where(x => DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate)
+                                            && x.Currency == item.Currency
+                                            && x.FormStatus != Common.FormStatus.Rejected)
+                                .Select(x => x.Id)
+                                .ToList();
 
-                        if (approvedFidForms.Any())
+                        if (treasuryFormIds.Any())
                         {
                             var IF_DepositMaturity = db.FID_Treasury_Deposit
                                 .Where(x => x.CashflowType == Common.Cashflow.Inflow
-                                            && approvedFidForms.Contains(x.FormId)
+                                            && treasuryFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
                                 .Select(x => x.PrincipalIntProfitReceivable)
                                 .DefaultIfEmpty(0)
@@ -492,7 +524,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                             var IF_MoneyMarket = db.FID_Treasury_MMI
                                 .Where(x => x.CashflowType == Common.Cashflow.Inflow
-                                            && approvedFidForms.Contains(x.FormId)
+                                            && treasuryFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
                                 .Select(x => x.Proceeds)
                                 .DefaultIfEmpty(0)
@@ -500,14 +532,14 @@ namespace xDC_Web.Extension.DocGenerator
 
                             var OF_RolloverNewPlacement = db.FID_Treasury_Deposit
                                 .Where(x => x.CashflowType == Common.Cashflow.Outflow
-                                            && approvedFidForms.Contains(x.FormId)
+                                            && treasuryFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
                                 .Select(x => x.Principal)
                                 .DefaultIfEmpty(0)
                                 .Sum();
                             var OF_MoneyMarket = db.FID_Treasury_MMI
                                 .Where(x => x.CashflowType == Common.Cashflow.Inflow
-                                            && approvedFidForms.Contains(x.FormId)
+                                            && treasuryFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
                                 .Select(x => x.Proceeds)
                                 .DefaultIfEmpty(0)
@@ -530,24 +562,33 @@ namespace xDC_Web.Extension.DocGenerator
 
                     if (availableAccount3.Any())
                     {
-                        var approvedIssdForms = db.ISSD_FormHeader
-                            .Where(x => x.FormStatus == Common.FormStatus.Approved
-                                        && DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
-                                        && x.Currency == item.Currency)
-                            .Select(x => x.Id)
-                            .ToList();
+                        var tsFormIds = (viewApproved)
+                            ? db.ISSD_FormHeader
+                                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) ==
+                                            DbFunctions.TruncateTime(selectedDate)
+                                            && x.Currency == item.Currency
+                                            && x.FormStatus == Common.FormStatus.Approved)
+                                .Select(x => x.Id)
+                                .ToList()
+                            : db.ISSD_FormHeader
+                                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) ==
+                                            DbFunctions.TruncateTime(selectedDate)
+                                            && x.Currency == item.Currency
+                                            && x.FormStatus != Common.FormStatus.Rejected)
+                                .Select(x => x.Id)
+                                .ToList();
 
-                        if (approvedIssdForms.Any())
+                        if (tsFormIds.Any())
                         {
                             var IF_Others = db.ISSD_TradeSettlement
-                                .Where(x => approvedIssdForms.Contains(x.FormId)
+                                .Where(x => tsFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.InflowTo))
                                 .Select(x => x.InflowAmount)
                                 .DefaultIfEmpty(0)
                                 .Sum();
 
                             var OF_Others = db.ISSD_TradeSettlement
-                                .Where(x => approvedIssdForms.Contains(x.FormId)
+                                .Where(x => tsFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.OutflowFrom))
                                 .Select(x => x.OutflowAmount)
                                 .DefaultIfEmpty(0)
@@ -564,24 +605,32 @@ namespace xDC_Web.Extension.DocGenerator
                 foreach (var item in dataObj.Accounts)
                 {
                     var availableAccount3 = db.Config_FcaBankAccount
-                        .Where(x => x.Currency == item.Currency && x.AccountName1 == item.Account)
+                        .Where(x => x.Currency == item.Currency 
+                                    && x.AccountName1 == item.Account)
                         .Select(x => x.AccountName3)
                         .ToList();
 
                     if (availableAccount3.Any())
                     {
-                        var approvedFidForms = db.FID_Treasury
-                            .Where(x => x.FormStatus == Common.FormStatus.Approved
-                                        && DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate)
-                                        && x.Currency == item.Currency)
-                            .Select(x => x.Id)
-                            .ToList();
+                        var treasuryFormIds = (viewApproved)?
+                            db.FID_Treasury
+                                .Where(x => DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate)
+                                            && x.Currency == item.Currency
+                                            && x.FormStatus == Common.FormStatus.Approved)
+                                .Select(x => x.Id)
+                                .ToList():
+                            db.FID_Treasury
+                                .Where(x => DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate)
+                                            && x.Currency == item.Currency
+                                            && x.FormStatus != Common.FormStatus.Rejected)
+                                .Select(x => x.Id)
+                                .ToList();
 
-                        if (approvedFidForms.Any())
+                        if (treasuryFormIds.Any())
                         {
                             var IF_DepositMaturity = db.FID_Treasury_Deposit
                                 .Where(x => x.CashflowType == Common.Cashflow.Inflow
-                                            && approvedFidForms.Contains(x.FormId)
+                                            && treasuryFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
                                 .ToList();
 
@@ -614,7 +663,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                             var IF_MoneyMarket = db.FID_Treasury_MMI
                                 .Where(x => x.CashflowType == Common.Cashflow.Inflow
-                                            && approvedFidForms.Contains(x.FormId)
+                                            && treasuryFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
                                 .ToList();
 
@@ -645,7 +694,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                             var OF_RolloverNewPlacement = db.FID_Treasury_Deposit
                                 .Where(x => x.CashflowType == Common.Cashflow.Outflow
-                                            && approvedFidForms.Contains(x.FormId)
+                                            && treasuryFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
                                 .ToList();
 
@@ -678,7 +727,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                             var OF_MoneyMarket = db.FID_Treasury_MMI
                                 .Where(x => x.CashflowType == Common.Cashflow.Outflow
-                                            && approvedFidForms.Contains(x.FormId)
+                                            && treasuryFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
                                 .ToList();
 
@@ -710,18 +759,25 @@ namespace xDC_Web.Extension.DocGenerator
 
                         #region Others Portion
 
-                        var approvedTsForms = db.ISSD_FormHeader
-                            .Where(x => x.FormStatus == Common.FormStatus.Approved
-                                        && DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
-                                        && x.Currency == item.Currency)
-                            .Select(x => x.Id)
-                            .ToList();
+                        var tsFormIds = (viewApproved)?
+                            db.ISSD_FormHeader
+                                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
+                                            && x.Currency == item.Currency
+                                            && x.FormStatus == Common.FormStatus.Approved)
+                                .Select(x => x.Id)
+                                .ToList():
+                            db.ISSD_FormHeader
+                                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
+                                            && x.Currency == item.Currency
+                                            && x.FormStatus != Common.FormStatus.Rejected)
+                                .Select(x => x.Id)
+                                .ToList();
 
-                        if (approvedTsForms.Any())
+                        if (tsFormIds.Any())
                         {
                             var IF_Others = db.ISSD_TradeSettlement
                                 .Where(x => x.InflowAmount > 0
-                                            && approvedTsForms.Contains(x.FormId)
+                                            && tsFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.InflowTo))
                                 .ToList();
 
@@ -744,7 +800,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                             var OF_Others = db.ISSD_TradeSettlement
                                 .Where(x => x.OutflowAmount > 0
-                                            && approvedTsForms.Contains(x.FormId)
+                                            && tsFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.OutflowFrom))
                                 .ToList();
 
@@ -856,8 +912,7 @@ namespace xDC_Web.Extension.DocGenerator
         }
     }
 
-    public class 
-        FCY_DealCutOffData
+    public class FCY_DealCutOffData
     {
         public DateTime? SelectedDate { get; set; }
         public List<FCY_DealCutOffData_Account> Accounts { get; set; }

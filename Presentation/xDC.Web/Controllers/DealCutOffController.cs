@@ -144,7 +144,7 @@ namespace xDC_Web.Controllers
 
         [HttpPost]
         [Route("Fcy/Print")]
-        public ActionResult DealCutOffFcy_Print(string TradeDate, bool isExportAsExcel)
+        public ActionResult DealCutOffFcy_Print(string TradeDate, bool isExportAsExcel, string viewType)
         {
             try
             {
@@ -153,8 +153,9 @@ namespace xDC_Web.Controllers
                 {
                     selectedDate = Common.ConvertEpochToDateTime(Convert.ToInt64(TradeDate));
                 }
+                bool viewApprovedOnly = (viewType.ToLower() == Common.FormStatus.Approved.ToLower());
 
-                var generatedDocumentFile = new DealCutOffForm_FCY().GenerateFile(selectedDate.Value, isExportAsExcel);
+                var generatedDocumentFile = new DealCutOffForm_FCY().GenerateFile(selectedDate.Value, isExportAsExcel, viewApprovedOnly);
 
                 if (!string.IsNullOrEmpty(generatedDocumentFile))
                 {
@@ -209,17 +210,18 @@ namespace xDC_Web.Controllers
             }
         }
 
-        public ActionResult DealCutOffFcyPreview(string TradeDate, int SheetIndex)
+        public ActionResult DealCutOffFcyPreview(string tradeDate, string viewType, int SheetIndex)
         {
             DateTime? selectedDate = DateTime.Now;
-            if (!string.IsNullOrEmpty(TradeDate))
+            if (!string.IsNullOrEmpty(tradeDate))
             {
-                selectedDate = Common.ConvertEpochToDateTime(Convert.ToInt64(TradeDate));
+                selectedDate = Common.ConvertEpochToDateTime(Convert.ToInt64(tradeDate));
             }
+            bool viewApprovedOnly = (viewType.ToLower() == Common.FormStatus.Approved.ToLower());
 
             var previewModel = new SpreadsheetPreviewModel
             {
-                Workbook = new DealCutOffForm_FCY().GenerateWorkbook(selectedDate),
+                Workbook = new DealCutOffForm_FCY().GenerateWorkbook(selectedDate, viewApprovedOnly),
                 PreviewSheetIndex = SheetIndex
             };
             return GenerateHtmlPreview(previewModel);

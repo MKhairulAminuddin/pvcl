@@ -16,9 +16,9 @@ namespace xDC_Web.Extension.DocGenerator
 {
     public class DealCutOffForm_MYR : DocGeneratorBase
     {
-        private Color _tableHeaderPrimaryColor = System.Drawing.ColorTranslator.FromHtml("#5b8efb");
-        private Color _inflowColor = System.Drawing.ColorTranslator.FromHtml("#3498DB");
-        private Color _outFlowColor = System.Drawing.ColorTranslator.FromHtml("#E67E22");
+        private Color _tableHeaderPrimaryColor = ColorTranslator.FromHtml("#5b8efb");
+        private Color _inflowColor = ColorTranslator.FromHtml("#3498DB");
+        private Color _outFlowColor = ColorTranslator.FromHtml("#E67E22");
 
         public IWorkbook GenerateWorkbook(DateTime? selectedDate, bool viewApproved)
         {
