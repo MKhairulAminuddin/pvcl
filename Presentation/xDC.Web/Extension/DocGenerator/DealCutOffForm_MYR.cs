@@ -20,19 +20,19 @@ namespace xDC_Web.Extension.DocGenerator
         private Color _inflowColor = System.Drawing.ColorTranslator.FromHtml("#3498DB");
         private Color _outFlowColor = System.Drawing.ColorTranslator.FromHtml("#E67E22");
 
-        public IWorkbook GenerateWorkbook(DateTime? selectedDate)
+        public IWorkbook GenerateWorkbook(DateTime? selectedDate, bool viewApproved)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
 
-                    var dataObj = ConstructData(db, selectedDate);
+                    var dataObj = ConstructData(db, selectedDate, viewApproved);
 
                     IWorkbook workbook = new Workbook();
                     workbook.Options.Culture = new CultureInfo("en-US");
                     workbook.LoadDocument(MapPath(Common.ExcelTemplateLocation.FID_DealCutOff_MYR));
-                    workbook = GenerateDocument(workbook, dataObj);
+                    workbook = GenerateDocument(workbook, dataObj, viewApproved);
 
                     return workbook;
 
@@ -45,11 +45,11 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        public string GenerateFile(DateTime selectedDate, bool isExportAsExcel)
+        public string GenerateFile(DateTime selectedDate, bool isExportAsExcel, bool viewApproved)
         {
             try
             {
-                IWorkbook workbook = GenerateWorkbook(selectedDate);
+                IWorkbook workbook = GenerateWorkbook(selectedDate, viewApproved);
                 var randomFileName = Common.DownloadedFileName.FID_DealCutOff_MYR + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                 if (isExportAsExcel)
@@ -73,13 +73,23 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private IWorkbook GenerateDocument(IWorkbook workbook, MYR_DealCutOffData dataItem)
+        private IWorkbook GenerateDocument(IWorkbook workbook, MYR_DealCutOffData dataItem, bool viewApproved)
         {
             workbook.BeginUpdate();
             try
             {
 
                 var sheet = workbook.Worksheets[0];
+
+                if (!viewApproved)
+                {
+                    sheet["B1:E1"].Merge();
+                    sheet["B1"].Value = Config.FormViewAllSubmittedData;
+                    sheet["B1"].Font.Italic = true;
+                    sheet["B1"].Font.Bold = true;
+                    sheet["B1"].Font.Color = Color.Red;
+                    sheet["B1"].Font.Size = 10;
+                }
 
                 sheet["J2"].Value = (dataItem.SelectedDate != null)
                     ? dataItem.SelectedDate.Value.ToString("dd/MM/yyyy")
@@ -222,6 +232,16 @@ namespace xDC_Web.Extension.DocGenerator
 
                 var sheet2 = workbook.Worksheets[1];
 
+                if (!viewApproved)
+                {
+                    sheet2["C1:E1"].Merge();
+                    sheet2["C1"].Value = Config.FormViewAllSubmittedData;
+                    sheet2["C1"].Font.Italic = true;
+                    sheet2["C1"].Font.Bold = true;
+                    sheet2["C1"].Font.Color = Color.Red;
+                    sheet2["C1"].Font.Size = 10;
+                }
+
                 var title = "MONEY MARKET TRANSACTIONS WITH FINANCIAL INSTITUTIONS FOR ";
                 sheet2["C3"].Value = title + dataItem.SelectedDate.Value.ToString("dd/MM/yyyy");
 
@@ -248,6 +268,16 @@ namespace xDC_Web.Extension.DocGenerator
                 #region Sheet 3 - Others
 
                 var sheet3 = workbook.Worksheets[2];
+
+                if (!viewApproved)
+                {
+                    sheet3["C1:E1"].Merge();
+                    sheet3["C1"].Value = Config.FormViewAllSubmittedData;
+                    sheet3["C1"].Font.Italic = true;
+                    sheet3["C1"].Font.Bold = true;
+                    sheet3["C1"].Font.Color = Color.Red;
+                    sheet3["C1"].Font.Size = 10;
+                }
 
                 sheet3["E6"].Value = dataItem.MmaOb;
                 sheet3["E7"].Value = dataItem.TotalRhb;
@@ -310,7 +340,7 @@ namespace xDC_Web.Extension.DocGenerator
             return workbook;
         }
 
-        private MYR_DealCutOffData ConstructData(kashflowDBEntities db, DateTime? selectedDate)
+        private MYR_DealCutOffData ConstructData(kashflowDBEntities db, DateTime? selectedDate, bool viewApproved = true)
         {
             //get data 
             var dataObj = new MYR_DealCutOffData()
@@ -318,11 +348,15 @@ namespace xDC_Web.Extension.DocGenerator
                 SelectedDate = selectedDate
             };
 
+            #region Sheet 1 - Summary
+
             #region 1 - IF OB Rentas, MMA, RHB
 
             //1. Opening Balance RENTAS from EDW
             var rentasOb = db.EDW_BankBalance
-                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate) && x.Currency == "MYR" && x.InstrumentType == "RENTAS")
+                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
+                            && x.Currency == "MYR"
+                            && x.InstrumentType == "RENTAS")
                 .Select(x => x.Amount)
                 .DefaultIfEmpty(0)
                 .Sum();
@@ -330,17 +364,27 @@ namespace xDC_Web.Extension.DocGenerator
 
             //2. Opening Balance MMA from EDW
             var mmaOb = db.EDW_BankBalance
-                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate) && x.Currency == "MYR" && x.InstrumentType == "MMA")
+                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
+                            && x.Currency == "MYR"
+                            && x.InstrumentType == "MMA")
                 .Select(x => x.Amount)
                 .DefaultIfEmpty(0)
                 .Sum();
             dataObj.MmaOb = mmaOb ?? 0;
 
             //3. AMSD Inflow Fund RHB
-            var amsdApprovedForms = db.AMSD_IF
-                .Where(x => DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(selectedDate) && x.FormStatus == Common.FormStatus.Approved)
-                .Select(x => x.Id)
-                .ToList();
+            var amsdApprovedForms = (viewApproved)
+                ? db.AMSD_IF
+                    .Where(x => DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(selectedDate)
+                                && x.FormStatus == Common.FormStatus.Approved)
+                    .Select(x => x.Id)
+                    .ToList()
+                : db.AMSD_IF
+                    .Where(x => DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(selectedDate)
+                                && x.FormStatus != Common.FormStatus.Rejected)
+                    .Select(x => x.Id)
+                    .ToList();
+
             var totalRhb = db.AMSD_IF_Item
                 .Where(x => amsdApprovedForms.Contains(x.FormId))
                 .Select(x => x.Amount)
@@ -351,23 +395,30 @@ namespace xDC_Web.Extension.DocGenerator
 
             #endregion
 
-            #region 2 - IF MMI 
-            
-            var treasuryApprovedForms = db.FID_Treasury
-                .Where(x => DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate) 
-                            && x.Currency == "MYR" 
-                            && x.FormStatus == Common.FormStatus.Approved)
-                .Select(x => x.Id)
-                .ToList();
+            #region 2 - IF MMI
+
+            var treasuryFormIds = (viewApproved)
+                ? db.FID_Treasury
+                    .Where(x => DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate)
+                                && x.Currency == "MYR"
+                                && x.FormStatus == Common.FormStatus.Approved)
+                    .Select(x => x.Id)
+                    .ToList()
+                : db.FID_Treasury
+                    .Where(x => DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate)
+                                && x.Currency == "MYR"
+                                && x.FormStatus != Common.FormStatus.Rejected)
+                    .Select(x => x.Id)
+                    .ToList();
 
             var ifTotalPrincipal = db.FID_Treasury_Deposit
-                .Where(x => treasuryApprovedForms.Contains(x.FormId) && x.CashflowType == Common.Cashflow.Inflow)
+                .Where(x => treasuryFormIds.Contains(x.FormId) && x.CashflowType == Common.Cashflow.Inflow)
                 .Select(x => x.Principal)
                 .DefaultIfEmpty(0)
                 .Sum();
 
             var ifTotalInterest = db.FID_Treasury_Deposit
-                .Where(x => treasuryApprovedForms.Contains(x.FormId) && x.CashflowType == Common.Cashflow.Inflow)
+                .Where(x => treasuryFormIds.Contains(x.FormId) && x.CashflowType == Common.Cashflow.Inflow)
                 .Select(x => x.IntProfitReceivable)
                 .DefaultIfEmpty(0)
                 .Sum();
@@ -379,28 +430,36 @@ namespace xDC_Web.Extension.DocGenerator
             dataObj.InflowTotalDepoPrincipalInterest = inflowTotalDepoPrincipalInterest;
 
             #endregion
-            
+
             #region 3 - IF Fixed Income
 
-            var approvedTsForms = db.ISSD_FormHeader
-                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
-                            && x.Currency == "MYR" && x.FormStatus == Common.FormStatus.Approved)
-                .Select(x => x.Id)
-                .ToList();
+            var tsFormIds = (viewApproved)
+                ? db.ISSD_FormHeader
+                    .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
+                                && x.Currency == "MYR"
+                                && x.FormStatus == Common.FormStatus.Approved)
+                    .Select(x => x.Id)
+                    .ToList()
+                : db.ISSD_FormHeader
+                    .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
+                                && x.Currency == "MYR"
+                                && x.FormStatus != Common.FormStatus.Rejected)
+                    .Select(x => x.Id)
+                    .ToList();
 
             var couponBondMgs = db.ISSD_TradeSettlement
-                .Where(x => approvedTsForms.Contains(x.FormId)
+                .Where(x => tsFormIds.Contains(x.FormId)
                             && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Bond)
                             && (x.InstrumentCode.Contains("MGS") || x.InstrumentCode.Contains("MGII") || x.InstrumentCode.Contains("GII"))
                             && (x.InflowAmount) > 0)
                 .Select(x => x.InflowAmount)
                 .DefaultIfEmpty(0)
                 .Sum();
-            
+
             dataObj.IF_FixedIncome_Mgs = couponBondMgs;
 
             var couponNonMgs = db.ISSD_TradeSettlement
-                .Where(x => approvedTsForms.Contains(x.FormId)
+                .Where(x => tsFormIds.Contains(x.FormId)
                             && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Bond)
                             && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
                             && (x.InflowAmount) > 0)
@@ -409,7 +468,7 @@ namespace xDC_Web.Extension.DocGenerator
                 .Sum();
 
             var treasuryMmIf = db.FID_Treasury_MMI
-                .Where(x => treasuryApprovedForms.Contains(x.FormId)
+                .Where(x => treasuryFormIds.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Inflow)
                 .Select(x => x.Proceeds)
                 .DefaultIfEmpty(0)
@@ -423,21 +482,21 @@ namespace xDC_Web.Extension.DocGenerator
 
             #region 4 - IF Equity
 
-            dataObj.IF_Equity = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Equity);
+            dataObj.IF_Equity = TradeSettlementSvc.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Equity);
 
             #endregion
 
             #region 5 - IF Others
-            
-            dataObj.IF_Others_CP = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cp);
-            dataObj.IF_Others_NP = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.NotesPapers);
-            dataObj.IF_Others_REPO = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Repo);
-            dataObj.IF_Others_Fees = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Fees);
-            dataObj.IF_Others_Mtm = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Mtm);
-            dataObj.IF_Others_Fx = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Fx);
-            dataObj.IF_Others_Cn = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cn);
-            dataObj.IF_Others_Altid = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Altid);
-            dataObj.IF_Others_Others = TradeSettlementSvc.GetTotalInflowByCategory(db, approvedTsForms, Common.TsItemCategory.Others);
+
+            dataObj.IF_Others_CP = TradeSettlementSvc.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Cp);
+            dataObj.IF_Others_NP = TradeSettlementSvc.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.NotesPapers);
+            dataObj.IF_Others_REPO = TradeSettlementSvc.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Repo);
+            dataObj.IF_Others_Fees = TradeSettlementSvc.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Fees);
+            dataObj.IF_Others_Mtm = TradeSettlementSvc.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Mtm);
+            dataObj.IF_Others_Fx = TradeSettlementSvc.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Fx);
+            dataObj.IF_Others_Cn = TradeSettlementSvc.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Cn);
+            dataObj.IF_Others_Altid = TradeSettlementSvc.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Altid);
+            dataObj.IF_Others_Others = TradeSettlementSvc.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Others);
 
             dataObj.IF_Others_Total = dataObj.IF_Others_CP + dataObj.IF_Others_NP + dataObj.IF_Others_REPO + dataObj.IF_Others_Fees +
                                            dataObj.IF_Others_Mtm + dataObj.IF_Others_Fx + dataObj.IF_Others_Cn + dataObj.IF_Others_Altid +
@@ -455,9 +514,9 @@ namespace xDC_Web.Extension.DocGenerator
             #endregion
 
             #region 6 - OF MMI 
-            
+
             dataObj.OF_MM_NewPlacement = db.FID_Treasury_Deposit
-                .Where(x => treasuryApprovedForms.Contains(x.FormId) 
+                .Where(x => treasuryFormIds.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Outflow
                             && x.Notes == "New")
                 .Select(x => x.Principal)
@@ -465,7 +524,7 @@ namespace xDC_Web.Extension.DocGenerator
                 .Sum();
 
             dataObj.OF_MM_Rollover = db.FID_Treasury_Deposit
-                .Where(x => treasuryApprovedForms.Contains(x.FormId) 
+                .Where(x => treasuryFormIds.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Outflow
                             && x.Notes == "r/o p+i")
                 .Select(x => x.IntProfitReceivable)
@@ -478,7 +537,7 @@ namespace xDC_Web.Extension.DocGenerator
 
 
             var of_couponBondMgs = db.ISSD_TradeSettlement
-                .Where(x => approvedTsForms.Contains(x.FormId)
+                .Where(x => tsFormIds.Contains(x.FormId)
                             && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Bond)
                             && (x.InstrumentCode.Contains("MGS") || x.InstrumentCode.Contains("MGII") || x.InstrumentCode.Contains("GII"))
                             && (x.OutflowAmount) > 0)
@@ -489,7 +548,7 @@ namespace xDC_Web.Extension.DocGenerator
             dataObj.OF_FixedIncome_Mgs = of_couponBondMgs;
 
             var of_couponBondNonMgs = db.ISSD_TradeSettlement
-                .Where(x => approvedTsForms.Contains(x.FormId)
+                .Where(x => tsFormIds.Contains(x.FormId)
                             && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Bond || x.InstrumentType == Common.TsItemCategory.Repo)
                             && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
                             && (x.OutflowAmount) > 0)
@@ -498,7 +557,7 @@ namespace xDC_Web.Extension.DocGenerator
                 .Sum();
 
             var treasuryMmOf = db.FID_Treasury_MMI
-                .Where(x => treasuryApprovedForms.Contains(x.FormId)
+                .Where(x => treasuryFormIds.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Outflow
                             )
                 .Select(x => x.Proceeds)
@@ -513,21 +572,21 @@ namespace xDC_Web.Extension.DocGenerator
 
             #region 8 - OF Equity
 
-            dataObj.OF_Equity = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Equity);
+            dataObj.OF_Equity = TradeSettlementSvc.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Equity);
 
             #endregion
 
-            #region OF Others
-            
-            dataObj.OF_Others_CP = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cp);
-            dataObj.OF_Others_NP = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.NotesPapers);
-            dataObj.OF_Others_REPO = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Repo);
-            dataObj.OF_Others_Fees = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Fees);
-            dataObj.OF_Others_Mtm = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Mtm);
-            dataObj.OF_Others_Fx = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Fx);
-            dataObj.OF_Others_Cn = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Cn);
-            dataObj.OF_Others_Altid = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Altid);
-            dataObj.OF_Others_Others = TradeSettlementSvc.GetTotalOutflowByCategory(db, approvedTsForms, Common.TsItemCategory.Others);
+            #region 9 - OF Others
+
+            dataObj.OF_Others_CP = TradeSettlementSvc.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Cp);
+            dataObj.OF_Others_NP = TradeSettlementSvc.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.NotesPapers);
+            dataObj.OF_Others_REPO = TradeSettlementSvc.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Repo);
+            dataObj.OF_Others_Fees = TradeSettlementSvc.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Fees);
+            dataObj.OF_Others_Mtm = TradeSettlementSvc.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Mtm);
+            dataObj.OF_Others_Fx = TradeSettlementSvc.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Fx);
+            dataObj.OF_Others_Cn = TradeSettlementSvc.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Cn);
+            dataObj.OF_Others_Altid = TradeSettlementSvc.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Altid);
+            dataObj.OF_Others_Others = TradeSettlementSvc.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Others);
 
             dataObj.OF_Others_Total = dataObj.OF_Others_CP + dataObj.OF_Others_NP + dataObj.OF_Others_REPO + dataObj.OF_Others_Fees +
                                       dataObj.OF_Others_Mtm + dataObj.OF_Others_Fx + dataObj.OF_Others_Cn + dataObj.OF_Others_Altid +
@@ -535,11 +594,13 @@ namespace xDC_Web.Extension.DocGenerator
 
             #endregion
 
-            #region 9 - OF Net
+            #region 10 - OF Net
 
             dataObj.OF_Net = dataObj.OF_Equity + dataObj.OF_FixedIncome_Total +
                              dataObj.OF_MM_NewPlacement + dataObj.OF_MM_Rollover +
                              dataObj.OF_Others_Total;
+
+            #endregion
 
             #endregion
 
@@ -548,7 +609,7 @@ namespace xDC_Web.Extension.DocGenerator
             #region IF: Deposit Maturity
 
             var ifInflowItems = db.FID_Treasury_Deposit
-                .Where(x => treasuryApprovedForms.Contains(x.FormId)
+                .Where(x => treasuryFormIds.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Inflow)
                 .Select(x => new MYR_DealCutOffData_Mmi
                 {
@@ -573,7 +634,7 @@ namespace xDC_Web.Extension.DocGenerator
             #region OF Rollover & New Placement
 
             var ofInflowRolloverItems = db.FID_Treasury_Deposit
-                .Where(x => treasuryApprovedForms.Contains(x.FormId)
+                .Where(x => treasuryFormIds.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Outflow
                             && x.Notes == "r/o P+I")
                 .Select(x => new MYR_DealCutOffData_Mmi
@@ -595,7 +656,7 @@ namespace xDC_Web.Extension.DocGenerator
             dataObj.OF_MMI_RolloverItems = ofInflowRolloverItems;
 
             var ofInflowNewPlacementItems = db.FID_Treasury_Deposit
-                .Where(x => treasuryApprovedForms.Contains(x.FormId)
+                .Where(x => treasuryFormIds.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Outflow
                             && x.Notes == "New")
                 .Select(x => new MYR_DealCutOffData_Mmi
@@ -619,7 +680,6 @@ namespace xDC_Web.Extension.DocGenerator
 
             #endregion
 
-
             #region Sheet 3 - Others
 
             #region Others Tab - IF - MGS & GII - Sales, maturity or coupon
@@ -627,7 +687,7 @@ namespace xDC_Web.Extension.DocGenerator
             var othersTab_if_mgs = new List<MYR_DealCutOffData_OthersTab_Item1>();
 
             var ifCoupon = db.ISSD_TradeSettlement
-                .Where(x => approvedTsForms.Contains(x.FormId)
+                .Where(x => tsFormIds.Contains(x.FormId)
                             && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Bond)
                             && (x.InstrumentCode.Contains("MGS") || x.InstrumentCode.Contains("MGII") || x.InstrumentCode.Contains("GII"))
                             && (x.InflowAmount) > 0)
@@ -659,7 +719,7 @@ namespace xDC_Web.Extension.DocGenerator
             var othersTab_if_pds = new List<MYR_DealCutOffData_OthersTab_Item1>();
 
             var othersTab_pds_itemCoupon = db.ISSD_TradeSettlement
-                .Where(x => approvedTsForms.Contains(x.FormId)
+                .Where(x => tsFormIds.Contains(x.FormId)
                             && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Bond)
                             && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
                             && (x.InflowAmount) > 0)
@@ -678,7 +738,7 @@ namespace xDC_Web.Extension.DocGenerator
                 .ToList();
 
             var othersTab_pds_item = db.FID_Treasury_MMI
-                .Where(x => treasuryApprovedForms.Contains(x.FormId)
+                .Where(x => treasuryFormIds.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Inflow)
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item1
                 {
@@ -713,7 +773,7 @@ namespace xDC_Web.Extension.DocGenerator
             var othersTab_if_others = new List<MYR_DealCutOffData_OthersTab_Item2>();
             
             var othersTab_if_others_item = db.ISSD_TradeSettlement
-                .Where(x => approvedTsForms.Contains(x.FormId)
+                .Where(x => tsFormIds.Contains(x.FormId)
                             && (x.InstrumentType != Common.TsItemCategory.Coupon && x.InstrumentType != Common.TsItemCategory.Equity && x.InstrumentType != Common.TsItemCategory.Bond)
                             && x.InflowAmount > 0)
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item2
@@ -738,7 +798,7 @@ namespace xDC_Web.Extension.DocGenerator
             var othersTab_of_mgs = new List<MYR_DealCutOffData_OthersTab_Item1>();
 
             var othersTab_of_mgs_itemBond = db.ISSD_TradeSettlement
-                .Where(x => approvedTsForms.Contains(x.FormId)
+                .Where(x => tsFormIds.Contains(x.FormId)
                             && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Bond)
                             && (x.InstrumentCode.Contains("MGS") || x.InstrumentCode.Contains("MGII") || x.InstrumentCode.Contains("GII"))
                             && (x.OutflowAmount) > 0)
@@ -771,7 +831,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             // Sales - from FID Treasury IF MMI tab
             var othersTab_of_pds_item = db.FID_Treasury_MMI
-                .Where(x => treasuryApprovedForms.Contains(x.FormId)
+                .Where(x => treasuryFormIds.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Outflow
                             )
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item1
@@ -790,7 +850,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             // coupon - from ISSD TS coupon
             var othersTab_of_pds_itemRepo = db.ISSD_TradeSettlement
-                .Where(x => approvedTsForms.Contains(x.FormId)
+                .Where(x => tsFormIds.Contains(x.FormId)
                             && (x.InstrumentType == Common.TsItemCategory.Coupon || x.InstrumentType == Common.TsItemCategory.Bond || x.InstrumentType == Common.TsItemCategory.Repo)
                             && (!x.InstrumentCode.Contains("MGS") && !x.InstrumentCode.Contains("MGII") && !x.InstrumentCode.Contains("GII"))
                             && (x.OutflowAmount) > 0)
@@ -827,7 +887,7 @@ namespace xDC_Web.Extension.DocGenerator
             var othersTab_of_others = new List<MYR_DealCutOffData_OthersTab_Item2>();
             
             var othersTab_of_others_item = db.ISSD_TradeSettlement
-                .Where(x => approvedTsForms.Contains(x.FormId)
+                .Where(x => tsFormIds.Contains(x.FormId)
                             && (x.InstrumentType != Common.TsItemCategory.Coupon && x.InstrumentType != Common.TsItemCategory.Equity && x.InstrumentType != Common.TsItemCategory.Bond && x.InstrumentType != Common.TsItemCategory.Repo)
                             && x.OutflowAmount > 0)
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item2
@@ -848,10 +908,7 @@ namespace xDC_Web.Extension.DocGenerator
             #endregion
 
             #endregion
-
-
-
-
+            
             return dataObj;
 
             

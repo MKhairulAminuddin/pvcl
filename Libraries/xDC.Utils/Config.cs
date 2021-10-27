@@ -20,7 +20,9 @@ namespace xDC.Utils
 
         public static string EmailApplicationUrl => ConfigurationManager.AppSettings["Email.ApplicationUrl"];
         public static bool IsLive => Convert.ToBoolean(ConfigurationManager.AppSettings["Environment.IsLive"]);
-        
+
+        public static string FormViewAllSubmittedData => ConfigurationManager.AppSettings["Form.DealCutOff.ViewAllSubmittedFormText"];
+
         public static class Acl
         {
             public const  string Administrator = "Administrator";

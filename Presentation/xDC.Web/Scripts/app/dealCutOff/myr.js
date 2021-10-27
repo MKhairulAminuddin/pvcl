@@ -3,7 +3,8 @@
         //#region Variable Definition
         
         var $dateSelectionBtn,
-            $printBtn;
+            $printBtn,
+            $viewTypeDropdown;
 
         var referenceUrl = {
             printRequest: window.location.origin + "/DealCutOff/Myr/Print",
@@ -14,9 +15,9 @@
 
         //#region Data Source & Functions
 
-        var populateData = function (selectedDate) {
+        var populateData = function (selectedDate, viewType) {
             var epochDate = moment(selectedDate).unix();
-            var params = "TradeDate=" + encodeURIComponent(epochDate);
+            var params = "TradeDate=" + encodeURIComponent(epochDate) + "&ViewType=" + viewType;
 
             var iframeElement0 = document.getElementById("sheet1");
             iframeElement0.src = "./DealCutOffMyrPreview?" + params + "&SheetIndex=0";
@@ -36,9 +37,17 @@
             displayFormat: "dd/MM/yyyy",
             value: new Date(),
             onValueChanged: function (data) {
-                populateData(data.value);
+                populateData(data.value, $viewTypeDropdown.option("value"));
             }
         }).dxDateBox("instance");
+
+        $viewTypeDropdown = $("#viewTypeDropdown").dxSelectBox({
+            items: ["Approved", "LIVE"],
+            value: "Approved",
+            onValueChanged: function (data) {
+                populateData($dateSelectionBtn.option("value"), data.value);
+            }
+        }).dxSelectBox("instance");
 
         $printBtn = $("#printBtn").dxDropDownButton({
             text: "Print",
@@ -58,8 +67,9 @@
                 app.toast("Generating...");
 
                 var data = {
-                    TradeDate: moment($dateSelectionBtn.option("value")).unix(),
-                    isExportAsExcel: (e.itemData.id == 1)
+                    tradeDate: moment($dateSelectionBtn.option("value")).unix(),
+                    isExportAsExcel: (e.itemData.id == 1),
+                    viewType: $viewTypeDropdown.option("value")
                 };
 
                 $.ajax({
@@ -110,7 +120,7 @@
         //#region Immediate Invocation function
 
         
-        populateData(new Date());
+        populateData(new Date(), "Approved");
 
         //#endregion
     });
