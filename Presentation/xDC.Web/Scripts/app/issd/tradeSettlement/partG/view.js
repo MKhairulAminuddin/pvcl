@@ -2,7 +2,7 @@
     $(function () {
         //#region Variable Definition
         
-        tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
+        ts.setSideMenuItemActive("/issd/TradeSettlement");
 
         var $tabpanel,
             
@@ -39,12 +39,12 @@
         }
 
         var populateData = function() {
-            $.when(tradeSettlement.dsTradeItem("contributionCredited"))
+            $.when(ts.dsTradeItem("contributionCredited"))
                 .done(function(cn) {
                     $cnGrid.option("dataSource", cn.data);
                     $cnGrid.repaint();
 
-                    tradeSettlement.defineTabBadgeNumbers([
+                    ts.defineTabBadgeNumbers([
                         { titleId: "titleBadge10", dxDataGrid: $cnGrid }
                     ]);
                 })
@@ -59,7 +59,7 @@
                     ? $("#approvalNoteTextBox").dxTextArea("instance").option("value")
                     : $("#rejectionNoteTextBox").dxTextArea("instance").option("value"),
                 approvalStatus: isToApprove,
-                formId: tradeSettlement.getIdFromQueryString
+                formId: ts.getIdFromQueryString
             };
             
             $.ajax({
@@ -132,7 +132,7 @@
             }
         });
 
-        $printBtn = $("#printBtn").dxDropDownButton(tradeSettlement.printBtnWidgetSetting).dxDropDownButton("instance");
+        $printBtn = $("#printBtn").dxDropDownButton(ts.printBtnWidgetSetting).dxDropDownButton("instance");
         
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
@@ -220,7 +220,7 @@
         }).dxDataGrid("instance");
         
         $workflowGrid = $("#workflowGrid").dxDataGrid({
-            dataSource: tradeSettlement.dsWorflowInformation(9),
+            dataSource: ts.dsWorflowInformation(9),
             columns: [
                 {
                     dataField: "recordedDate",
@@ -276,7 +276,7 @@
 
         $("#adminEditBtn").on({
             "click": function (e) {
-                window.location.href = referenceUrl.adminEdit + tradeSettlement.getIdFromQueryString;
+                window.location.href = referenceUrl.adminEdit + ts.getIdFromQueryString;
                 e.preventDefault();
             }
         });

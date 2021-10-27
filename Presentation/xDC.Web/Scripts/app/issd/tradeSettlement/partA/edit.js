@@ -3,7 +3,7 @@
     $(function() {
         //#region Variable Definition
 
-        tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
+        ts.setSideMenuItemActive("/issd/TradeSettlement");
 
         var $tabpanel,
             $equityGrid,
@@ -30,12 +30,12 @@
         //#region Data Source & Functions
         
         var populateData = function() {
-            $.when(tradeSettlement.dsTradeItem("equity"))
+            $.when(ts.dsTradeItem("equity"))
                 .done(function (equity) {
                     $equityGrid.option("dataSource", equity.data);
                     $equityGrid.repaint();
 
-                    tradeSettlement.defineTabBadgeNumbers([
+                    ts.defineTabBadgeNumbers([
                         { titleId: "titleBadge1", dxDataGrid: $equityGrid }
                     ]);
                 })
@@ -47,7 +47,7 @@
         function postData(isDraft, isAdminEdit) {
 
             var data = {
-                id: tradeSettlement.getIdFromQueryString,
+                id: ts.getIdFromQueryString,
                 formType: formTypeId,
                 isSaveAsDraft: isDraft,
                 isSaveAdminEdit: isAdminEdit,
@@ -88,9 +88,9 @@
             showNavButtons: true
         });
 
-        $approverDropdown = $("#approverDropdown").dxSelectBox(tradeSettlement.submitApproverSelectBox).dxSelectBox("instance");
+        $approverDropdown = $("#approverDropdown").dxSelectBox(ts.submitApproverSelectBox).dxSelectBox("instance");
 
-        $approvalNotes = $("#approvalNotes").dxTextArea(tradeSettlement.submitApprovalNotesTextArea).dxTextArea("instance");
+        $approvalNotes = $("#approvalNotes").dxTextArea(ts.submitApprovalNotesTextArea).dxTextArea("instance");
 
         //#endregion
 
@@ -121,13 +121,11 @@
                 },
                 {
                     dataField: "instrumentCode",
-                    caption: "Equity",
-                    allowEditing: false
+                    caption: "Equity"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    allowEditing: false
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "maturity",
@@ -136,8 +134,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "sales",
@@ -146,8 +143,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "purchase",
@@ -156,8 +152,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "remarks",
@@ -203,8 +198,8 @@
             editing: {
                 mode: "batch",
                 allowUpdating: true,
-                allowDeleting: false,
-                allowAdding: false
+                allowDeleting: true,
+                allowAdding: true
             },
             paging: {
                 enabled: false
@@ -229,7 +224,7 @@
 
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function(e) {
-                tradeSettlement.saveAllGrids($equityGrid);
+                ts.saveAllGrids($equityGrid);
                 
                 if (isDraft || isAdminEdit) {
                     setTimeout(function() {
@@ -245,7 +240,7 @@
 
         $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                tradeSettlement.saveAllGrids($equityGrid);
+                ts.saveAllGrids($equityGrid);
 
                 if ($approverDropdown.option("value") != null) {
 

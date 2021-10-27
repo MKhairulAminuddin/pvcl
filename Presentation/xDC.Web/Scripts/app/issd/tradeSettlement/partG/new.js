@@ -3,7 +3,7 @@
     $(function () {
         //#region Variable Definition
         
-        tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
+        ts.setSideMenuItemActive("/issd/TradeSettlement");
         
         var $tabpanel,
             $cnGrid,
@@ -67,7 +67,7 @@
         
         //#region Other Widgets
 
-        $settlementDateBox = $("#settlementDateBox").dxDateBox(tradeSettlement.settlementDateBox).dxValidator({
+        $settlementDateBox = $("#settlementDateBox").dxDateBox(ts.settlementDateBox).dxValidator({
             validationRules: [
                 {
                     type: "required",
@@ -76,7 +76,7 @@
             ]
         }).dxDateBox("instance");
 
-        $currencySelectBox = $("#currencySelectBox").dxSelectBox(tradeSettlement.currencySelectBox)
+        $currencySelectBox = $("#currencySelectBox").dxSelectBox(ts.currencySelectBox)
             .dxValidator({
                 validationRules: [
                     {
@@ -96,9 +96,9 @@
             showNavButtons: true
         });
 
-        $approverDropdown = $("#approverDropdown").dxSelectBox(tradeSettlement.submitApproverSelectBox).dxSelectBox("instance");
+        $approverDropdown = $("#approverDropdown").dxSelectBox(ts.submitApproverSelectBox).dxSelectBox("instance");
 
-        $approvalNotes = $("#approvalNotes").dxTextArea(tradeSettlement.submitApprovalNotesTextArea).dxTextArea("instance");
+        $approvalNotes = $("#approvalNotes").dxTextArea(ts.submitApprovalNotesTextArea).dxTextArea("instance");
         
         //#endregion
         
@@ -162,7 +162,7 @@
                 ]
             },
             onSaved: function () {
-                tradeSettlement.defineTabBadgeNumbers([
+                ts.defineTabBadgeNumbers([
                     { titleId: "titleBadge10", dxDataGrid: $cnGrid }
                 ]);
             },
@@ -195,9 +195,9 @@
 
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function (e) {
-                tradeSettlement.saveAllGrids($cnGrid);
+                ts.saveAllGrids($cnGrid);
 
-                if (tradeSettlement.val_isTMinus1($settlementDateBox.option("value"))) {
+                if (ts.val_isTMinus1($settlementDateBox.option("value"))) {
                     alert("T-n only available for viewing..");
                 }
                 else {
@@ -217,7 +217,7 @@
 
         $submitForApprovalModalBtn = $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                tradeSettlement.saveAllGrids($cnGrid);
+                ts.saveAllGrids($cnGrid);
 
                 if ($approverDropdown.option("value") != null) {
 

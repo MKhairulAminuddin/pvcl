@@ -2,7 +2,7 @@
     $(function () {
         //#region Variable Definition
         
-        tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
+        ts.setSideMenuItemActive("/issd/TradeSettlement");
 
         var $tabpanel,
             $mtmGrid,
@@ -40,8 +40,8 @@
 
         var populateData = function() {
             $.when(
-                    tradeSettlement.dsTradeItem("mtm"),
-                    tradeSettlement.dsTradeItem("fxSettlement")
+                    ts.dsTradeItem("mtm"),
+                    ts.dsTradeItem("fxSettlement")
                 )
                 .done(function(data1, data2) {
                     $mtmGrid.option("dataSource", data1[0].data);
@@ -50,7 +50,7 @@
                     $fxSettlementGrid.option("dataSource", data2[0].data);
                     $fxSettlementGrid.repaint();
 
-                    tradeSettlement.defineTabBadgeNumbers([
+                    ts.defineTabBadgeNumbers([
                         { titleId: "titleBadge8", dxDataGrid: $mtmGrid },
                         { titleId: "titleBadge9", dxDataGrid: $fxSettlementGrid }
                     ]);
@@ -66,7 +66,7 @@
                     ? $("#approvalNoteTextBox").dxTextArea("instance").option("value")
                     : $("#rejectionNoteTextBox").dxTextArea("instance").option("value"),
                 approvalStatus: isToApprove,
-                formId: tradeSettlement.getIdFromQueryString
+                formId: ts.getIdFromQueryString
             };
             
             $.ajax({
@@ -139,7 +139,7 @@
             }
         });
         
-        $printBtn = $("#printBtn").dxDropDownButton(tradeSettlement.printBtnWidgetSetting).dxDropDownButton("instance");
+        $printBtn = $("#printBtn").dxDropDownButton(ts.printBtnWidgetSetting).dxDropDownButton("instance");
         
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
@@ -333,7 +333,7 @@
         }).dxDataGrid("instance");
 
         $workflowGrid = $("#workflowGrid").dxDataGrid({
-            dataSource: tradeSettlement.dsWorflowInformation(6),
+            dataSource: ts.dsWorflowInformation(6),
             columns: [
                 {
                     dataField: "recordedDate",
@@ -389,7 +389,7 @@
 
         $("#adminEditBtn").on({
             "click": function (e) {
-                window.location.href = referenceUrl.adminEdit + tradeSettlement.getIdFromQueryString;
+                window.location.href = referenceUrl.adminEdit + ts.getIdFromQueryString;
                 e.preventDefault();
             }
         });

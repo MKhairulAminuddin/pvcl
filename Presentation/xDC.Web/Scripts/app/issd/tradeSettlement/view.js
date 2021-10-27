@@ -2,7 +2,7 @@
     $(function () {
         //#region Variable Definition
 
-        tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
+        ts.setSideMenuItemActive("/issd/TradeSettlement");
         $('[data-toggle="tooltip"]').tooltip();
 
         var $tabpanel,
@@ -37,7 +37,7 @@
         var loadData = function () {
             return $.ajax({
                 dataType: "json",
-                url: tradeSettlement.api.loadApprovedTrades(),
+                url: ts.api.loadApprovedTrades(),
                 method: "get",
                 success: function (response) {
                     loadTabs(response);
@@ -60,7 +60,7 @@
                     template: function (itemData, itemIndex, element) {
                         var newTabView = $("<div id='equityGrid' class='grid-container-tabview' style='width: 100%'/>");
                         newTabView.dxDataGrid({
-                            dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdEquity, "equity"),
+                            dataSource: ts.dsApprovedTradeItems(response.data[0].formIdEquity, "equity"),
                             columns: [
                                 {
                                     caption: "#",
@@ -176,7 +176,7 @@
                     template: function (itemData, itemIndex, element) {
                         var newTabView = $("<div id='bondGrid' class='grid-container-tabview' style='width: 100%'/>");
                         newTabView.dxDataGrid({
-                            dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdBond, "bond"),
+                            dataSource: ts.dsApprovedTradeItems(response.data[0].formIdBond, "bond"),
                             columns: [
                                 {
                                     caption: "#",
@@ -297,7 +297,7 @@
                     template: function (itemData, itemIndex, element) {
                         var newTabView = $("<div id='cpGrid' class='grid-container-tabview' style='width: 100%'/>");
                         newTabView.dxDataGrid({
-                            dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdCp, "cp"),
+                            dataSource: ts.dsApprovedTradeItems(response.data[0].formIdCp, "cp"),
                             columns: [
                                 {
                                     caption: "#",
@@ -418,7 +418,7 @@
                     template: function (itemData, itemIndex, element) {
                         var newTabView = $("<div id='notesPaperGrid' class='grid-container-tabview' style='width: 100%'/>");
                         newTabView.dxDataGrid({
-                            dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdNotesPapers, "notesPapers"),
+                            dataSource: ts.dsApprovedTradeItems(response.data[0].formIdNotesPapers, "notesPapers"),
                             columns: [
                                 {
                                     caption: "#",
@@ -539,7 +539,7 @@
                     template: function (itemData, itemIndex, element) {
                         var newTabView = $("<div id='repoGrid' class='grid-container-tabview' style='width: 100%'/>");
                         newTabView.dxDataGrid({
-                            dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdRepo, "repo"),
+                            dataSource: ts.dsApprovedTradeItems(response.data[0].formIdRepo, "repo"),
                             columns: [
                                 {
                                     caption: "#",
@@ -641,7 +641,7 @@
                     template: function (itemData, itemIndex, element) {
                         var newTabView = $("<div id='couponGrid' class='grid-container-tabview' style='width: 100%'/>");
                         newTabView.dxDataGrid({
-                            dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdCoupon, "coupon"),
+                            dataSource: ts.dsApprovedTradeItems(response.data[0].formIdCoupon, "coupon"),
                             columns: [
                                 {
                                     caption: "#",
@@ -721,7 +721,7 @@
                     template: function (itemData, itemIndex, element) {
                         var newTabView = $("<div id='mtmGrid' class='grid-container-tabview' style='width: 100%'/>");
                         newTabView.dxDataGrid({
-                            dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdMtm, "mtm"),
+                            dataSource: ts.dsApprovedTradeItems(response.data[0].formIdMtm, "mtm"),
                             columns: [
                                 {
                                     caption: "#",
@@ -825,7 +825,7 @@
                     template: function (itemData, itemIndex, element) {
                         var newTabView = $("<div id='fxSettlementGrid' class='grid-container-tabview' style='width: 100%'/>");
                         newTabView.dxDataGrid({
-                            dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdFx, "fxSettlement"),
+                            dataSource: ts.dsApprovedTradeItems(response.data[0].formIdFx, "fxSettlement"),
                             columns: [
                                 {
                                     caption: "#",
@@ -929,7 +929,7 @@
                     template: function (itemData, itemIndex, element) {
                         var newTabView = $("<div id='altidGrid' class='grid-container-tabview' style='width: 100%'/>");
                         newTabView.dxDataGrid({
-                            dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdAltid, "altid"),
+                            dataSource: ts.dsApprovedTradeItems(response.data[0].formIdAltid, "altid"),
                             columns: [
                                 {
                                     caption: "#",
@@ -1033,7 +1033,7 @@
                     template: function (itemData, itemIndex, element) {
                         var newTabView = $("<div id='feesGrid' class='grid-container-tabview' style='width: 100%'/>");
                         newTabView.dxDataGrid({
-                            dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdFees, "fees"),
+                            dataSource: ts.dsApprovedTradeItems(response.data[0].formIdFees, "fees"),
                             columns: [
                                 {
                                     caption: "#",
@@ -1128,7 +1128,7 @@
                     template: function (itemData, itemIndex, element) {
                         var newTabView = $("<div id='cnGrid' class='grid-container-tabview' style='width: 100%'/>");
                         newTabView.dxDataGrid({
-                            dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdCn, "contributionCredited"),
+                            dataSource: ts.dsApprovedTradeItems(response.data[0].formIdCn, "contributionCredited"),
                             columns: [
                                 {
                                     caption: "#",
@@ -1214,7 +1214,7 @@
                     template: function (itemData, itemIndex, element) {
                         var newTabView = $("<div id='othersGrid' class='grid-container-tabview' style='width: 100%'/>");
                         newTabView.dxDataGrid({
-                            dataSource: tradeSettlement.dsApprovedTradeItems(response.data[0].formIdOthers, "others"),
+                            dataSource: ts.dsApprovedTradeItems(response.data[0].formIdOthers, "others"),
                             columns: [
                                 {
                                     caption: "#",
@@ -1325,7 +1325,7 @@
             showNavButtons: true
         }).dxTabPanel("instance");
 
-        $printBtn = $("#printBtn").dxDropDownButton(tradeSettlement.printBtnWidgetSettingConsolidated).dxDropDownButton("instance");
+        $printBtn = $("#printBtn").dxDropDownButton(ts.printBtnWidgetSettingConsolidated).dxDropDownButton("instance");
 
         //#endregion
 

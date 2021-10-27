@@ -148,13 +148,11 @@
                 },
                 {
                     dataField: "instrumentCode",
-                    caption: "Bond",
-                    allowEditing: false
+                    caption: "Bond"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    allowEditing: false
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "maturity",
@@ -163,8 +161,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "sales",
@@ -173,8 +170,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "purchase",
@@ -183,8 +179,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "remarks",
@@ -230,8 +225,8 @@
             editing: {
                 mode: "batch",
                 allowUpdating: true,
-                allowDeleting: false,
-                allowAdding: false
+                allowDeleting: true,
+                allowAdding: true
             },
             paging: {
                 enabled: false
@@ -263,13 +258,11 @@
                 },
                 {
                     dataField: "instrumentCode",
-                    caption: "CP",
-                    allowEditing: false
+                    caption: "CP"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    allowEditing: false
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "maturity",
@@ -278,8 +271,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "sales",
@@ -288,8 +280,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "purchase",
@@ -298,8 +289,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "remarks",
@@ -345,8 +335,8 @@
             editing: {
                 mode: "batch",
                 allowUpdating: true,
-                allowDeleting: false,
-                allowAdding: false
+                allowDeleting: true,
+                allowAdding: true
             },
             paging: {
                 enabled: false
@@ -378,13 +368,11 @@
                 },
                 {
                     dataField: "instrumentCode",
-                    caption: "Notes & Papers",
-                    allowEditing: false
+                    caption: "Notes & Papers"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    allowEditing: false
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "maturity",
@@ -393,8 +381,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "sales",
@@ -403,8 +390,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "purchase",
@@ -413,8 +399,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "remarks",
@@ -460,8 +445,8 @@
             editing: {
                 mode: "batch",
                 allowUpdating: true,
-                allowDeleting: false,
-                allowAdding: false
+                allowDeleting: true,
+                allowAdding: true
             },
             paging: {
                 enabled: false

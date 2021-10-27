@@ -3,7 +3,7 @@
     $(function() {
         //#region Variable Definition
 
-        tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
+        ts.setSideMenuItemActive("/issd/TradeSettlement");
 
         var $tabpanel,
             $repoGrid,
@@ -32,13 +32,13 @@
 
         var populateData = function() {
             $.when(
-                    tradeSettlement.dsTradeItem("repo")
+                    ts.dsTradeItem("repo")
                 )
                 .done(function (repo) {
                     $repoGrid.option("dataSource", repo.data);
                     $repoGrid.repaint();
 
-                    tradeSettlement.defineTabBadgeNumbers([
+                    ts.defineTabBadgeNumbers([
                         { titleId: "titleBadge5", dxDataGrid: $repoGrid }
                     ]);
                 })
@@ -50,7 +50,7 @@
         function postData(isDraft, isAdminEdit) {
 
             var data = {
-                id: tradeSettlement.getIdFromQueryString,
+                id: ts.getIdFromQueryString,
                 formType: formTypeId,
                 isSaveAsDraft: isDraft,
                 isSaveAdminEdit: isAdminEdit,
@@ -91,9 +91,9 @@
             showNavButtons: true
         });
 
-        $approverDropdown = $("#approverDropdown").dxSelectBox(tradeSettlement.submitApproverSelectBox).dxSelectBox("instance");
+        $approverDropdown = $("#approverDropdown").dxSelectBox(ts.submitApproverSelectBox).dxSelectBox("instance");
 
-        $approvalNotes = $("#approvalNotes").dxTextArea(tradeSettlement.submitApprovalNotesTextArea).dxTextArea("instance");
+        $approvalNotes = $("#approvalNotes").dxTextArea(ts.submitApprovalNotesTextArea).dxTextArea("instance");
 
         //#endregion
 
@@ -209,7 +209,7 @@
 
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function(e) {
-                tradeSettlement.saveAllGrids($repoGrid);
+                ts.saveAllGrids($repoGrid);
                 
                 if (isDraft || isAdminEdit) {
                     setTimeout(function() {
@@ -225,7 +225,7 @@
 
         $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                tradeSettlement.saveAllGrids($repoGrid);
+                ts.saveAllGrids($repoGrid);
 
                 if ($approverDropdown.option("value") != null) {
                     setTimeout(function () { postData(false, false); },

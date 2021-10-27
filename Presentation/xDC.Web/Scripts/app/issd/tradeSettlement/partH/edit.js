@@ -3,7 +3,7 @@
     $(function() {
         //#region Variable Definition
 
-        tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
+        ts.setSideMenuItemActive("/issd/TradeSettlement");
 
         var $tabpanel,
             
@@ -32,12 +32,12 @@
         //#region Data Source & Functions
 
         var populateData = function() {
-            $.when(tradeSettlement.dsTradeItem("others"))
+            $.when(ts.dsTradeItem("others"))
                 .done(function (others) {
                     $othersGrid.option("dataSource", others.data);
                     $othersGrid.repaint();
 
-                    tradeSettlement.defineTabBadgeNumbers([
+                    ts.defineTabBadgeNumbers([
                         { titleId: "titleBadge12", dxDataGrid: $othersGrid }
                     ]);
                 })
@@ -49,7 +49,7 @@
         function postData(isDraft, isAdminEdit) {
 
             var data = {
-                id: tradeSettlement.getIdFromQueryString,
+                id: ts.getIdFromQueryString,
                 formType: formTypeId,
                 isSaveAsDraft: isDraft,
                 isSaveAdminEdit: isAdminEdit,
@@ -91,9 +91,9 @@
             showNavButtons: true
         });
 
-        $approverDropdown = $("#approverDropdown").dxSelectBox(tradeSettlement.submitApproverSelectBox).dxSelectBox("instance");
+        $approverDropdown = $("#approverDropdown").dxSelectBox(ts.submitApproverSelectBox).dxSelectBox("instance");
 
-        $approvalNotes = $("#approvalNotes").dxTextArea(tradeSettlement.submitApprovalNotesTextArea).dxTextArea("instance");
+        $approvalNotes = $("#approvalNotes").dxTextArea(ts.submitApprovalNotesTextArea).dxTextArea("instance");
 
         //#endregion
 
@@ -175,7 +175,7 @@
                 ]
             },
             onSaved: function () {
-                tradeSettlement.defineTabBadgeNumbers([
+                ts.defineTabBadgeNumbers([
                     { titleId: "titleBadge12", dxDataGrid: $othersGrid }
                 ]);
             },
@@ -208,7 +208,7 @@
 
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function(e) {
-                tradeSettlement.saveAllGrids($othersGrid);
+                ts.saveAllGrids($othersGrid);
                 
                 if (isDraft || isAdminEdit) {
                     setTimeout(function() {
@@ -224,7 +224,7 @@
 
         $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                tradeSettlement.saveAllGrids($othersGrid);
+                ts.saveAllGrids($othersGrid);
 
                 if ($approverDropdown.option("value") != null) {
                     setTimeout(function () { postData(false, false); },

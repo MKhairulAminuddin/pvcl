@@ -3,7 +3,7 @@
     $(function () {
         //#region Variable Definition
         
-        tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
+        ts.setSideMenuItemActive("/issd/TradeSettlement");
         
         var $tabpanel,
             $equityGrid,
@@ -13,6 +13,7 @@
 
             $settlementDateBox,
             $currencySelectBox,
+            $edwAvailable,
 
             $saveAsDraftBtn,
             $submitForApprovalBtn,
@@ -27,33 +28,66 @@
         var referenceUrl = {
             postNewFormRequest: window.location.origin + "/api/issd/TradeSettlement/New",
             postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartA/View/",
+            dsEdwAvailability: window.location.origin + "/api/issd/ts/EdwAvailability/a"
         };
         
         //#endregion
 
         //#region Data Source & Functions
         
-        function populateDwData(settlementDate, currency) {
-            if (settlementDate && currency) {
-                $.when(tradeSettlement.dsTradeItemEdw("EQUITY", settlementDate, currency))
-                    .done(function(equity) {
-                        $equityGrid.option("dataSource", equity.data);
+        function populateDwData(categoryType, settlementDate, currency) {
+            if (categoryType == "equity") {
+                $.when(
+                        ts.dsTradeItemEdw("EQUITY", settlementDate, currency)
+                    )
+                    .done(function (data1) {
+                        $equityGrid.option("dataSource", []);
+                        $equityGrid.option("dataSource", data1.data);
                         $equityGrid.repaint();
-                        app.toastEdwCount(equity.data, "Equity");
-                        
-                        tradeSettlement.defineTabBadgeNumbers([
-                            { titleId: "titleBadge1", dxDataGrid: $equityGrid }
-                        ]);
+
+                        app.toastEdwCount(data1.data, "EQUITY");
                     })
                     .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-                        
 
                     })
-                    .then(function() {
+                    .then(function () {
+
+                    });
+            }
+
+            ts.defineTabBadgeNumbers([
+                { titleId: "titleBadge1", dxDataGrid: $equityGrid }
+            ]);
+        }
+
+        var dsEdwAvailability = function (tradeDateEpoch, currency) {
+            return $.ajax({
+                url: referenceUrl.dsEdwAvailability + "/" + moment(tradeDateEpoch).unix() + "/" + currency,
+                type: "get"
+            });
+        };
+
+        var checkDwDataAvailability = function (settlementDate, currency) {
+            app.clearAllGrid($equityGrid);
+            ts.defineTabBadgeNumbers([
+                { titleId: "titleBadge1", dxDataGrid: $equityGrid }
+            ]);
+
+            if (settlementDate && currency) {
+                $.when(
+                        dsEdwAvailability(settlementDate, currency)
+                    )
+                    .done(function (data1) {
+                        $edwAvailable.option("dataSource", data1);
+                    })
+                    .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+
+                    })
+                    .then(function () {
 
                     });
             } else {
-                dxGridUtils.clearGrid($equityGrid);
+
             }
         }
 
@@ -97,7 +131,7 @@
         
         //#region Other Widgets
 
-        $settlementDateBox = $("#settlementDateBox").dxDateBox(tradeSettlement.settlementDateBox).dxValidator({
+        $settlementDateBox = $("#settlementDateBox").dxDateBox(ts.settlementDateBox).dxValidator({
             validationRules: [
                 {
                     type: "required",
@@ -106,7 +140,7 @@
             ]
         }).dxDateBox("instance");
 
-        $currencySelectBox = $("#currencySelectBox").dxSelectBox(tradeSettlement.currencySelectBox)
+        $currencySelectBox = $("#currencySelectBox").dxSelectBox(ts.currencySelectBox)
             .dxValidator({
                 validationRules: [
                     {
@@ -117,6 +151,24 @@
             })
             .dxSelectBox("instance");
 
+        $edwAvailable = $("#edwAvailable").dxList({
+            activeStateEnabled: false,
+            focusStateEnabled: false,
+            itemTemplate: function (data, index) {
+                var result = $("<div>");
+
+                $("<div>").text(data.name + " × " + data.numbers).appendTo(result);
+                $("<a>").append("<i class='fa fa-download'></i> Populate").on("dxclick", function (e) {
+
+                    populateDwData(data.categoryType, $settlementDateBox.option("value"), $currencySelectBox.option("value"));
+
+                    e.stopPropagation();
+                }).appendTo(result);
+
+                return result;
+            }
+        }).dxList("instance");
+
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
                 { titleId: "titleBadge1", title: "Equity", template: "equityTab" }
@@ -126,9 +178,9 @@
             showNavButtons: true
         });
 
-        $approverDropdown = $("#approverDropdown").dxSelectBox(tradeSettlement.submitApproverSelectBox).dxSelectBox("instance");
+        $approverDropdown = $("#approverDropdown").dxSelectBox(ts.submitApproverSelectBox).dxSelectBox("instance");
 
-        $approvalNotes = $("#approvalNotes").dxTextArea(tradeSettlement.submitApprovalNotesTextArea).dxTextArea("instance");
+        $approvalNotes = $("#approvalNotes").dxTextArea(ts.submitApprovalNotesTextArea).dxTextArea("instance");
         
         //#endregion
         
@@ -147,13 +199,11 @@
                 },
                 {
                     dataField: "instrumentCode",
-                    caption: "Equity",
-                    allowEditing: false
+                    caption: "Equity"
                 },
                 {
                     dataField: "stockCode",
-                    caption: "Stock Code/ ISIN",
-                    allowEditing: false
+                    caption: "Stock Code/ ISIN"
                 },
                 {
                     dataField: "maturity",
@@ -162,8 +212,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "sales",
@@ -172,8 +221,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "purchase",
@@ -182,8 +230,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    allowEditing: false
+                    }
                 },
                 {
                     dataField: "remarks",
@@ -229,8 +276,8 @@
             editing: {
                 mode: "batch",
                 allowUpdating: true,
-                allowDeleting: false,
-                allowAdding: false
+                allowDeleting: true,
+                allowAdding: true
             },
             showBorders: true,
             showRowLines: true,
@@ -245,11 +292,11 @@
         //#region Events
 
         $settlementDateBox.on("valueChanged", function (data) {
-            populateDwData(data.value, $currencySelectBox.option("value"));
+            checkDwDataAvailability(data.value, $currencySelectBox.option("value"));
         });
 
         $currencySelectBox.on("valueChanged", function (data) {
-            populateDwData($settlementDateBox.option("value"), data.value);
+            checkDwDataAvailability($settlementDateBox.option("value"), data.value);
         });
 
 
@@ -267,7 +314,7 @@
 
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function (e) {
-                tradeSettlement.saveAllGrids($equityGrid);
+                ts.saveAllGrids($equityGrid);
 
                 if (isSaveAsDraft) {
                     setTimeout(function () {
@@ -283,7 +330,7 @@
 
         $submitForApprovalModalBtn = $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                tradeSettlement.saveAllGrids($equityGrid);
+                ts.saveAllGrids($equityGrid);
 
                 if ($approverDropdown.option("value") != null) {
 

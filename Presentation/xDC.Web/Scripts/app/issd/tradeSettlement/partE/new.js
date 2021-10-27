@@ -3,7 +3,7 @@
     $(function () {
         //#region Variable Definition
         
-        tradeSettlement.setSideMenuItemActive("/issd/TradeSettlement");
+        ts.setSideMenuItemActive("/issd/TradeSettlement");
         
         var $tabpanel,
             $altidGrid,
@@ -32,31 +32,7 @@
         //#endregion
 
         //#region Data Source & Functions
-
-        var populateDwData = function(settlementDate, currency) {
-            if (settlementDate && currency) {
-                $.when(
-                        tradeSettlement.dsTradeItemEdw("ALTID DISTRIBUTION AND DRAWDOWN", settlementDate, currency)
-                    )
-                    .done(function(data1) {
-                        $altidGrid.option("dataSource", data1.data);
-                        $altidGrid.repaint();
-
-                        tradeSettlement.defineTabBadgeNumbers([
-                            { titleId: "titleBadge11", dxDataGrid: $altidGrid }
-                        ]);
-                    })
-                    .always(function(dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-                        tradeSettlement.toast("Data Updated", "info");
-                    })
-                    .then(function() {
-
-                    });
-            } else {
-                dxGridUtils.clearGrid($equityGrid);
-            }
-        };
-
+        
         function postData(isDraft) {
             var data = {
                 currency: $currencySelectBox.option("value"),
@@ -91,7 +67,7 @@
         
         //#region Other Widgets
 
-        $settlementDateBox = $("#settlementDateBox").dxDateBox(tradeSettlement.settlementDateBox).dxValidator({
+        $settlementDateBox = $("#settlementDateBox").dxDateBox(ts.settlementDateBox).dxValidator({
             validationRules: [
                 {
                     type: "required",
@@ -100,7 +76,7 @@
             ]
         }).dxDateBox("instance");
 
-        $currencySelectBox = $("#currencySelectBox").dxSelectBox(tradeSettlement.currencySelectBox)
+        $currencySelectBox = $("#currencySelectBox").dxSelectBox(ts.currencySelectBox)
             .dxValidator({
                 validationRules: [
                     {
@@ -120,9 +96,9 @@
             showNavButtons: true
         });
 
-        $approverDropdown = $("#approverDropdown").dxSelectBox(tradeSettlement.submitApproverSelectBox).dxSelectBox("instance");
+        $approverDropdown = $("#approverDropdown").dxSelectBox(ts.submitApproverSelectBox).dxSelectBox("instance");
 
-        $approvalNotes = $("#approvalNotes").dxTextArea(tradeSettlement.submitApprovalNotesTextArea).dxTextArea("instance");
+        $approvalNotes = $("#approvalNotes").dxTextArea(ts.submitApprovalNotesTextArea).dxTextArea("instance");
         
         //#endregion
         
@@ -204,7 +180,7 @@
                 ]
             },
             onSaved: function () {
-                tradeSettlement.defineTabBadgeNumbers([
+                ts.defineTabBadgeNumbers([
                     { titleId: "titleBadge11", dxDataGrid: $altidGrid }
                 ]);
             },
@@ -222,16 +198,7 @@
         // #endregion Data Grid
  
         //#region Events
-
-        $settlementDateBox.on("valueChanged", function (data) {
-            populateDwData(data.value, $currencySelectBox.option("value"));
-        });
-
-        $currencySelectBox.on("valueChanged", function (data) {
-            populateDwData($settlementDateBox.option("value"), data.value);
-        });
-
-
+        
         $saveAsDraftBtn = $("#saveAsDraftBtn").on({
             "click": function (e) {
                 isSaveAsDraft = true;
@@ -246,9 +213,9 @@
 
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function (e) {
-                tradeSettlement.saveAllGrids($altidGrid);
+                ts.saveAllGrids($altidGrid);
 
-                if (tradeSettlement.val_isTMinus1($settlementDateBox.option("value"))) {
+                if (ts.val_isTMinus1($settlementDateBox.option("value"))) {
                     alert("T-n only available for viewing..");
                 }
                 else {
@@ -268,7 +235,7 @@
 
         $submitForApprovalModalBtn = $("#submitForApprovalModalBtn").on({
             "click": function (e) {
-                tradeSettlement.saveAllGrids($altidGrid);
+                ts.saveAllGrids($altidGrid);
 
                 if ($approverDropdown.option("value") != null) {
 
