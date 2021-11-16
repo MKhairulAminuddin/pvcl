@@ -438,9 +438,9 @@ namespace xDC.Utils
                 return new Row(_sb);
             }
 
-            public Row AddHeaderRow()
+            public Row AddHeaderRow(string headerColor = null, string fontColor = null)
             {
-                return new Row(_sb, true);
+                return new Row(_sb, true, headerColor, fontColor);
             }
 
             public void StartTableBody()
@@ -460,13 +460,16 @@ namespace xDC.Utils
         {
             private StringBuilder _sb;
             private bool _isHeader;
-            public Row(StringBuilder sb, bool isHeader = false)
+            public Row(StringBuilder sb, bool isHeader = false, string headerColor = null, string fontColor = null)
             {
                 _sb = sb;
                 _isHeader = isHeader;
                 if (_isHeader)
                 {
-                    _sb.Append("<thead style='border: 1px solid #999;padding: 8px;font-weight: bold;background-color: #5B8EFB;color: white'>\n");
+                    _sb.Append("<thead style='border: 1px solid #999;padding: 8px;font-weight: bold;" +
+                               (!string.IsNullOrEmpty(headerColor) ? "background-color:" + headerColor + ";" : "") +
+                               (!string.IsNullOrEmpty(fontColor) ? "color:" + fontColor : "") +
+                               "'>\n");
                 }
                 _sb.Append("\t<tr>\n");
             }

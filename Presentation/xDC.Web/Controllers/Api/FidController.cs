@@ -1284,6 +1284,8 @@ namespace xDC_Web.Controllers.Api
                             new MailService().SendApprovalStatus(form.Id, form.FormType, form.FormStatus, form.PreparedBy, input.ApprovalNote);
                             new WorkflowService().ApprovalResponse(form.Id, form.FormStatus, input.ApprovalNote, form.FormType, form.PreparedBy, form.ApprovedBy);
 
+                            new MailService().Treasury_ApprovedFormSubmission(form.Id, form.FormType, form.Currency);
+
                             return Request.CreateResponse(HttpStatusCode.Accepted, input.FormId);
                         }
                         else
