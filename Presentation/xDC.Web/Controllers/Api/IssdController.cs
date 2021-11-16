@@ -801,6 +801,15 @@ namespace xDC_Web.Controllers.Api
                             TradeSettlementSvc.NotifyPreparer(form.Id, form.FormType, form.FormStatus, form.PreparedBy, form.ApprovedBy, input.ApprovalNote);
                             new MailService().TS_IncomingFund(form.Id, form.FormType, form.Currency);
 
+                            if (form.FormType == Common.FormType.ISSD_TS_E && form.FormStatus == Common.FormStatus.Approved)
+                            {
+                                new MailService().TS_PartE_NotifyPe(form.Id);
+                            }
+                            if (form.FormType == Common.FormType.ISSD_TS_H && form.FormStatus == Common.FormStatus.Approved)
+                            {
+                                new MailService().TS_PartH_NotifyProperty(form.Id);
+                            }
+
                             return Request.CreateResponse(HttpStatusCode.Accepted, formId);
                         }
                         else

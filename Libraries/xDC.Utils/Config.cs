@@ -23,6 +23,12 @@ namespace xDC.Utils
 
         public static string FormViewAllSubmittedData => ConfigurationManager.AppSettings["Form.DealCutOff.ViewAllSubmittedFormText"];
 
+
+        public static string NotificationTsPeEmail => ConfigurationManager.AppSettings["Notification.TS.PeEmail"];
+        public static string NotificationTsPeEmailCc => ConfigurationManager.AppSettings["Notification.TS.PeEmail.CC"];
+        public static string NotificationTsPropertyEmail => ConfigurationManager.AppSettings["Notification.TS.PropertyEmail"];
+        public static string NotificationTsPropertyEmailCc => ConfigurationManager.AppSettings["Notification.TS.PropertyEmail.CC"];
+
         public static class Acl
         {
             public const  string Administrator = "Administrator";

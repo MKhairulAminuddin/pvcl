@@ -269,6 +269,180 @@ namespace xDC.Services
             }
         }
 
+        public void TS_PartE_NotifyPe(int formId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var theForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId && x.FormType == Common.FormType.ISSD_TS_E);
+                    
+                    var message = new MimeMessage()
+                    {
+                        Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                        Subject = $"{SubjectAppend} Approved Trade Settlement for Part E (ALTID)"
+                    };
+
+                    var recipients = Config.NotificationTsPeEmail.Split(';');
+
+                    foreach (var recipient in recipients)
+                    {
+                        message.To.Add(MailboxAddress.Parse(recipient));
+                    }
+
+                    var cc = Config.NotificationTsPeEmailCc.Split(';');
+
+                    foreach (var recipient in cc)
+                    {
+                        message.Cc.Add(MailboxAddress.Parse(recipient));
+                    }
+                    
+                    var bodyBuilder = new StringBuilder();
+                    bodyBuilder.Append($"<p>Dear All, </p>");
+                    bodyBuilder.AppendLine($"<p>A Trade Settlement ({theForm.FormType}) ({theForm.Currency}) form dated {theForm.SettlementDate?.ToString("dd/MM/yyyy")} has been submitted and approved by ISSD. Below are the details of the submission. </p>");
+
+                    var sb = new StringBuilder();
+                    
+                    var tsFormPartE = db.ISSD_TradeSettlement
+                        .Where(x => x.FormId == formId)
+                        .ToList();
+                
+                    if (tsFormPartE.Any())
+                    {
+                        sb.AppendLine("<br/><b>Trade Settlement (Part E - ALTID)</b><br/>");
+
+                        using (var table = new Common.Table(sb))
+                        {
+                            using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                            {
+                                row.AddCell("ALTID Distribution & Drawdown");
+                                row.AddCell("Amount (+)");
+                                row.AddCell("Amount (-)");
+                                row.AddCell("Remarks");
+                            }
+
+                            foreach (var item in tsFormPartE)
+                            {
+                                using (var row = table.AddRow())
+                                {
+                                    row.AddCell(item.InstrumentCode);
+                                    row.AddCell(item.AmountPlus.ToString("N"));
+                                    row.AddCell(item.AmountMinus.ToString("N"));
+                                    row.AddCell(item.Remarks);
+                                }
+                            }
+                        }
+
+                        bodyBuilder.Append(sb);
+                        
+
+                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                        {
+                            Text = bodyBuilder.ToString()
+                        };
+
+
+                        SendEmailToSmtp(message);
+                    }
+                    else
+                    {
+                        Logger.LogError("TS_PartE_NotifyPe email failed");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
+        public void TS_PartH_NotifyProperty(int formId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var theForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId && x.FormType == Common.FormType.ISSD_TS_H);
+
+                    var message = new MimeMessage()
+                    {
+                        Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                        Subject = $"{SubjectAppend} Approved Trade Settlement for Part H (Others)"
+                    };
+
+                    var recipients = Config.NotificationTsPropertyEmail.Split(';');
+
+                    foreach (var recipient in recipients)
+                    {
+                        message.To.Add(MailboxAddress.Parse(recipient));
+                    }
+
+                    var cc = Config.NotificationTsPropertyEmailCc.Split(';');
+
+                    foreach (var recipient in cc)
+                    {
+                        message.Cc.Add(MailboxAddress.Parse(recipient));
+                    }
+
+                    var bodyBuilder = new StringBuilder();
+                    bodyBuilder.Append($"<p>Dear All, </p>");
+                    bodyBuilder.AppendLine($"<p>A Trade Settlement ({theForm.FormType}) ({theForm.Currency}) form dated {theForm.SettlementDate?.ToString("dd/MM/yyyy")} has been submitted and approved by ISSD. Below are the details of the submission. </p>");
+
+                    var sb = new StringBuilder();
+
+                    var tsFormPartE = db.ISSD_TradeSettlement
+                        .Where(x => x.FormId == formId)
+                        .ToList();
+
+                    if (tsFormPartE.Any())
+                    {
+                        sb.AppendLine("<br/><b>Trade Settlement (Part H - Others)</b><br/>");
+
+                        using (var table = new Common.Table(sb))
+                        {
+                            using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                            {
+                                row.AddCell("Others");
+                                row.AddCell("Amount (+)");
+                                row.AddCell("Amount (-)");
+                                row.AddCell("Remarks");
+                            }
+
+                            foreach (var item in tsFormPartE)
+                            {
+                                using (var row = table.AddRow())
+                                {
+                                    row.AddCell(item.InstrumentCode);
+                                    row.AddCell(item.AmountPlus.ToString("N"));
+                                    row.AddCell(item.AmountMinus.ToString("N"));
+                                    row.AddCell(item.Remarks);
+                                }
+                            }
+                        }
+
+                        bodyBuilder.Append(sb);
+
+
+                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                        {
+                            Text = bodyBuilder.ToString()
+                        };
+
+
+                        SendEmailToSmtp(message);
+                    }
+                    else
+                    {
+                        Logger.LogError("TS_PartH_NotifyProperty email failed");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
         public void TS_AmendAfterCutOff(List<ISSD_TradeSettlement> itemBefore, List<ISSD_TradeSettlement> itemAfter, ISSD_FormHeader form)
         {
             try
