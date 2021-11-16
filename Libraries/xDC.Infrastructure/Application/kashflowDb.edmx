@@ -375,6 +375,18 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="AssignedBy" Type="nvarchar" MaxLength="150" />
           <Property Name="AssignedDate" Type="datetime" />
         </EntityType>
+        <EntityType Name="TenAmDealCutOff_ClosingBalance">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Date" Type="date" />
+          <Property Name="Currency" Type="nvarchar" MaxLength="50" />
+          <Property Name="Account" Type="nvarchar" MaxLength="150" />
+          <Property Name="ClosingBalance" Type="float" Nullable="false" />
+          <Property Name="ModifiedBy" Type="nvarchar" MaxLength="150" />
+          <Property Name="ModifiedDate" Type="datetime" />
+        </EntityType>
         <Association Name="FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId">
           <End Role="AspNetRoles" Type="Self.AspNetRoles" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -423,6 +435,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="Form_Workflow" EntityType="Self.Form_Workflow" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ISSD_FormHeader" EntityType="Self.ISSD_FormHeader" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ISSD_TradeSettlement" EntityType="Self.ISSD_TradeSettlement" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TenAmDealCutOff_ClosingBalance" EntityType="Self.TenAmDealCutOff_ClosingBalance" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EDW_BankBalance" EntityType="Self.EDW_BankBalance" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [EDW_BankBalance].[InstrumentType] AS [InstrumentType], 
@@ -528,6 +541,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="EDW_Maturity_MM" EntityType="kashflowDbModel.EDW_Maturity_MM" />
           <EntitySet Name="FID_Treasury_MMI" EntityType="kashflowDbModel.FID_Treasury_MMI" />
           <EntitySet Name="EDW_TradeItem" EntityType="kashflowDbModel.EDW_TradeItem" />
+          <EntitySet Name="TenAmDealCutOff_ClosingBalance" EntityType="kashflowDbModel.TenAmDealCutOff_ClosingBalance" />
           </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -888,6 +902,18 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="TenAmDealCutOff_ClosingBalance">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Date" Type="DateTime" Precision="0" />
+          <Property Name="Currency" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Account" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ClosingBalance" Type="Double" Nullable="false" />
+          <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -1265,6 +1291,19 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
                 <ScalarProperty Name="StockCode" ColumnName="StockCode" />
                 <ScalarProperty Name="InstrumentName" ColumnName="InstrumentName" />
                 <ScalarProperty Name="InstrumentType" ColumnName="InstrumentType" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TenAmDealCutOff_ClosingBalance">
+            <EntityTypeMapping TypeName="kashflowDbModel.TenAmDealCutOff_ClosingBalance">
+              <MappingFragment StoreEntitySet="TenAmDealCutOff_ClosingBalance">
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="ClosingBalance" ColumnName="ClosingBalance" />
+                <ScalarProperty Name="Account" ColumnName="Account" />
+                <ScalarProperty Name="Currency" ColumnName="Currency" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

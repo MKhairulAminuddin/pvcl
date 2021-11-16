@@ -9,24 +9,26 @@
             $refreshBtn;
 
         var referenceUrl = {
-            load10amCutOff: window.location.origin + "/api/TenAmDealCutOff/Summary/"
+            load10amCutOff: window.location.origin + "/api/TenAmDealCutOff/Summary/",
+            update10amCutOffClosingBalance: window.location.origin + "/api/TenAmDealCutOff/Summary/ClosingBalance/",
         };
 
         //#endregion
 
         //#region Data Source & Functions
 
-        var ds = function(selectedDate) {
-            return $.ajax({
-                url: referenceUrl.load10amCutOff + moment(selectedDate).unix(),
-                type: "get"
+        var ds = function (selectedDate) {
+            return DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: referenceUrl.load10amCutOff + moment(selectedDate).unix(),
+                updateUrl: referenceUrl.update10amCutOffClosingBalance + moment(selectedDate).unix()
             });
         };
 
         function populateData() {
             $.when(ds(new Date()))
                 .done(function (data1) {
-                    $grid.option("dataSource", data1.data);
+                    $grid.option("dataSource", data1);
                     $grid.repaint();
                 });
         }
@@ -41,7 +43,7 @@
             onValueChanged: function (data) {
                 $.when(ds(data.value))
                     .done(function (data1) {
-                        $grid.option("dataSource", data1.data);
+                        $grid.option("dataSource", data1);
                         $grid.repaint();
 
                         app.toast("Data fetched", "info");
@@ -114,13 +116,21 @@
             dataSource: [],
             columns: [
                 {
+                    dataField: "id",
+                    caption: "ID",
+                    allowEditing: false,
+                    visible: false
+                },
+                {
                     dataField: "currency",
                     caption: "Currency",
-                    groupIndex: 0
+                    groupIndex: 0,
+                    allowEditing: false
                 },
                 {
                     dataField: "account",
-                    caption: "Account"
+                    caption: "Account",
+                    allowEditing: false
                 },
                 {
                     dataField: "openingBalance",
@@ -129,7 +139,8 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    allowEditing: false
                 },
                 {
                     dataField: "totalInflow",
@@ -141,7 +152,8 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    allowEditing: false
                 },
                 {
                     dataField: "totalOutflow",
@@ -153,7 +165,8 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    allowEditing: false
                 },
                 {
                     dataField: "net",
@@ -165,7 +178,21 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    allowEditing: false
+                },
+                {
+                    dataField: "closingBalance",
+                    headerCellTemplate: function (container) {
+                        container.append($(
+                            "<div><strong>Closing Balance</strong><br/>(Editable)<br/><small>* to be enter by ISSD</small></div>"));
+                    },
+                    dataType: "number",
+                    format: {
+                        type: "fixedPoint",
+                        precision: 2
+                    },
+                    allowEditing: true
                 },
             ],
             summary: {
@@ -212,6 +239,16 @@
                             precision: 2
                         },
                         showInGroupFooter: true
+                    },
+                    {
+                        column: "closingBalance",
+                        summaryType: "sum",
+                        displayFormat: "{0}",
+                        valueFormat: {
+                            type: "fixedPoint",
+                            precision: 2
+                        },
+                        showInGroupFooter: true
                     }
                 ]
             },
@@ -222,6 +259,12 @@
             paging: {
                 enabled: false
             },
+            editing: {
+                mode: "batch",
+                allowUpdating: true,
+                allowDeleting: false,
+                allowAdding: false
+            }
         }).dxDataGrid("instance");
         
         // #endregion DataGrid

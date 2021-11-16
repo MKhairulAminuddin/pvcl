@@ -28,6 +28,7 @@
         <EntityTypeShape EntityType="kashflowDbModel.EDW_Maturity_MM" Width="1.5" PointX="22.625" PointY="11.875" />
         <EntityTypeShape EntityType="kashflowDbModel.FID_Treasury_MMI" Width="1.5" PointX="12.25" PointY="9.75" />
         <EntityTypeShape EntityType="kashflowDbModel.EDW_TradeItem" Width="1.5" PointX="19" PointY="11.875" />
+        <EntityTypeShape EntityType="kashflowDbModel.TenAmDealCutOff_ClosingBalance" Width="1.5" PointX="17.75" PointY="5.625" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

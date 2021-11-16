@@ -4,14 +4,17 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Web.Http;
 using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
+using Newtonsoft.Json;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services.App;
 using xDC.Utils;
 using xDC_Web.ViewModels.Fid;
+using xDC_Web.ViewModels.TenAmCutOff;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -303,14 +306,34 @@ namespace xDC_Web.Controllers.Api
                     })
                         .Select(x => new TenAmCutOffItemVM
                         {
+                            Id = $"{x.Key.Currency};{x.Key.Account}",
                             Currency = x.Key.Currency,
                             Account = x.Key.Account,
                             OpeningBalance = x.Sum(y => y.OpeningBalance),
                             TotalInflow = x.Sum(y => y.TotalInflow),
                             TotalOutflow = x.Sum(y => y.TotalOutflow),
-                            Net = x.Sum(y => y.OpeningBalance) + x.Sum(y => y.TotalInflow) - x.Sum(y => y.TotalOutflow)
+                            Net = x.Sum(y => y.OpeningBalance) + x.Sum(y => y.TotalInflow) - x.Sum(y => y.TotalOutflow),
+                            ClosingBalance = 0
                         })
                         .ToList();
+
+                    #region Editable Closing Balance
+
+                    var closingBalances = db.TenAmDealCutOff_ClosingBalance.Where(x => x.Date == reportDateParsed);
+
+                    if (closingBalances.Any())
+                    {
+                        foreach (var item in closingBalances)
+                        {
+                            var getResult = result.FirstOrDefault(x => x.Account == item.Account && x.Currency == item.Currency);
+                            if (getResult != null)
+                            {
+                                getResult.ClosingBalance = item.ClosingBalance;
+                            }
+                        }
+                    }
+
+                    #endregion
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -319,6 +342,84 @@ namespace xDC_Web.Controllers.Api
             {
                 Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("Summary/ClosingBalance/{reportDate}")]
+        public HttpResponseMessage UpdateClosingBalance(long reportDate, FormDataCollection form)
+        {
+            try
+            {
+                var reportDateParsed = Common.ConvertEpochToDateTime(reportDate);
+                reportDateParsed = reportDateParsed.Value.Date;
+
+                var key = Convert.ToString(form.Get("key"));
+                var values = form.Get("values");
+
+                var vm = new UpdateClosingBalanceVM();
+                
+                JsonConvert.PopulateObject(values, vm);
+
+                
+
+                using (var db = new kashflowDBEntities())
+                {
+                    if (!string.IsNullOrEmpty(key))
+                    {
+                        var popCurrencyAccount = key.Split(';');
+                        vm.Currency = popCurrencyAccount.FirstOrDefault();
+                        vm.Account = popCurrencyAccount.LastOrDefault();
+
+                        var record = db.TenAmDealCutOff_ClosingBalance.FirstOrDefault(x =>
+                            x.Account == vm.Account
+                            && x.Currency == vm.Currency && DbFunctions.TruncateTime(x.Date) == DbFunctions.TruncateTime(reportDateParsed));
+
+                        if (record != null)
+                        {
+                            record.ClosingBalance = vm.ClosingBalance;
+                            record.ModifiedBy = User.Identity.Name;
+                            record.ModifiedDate = DateTime.Now;
+                            db.SaveChanges();
+                        }
+                        else
+                        {
+                            var newRecord = new TenAmDealCutOff_ClosingBalance()
+                            {
+                                Date = reportDateParsed,
+                                Currency = vm.Currency,
+                                Account = vm.Account,
+                                ClosingBalance = vm.ClosingBalance,
+                                ModifiedBy = User.Identity.Name,
+                                ModifiedDate = DateTime.Now
+                            };
+                            db.TenAmDealCutOff_ClosingBalance.Add(newRecord);
+                            db.SaveChanges();
+                        }
+                    }
+                    else
+                    {
+                        var newRecord = new TenAmDealCutOff_ClosingBalance()
+                        {
+                            Date = reportDateParsed,
+                            Currency = vm.Currency,
+                            Account = vm.Account,
+                            ClosingBalance = vm.ClosingBalance,
+                            ModifiedBy = User.Identity.Name,
+                            ModifiedDate = DateTime.Now
+                        };
+                        db.TenAmDealCutOff_ClosingBalance.Add(newRecord);
+                        db.SaveChanges();
+                    }
+
+                    return Request.CreateResponse(HttpStatusCode.OK);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message); 
             }
         }
 

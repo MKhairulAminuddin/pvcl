@@ -140,6 +140,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>kashflowDb.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Application\TenAmDealCutOff_ClosingBalance.cs">
+      <DependentUpon>kashflowDb.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

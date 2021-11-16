@@ -47,5 +47,6 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<EDW_Maturity_MM> EDW_Maturity_MM { get; set; }
         public virtual DbSet<FID_Treasury_MMI> FID_Treasury_MMI { get; set; }
         public virtual DbSet<EDW_TradeItem> EDW_TradeItem { get; set; }
+        public virtual DbSet<TenAmDealCutOff_ClosingBalance> TenAmDealCutOff_ClosingBalance { get; set; }
     }
 }

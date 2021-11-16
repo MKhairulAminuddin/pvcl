@@ -5,6 +5,7 @@ VisualStudioVersion = 16.0.31229.75
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{7122A0F2-D963-4FF2-A899-44463EA526B5}"
 	ProjectSection(SolutionItems) = preProject
+		Database\10amDealCutOff_ClosingBalance.sql = Database\10amDealCutOff_ClosingBalance.sql
 		Database\AMSD_IF.sql = Database\AMSD_IF.sql
 		Database\AMSD_IF_Item.sql = Database\AMSD_IF_Item.sql
 		Database\App_Notification.sql = Database\App_Notification.sql
