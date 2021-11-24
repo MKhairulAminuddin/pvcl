@@ -285,6 +285,7 @@
     <Content Include="Scripts\app\amsd\inflowFund\new.js" />
     <Content Include="Scripts\app\amsd\index.js" />
     <Content Include="Scripts\app.dxGrid.utils.js" />
+    <Content Include="Scripts\app\audit\form.js" />
     <Content Include="Scripts\app\dealCutOff\fcy.js" />
     <Content Include="Scripts\app\dealCutOff\myr.js" />
     <Content Include="Scripts\app\fid\tenAmCutOff\fcaTagging.js" />
@@ -635,6 +636,7 @@
     <Compile Include="Controllers\AmsdController.cs" />
     <Compile Include="Controllers\Api\AdminController.cs" />
     <Compile Include="Controllers\Api\AmsdController.cs" />
+    <Compile Include="Controllers\Api\AuditController.cs" />
     <Compile Include="Controllers\Api\CommonController.cs" />
     <Compile Include="Controllers\Api\FidController.cs" />
     <Compile Include="Controllers\Api\IssdController.cs" />

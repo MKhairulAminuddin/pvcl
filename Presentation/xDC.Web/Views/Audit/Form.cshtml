@@ -9,11 +9,17 @@
     <div class="row">
         <div class="col-md-6">
             <div class="left-container">
+                <div id="dp-fromDate">date picker</div>
+                <div id="dp-toDate">date picker</div>
+                <div id="tb-formId">text box form id</div>
+                <div id="dd-formType">dropdown form type</div>
+                <div id="dd-userId">dropdown user id</div>
+                <div id="dd-actionType">dropdown action type</div>
             </div>
         </div>
         <div class="col-md-6">
             <div id="right-toolbar-container" class="right-container">
-
+                <div id="searchBtn" style="display: inline-block"></div>
             </div>
         </div>
     </div>
@@ -36,7 +42,7 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    <div id="amsdGrid" class="grid-container"></div>
+                    <div id="auditFormGrid" class="grid-container"></div>
                 </div>
             </div>
 
@@ -46,4 +52,5 @@
 
 @section scripts
 {
+    <script src="~/Scripts/app/audit/form.js"></script>
 }
