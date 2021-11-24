@@ -481,6 +481,7 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Audit\Form.cshtml" />
     <None Include="Web.UAT.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -640,6 +641,7 @@
     <Compile Include="Controllers\Api\SettingController.cs" />
     <Compile Include="Controllers\Api\TenAmDealCutOffController.cs" />
     <Compile Include="Controllers\Api\UserController.cs" />
+    <Compile Include="Controllers\AuditController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\DealCutOffController.cs" />
     <Compile Include="Controllers\FidController.cs" />

@@ -1,0 +1,49 @@
+﻿@model xDC_Web.ViewModels.AmsdLandingPageVM
+
+@{
+    ViewBag.Title = "Audit";
+    ViewBag.Subtitle = "Forms Audit Trail";
+}
+
+<section class="content-header content-toolbar">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="left-container">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div id="right-toolbar-container" class="right-container">
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-solid">
+                <div class="box-header">
+                    <div class="pull-right">
+                        <div style="display: inline-block">
+                            <div id="gridFilterDropdown"></div>
+                        </div>
+
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="dx-icon-chevrondown"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div id="amsdGrid" class="grid-container"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+@section scripts
+{
+}
