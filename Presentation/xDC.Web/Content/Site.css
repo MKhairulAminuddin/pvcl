@@ -50,13 +50,16 @@ body {
 }
 
 .content-header.content-toolbar .left-container > * {
-    float: left;
     display: inline-block;
     margin-right: 5px;
+    margin-top: 5px;
+    width: 200px;
 }
 
 .content-header.content-toolbar .right-container {
     float: right;
+    margin-left: 5px;
+    margin-top: 5px;
     display: inline-block;
 }
 
