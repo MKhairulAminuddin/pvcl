@@ -383,12 +383,15 @@ namespace xDC_Web.Controllers.Api
                     
                     db.ISSD_TradeSettlement.AddRange(newTrades);
                     db.SaveChanges();
-                    
+
+                    new AuditService().AuditForm_Create(newFormHeader.Id, newFormHeader.FormType, newFormHeader.SettlementDate, User.Identity.Name);
+
                     if (inputs.Approver != null)
                     {
                         TradeSettlementSvc.NotifyApprover(inputs.Approver, newFormHeader.Id, User.Identity.Name, newFormHeader.FormType, inputs.ApprovalNotes);
+                        new AuditService().AuditForm_RequestApproval(newFormHeader.Id, newFormHeader.FormType, newFormHeader.SettlementDate, User.Identity.Name);
                     }
-                    
+
                     return Request.CreateResponse(HttpStatusCode.Created, newFormHeader.Id);
                 }
             }
@@ -800,6 +803,7 @@ namespace xDC_Web.Controllers.Api
 
                             TradeSettlementSvc.NotifyPreparer(form.Id, form.FormType, form.FormStatus, form.PreparedBy, form.ApprovedBy, input.ApprovalNote);
                             new MailService().TS_IncomingFund(form.Id, form.FormType, form.Currency);
+                            new AuditService().AuditForm_Approval(form.Id, form.FormType, form.FormStatus, form.SettlementDate, User.Identity.Name);
 
                             if (form.FormType == Common.FormType.ISSD_TS_E && form.FormStatus == Common.FormStatus.Approved)
                             {
@@ -852,6 +856,8 @@ namespace xDC_Web.Controllers.Api
                         }
                         
                         db.SaveChanges();
+
+                        new AuditService().AuditForm_Delete(form.Id, form.FormType, form.SettlementDate, User.Identity.Name);
 
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
