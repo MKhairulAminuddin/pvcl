@@ -153,6 +153,7 @@ namespace xDC_Web.Controllers.Api
                         Currency = "MYR",
                         PreparedBy = User.Identity.Name,
                         PreparedDate = DateTime.Now,
+                        FormDate = DateTime.Now
                     };
 
                     if (!string.IsNullOrEmpty(input.Approver))
@@ -186,12 +187,18 @@ namespace xDC_Web.Controllers.Api
                     db.AMSD_IF_Item.AddRange(newRecordInflowFunds);
                     db.SaveChanges();
 
+                    new AuditService().AuditForm_Create(form.Id, form.FormType, form.FormDate, User.Identity.Name);
+
                     if (form.FormStatus == Common.FormStatus.PendingApproval)
                     {
                         new NotificationService().NotifyApprovalRequest(form.ApprovedBy, form.Id, form.PreparedBy, form.FormType);
                         new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
                         new WorkflowService().SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
+
+                        new AuditService().AuditForm_RequestApproval(form.Id, form.FormType, form.FormDate, User.Identity.Name);
                     }
+
+                    
                     
                     return Request.CreateResponse(HttpStatusCode.Created, form.Id);
                     
@@ -247,6 +254,11 @@ namespace xDC_Web.Controllers.Api
 
                             if (removedItems.Any())
                             {
+                                foreach (var item in removedItems)
+                                {
+                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.FormDate, User.Identity.Name,
+                                        $"{item.FundType}, {item.Bank}, {item.Amount}");
+                                }
                                 db.AMSD_IF_Item.RemoveRange(removedItems);
                             }
 
@@ -261,14 +273,23 @@ namespace xDC_Web.Controllers.Api
                                         if (itemInDb.Amount != item.Amount)
                                         {
                                             itemInDb.Amount = item.Amount;
+                                            new AuditService().AuditForm_EditRow(form.Id, form.FormType, 
+                                                form.FormDate, User.Identity.Name, itemInDb.Amount.ToString(), 
+                                                item.Amount.ToString(), "Amount");
                                         }
                                         if (itemInDb.Bank != item.Bank)
                                         {
                                             itemInDb.Bank = item.Bank;
+                                            new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                                form.FormDate, User.Identity.Name, itemInDb.Bank,
+                                                item.Bank, "Bank");
                                         }
                                         if (itemInDb.FundType != item.FundType)
                                         {
                                             itemInDb.FundType = item.FundType;
+                                            new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                                form.FormDate, User.Identity.Name, itemInDb.FundType,
+                                                item.FundType, "Fund Type");
                                         }
 
                                         itemInDb.ModifiedBy = User.Identity.Name;
@@ -287,6 +308,9 @@ namespace xDC_Web.Controllers.Api
                                         ModifiedBy = User.Identity.Name,
                                         ModifiedDate = DateTime.Now
                                     });
+                                    new AuditService().AuditForm_AddRow(form.Id, form.FormType,
+                                                form.FormDate, User.Identity.Name,
+                                                $"{item.FundType}, {item.Bank}, {item.Amount}");
                                 }
                             }
 
@@ -299,6 +323,8 @@ namespace xDC_Web.Controllers.Api
                             new NotificationService().NotifyApprovalRequest(form.ApprovedBy, form.Id, form.PreparedBy, form.FormType);
                             new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
                             new WorkflowService().SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
+
+                            new AuditService().AuditForm_RequestApproval(form.Id, form.FormType, form.FormDate, User.Identity.Name);
                         }
 
                         return Request.CreateResponse(HttpStatusCode.Accepted, form.Id);
@@ -342,6 +368,8 @@ namespace xDC_Web.Controllers.Api
                         db.AMSD_IF.Remove(form);
                         db.SaveChanges();
 
+                        new AuditService().AuditForm_Delete(form.Id, form.FormType, form.FormDate, User.Identity.Name);
+
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
                     else
@@ -384,6 +412,7 @@ namespace xDC_Web.Controllers.Api
                             new NotificationService().NotifyApprovalResult(form.PreparedBy, form.Id, form.ApprovedBy, form.FormType, form.FormStatus);
                             new MailService().SendApprovalStatus(form.Id, form.FormType, form.FormStatus, form.PreparedBy, input.ApprovalNote);
                             new WorkflowService().ApprovalResponse(form.Id, form.FormStatus, input.ApprovalNote, form.FormType, form.PreparedBy, form.ApprovedBy);
+                            new AuditService().AuditForm_Approval(form.Id, form.FormType, form.FormStatus, form.FormDate, User.Identity.Name);
 
                             if (form.FormStatus == Common.FormStatus.Approved)
                             {

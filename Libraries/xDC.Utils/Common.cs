@@ -509,5 +509,22 @@ namespace xDC.Utils
                 _sb.Append("\t\t</td>\n");
             }
         }
+
+        #region Audit
+
+        public static class ActionType
+        {
+            public const string Create = "CREATE";
+            public const string Modify = "MODIFY";
+            public const string Delete = "DELETE";
+            public const string Approve = "APPROVE";
+            public const string Reject = "REJECT";
+            public const string Reassign = "REASSIGN";
+            public const string RequestApproval = "REQUEST APPROVAL";
+        }
+
+        
+
+        #endregion
     }
 }

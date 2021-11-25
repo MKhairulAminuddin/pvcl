@@ -17,6 +17,7 @@ namespace xDC.Infrastructure.Application
         public int Id { get; set; }
         public int FormId { get; set; }
         public string FormType { get; set; }
+        public Nullable<System.DateTime> FormDate { get; set; }
         public string ActionType { get; set; }
         public string Remarks { get; set; }
         public string ValueBefore { get; set; }
