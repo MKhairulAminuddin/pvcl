@@ -682,6 +682,7 @@
     <Compile Include="Models\NewApprover.cs" />
     <Compile Include="Models\Trades.cs" />
     <Compile Include="Models\TreasuryFormVM.cs" />
+    <Compile Include="ViewModels\Amsd\InflowFundVM.cs" />
     <Compile Include="ViewModels\Fid\DealCutOff\SpreadsheetModelBase.cs" />
     <Compile Include="ViewModels\Fid\DealCutOff\DealCutOffMyrTemplateModel.cs" />
     <Compile Include="ViewModels\Fid\DealCutOff\SpreadsheetPreviewModel.cs" />
@@ -764,7 +765,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>49914</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:49915/</IISUrl>
+          <IISUrl>http://localhost:49916/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

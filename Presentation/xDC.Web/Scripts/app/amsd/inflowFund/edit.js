@@ -230,13 +230,12 @@
                         $("#error_container").bs_warning("Please key in at least one item.");
                     }
                     else {
-                        $loadPanel.option("position", { of: "#formContainer" });
-                        $loadPanel.show();
+                        
 
                         var data;
-                        if (app.getUrlParameter('id') != false) {
+                        if (!isNaN(app.getUrlId())) {
                             data = {
-                                id: app.getUrlParameter('id'),
+                                id: app.getUrlId(),
                                 amsdInflowFunds: $inflowFundsGrid.getDataSource().items()
                             };
                         } else {
@@ -257,7 +256,7 @@
                                 app.alertError(textStatus + ': ' + errorThrown);
                             },
                             complete: function (data) {
-                                $loadPanel.hide();
+                                window.location.href = window.location.origin + "/amsd";
                             }
                         });
                     }

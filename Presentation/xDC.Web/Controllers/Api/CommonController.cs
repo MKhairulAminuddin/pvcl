@@ -14,6 +14,7 @@ using xDC.Logging;
 using xDC.Services;
 using xDC.Utils;
 using xDC_Web.Models;
+using System.Data.Entity;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -265,6 +266,29 @@ namespace xDC_Web.Controllers.Api
                     var result = db.Config_Dropdown
                         .Where(x => x.Key == Common.DropdownConfigKey.FID_Treasury_ProductType)
                         .OrderBy(x => x.Value)
+                        .ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("Users")]
+        public HttpResponseMessage GetSystemUsers(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    db.Configuration.LazyLoadingEnabled = false;
+                    db.Configuration.ProxyCreationEnabled = false;
+                    var result = db.AspNetUsers
+                        .OrderBy(x => x.UserName)
                         .ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));

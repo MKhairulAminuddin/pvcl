@@ -523,8 +523,17 @@ namespace xDC.Utils
             public const string RequestApproval = "REQUEST APPROVAL";
         }
 
-        
+        public static string FlattenStrings(params string[] parameters)
+        {
+            var result = string.Empty;
 
+            foreach (var item in parameters)
+            {
+                result.Concat(item.ToString() + " | ");
+            }
+
+            return result;
+        }
         #endregion
     }
 }

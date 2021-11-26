@@ -39,6 +39,7 @@ namespace xDC_Web.Controllers.Api
                             (DbFunctions.TruncateTime(x.ModifiedOn) >= DbFunctions.TruncateTime(fromDate) &&
                              DbFunctions.TruncateTime(x.ModifiedOn) <= DbFunctions.TruncateTime(toDate)) &&
 
+                             (formIdInt == 0 || x.FormId == formIdInt) &&
                              (string.IsNullOrEmpty(formType) || x.FormType == formType) &&
                              (string.IsNullOrEmpty(userId) || x.ModifiedBy == userId) &&
                              (string.IsNullOrEmpty(actionType) || x.ActionType == actionType))

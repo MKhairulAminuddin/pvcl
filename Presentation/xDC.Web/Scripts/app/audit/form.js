@@ -18,6 +18,8 @@
         var referenceUrl = {
             loadAuditForm: window.location.origin + "/api/audit/auditForm/",
 
+            loadUserIdList: "/api/common/Users",
+
             printRequest: window.location.origin + "/amsd/Print",
             printResponse: window.location.origin + "/amsd/Printed/",
         };
@@ -25,6 +27,17 @@
         //#endregion
 
         //#region Data Source & Functions
+
+        var loadUsersList = function () {
+            return {
+                store: DevExpress.data.AspNet.createStore({
+                    key: "userName",
+                    loadUrl: referenceUrl.loadUserIdList
+                }),
+                paginate: true,
+                pageSize: 20
+            };
+        }
 
         var loadData = function (fromDate, toDate, formId, formType, userId, actionType) {
             formId = formId == "" ? null : formId;
@@ -62,7 +75,7 @@
 
         $dp_fromDate = $('#dp-fromDate').dxDateBox({
             type: 'date',
-            value: moment().add("days", -7),
+            value: moment().subtract(7, "d"),
             displayFormat: "dd/MM/yyyy"
         }).dxDateBox("instance");
 
@@ -94,7 +107,9 @@
         }).dxSelectBox("instance");
 
         $dd_userId = $('#dd-userId').dxSelectBox({
-            items: ["abdulkhaliq.h"],
+            dataSource: loadUsersList(),
+            displayExpr: "userName",
+            valueExpr: "userName",
             placeholder: 'User Id...',
             showClearButton: true,
         }).dxSelectBox("instance");
@@ -123,20 +138,41 @@
             }
         }).dxButton("instance");
 
+        $printBtn = $("#printBtn").dxButton({
+            text: "Print",
+            type: "default",
+            icon: "print",
+            onClick: function (e) {
+                // search function here
+                loadDataToGrid();
+            }
+        }).dxButton("instance");
+
 
         $dg_auditForm = $("#dg-auditForm").dxDataGrid({
             columns: [
                 {
                     dataField: "formId",
-                    caption: "Form ID"
+                    caption: "Form ID",
+                    width: "100px"
                 },
                 {
                     dataField: "actionType",
                     caption: "Action"
                 },
                 {
+                    dataField: "formType",
+                    caption: "Form Type"
+                },
+                {
+                    dataField: "formDate",
+                    caption: "Form Date",
+                    dataType: "date",
+                    format: "dd/MM/yyyy"
+                },
+                {
                     dataField: "modifiedOn",
-                    caption: "Date",
+                    caption: "Performed On",
                     dataType: "datetime",
                     format: "dd/MM/yyyy hh:mm:ss",
                     sortIndex: 0,
@@ -174,9 +210,6 @@
                 showPageSizeSelector: true,
                 showInfo: true,
                 showNavigationButtons: true
-            },
-            filterPanel: {
-                visible: true
             }
         }).dxDataGrid("instance");
 

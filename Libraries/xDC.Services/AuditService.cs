@@ -121,7 +121,7 @@ namespace xDC.Services
             AuditForm_Insert(obj);
         }
 
-        public void AuditForm_RemoveRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueAfter)
+        public void AuditForm_RemoveRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore)
         {
             var obj = new Audit_Form()
             {
@@ -134,7 +134,7 @@ namespace xDC.Services
                 ModifiedOn = DateTime.Now,
 
                 Remarks = $"Remove a record",
-                ValueAfter = valueAfter
+                ValueBefore = valueBefore
             };
 
             AuditForm_Insert(obj);

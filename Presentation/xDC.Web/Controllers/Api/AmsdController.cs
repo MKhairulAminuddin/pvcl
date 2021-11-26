@@ -16,7 +16,7 @@ using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services;
 using xDC.Services.App;
-using xDC_Web.Extension.CustomAttribute;
+using xDC_Web.ViewModels.Amsd;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -510,36 +510,81 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Authorize(Roles = "Power User, AMSD")]
-        public HttpResponseMessage InsertInflowFund(FormDataCollection form)
+        public HttpResponseMessage InsertInflowFund([FromBody] InflowFundVM request)
         {
             using (var db = new kashflowDBEntities())
             {
-                var values = form.Get("values");
+                var form = db.AMSD_IF.FirstOrDefault(x => x.Id == request.Id);
 
-                var newRecord = new AMSD_IF_Item();
-                JsonConvert.PopulateObject(values, newRecord);
+                var existingItems = db.AMSD_IF_Item.Where(x => x.FormId == request.Id).ToList();
 
-                newRecord.ModifiedBy = User.Identity.Name;
-                newRecord.ModifiedDate = DateTime.Now;
-
-                var formHeader = db.AMSD_IF.FirstOrDefault(x => x.Id == newRecord.FormId);
-                var isAdminEdit = User.IsInRole(Config.Acl.PowerUser);
-                if (isAdminEdit)
+                //delete existing item
+                var removedItems = existingItems.Where(x => !request.AmsdInflowFunds.Select(y => y.Id).Contains(x.Id)).ToList();
+                if (removedItems.Any())
                 {
-                    formHeader.AdminEditted = true;
-                    formHeader.AdminEdittedBy = User.Identity.Name;
-                    formHeader.AdminEdittedDate = DateTime.Now;
+                    foreach (var item in removedItems)
+                    {
+                        new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.FormDate,
+                                User.Identity.Name,
+                                Common.FlattenStrings(item.FundType, item.Bank, item.Amount.ToString()));
+                    }
+
+                    db.AMSD_IF_Item.RemoveRange(removedItems);
                 }
-
-                Validate(newRecord);
-
-                if (!ModelState.IsValid)
-                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
-
-                db.AMSD_IF_Item.Add(newRecord);
                 db.SaveChanges();
 
-                return Request.CreateResponse(HttpStatusCode.Created, newRecord);
+                foreach (var item in request.AmsdInflowFunds)
+                {
+                    var matchingItem = existingItems.FirstOrDefault(x => x.Id == item.Id);
+
+                    if (matchingItem != null)
+                    {
+                        //edit existing item
+                        if (matchingItem.FundType != item.FundType)
+                        {
+                            matchingItem.FundType = item.FundType;
+                            new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.FormDate,
+                                User.Identity.Name, matchingItem.FundType, item.FundType, "Fund Type");
+                        }
+
+                        if (matchingItem.Bank != item.Bank)
+                        {
+                            matchingItem.Bank = item.Bank;
+                            new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.FormDate,
+                                User.Identity.Name, matchingItem.Bank, item.Bank, "Bank");
+                        }
+
+                        if (matchingItem.Amount != item.Amount)
+                        {
+                            matchingItem.Amount = item.Amount;
+                            new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.FormDate,
+                                User.Identity.Name, matchingItem.Amount.ToString(), item.Amount.ToString(), "Amount");
+                        }
+
+                        matchingItem.ModifiedBy = User.Identity.Name;
+                        matchingItem.ModifiedDate = DateTime.Now;
+                    }
+                    else
+                    {
+                        //new
+                        var newItem = new AMSD_IF_Item()
+                        {
+                            FundType = item.FundType,
+                            Bank = item.Bank,
+                            Amount = item.Amount,
+                            ModifiedBy = User.Identity.Name,
+                            ModifiedDate = DateTime.Now,
+                            FormId = form.Id
+                        };
+                        db.AMSD_IF_Item.Add(newItem);
+                        new AuditService().AuditForm_AddRow(form.Id, form.FormType, form.FormDate,
+                                User.Identity.Name, 
+                                Common.FlattenStrings(newItem.FundType, newItem.Bank, newItem.Amount.ToString()));
+                    }
+                }
+                db.SaveChanges();
+
+                return Request.CreateResponse(HttpStatusCode.Created);
             }
         }
 
