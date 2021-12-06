@@ -23,19 +23,19 @@ namespace xDC_Web.Extension.DocGenerator
         private Color _outFlowColor = System.Drawing.ColorTranslator.FromHtml("#E67E22");
         private Color _highlightColor = System.Drawing.ColorTranslator.FromHtml("#FFFDE7");
 
-        public IWorkbook GenerateWorkbook(DateTime selectedDate)
+        public IWorkbook GenerateWorkbook(DateTime selectedDate, bool viewApproved)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
 
-                    var dataObj = ConstructData(selectedDate);
+                    var dataObj = ConstructData(selectedDate, viewApproved);
 
                     IWorkbook workbook = new Workbook();
                     workbook.Options.Culture = new CultureInfo("en-US");
                     workbook.LoadDocument(MapPath(Common.ExcelTemplateLocation.FID_TenAmDealCutOff));
-                    workbook = GenerateDocument(workbook, dataObj, selectedDate);
+                    workbook = GenerateDocument(workbook, dataObj, selectedDate, viewApproved);
 
                     return workbook;
 
@@ -48,11 +48,11 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        public string GenerateFile(DateTime selectedDate, bool isExportAsExcel)
+        public string GenerateFile(DateTime selectedDate, bool isExportAsExcel, bool viewApproved)
         {
             try
             {
-                IWorkbook workbook = GenerateWorkbook(selectedDate);
+                IWorkbook workbook = GenerateWorkbook(selectedDate, viewApproved);
                 var randomFileName = Common.DownloadedFileName.FID_TenAmDealCutOff + DateTime.Now.ToString("yyyyMMddHHmmss");
 
                 if (isExportAsExcel)
@@ -76,7 +76,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private IWorkbook GenerateDocument(IWorkbook workbook, List<TenAmCutOffItemVM> items, DateTime selectedDate)
+        private IWorkbook GenerateDocument(IWorkbook workbook, List<TenAmCutOffItemVM> items, DateTime selectedDate, bool viewApproved)
         {
             workbook.BeginUpdate();
             try
@@ -105,6 +105,7 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet["D" + currentIndex].Value = item.TotalInflow;
                         sheet["E" + currentIndex].Value = item.TotalOutflow;
                         sheet["F" + currentIndex].Value = item.Net;
+                        sheet["G" + currentIndex].Value = item.ClosingBalance;
 
                         currentIndex++;
                     }
@@ -116,8 +117,10 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["D" + currentIndex].Formula = "=SUM($D$" + startGroupIndex + ":$D$" + (currentIndex - 1) + ")";
                     sheet["E" + currentIndex].Formula = "=SUM($E$" + startGroupIndex + ":$E$" + (currentIndex - 1) + ")";
                     sheet["F" + currentIndex].Formula = "=SUM($F$" + startGroupIndex + ":$F$" + (currentIndex - 1) + ")";
-                    sheet["B" + currentIndex + ":F" + currentIndex].Font.Bold = true;
-                    sheet["B" + currentIndex + ":F" + currentIndex].FillColor = _highlightColor;
+                    sheet["G" + currentIndex].Formula = "=SUM($G$" + startGroupIndex + ":$G$" + (currentIndex - 1) + ")";
+
+                    sheet["B" + currentIndex + ":G" + currentIndex].Font.Bold = true;
+                    sheet["B" + currentIndex + ":G" + currentIndex].FillColor = _highlightColor;
 
                     sheet["A" + startGroupIndex + ":A" + currentIndex].Merge();
                     sheet["A" + startGroupIndex + ":A" + currentIndex].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
@@ -139,7 +142,7 @@ namespace xDC_Web.Extension.DocGenerator
             return workbook;
         }
 
-        private List<TenAmCutOffItemVM> ConstructData(DateTime selectedDate)
+        private List<TenAmCutOffItemVM> ConstructData(DateTime selectedDate, bool viewApproved)
         {
             try
             {
@@ -175,18 +178,26 @@ namespace xDC_Web.Extension.DocGenerator
                         };
                         result.Add(item);
 
-                        var approvedTsIds = db.ISSD_FormHeader
-                            .Where(x => x.FormStatus == Common.FormStatus.Approved
-                                        && x.SettlementDate != null
-                                        && x.Currency == item.Currency
-                                        && DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate))
-                            .Select(x => x.Id)
-                            .ToList();
+                        var tsFormIds = (viewApproved)
+                            ? db.ISSD_FormHeader
+                                .Where(x => x.FormStatus == Common.FormStatus.Approved
+                                            && x.SettlementDate != null
+                                            && x.Currency == item.Currency
+                                            && DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate))
+                                .Select(x => x.Id)
+                                .ToList()
+                            : db.ISSD_FormHeader
+                                .Where(x => x.FormStatus != Common.FormStatus.Rejected
+                                            && x.SettlementDate != null
+                                            && x.Currency == item.Currency
+                                            && DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate))
+                                .Select(x => x.Id)
+                                .ToList();
 
-                        if (approvedTsIds.Any())
+                        if (tsFormIds.Any())
                         {
                             var tradeItemInflow = db.ISSD_TradeSettlement
-                                .Where(x => approvedTsIds.Contains(x.FormId)
+                                .Where(x => tsFormIds.Contains(x.FormId)
                                             && x.InflowTo != null
                                             && x.InflowTo == account.AccountName3
                                             && x.InflowAmount > 0)
@@ -198,7 +209,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                             // get total inflow based on assigned outflow account
                             var tradeItemOutflow = db.ISSD_TradeSettlement
-                                .Where(x => approvedTsIds.Contains(x.FormId)
+                                .Where(x => tsFormIds.Contains(x.FormId)
                                             && x.OutflowFrom != null
                                             && x.OutflowFrom == account.AccountName3
                                             && x.OutflowAmount > 0)
@@ -222,18 +233,26 @@ namespace xDC_Web.Extension.DocGenerator
                         Currency = "MYR"
                     };
 
-                    var approvedFidTreasuryIds = db.FID_Treasury
-                        .Where(x => x.FormStatus == Common.FormStatus.Approved
-                                    && x.TradeDate != null
-                                    && x.Currency == "MYR"
-                                    && DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate))
-                        .Select(x => x.Id)
-                        .ToList();
+                    var treasuryMyrFormIds = (viewApproved)
+                        ? db.FID_Treasury
+                            .Where(x => x.FormStatus == Common.FormStatus.Approved
+                                        && x.TradeDate != null
+                                        && x.Currency == "MYR"
+                                        && DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate))
+                            .Select(x => x.Id)
+                            .ToList()
+                        : db.FID_Treasury
+                            .Where(x => x.FormStatus != Common.FormStatus.Rejected
+                                        && x.TradeDate != null
+                                        && x.Currency == "MYR"
+                                        && DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate))
+                            .Select(x => x.Id)
+                            .ToList();
 
-                    if (approvedFidTreasuryIds.Any())
+                    if (treasuryMyrFormIds.Any())
                     {
                         var inflowDeposit = db.FID_Treasury_Deposit
-                            .Where(x => approvedFidTreasuryIds.Contains(x.FormId)
+                            .Where(x => treasuryMyrFormIds.Contains(x.FormId)
                                         && x.PrincipalIntProfitReceivable > 0
                                         && x.CashflowType == Common.Cashflow.Inflow)
                             .Select(l => l.PrincipalIntProfitReceivable)
@@ -241,7 +260,7 @@ namespace xDC_Web.Extension.DocGenerator
                             .Sum();
 
                         var inflowMmi = db.FID_Treasury_MMI
-                            .Where(x => approvedFidTreasuryIds.Contains(x.FormId)
+                            .Where(x => treasuryMyrFormIds.Contains(x.FormId)
                                         && x.CashflowType == Common.Cashflow.Inflow
                                         && x.Proceeds > 0)
                             .Select(l => l.Proceeds)
@@ -249,7 +268,7 @@ namespace xDC_Web.Extension.DocGenerator
                             .Sum();
 
                         var outflowDeposit = db.FID_Treasury_Deposit
-                            .Where(x => approvedFidTreasuryIds.Contains(x.FormId)
+                            .Where(x => treasuryMyrFormIds.Contains(x.FormId)
                                         && x.PrincipalIntProfitReceivable > 0
                                         && x.CashflowType == Common.Cashflow.Outflow)
                             .Select(l => l.PrincipalIntProfitReceivable)
@@ -257,7 +276,7 @@ namespace xDC_Web.Extension.DocGenerator
                             .Sum();
 
                         var outflowMmi = db.FID_Treasury_MMI
-                            .Where(x => approvedFidTreasuryIds.Contains(x.FormId)
+                            .Where(x => treasuryMyrFormIds.Contains(x.FormId)
                                         && x.CashflowType == Common.Cashflow.Outflow
                                         && x.Proceeds > 0)
                             .Select(l => l.Proceeds)
@@ -284,18 +303,26 @@ namespace xDC_Web.Extension.DocGenerator
                             Currency = account.Currency
                         };
 
-                        var approvedFidTreasuryIdsFcy = db.FID_Treasury
-                            .Where(x => x.FormStatus == Common.FormStatus.Approved
-                                        && x.TradeDate != null
-                                        && x.Currency == account.Currency
-                                        && DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate))
-                            .Select(x => x.Id)
-                            .ToList();
+                        var treasuryFcyFormIds = (viewApproved)
+                            ? db.FID_Treasury
+                                .Where(x => x.FormStatus == Common.FormStatus.Approved
+                                            && x.TradeDate != null
+                                            && x.Currency == account.Currency
+                                            && DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate))
+                                .Select(x => x.Id)
+                                .ToList()
+                            : db.FID_Treasury
+                                .Where(x => x.FormStatus != Common.FormStatus.Rejected
+                                            && x.TradeDate != null
+                                            && x.Currency == account.Currency
+                                            && DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate))
+                                .Select(x => x.Id)
+                                .ToList();
 
-                        if (approvedFidTreasuryIdsFcy.Any())
+                        if (treasuryFcyFormIds.Any())
                         {
                             var inflowDeposit = db.FID_Treasury_Deposit
-                                .Where(x => approvedFidTreasuryIdsFcy.Contains(x.FormId)
+                                .Where(x => treasuryFcyFormIds.Contains(x.FormId)
                                             && x.PrincipalIntProfitReceivable > 0
                                             && x.CashflowType == Common.Cashflow.Inflow
                                             && x.FcaAccount == account.AccountName3)
@@ -304,7 +331,7 @@ namespace xDC_Web.Extension.DocGenerator
                                 .Sum();
 
                             var inflowMmi = db.FID_Treasury_MMI
-                                .Where(x => approvedFidTreasuryIdsFcy.Contains(x.FormId)
+                                .Where(x => treasuryFcyFormIds.Contains(x.FormId)
                                             && x.CashflowType == Common.Cashflow.Inflow
                                             && x.Proceeds > 0
                                             && x.FcaAccount == account.AccountName3)
@@ -313,7 +340,7 @@ namespace xDC_Web.Extension.DocGenerator
                                 .Sum();
 
                             var outflowDeposit = db.FID_Treasury_Deposit
-                                .Where(x => approvedFidTreasuryIdsFcy.Contains(x.FormId)
+                                .Where(x => treasuryFcyFormIds.Contains(x.FormId)
                                             && x.PrincipalIntProfitReceivable > 0
                                             && x.CashflowType == Common.Cashflow.Outflow
                                             && x.FcaAccount == account.AccountName3)
@@ -322,7 +349,7 @@ namespace xDC_Web.Extension.DocGenerator
                                 .Sum();
 
                             var outflowMmi = db.FID_Treasury_MMI
-                                .Where(x => approvedFidTreasuryIdsFcy.Contains(x.FormId)
+                                .Where(x => treasuryFcyFormIds.Contains(x.FormId)
                                             && x.CashflowType == Common.Cashflow.Outflow
                                             && x.Proceeds > 0
                                             && x.FcaAccount == account.AccountName3)
@@ -344,15 +371,21 @@ namespace xDC_Web.Extension.DocGenerator
 
                     #region 4 - AMSD Inflow Fund
 
-                    var approvedAmsdForms = db.AMSD_IF
-                        .Where(x => DbFunctions.TruncateTime(x.ApprovedDate) == DbFunctions.TruncateTime(selectedDate)
-                                    && x.FormStatus == Common.FormStatus.Approved)
-                        .Select(x => x.Id);
+                    var amsdFormIds = (viewApproved)
+                        ? db.AMSD_IF
+                            .Where(x => DbFunctions.TruncateTime(x.FormDate) == DbFunctions.TruncateTime(selectedDate)
+                                        && x.FormStatus == Common.FormStatus.Approved)
+                            .Select(x => x.Id).ToList()
+                        : db.AMSD_IF
+                            .Where(x => DbFunctions.TruncateTime(x.FormDate) == DbFunctions.TruncateTime(selectedDate)
+                                        && x.FormStatus != Common.FormStatus.Rejected)
+                            .Select(x => x.Id)
+                            .ToList();
 
-                    if (approvedAmsdForms.Any())
+                    if (amsdFormIds.Any())
                     {
                         var inflowFunds = db.AMSD_IF_Item
-                            .Where(x => approvedAmsdForms.Contains(x.FormId))
+                            .Where(x => amsdFormIds.Contains(x.FormId))
                             .GroupBy(x => new
                             {
                                 x.Bank
@@ -426,6 +459,24 @@ namespace xDC_Web.Extension.DocGenerator
                             Net = x.Sum(y => y.OpeningBalance) + x.Sum(y => y.TotalInflow) - x.Sum(y => y.TotalOutflow)
                         })
                         .ToList();
+
+                    #region Editable Closing Balance
+
+                    var closingBalances = db.TenAmDealCutOff_ClosingBalance.Where(x => DbFunctions.TruncateTime(x.Date) == DbFunctions.TruncateTime(selectedDate)).ToList();
+
+                    if (closingBalances.Any())
+                    {
+                        foreach (var item in closingBalances)
+                        {
+                            var getResult = result.FirstOrDefault(x => x.Account == item.Account && x.Currency == item.Currency);
+                            if (getResult != null)
+                            {
+                                getResult.ClosingBalance = item.ClosingBalance;
+                            }
+                        }
+                    }
+
+                    #endregion
 
                     return result;
                 }

@@ -6,7 +6,8 @@
             $grid,
             $dateSelectionBtn,
             $printBtn,
-            $refreshBtn;
+            $refreshBtn,
+            $viewTypeDropdown;
 
         var referenceUrl = {
             load10amCutOff: window.location.origin + "/api/TenAmDealCutOff/Summary/",
@@ -17,16 +18,16 @@
 
         //#region Data Source & Functions
 
-        var ds = function (selectedDate) {
+        var ds = function (selectedDate, viewType) {
             return DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: referenceUrl.load10amCutOff + moment(selectedDate).unix(),
+                loadUrl: referenceUrl.load10amCutOff + moment(selectedDate).unix() + "/" + viewType,
                 updateUrl: referenceUrl.update10amCutOffClosingBalance + moment(selectedDate).unix()
             });
         };
 
-        function populateData() {
-            $.when(ds(new Date()))
+        function populateData(selectedDate, viewType) {
+            $.when(ds(selectedDate, viewType))
                 .done(function (data1) {
                     $grid.option("dataSource", data1);
                     $grid.repaint();
@@ -54,7 +55,7 @@
         $refreshBtn = $("#refreshBtn").dxButton({
             icon: "refresh",
             onClick: function (e) {
-                $.when(ds($dateSelectionBtn.option("value")))
+                $.when(ds($dateSelectionBtn.option("value"), $viewTypeDropdown.option("value")))
                     .done(function (data1) {
                         $grid.option("dataSource", data1.data);
                         $grid.repaint();
@@ -63,6 +64,14 @@
                     });
             }
         }).dxButton("instance");
+
+        $viewTypeDropdown = $("#viewTypeDropdown").dxSelectBox({
+            items: ["Approved", "LIVE"],
+            value: "Approved",
+            onValueChanged: function (data) {
+                populateData($dateSelectionBtn.option("value"), data.value);
+            }
+        }).dxSelectBox("instance");
 
         $printBtn = $("#printBtn").dxDropDownButton({
             text: "Print",
@@ -83,7 +92,8 @@
 
                 var data = {
                     SelectedDateEpoch: moment($dateSelectionBtn.option("value")).unix(),
-                    isExportAsExcel: (e.itemData.id == 1)
+                    isExportAsExcel: (e.itemData.id == 1),
+                    viewType: $viewTypeDropdown.option("value")
                 };
 
                 $.ajax({
@@ -185,15 +195,19 @@
                     dataField: "closingBalance",
                     headerCellTemplate: function (container) {
                         container.append($(
-                            "<div><strong>Closing Balance</strong><br/>(Editable)<br/><small>* to be enter by ISSD</small></div>"));
+                            "<div><strong>Closing Balance</strong><br/>(Editable)</div>"));
                     },
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
                         precision: 2
                     },
-                    allowEditing: true
-                },
+                    allowEditing: true,
+                    cellTemplate: function (container, options) {
+                        container.addClass("cell-bg-gray");
+                        $("<span>" + options.text + "</span>").appendTo(container);
+                    }
+                }
             ],
             summary: {
                 groupItems: [
@@ -277,7 +291,7 @@
 
         //#region Immediate Invocation function
 
-        populateData();
+        populateData(new Date(), "Approved");
 
         //#endregion
     });

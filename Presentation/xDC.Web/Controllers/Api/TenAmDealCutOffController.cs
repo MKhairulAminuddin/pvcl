@@ -23,13 +23,15 @@ namespace xDC_Web.Controllers.Api
     public class TenAmDealCutOffController : ApiController
     {
         [HttpGet]
-        [Route("Summary/{reportDate}")]
-        public HttpResponseMessage SummaryReport(long reportDate, DataSourceLoadOptions loadOptions)
+        [Route("Summary/{reportDate}/{viewType}")]
+        public HttpResponseMessage SummaryReport(long reportDate, string viewType, DataSourceLoadOptions loadOptions)
         {
             try
             {
                 var reportDateParsed = Common.ConvertEpochToDateTime(reportDate);
                 reportDateParsed = reportDateParsed.Value.Date;
+
+                bool viewApprovedOnly = (viewType.ToLower() == Common.FormStatus.Approved.ToLower());
 
                 using (var db = new kashflowDBEntities())
                 {
@@ -63,18 +65,27 @@ namespace xDC_Web.Controllers.Api
                         };
                         result.Add(item);
 
-                        var approvedTsIds = db.ISSD_FormHeader
-                            .Where(x => x.FormStatus == Common.FormStatus.Approved
-                                        && x.SettlementDate != null
-                                        && x.Currency == item.Currency
-                                        && DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(reportDateParsed))
-                            .Select(x => x.Id)
-                            .ToList();
+                        var tsFormIds = (viewApprovedOnly)
+                            ? db.ISSD_FormHeader
+                                .Where(x => x.FormStatus == Common.FormStatus.Approved
+                                            && x.SettlementDate != null
+                                            && x.Currency == item.Currency
+                                            && DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(reportDateParsed))
+                                .Select(x => x.Id)
+                                .ToList()
+                            : db.ISSD_FormHeader
+                                .Where(x => x.FormStatus != Common.FormStatus.Rejected
+                                            && x.SettlementDate != null
+                                            && x.Currency == item.Currency
+                                            && DbFunctions.TruncateTime(x.SettlementDate) ==
+                                            DbFunctions.TruncateTime(reportDateParsed))
+                                .Select(x => x.Id)
+                                .ToList();
 
-                        if (approvedTsIds.Any())
+                        if (tsFormIds.Any())
                         {
                             var tradeItemInflow = db.ISSD_TradeSettlement
-                                .Where(x => approvedTsIds.Contains(x.FormId)
+                                .Where(x => tsFormIds.Contains(x.FormId)
                                             && x.InflowTo != null
                                             && x.InflowTo == account.AccountName3
                                             && x.InflowAmount > 0)
@@ -86,7 +97,7 @@ namespace xDC_Web.Controllers.Api
 
                             // get total inflow based on assigned outflow account
                             var tradeItemOutflow = db.ISSD_TradeSettlement
-                                .Where(x => approvedTsIds.Contains(x.FormId)
+                                .Where(x => tsFormIds.Contains(x.FormId)
                                             && x.OutflowFrom != null
                                             && x.OutflowFrom == account.AccountName3
                                             && x.OutflowAmount > 0)
@@ -110,18 +121,28 @@ namespace xDC_Web.Controllers.Api
                         Currency = "MYR"
                     };
 
-                    var approvedFidTreasuryIds = db.FID_Treasury
-                        .Where(x => x.FormStatus == Common.FormStatus.Approved
-                                    && x.TradeDate != null
-                                    && x.Currency == "MYR"
-                                    && DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(reportDateParsed))
-                        .Select(x => x.Id)
-                        .ToList();
+                    var treasuryMyrFormIds = (viewApprovedOnly)
+                        ? db.FID_Treasury
+                            .Where(x => x.FormStatus == Common.FormStatus.Approved
+                                        && x.TradeDate != null
+                                        && x.Currency == "MYR"
+                                        && DbFunctions.TruncateTime(x.TradeDate) ==
+                                        DbFunctions.TruncateTime(reportDateParsed))
+                            .Select(x => x.Id)
+                            .ToList()
+                        : db.FID_Treasury
+                            .Where(x => x.FormStatus != Common.FormStatus.Rejected
+                                        && x.TradeDate != null
+                                        && x.Currency == "MYR"
+                                        && DbFunctions.TruncateTime(x.TradeDate) ==
+                                        DbFunctions.TruncateTime(reportDateParsed))
+                            .Select(x => x.Id)
+                            .ToList();
 
-                    if (approvedFidTreasuryIds.Any())
+                    if (treasuryMyrFormIds.Any())
                     {
                         var inflowDeposit = db.FID_Treasury_Deposit
-                            .Where(x => approvedFidTreasuryIds.Contains(x.FormId)
+                            .Where(x => treasuryMyrFormIds.Contains(x.FormId)
                                         && x.PrincipalIntProfitReceivable > 0
                                         && x.CashflowType == Common.Cashflow.Inflow)
                             .Select(l => l.PrincipalIntProfitReceivable)
@@ -129,7 +150,7 @@ namespace xDC_Web.Controllers.Api
                             .Sum();
 
                         var inflowMmi = db.FID_Treasury_MMI
-                            .Where(x => approvedFidTreasuryIds.Contains(x.FormId)
+                            .Where(x => treasuryMyrFormIds.Contains(x.FormId)
                                         && x.CashflowType == Common.Cashflow.Inflow
                                         && x.Proceeds > 0)
                             .Select(l => l.Proceeds)
@@ -137,7 +158,7 @@ namespace xDC_Web.Controllers.Api
                             .Sum();
 
                         var outflowDeposit = db.FID_Treasury_Deposit
-                            .Where(x => approvedFidTreasuryIds.Contains(x.FormId)
+                            .Where(x => treasuryMyrFormIds.Contains(x.FormId)
                                         && x.Principal > 0
                                         && x.CashflowType == Common.Cashflow.Outflow)
                             .Select(l => l.Principal)
@@ -145,7 +166,7 @@ namespace xDC_Web.Controllers.Api
                             .Sum();
 
                         var outflowMmi = db.FID_Treasury_MMI
-                            .Where(x => approvedFidTreasuryIds.Contains(x.FormId)
+                            .Where(x => treasuryMyrFormIds.Contains(x.FormId)
                                         && x.CashflowType == Common.Cashflow.Outflow
                                         && x.Proceeds > 0)
                             .Select(l => l.Proceeds)
@@ -172,18 +193,28 @@ namespace xDC_Web.Controllers.Api
                             Currency = account.Currency
                         };
 
-                        var approvedFidTreasuryIdsFcy = db.FID_Treasury
-                            .Where(x => x.FormStatus == Common.FormStatus.Approved
-                                        && x.TradeDate != null
-                                        && x.Currency == account.Currency
-                                        && DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(reportDateParsed))
-                            .Select(x => x.Id)
-                            .ToList();
+                        var treasuryFcyFormIds = (viewApprovedOnly)
+                            ? db.FID_Treasury
+                                .Where(x => x.FormStatus == Common.FormStatus.Approved
+                                            && x.TradeDate != null
+                                            && x.Currency == account.Currency
+                                            && DbFunctions.TruncateTime(x.TradeDate) ==
+                                            DbFunctions.TruncateTime(reportDateParsed))
+                                .Select(x => x.Id)
+                                .ToList()
+                            : db.FID_Treasury
+                                .Where(x => x.FormStatus != Common.FormStatus.Rejected
+                                            && x.TradeDate != null
+                                            && x.Currency == account.Currency
+                                            && DbFunctions.TruncateTime(x.TradeDate) ==
+                                            DbFunctions.TruncateTime(reportDateParsed))
+                                .Select(x => x.Id)
+                                .ToList();
 
-                        if (approvedFidTreasuryIdsFcy.Any())
+                        if (treasuryFcyFormIds.Any())
                         {
                             var inflowDeposit = db.FID_Treasury_Deposit
-                                .Where(x => approvedFidTreasuryIdsFcy.Contains(x.FormId)
+                                .Where(x => treasuryFcyFormIds.Contains(x.FormId)
                                             && x.PrincipalIntProfitReceivable > 0
                                             && x.CashflowType == Common.Cashflow.Inflow
                                             && x.FcaAccount == account.AccountName3)
@@ -192,7 +223,7 @@ namespace xDC_Web.Controllers.Api
                                 .Sum();
 
                             var inflowMmi = db.FID_Treasury_MMI
-                                .Where(x => approvedFidTreasuryIdsFcy.Contains(x.FormId)
+                                .Where(x => treasuryFcyFormIds.Contains(x.FormId)
                                             && x.CashflowType == Common.Cashflow.Inflow
                                             && x.Proceeds > 0
                                             && x.FcaAccount == account.AccountName3)
@@ -201,7 +232,7 @@ namespace xDC_Web.Controllers.Api
                                 .Sum();
 
                             var outflowDeposit = db.FID_Treasury_Deposit
-                                .Where(x => approvedFidTreasuryIdsFcy.Contains(x.FormId)
+                                .Where(x => treasuryFcyFormIds.Contains(x.FormId)
                                             && x.Principal > 0
                                             && x.CashflowType == Common.Cashflow.Outflow
                                             && x.FcaAccount == account.AccountName3)
@@ -210,7 +241,7 @@ namespace xDC_Web.Controllers.Api
                                 .Sum();
 
                             var outflowMmi = db.FID_Treasury_MMI
-                                .Where(x => approvedFidTreasuryIdsFcy.Contains(x.FormId)
+                                .Where(x => treasuryFcyFormIds.Contains(x.FormId)
                                             && x.CashflowType == Common.Cashflow.Outflow
                                             && x.Proceeds > 0
                                             && x.FcaAccount == account.AccountName3)
@@ -232,15 +263,22 @@ namespace xDC_Web.Controllers.Api
 
                     #region 4 - AMSD Inflow Fund
 
-                    var approvedAmsdForms = db.AMSD_IF
-                        .Where(x => DbFunctions.TruncateTime(x.ApprovedDate) == DbFunctions.TruncateTime(reportDateParsed)
-                                    && x.FormStatus == Common.FormStatus.Approved)
-                        .Select(x => x.Id);
+                    var amsdFormIds = (viewApprovedOnly)
+                        ? db.AMSD_IF
+                            .Where(x => DbFunctions.TruncateTime(x.FormDate) == DbFunctions.TruncateTime(reportDateParsed)
+                                        && x.FormStatus == Common.FormStatus.Approved)
+                            .Select(x => x.Id)
+                            .ToList()
+                        : db.AMSD_IF
+                            .Where(x => DbFunctions.TruncateTime(x.FormDate) == DbFunctions.TruncateTime(reportDateParsed)
+                                        && x.FormStatus != Common.FormStatus.Rejected)
+                            .Select(x => x.Id)
+                            .ToList();
 
-                    if (approvedAmsdForms.Any())
+                    if (amsdFormIds.Any())
                     {
                         var inflowFunds = db.AMSD_IF_Item
-                            .Where(x => approvedAmsdForms.Contains(x.FormId) && x.Bank != null)
+                            .Where(x => amsdFormIds.Contains(x.FormId) && x.Bank != null)
                             .GroupBy(x => new
                             {
                                 x.Bank

@@ -20,7 +20,7 @@ namespace xDC_Web.Controllers
 
         [HttpPost]
         [Route("TenAmDealCutOff/Print")]
-        public ActionResult TenAmDealCutOff_Print(string selectedDateEpoch, bool isExportAsExcel)
+        public ActionResult TenAmDealCutOff_Print(string selectedDateEpoch, bool isExportAsExcel, string viewType)
         {
             try
             {
@@ -30,7 +30,9 @@ namespace xDC_Web.Controllers
                     selectedDate = Common.ConvertEpochToDateTime(Convert.ToInt64(selectedDateEpoch));
                 }
 
-                var generatedDocumentFile = new TenAmDealCutOffDoc().GenerateFile(selectedDate.Value, isExportAsExcel);
+                bool viewApprovedOnly = (viewType.ToLower() == Common.FormStatus.Approved.ToLower());
+
+                var generatedDocumentFile = new TenAmDealCutOffDoc().GenerateFile(selectedDate.Value, isExportAsExcel, viewApprovedOnly);
 
                 if (!string.IsNullOrEmpty(generatedDocumentFile))
                 {

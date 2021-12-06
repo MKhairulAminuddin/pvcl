@@ -412,3 +412,7 @@ div .validation-summary-errors.text-danger {
 .dxDataGrid-cell-grey {
     background-color: #BDBDBD;
 }
+
+.cell-bg-gray {
+    background-color: #edf1fa;
+}

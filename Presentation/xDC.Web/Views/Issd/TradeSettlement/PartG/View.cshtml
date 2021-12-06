@@ -62,6 +62,17 @@
                     </div>
 
                     <div class="right-container pull-right">
+                        @if (Model.FormStatus == "Approved")
+                        {
+                            @(Html.DevExtreme().Button()
+                                .ID("peEmailBtn")
+                                .Text("Generate Contribution Email")
+                                .Icon("message")
+                                .Type(ButtonType.Normal)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                )
+                        }
+
                         <div id="printBtn"></div>
                     </div>
                 </div>
