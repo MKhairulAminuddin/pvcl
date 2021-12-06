@@ -738,13 +738,15 @@ namespace xDC_Web.Controllers.Api
                                     foundItem.StockCode != item.StockCode||
                                     foundItem.AmountPlus != item.AmountPlus||
                                     foundItem.AmountMinus != item.AmountMinus ||
-                                    foundItem.Remarks != item.Remarks)
+                                    foundItem.Remarks != item.Remarks ||
+                                    foundItem.OthersType != item.OthersType)
                                 {
                                     foundItem.InstrumentCode = item.InstrumentCode;
                                     foundItem.StockCode = item.StockCode;
                                     foundItem.AmountPlus = item.AmountPlus;
                                     foundItem.AmountMinus = item.AmountMinus;
                                     foundItem.Remarks = item.Remarks;
+                                    foundItem.OthersType = item.OthersType;
 
                                     foundItem.ModifiedBy = User.Identity.Name;
                                     foundItem.ModifiedDate = DateTime.Now;
@@ -809,9 +811,21 @@ namespace xDC_Web.Controllers.Api
                             {
                                 new MailService().TS_PartE_NotifyPe(form.Id);
                             }
+
                             if (form.FormType == Common.FormType.ISSD_TS_H && form.FormStatus == Common.FormStatus.Approved)
                             {
-                                new MailService().TS_PartH_NotifyProperty(form.Id);
+                                var tsPropertyItemExist = db.ISSD_TradeSettlement.Any(x => x.FormId == form.Id && x.OthersType == Common.TsOthersTypeItem.Property);
+                                if (tsPropertyItemExist)
+                                {
+                                    new MailService().TS_PartH_Notify(form.Id, Common.TsOthersTypeItem.Property);
+                                }
+
+                                var tsLoanItemExist = db.ISSD_TradeSettlement.Any(x => x.FormId == form.Id && x.OthersType == Common.TsOthersTypeItem.Loan);
+                                if (tsLoanItemExist)
+                                {
+                                    new MailService().TS_PartH_Notify(form.Id, Common.TsOthersTypeItem.Loan);
+                                }
+
                             }
 
                             return Request.CreateResponse(HttpStatusCode.Accepted, formId);
@@ -1445,7 +1459,9 @@ namespace xDC_Web.Controllers.Api
                         ? "RENTAS"
                         : null,
                     AssignedBy = null,
-                    AssignedDate = null
+                    AssignedDate = null,
+
+                    OthersType = item.OthersType
                 });
             }
         }
@@ -1479,8 +1495,10 @@ namespace xDC_Web.Controllers.Api
                         ? "RENTAS"
                         : null,
                     AssignedBy = null,
-                    AssignedDate = null
-                };
+                    AssignedDate = null,
+
+                    OthersType = item.OthersType
+            };
             
         }
     }

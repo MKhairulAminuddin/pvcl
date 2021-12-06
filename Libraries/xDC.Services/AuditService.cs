@@ -158,6 +158,26 @@ namespace xDC.Services
             AuditForm_Insert(obj);
         }
 
+        public void AuditForm_ReassignApprover(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore, string valueAfter)
+        {
+            var obj = new Audit_Form()
+            {
+                FormId = formId,
+                FormType = formType,
+                FormDate = formDate,
+                ActionType = Common.ActionType.Reassign,
+
+                ModifiedBy = modifiedBy,
+                ModifiedOn = DateTime.Now,
+
+                Remarks = $"Reassign form's approver",
+                ValueBefore = valueBefore,
+                ValueAfter = valueAfter
+            };
+
+            AuditForm_Insert(obj);
+        }
+
 
     }
 }

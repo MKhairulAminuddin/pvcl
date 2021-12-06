@@ -263,7 +263,7 @@ namespace xDC.Services
             }
         }
 
-        public void TS_PartH_NotifyProperty(int formId)
+        public void TS_PartH_Notify(int formId, string othersType)
         {
             try
             {
@@ -277,15 +277,32 @@ namespace xDC.Services
                         Subject = $"{SubjectAppend} Approved Trade Settlement for Part H (Others)"
                     };
 
-                    var recipients = Config.NotificationTsPropertyEmail.Split(';');
+                    var recipients = new List<string>();
+                    var cc = new List<string>();
+                    var tsFormPartE = new List<ISSD_TradeSettlement>();
+
+                    if (othersType == Common.TsOthersTypeItem.Property)
+                    {
+                        recipients = Config.NotificationTsPropertyEmail.Split(';').ToList();
+                        cc = Config.NotificationTsPropertyEmailCc.Split(';').ToList();
+                        tsFormPartE = db.ISSD_TradeSettlement
+                            .Where(x => x.FormId == formId && x.OthersType == Common.TsOthersTypeItem.Property)
+                            .ToList();
+                    }
+                    else if (othersType == Common.TsOthersTypeItem.Loan)
+                    {
+                        recipients = Config.NotificationTsLoanEmail.Split(';').ToList();
+                        cc = Config.NotificationTsLoanEmailCc.Split(';').ToList();
+                        tsFormPartE = db.ISSD_TradeSettlement
+                            .Where(x => x.FormId == formId && x.OthersType == Common.TsOthersTypeItem.Loan)
+                            .ToList();
+                    }
 
                     foreach (var recipient in recipients)
                     {
                         message.To.Add(MailboxAddress.Parse(recipient));
                     }
-
-                    var cc = Config.NotificationTsPropertyEmailCc.Split(';');
-
+                    
                     foreach (var recipient in cc)
                     {
                         message.Cc.Add(MailboxAddress.Parse(recipient));
@@ -297,13 +314,9 @@ namespace xDC.Services
 
                     var sb = new StringBuilder();
 
-                    var tsFormPartE = db.ISSD_TradeSettlement
-                        .Where(x => x.FormId == formId)
-                        .ToList();
-
                     if (tsFormPartE.Any())
                     {
-                        sb.AppendLine("<br/><b>Trade Settlement (Part H - Others)</b><br/>");
+                        sb.AppendLine("<br/><b>Trade Settlement (Part H - Others) " + othersType + " </b><br/>");
 
                         using (var table = new Common.Table(sb))
                         {
@@ -340,7 +353,7 @@ namespace xDC.Services
                     }
                     else
                     {
-                        Logger.LogError("TS_PartH_NotifyProperty email failed");
+                        Logger.LogError("TS_PartH_Notify email failed");
                     }
                 }
             }

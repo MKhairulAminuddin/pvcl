@@ -35,5 +35,6 @@ namespace xDC.Infrastructure.Application
         public string OutflowFrom { get; set; }
         public string AssignedBy { get; set; }
         public Nullable<System.DateTime> AssignedDate { get; set; }
+        public string OthersType { get; set; }
     }
 }

@@ -128,7 +128,8 @@
                 },
                 {
                     dataField: "instrumentCode",
-                    caption: "Others"
+                    caption: "Others",
+                    validationRules: [{ type: 'required' }]
                 },
                 {
                     dataField: "amountPlus",
@@ -152,6 +153,14 @@
                     dataField: "remarks",
                     caption: "Remarks",
                     dataType: "text"
+                },
+                {
+                    dataField: "othersType",
+                    caption: "Types",
+                    lookup: {
+                        dataSource: ["Loan", "Property", "Others"]
+                    },
+                    validationRules: [{ type: 'required' }]
                 }
             ],
             summary: {

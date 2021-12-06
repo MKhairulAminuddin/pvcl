@@ -175,6 +175,7 @@ namespace xDC_Web.Controllers
                             EnableReassign = (form.FormStatus == Common.FormStatus.PendingApproval && form.ApprovedBy != User.Identity.Name),
 
                             IsApprovedOrRejected = isApprovedOrRejected,
+                            IsApproved = (form.FormStatus == Common.FormStatus.Approved),
                             ApprovalOrRejectionNotes = getFormWorkflow?.WorkflowNotes
                         };
 

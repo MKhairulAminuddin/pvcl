@@ -29,6 +29,8 @@ namespace xDC.Utils
         public static string NotificationTsPeEmailCc => ConfigurationManager.AppSettings["Notification.TS.PeEmail.CC"];
         public static string NotificationTsPropertyEmail => ConfigurationManager.AppSettings["Notification.TS.PropertyEmail"];
         public static string NotificationTsPropertyEmailCc => ConfigurationManager.AppSettings["Notification.TS.PropertyEmail.CC"];
+        public static string NotificationTsLoanEmail => ConfigurationManager.AppSettings["Notification.TS.LoanEmail"];
+        public static string NotificationTsLoanEmailCc => ConfigurationManager.AppSettings["Notification.TS.LoanEmail.CC"];
 
 
         public static string NotificationTsCnEmailSubject => ConfigurationManager.AppSettings["Notification.TS.CnEmailSubject"];

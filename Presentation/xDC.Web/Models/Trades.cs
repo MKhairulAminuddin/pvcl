@@ -16,5 +16,6 @@ namespace xDC_Web.Models
         public double AmountMinus { get; set; }
 
         public string Remarks { get; set; }
+        public string OthersType { get; set; }
     }
 }

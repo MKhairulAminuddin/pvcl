@@ -50,6 +50,13 @@ namespace xDC.Utils
             public const string FID_TREASURY = "Treasury";
         }
 
+        public static class TsOthersTypeItem
+        {
+            public const string Loan = "Loan";
+            public const string Property = "Property";
+            public const string Others = "Others";
+        }
+
         public static class Cashflow
         {
             public const string Inflow = "INFLOW";
@@ -150,7 +157,6 @@ namespace xDC.Utils
             }
             return String.Empty;
         }
-
         
         public static string TsUrlParamInstrumentTypeMapFormType(string value)
         {
@@ -264,7 +270,6 @@ namespace xDC.Utils
             }
             return String.Empty;
         }
-        
         
         /// <summary>
         /// Get form view url

@@ -272,24 +272,27 @@ namespace xDC_Web.Controllers.Api
                                     {
                                         if (itemInDb.Amount != item.Amount)
                                         {
-                                            itemInDb.Amount = item.Amount;
-                                            new AuditService().AuditForm_EditRow(form.Id, form.FormType, 
-                                                form.FormDate, User.Identity.Name, itemInDb.Amount.ToString(), 
+                                            new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                                form.FormDate, User.Identity.Name, itemInDb.Amount.ToString(),
                                                 item.Amount.ToString(), "Amount");
+
+                                            itemInDb.Amount = item.Amount;
                                         }
                                         if (itemInDb.Bank != item.Bank)
                                         {
-                                            itemInDb.Bank = item.Bank;
                                             new AuditService().AuditForm_EditRow(form.Id, form.FormType,
                                                 form.FormDate, User.Identity.Name, itemInDb.Bank,
                                                 item.Bank, "Bank");
+
+                                            itemInDb.Bank = item.Bank;
                                         }
                                         if (itemInDb.FundType != item.FundType)
                                         {
-                                            itemInDb.FundType = item.FundType;
                                             new AuditService().AuditForm_EditRow(form.Id, form.FormType,
                                                 form.FormDate, User.Identity.Name, itemInDb.FundType,
                                                 item.FundType, "Fund Type");
+
+                                            itemInDb.FundType = item.FundType;
                                         }
 
                                         itemInDb.ModifiedBy = User.Identity.Name;

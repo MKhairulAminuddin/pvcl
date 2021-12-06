@@ -59,7 +59,15 @@
                             .StylingMode(ButtonStylingMode.Contained))
                     </div>
                     
-                    <div class="right-container">
+                    <div class="right-container pull-right">
+                        @(Html.DevExtreme().Button()
+                            .ID("viewAuditTrailBtn")
+                            .Text("Audit Trail")
+                            .Icon("checklist")
+                            .Type(ButtonType.Normal)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
+
                         <div id="printBtn"></div>
                     </div>
 
@@ -247,6 +255,7 @@
     </div>
 </div>
 
+@Html.Partial("_AuditTrailModal")
 @Html.Partial("_WorkflowInfoModal")
 @Html.Partial("_ApprovalReassignModal")
 

@@ -197,6 +197,10 @@
                     dataType: "text"
                 },
                 {
+                    dataField: "othersType",
+                    caption: "Types"
+                },
+                {
                     dataField: "modifiedBy",
                     caption: "Modified"
                 },

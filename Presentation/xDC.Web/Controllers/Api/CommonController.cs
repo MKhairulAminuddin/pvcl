@@ -390,6 +390,8 @@ namespace xDC_Web.Controllers.Api
                                 var amsdForm = db.AMSD_IF.FirstOrDefault(x => x.Id == input.FormId);
                                 if (amsdForm != null)
                                 {
+                                    var currentApprover = amsdForm.ApprovedBy;
+
                                     amsdForm.ApprovedBy = permittedApprover.Username;
                                     amsdForm.ApprovedDate = null;
                                     db.SaveChanges();
@@ -397,6 +399,7 @@ namespace xDC_Web.Controllers.Api
                                     new WorkflowService().ReassignWorkflow(input.FormId, amsdForm.FormType);
                                     new MailService().SubmitForApproval(input.FormId, amsdForm.FormType, permittedApprover.Username, null);
                                     new NotificationService().NotifyApprovalRequest(permittedApprover.Username, input.FormId, User.Identity.Name, amsdForm.FormType);
+                                    new AuditService().AuditForm_ReassignApprover(input.FormId, amsdForm.FormType, amsdForm.FormDate, User.Identity.Name, currentApprover, permittedApprover.Username);
                                     return Request.CreateResponse(HttpStatusCode.Accepted);
                                 }
                                 else
@@ -407,6 +410,8 @@ namespace xDC_Web.Controllers.Api
                                 var treasuryForm = db.FID_Treasury.FirstOrDefault(x => x.Id == input.FormId);
                                 if (treasuryForm != null)
                                 {
+                                    var currentApprover = treasuryForm.ApprovedBy;
+
                                     treasuryForm.ApprovedBy = permittedApprover.Username;
                                     treasuryForm.ApprovedDate = null;
                                     db.SaveChanges();
@@ -414,6 +419,7 @@ namespace xDC_Web.Controllers.Api
                                     new WorkflowService().ReassignWorkflow(input.FormId, treasuryForm.FormType);
                                     new MailService().SubmitForApproval(input.FormId, treasuryForm.FormType, permittedApprover.Username, null);
                                     new NotificationService().NotifyApprovalRequest(permittedApprover.Username, input.FormId, User.Identity.Name, treasuryForm.FormType);
+                                    new AuditService().AuditForm_ReassignApprover(input.FormId, treasuryForm.FormType, treasuryForm.TradeDate, User.Identity.Name, currentApprover, permittedApprover.Username);
                                     return Request.CreateResponse(HttpStatusCode.Accepted);
                                 }
                                 else
@@ -424,6 +430,8 @@ namespace xDC_Web.Controllers.Api
                                 var tsForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == input.FormId);
                                 if (tsForm != null)
                                 {
+                                    var currentApprover = tsForm.ApprovedBy;
+
                                     tsForm.ApprovedBy = permittedApprover.Username;
                                     tsForm.ApprovedDate = null;
                                     db.SaveChanges();
@@ -431,6 +439,7 @@ namespace xDC_Web.Controllers.Api
                                     new WorkflowService().ReassignWorkflow(input.FormId, tsForm.FormType);
                                     new MailService().SubmitForApproval(input.FormId, tsForm.FormType, permittedApprover.Username, null);
                                     new NotificationService().NotifyApprovalRequest(permittedApprover.Username, input.FormId, User.Identity.Name, tsForm.FormType);
+                                    new AuditService().AuditForm_ReassignApprover(input.FormId, tsForm.FormType, tsForm.SettlementDate, User.Identity.Name, currentApprover, permittedApprover.Username);
                                     return Request.CreateResponse(HttpStatusCode.Accepted);
                                 }
                                 else
@@ -556,6 +565,33 @@ namespace xDC_Web.Controllers.Api
 
         #endregion
 
+        #region Audit Trail Information
+
+        [HttpGet]
+        [Route("FormAuditTrail/{formTypeId}/{formId}")]
+        public HttpResponseMessage GetFormAuditTrail(int formTypeId, int formId, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formTypeParsed = Common.FormTypeMapping(formTypeId);
+
+                    var result = db.Audit_Form
+                        .Where(x => x.FormId == formId && x.FormType == formTypeParsed)
+                        .OrderByDescending(x => x.Id).ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        #endregion
 
         #region Private Function
 

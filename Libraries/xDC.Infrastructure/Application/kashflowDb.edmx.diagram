@@ -22,7 +22,6 @@
         <EntityTypeShape EntityType="kashflowDbModel.Form_Workflow" Width="1.5" PointX="0.5" PointY="4" />
         <EntityTypeShape EntityType="kashflowDbModel.AMSD_IF_Item" Width="1.5" PointX="10.625" PointY="5.75" />
         <EntityTypeShape EntityType="kashflowDbModel.Config_FcaBankAccount" Width="1.5" PointX="6.75" PointY="4.875" />
-        <EntityTypeShape EntityType="kashflowDbModel.ISSD_TradeSettlement" Width="1.5" PointX="2.5" PointY="9.75" />
         <EntityTypeShape EntityType="kashflowDbModel.FID_Treasury_Deposit" Width="1.5" PointX="14" PointY="9.75" />
         <EntityTypeShape EntityType="kashflowDbModel.EDW_Maturity_Deposit" Width="1.5" PointX="20.875" PointY="11.875" />
         <EntityTypeShape EntityType="kashflowDbModel.EDW_Maturity_MM" Width="1.5" PointX="22.625" PointY="11.875" />
@@ -30,6 +29,7 @@
         <EntityTypeShape EntityType="kashflowDbModel.EDW_TradeItem" Width="1.5" PointX="19" PointY="11.875" />
         <EntityTypeShape EntityType="kashflowDbModel.Audit_Form" Width="1.5" PointX="5.375" PointY="8.75" />
         <EntityTypeShape EntityType="kashflowDbModel.TenAmDealCutOff_ClosingBalance" Width="1.5" PointX="5.375" PointY="12.75" />
+        <EntityTypeShape EntityType="kashflowDbModel.ISSD_TradeSettlement" Width="1.5" PointX="2.5" PointY="9.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
