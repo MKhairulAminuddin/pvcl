@@ -278,8 +278,6 @@
                     caption: "Notes"
                 }
             ],
-            showRowLines: true,
-            rowAlternationEnabled: false,
             showBorders: true,
             sorting: {
                 mode: "multiple",

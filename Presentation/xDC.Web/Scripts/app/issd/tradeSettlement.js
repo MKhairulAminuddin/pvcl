@@ -16,7 +16,11 @@
         loadWorkflowHistory: function(formTypeId) {
             return window.location.origin + "/api/common/GetWorkflow/" + formTypeId + "/" + _getIdFromQueryString;
         },
+        loadAuditTrail: function (formTypeId) {
+            return window.location.origin + "/api/common/FormAuditTrail/" + formTypeId +"/" + _getIdFromQueryString;
+        },
         loadApprover: window.location.origin + "/api/common/GetTradeSettlementApprover",
+        reassignApprover: window.location.origin + "/api/common/reassignApprover",
         loadCurrencies: window.location.origin + "/api/common/GetTradeSettlementCurrencies",
         loadTradeItemEdw: function(instrumentType, settlementDate, currency) {
             return window.location.origin +
@@ -138,6 +142,17 @@
             store: DevExpress.data.AspNet.createStore({
                 key: "id",
                 loadUrl: _ts.api.loadWorkflowHistory(formTypeId)
+            }),
+            paginate: true,
+            pageSize: 20
+        };
+    }
+
+    _ts.dsAuditTrail = function (formTypeId) {
+        return {
+            store: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: _ts.api.loadAuditTrail(formTypeId)
             }),
             paginate: true,
             pageSize: 20

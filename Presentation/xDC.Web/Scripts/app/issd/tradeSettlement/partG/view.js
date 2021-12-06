@@ -9,13 +9,14 @@
             $cnGrid,
 
             $workflowGrid,
-
+            $auditTrailGrid,
             $tradeSettlementForm,
             $currencySelectBox,
             $approverDropdown,
             $printBtn,
             $cnEmailBtn,
-            $approvalReassignModal = $("#approvalReassignModal");
+            $approvalReassignModal = $("#approvalReassignModal"),
+            $viewAuditTrailModal = $("#viewAuditTrailModal");
 
         var referenceUrl = {
             adminEdit: window.location.origin + "/issd/TradeSettlement/PartG/Edit/",
@@ -112,7 +113,7 @@
 
                     $.ajax({
                         type: "POST",
-                        url: window.location.origin + "/api/common/reassignApprover",
+                        url: ts.api.reassignApprover,
                         data: data,
                         dataType: "text",
                         success: function (data) {
@@ -137,10 +138,10 @@
         });
 
         $("#cnEmailBtn").dxButton({
-            text: "Query Email",
-            icon: "fa fa-paper-plane-o",
-            stylingMode: "outlined",
-            type: "default",
+            text: "Gen. Contribution Email",
+            icon: "fa fa-envelope-o",
+            stylingMode: "contained",
+            type: "normal",
             onClick: function () {
                 var req = {
                     "formId": ts.getIdFromQueryString
@@ -283,6 +284,60 @@
             wordWrapEnabled: true
         }).dxDataGrid("instance");
 
+        $auditTrailGrid = $("#auditTrailGrid").dxDataGrid({
+            dataSource: ts.dsAuditTrail(9),
+            columns: [
+                {
+                    dataField: "actionType",
+                    caption: "Action"
+                },
+                {
+                    dataField: "formType",
+                    caption: "Form Type",
+                    visible: false
+                },
+                {
+                    dataField: "formDate",
+                    caption: "Form Date",
+                    dataType: "date",
+                    format: "dd/MM/yyyy",
+                    visible: false
+                },
+                {
+                    dataField: "modifiedOn",
+                    caption: "Performed On",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy hh:mm:ss",
+                    sortIndex: 0,
+                    sortOrder: "desc"
+                },
+                {
+                    dataField: "modifiedBy",
+                    caption: "User ID"
+                },
+                {
+                    dataField: "remarks",
+                    caption: "Remarks"
+                },
+                {
+                    dataField: "valueBefore",
+                    caption: "Value Before"
+                },
+                {
+                    dataField: "valueAfter",
+                    caption: "Value After"
+                }
+            ],
+            showRowLines: true,
+            rowAlternationEnabled: false,
+            showBorders: true,
+            sorting: {
+                mode: "multiple",
+                showSortIndexes: true
+            },
+            wordWrapEnabled: true
+        }).dxDataGrid("instance");
+
         // #endregion DataGrid
         
         //#region Events
@@ -291,6 +346,13 @@
             onClick: function (e) {
                 $approvalReassignModal.modal("show");
                 e.event.preventDefault();
+            }
+        });
+
+        $("#viewAuditTrailBtn").on({
+            "click": function (e) {
+                $viewAuditTrailModal.modal("show");
+                e.preventDefault();
             }
         });
 

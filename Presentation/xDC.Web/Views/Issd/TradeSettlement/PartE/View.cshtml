@@ -62,6 +62,14 @@
                     </div>
 
                     <div class="right-container pull-right">
+                        @(Html.DevExtreme().Button()
+                            .ID("viewAuditTrailBtn")
+                            .Text("Audit Trail")
+                            .Icon("checklist")
+                            .Type(ButtonType.Normal)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
+
                         <div id="printBtn"></div>
                     </div>
                 </div>
@@ -196,6 +204,7 @@
 @Html.Partial("TradeSettlement/_TsRejectionModal")
 @Html.Partial("_WorkflowInfoModal")
 @Html.Partial("_ApprovalReassignModal")
+@Html.Partial("_AuditTrailModal")
 
 <script type="text/html" id="dxPanelTitle">
     <div style="margin: 4px 0">
