@@ -175,100 +175,7 @@ namespace xDC.Services
                 Logger.LogError(ex);
             }
         }
-
-        public void ContributionCreditedTradeSettlement(int formId)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var currentCnEmailList = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmail);
-
-                    if (currentCnEmailList != null && currentCnEmailList.Value != null)
-                    {
-                        var getForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
-
-                        if (getForm != null)
-                        {
-                            var contributionItemKey = Common.TsItemCategory.Cn;
-                            var getContributionItems = db.ISSD_TradeSettlement
-                                .Where(x => x.InstrumentType == contributionItemKey && x.FormId == formId).ToList();
-
-                            if (getContributionItems.Any())
-                            {
-                                var preparerName =
-                                    db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == getForm.PreparedBy);
-
-                                var contributionEmailList = currentCnEmailList.Value.Split(';').ToList();
-                                var cnEmailListAddress = new InternetAddressList();
-                                foreach (var item in contributionEmailList)
-                                {
-                                    cnEmailListAddress.Add(new MailboxAddress(item,item));
-                                }
-
-                                var message = new MimeMessage()
-                                {
-                                    Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                                    Subject = $"{SubjectAppend} Contribution Credited submitted in {getForm.FormType}"
-                                };
-
-                                message.To.AddRange(cnEmailListAddress);
-
-                                var pageUrl = string.Format("{0}" + Common.Email_FormUrlMap(getForm.FormType) + "{1}", Config.EmailApplicationUrl, formId);
-                                var bodyBuilder = new StringBuilder();
-                                bodyBuilder.Append("<p>Hi All, </p>");
-                                bodyBuilder.AppendLine(string.Format("<p>Contribution Credited item in  <a href='" + pageUrl + "'>#" + getForm.Id + "</a> form have been " + getForm.FormStatus));
-
-                                bodyBuilder.Append(
-                                    @"<table style='border-collapse: collapse;'>
-                                      <tr>
-                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Contribution Credited</th>
-                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (+)</th>
-                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th>
-                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Modified By</th>
-                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Modified Date</th>
-                                      </tr>");
-                                var tableRows = string.Empty;
-                                foreach (var item in getContributionItems)
-                                {
-                                    tableRows += string.Format(@"<tr>
-                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td>
-                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td>
-                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td>
-                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td>
-                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td>
-                                          </tr>", item.InstrumentCode, item.AmountPlus, item.Remarks, item.ModifiedBy, item.ModifiedDate.Value.ToString("dd/MM/yyyy"))
-                                        ;
-                                }
-                                bodyBuilder.Append(tableRows);
-                                bodyBuilder.Append(@"</table>");
-                                
-                                message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                                {
-                                    Text = bodyBuilder.ToString()
-                                };
-
-                                SendEmailToSmtp(message);
-                            }
-                        }
-                        else
-                        {
-                            Logger.LogError("SendApprovalStatusEmail FAILED, form data error: " + formId);
-                        }
-                    }
-                    else
-                    {
-                        Logger.LogError("SendApprovalStatusEmail FAILED, form data error: " + formId);
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-            }
-        }
-
+        
         public void TS_PartE_NotifyPe(int formId)
         {
             try
@@ -1010,41 +917,7 @@ namespace xDC.Services
 
             return message;
         }
-
-        private MimeMessage ComposeTsToFidNotification(int formId, string formType, List<AspNetUsers> fidUsers)
-        {
-            var message = new MimeMessage()
-            {
-                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                Subject = $"{SubjectAppend} Approved ISSD Trade Settlement "
-            };
-
-            foreach (var fidUser in fidUsers)
-            {
-                message.To.Add(new MailboxAddress(fidUser.FullName, fidUser.Email));
-            }
-
-            var pageUrl = string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}", Config.EmailApplicationUrl, formId);
-
-            var bodyBuilder = new StringBuilder();
-            bodyBuilder.Append($"<p>Dear All, </p>");
-            bodyBuilder.AppendLine($"<p>A {formType} form has been approved. Below are the details of it. </p>");
-
-            
-
-
-
-
-            bodyBuilder.AppendLine($"<p>Click <a href='{pageUrl}'>here</a> to view the submission in Kashflow.</p>");
-
-            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-            {
-                Text = bodyBuilder.ToString()
-            };
-
-            return message;
-        }
-
+        
         private StringBuilder ConstructTable(List<ISSD_TradeSettlement> tradeItems)
         {
             var output = new StringBuilder();
@@ -1219,39 +1092,6 @@ namespace xDC.Services
             return output;
 
         }
-
-        private MimeMessage ComposeTS_IncomingFundMail(int formId, string formType, string approverName, string approverMail, string notes)
-        {
-            var message = new MimeMessage()
-            {
-                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                Subject = $"{SubjectAppend} Incoming Funds dated {DateTime.Now:dd/MM/yyyy}",
-                To =
-                {
-                    new MailboxAddress(approverName, approverMail)
-                }
-            };
-
-            var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}",
-                Config.EmailApplicationUrl, formId);
-
-            var bodyBuilder = new StringBuilder();
-            bodyBuilder.Append($"<p>Hi {approverName}, </p>");
-            bodyBuilder.AppendLine($"<p>A {formType} form is pending for your approval. </p>");
-            bodyBuilder.AppendLine($"<p>Click <a href='{approvalPageUrl}'>here</a> to view.</p>");
-
-            if (!string.IsNullOrEmpty(notes))
-            {
-                bodyBuilder.AppendLine($"<br/><br/><p style='font-weight:bold'>Notes from preparer: </p>");
-                bodyBuilder.AppendLine($"<p>{notes}</p>");
-            }
-
-            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-            {
-                Text = bodyBuilder.ToString()
-            };
-
-            return message;
-        }
+        
     }
 }

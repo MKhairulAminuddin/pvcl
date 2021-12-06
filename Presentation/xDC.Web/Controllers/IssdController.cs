@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using xDC.Domain.ISSD_TS;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Services;
 using xDC.Services.App;
 using xDC.Utils;
 using xDC_Web.Extension.DocGenerator;
+using xDC_Web.Extension.MailGenerator;
 using xDC_Web.Models;
 using xDC_Web.ViewModels;
 using xDC_Web.ViewModels.Fid;
@@ -391,7 +394,63 @@ namespace xDC_Web.Controllers
         }
 
         #endregion
-        
+
+        #region Generate CN Email
+
+        [HttpPost]
+        [Route("TradeSettlement/GenerateCnEmail")]
+        public ActionResult GenerateCnEmail(int formId)
+        {
+            try
+            {
+                var userEmail = string.Empty;
+                
+                var findUser = new AuthService().GetUser(User.Identity.Name);
+                if (findUser != null)
+                {
+                    userEmail = findUser.Email;
+                }
+
+                var referenceId = new CnEmailGenerator().GenerateMailFile(formId, userEmail);
+
+                return Content(referenceId);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Error in composing the Email Query. Please check with developer. (STEP 1)");
+            }
+        }
+
+        [Route("TradeSettlement/RetrieveCnEmail")]
+        public ActionResult RetrieveCnEmail(string referenceId)
+        {
+            try
+            {
+                // stream out the contents - don't need to dispose because File() does it for you
+                var fileStream = new CnEmailGenerator().GetFile(referenceId);
+
+                if (fileStream != null)
+                {
+                    var responseHeaderValue = $"attachment; filename=Query Email - {DateTime.Now:ddMMyyyyhhmm}.eml";
+                    Response.AddHeader("Content-Disposition", responseHeaderValue);
+                    return File(fileStream, "application/vnd.ms-outlook");
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+        }
+
+
+        #endregion
+
         #region Private Methods
 
         private TradeSettlementFormVM GenerateViewModel(ISSD_FormHeader form, Form_Workflow wf)
@@ -571,8 +630,7 @@ namespace xDC_Web.Controllers
             }
         }
         #endregion
-
-
+        
         #region 10 AM Cut Off
 
         [Route("FcaTagging")]

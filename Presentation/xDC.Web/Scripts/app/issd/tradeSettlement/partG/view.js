@@ -14,13 +14,17 @@
             $currencySelectBox,
             $approverDropdown,
             $printBtn,
+            $cnEmailBtn,
             $approvalReassignModal = $("#approvalReassignModal");
 
         var referenceUrl = {
-            adminEdit: window.location.origin + "/issd/TradeSettlement/PartE/Edit/",
+            adminEdit: window.location.origin + "/issd/TradeSettlement/PartG/Edit/",
 
             submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
-            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartG/View/"
+            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartG/View/",
+
+            generateCnEmail: window.location.origin + "/issd/TradeSettlement/GenerateCnEmail",
+            retrieveCnEmail: window.location.origin + "/issd/TradeSettlement/RetrieveCnEmail?referenceId="
         };
 
         //#endregion
@@ -129,6 +133,30 @@
                 } else {
                     alert("Please select one approver to reassign to.");
                 }
+            }
+        });
+
+        $("#cnEmailBtn").dxButton({
+            text: "Query Email",
+            icon: "fa fa-paper-plane-o",
+            stylingMode: "outlined",
+            type: "default",
+            onClick: function () {
+                var req = {
+                    "formId": ts.getIdFromQueryString
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: referenceUrl.generateCnEmail,
+                    data: JSON.stringify(req),
+                    contentType: "application/json",
+                    dataType: "text",
+                    success: function (data) {
+                        var url = referenceUrl.retrieveCnEmail + data;
+                        window.location = url;
+                    }
+                });
             }
         });
 

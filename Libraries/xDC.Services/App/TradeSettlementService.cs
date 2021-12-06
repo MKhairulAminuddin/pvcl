@@ -23,7 +23,6 @@ namespace xDC.Services.App
         {
             new NotificationService().NotifyApprovalResult(preparedBy, formId, approvedBy, formType, formStatus);
             new MailService().SendApprovalStatus(formId, formType, formStatus, preparedBy, approvalNotes);
-            new MailService().ContributionCreditedTradeSettlement(formId);
             new WorkflowService().ApprovalResponse(formId, formStatus, approvalNotes, formType, preparedBy, approvedBy);
         }
 
