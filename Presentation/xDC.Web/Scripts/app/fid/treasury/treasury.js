@@ -21,10 +21,10 @@
             case "AUD":
             case "EUR":
                 result = principal * tenor / 36000 * rate;
-                return result.toFixed(2.5);
+                return result;
             default:
                 result = principal * tenor / 36500 * rate;
-                return result.toFixed(2.5);
+                return result;
         }
     }
 
@@ -36,10 +36,10 @@
         case "AUD":
         case "EUR":
             result = principal + (principal * tenor / 36000 * rate);
-            return result.toFixed(2.5);
+            return result;
         default:
             result = principal + (principal * tenor / 36500 * rate);
-            return result.toFixed(2.5);
+            return result;
         }
     }
 
@@ -353,6 +353,10 @@
         };
     };
 
+    _treasury.toFixed = function(num, fixed) {
+        var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fixed || -1) + '})?');
+        return num.toString().match(re)[0];
+    }
 
     return _treasury;
 }());

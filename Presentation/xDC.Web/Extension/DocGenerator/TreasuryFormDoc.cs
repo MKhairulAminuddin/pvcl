@@ -171,11 +171,11 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["C" + row].Value = item.Bank;
                     sheet["D" + row].Value = item.ValueDate?.ToString("dd/MM/yyyy");
                     sheet["E" + row].Value = item.MaturityDate?.ToString("dd/MM/yyyy");
-                    sheet["F" + row].Value = item.Principal;
+                    sheet["F" + row].Value = Math.Truncate(100 * item.Principal) / 100;
                     sheet["G" + row].Value = item.Tenor;
                     sheet["H" + row].Value = item.RatePercent;
-                    sheet["I" + row].Value = item.IntProfitReceivable;
-                    sheet["J" + row].Value = item.PrincipalIntProfitReceivable;
+                    sheet["I" + row].Value = Math.Truncate(100 * item.IntProfitReceivable) / 100;
+                    sheet["J" + row].Value = Math.Truncate(100 * item.PrincipalIntProfitReceivable) / 100;
                     sheet["K" + row].Value = item.AssetType;
                     sheet["L" + row].Value = item.RepoTag;
                     sheet["M" + row].Value = item.ContactPerson;
