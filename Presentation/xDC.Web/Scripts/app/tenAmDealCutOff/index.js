@@ -55,13 +55,7 @@
         $refreshBtn = $("#refreshBtn").dxButton({
             icon: "refresh",
             onClick: function (e) {
-                $.when(ds($dateSelectionBtn.option("value"), $viewTypeDropdown.option("value")))
-                    .done(function (data1) {
-                        $grid.option("dataSource", data1.data);
-                        $grid.repaint();
-
-                        app.toast("Refreshed", "info");
-                    });
+                populateData($dateSelectionBtn.option("value"), $viewTypeDropdown.option("value"));
             }
         }).dxButton("instance");
 

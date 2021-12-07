@@ -83,6 +83,16 @@ namespace xDC_Web.Extension.DocGenerator
             {
                 var sheet = workbook.Worksheets[0];
 
+                if (!viewApproved)
+                {
+                    sheet["A1:E1"].Merge();
+                    sheet["A1"].Value = Config.FormViewAllSubmittedData;
+                    sheet["A1"].Font.Italic = true;
+                    sheet["A1"].Font.Bold = true;
+                    sheet["A1"].Font.Color = Color.Red;
+                    sheet["A1"].Font.Size = 10;
+                }
+
                 sheet["B2"].Value =  selectedDate.ToString("dd/MM/yyyy");
 
                 var startIndex = 6;
