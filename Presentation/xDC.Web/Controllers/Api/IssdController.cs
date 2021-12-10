@@ -462,12 +462,64 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
+                                if (foundItem.InstrumentCode != item.InstrumentCode)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.InstrumentCode, item.InstrumentCode, "Equity - Instrument Code");
+
+                                    foundItem.InstrumentCode = item.InstrumentCode;
+                                }
+
+                                if (foundItem.StockCode != item.StockCode)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.StockCode, item.StockCode, "Equity - Stock Code");
+
+                                    foundItem.StockCode = item.StockCode;
+                                }
+
+                                if (foundItem.Maturity != item.Maturity)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.Maturity.ToString(), item.Maturity.ToString(), "Equity - Maturity (+)");
+
+                                    foundItem.Maturity = item.Maturity;
+                                }
+
+                                if (foundItem.AmountPlus != item.AmountPlus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Equity - Amount (+)");
+
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                }
+
+                                if (foundItem.AmountMinus != item.AmountMinus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "Equity - Amount (-)");
+
+                                    foundItem.AmountMinus = item.AmountMinus;
+                                }
+
                                 if (foundItem.Remarks != item.Remarks)
                                 {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.Remarks, item.Remarks, "Equity - Remarks");
+
                                     foundItem.Remarks = item.Remarks;
-                                    foundItem.ModifiedBy = User.Identity.Name;
-                                    foundItem.ModifiedDate = DateTime.Now;
                                 }
+
+                                foundItem.ModifiedBy = User.Identity.Name;
+                                foundItem.ModifiedDate = DateTime.Now;
+                            }
+                            else
+                            {
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Equity, inputs.Currency));
+
+                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
+                                    form.SettlementDate, User.Identity.Name,
+                                    $" Equity: {item.InstrumentCode}, {item.StockCode}, {item.Maturity}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
                             }
                         }
                     }
@@ -479,12 +531,72 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
+                                if (foundItem.InstrumentCode != item.InstrumentCode)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.InstrumentCode, item.InstrumentCode, "BOND - Instrument Code");
+
+                                    foundItem.InstrumentCode = item.InstrumentCode;
+                                }
+
+                                if (foundItem.StockCode != item.StockCode)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.StockCode, item.StockCode, "BOND - Stock Code");
+
+                                    foundItem.StockCode = item.StockCode;
+                                }
+
+                                if (foundItem.Maturity != item.Maturity)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.Maturity.ToString(), item.Maturity.ToString(), "BOND - Maturity (+)");
+
+                                    foundItem.Maturity = item.Maturity;
+                                }
+
+                                if (foundItem.AmountPlus != item.AmountPlus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "BOND - Amount (+)");
+
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                }
+
+                                if (foundItem.AmountMinus != item.AmountMinus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "BOND - Amount (-)");
+
+                                    foundItem.AmountMinus = item.AmountMinus;
+                                }
+
+                                if (foundItem.BondType != item.BondType)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.BondType, item.BondType, "BOND - Bond Type");
+
+                                    foundItem.BondType = item.BondType;
+                                }
+
                                 if (foundItem.Remarks != item.Remarks)
                                 {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.Remarks, item.Remarks, "BOND - Remarks");
+
                                     foundItem.Remarks = item.Remarks;
-                                    foundItem.ModifiedBy = User.Identity.Name;
-                                    foundItem.ModifiedDate = DateTime.Now;
                                 }
+
+                                foundItem.ModifiedBy = User.Identity.Name;
+                                foundItem.ModifiedDate = DateTime.Now;
+                            }
+                            else
+                            {
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Bond, inputs.Currency));
+
+                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
+                                    form.SettlementDate, User.Identity.Name,
+                                    $" BOND: {item.InstrumentCode}, {item.StockCode}, {item.Maturity}, {item.AmountPlus}, {item.AmountMinus}, {item.BondType}, {item.Remarks}");
                             }
                         }
                     }
@@ -496,12 +608,64 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
+                                if (foundItem.InstrumentCode != item.InstrumentCode)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.InstrumentCode, item.InstrumentCode, "CP - Instrument Code");
+
+                                    foundItem.InstrumentCode = item.InstrumentCode;
+                                }
+
+                                if (foundItem.StockCode != item.StockCode)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.StockCode, item.StockCode, "CP - Stock Code");
+
+                                    foundItem.StockCode = item.StockCode;
+                                }
+
+                                if (foundItem.Maturity != item.Maturity)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.Maturity.ToString(), item.Maturity.ToString(), "CP - Maturity (+)");
+
+                                    foundItem.Maturity = item.Maturity;
+                                }
+
+                                if (foundItem.AmountPlus != item.AmountPlus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "CP - Amount (+)");
+
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                }
+
+                                if (foundItem.AmountMinus != item.AmountMinus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "CP - Amount (-)");
+
+                                    foundItem.AmountMinus = item.AmountMinus;
+                                }
+
                                 if (foundItem.Remarks != item.Remarks)
                                 {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.Remarks, item.Remarks, "CP - Remarks");
+
                                     foundItem.Remarks = item.Remarks;
-                                    foundItem.ModifiedBy = User.Identity.Name;
-                                    foundItem.ModifiedDate = DateTime.Now;
                                 }
+
+                                foundItem.ModifiedBy = User.Identity.Name;
+                                foundItem.ModifiedDate = DateTime.Now;
+                            }
+                            else
+                            {
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Cp, inputs.Currency));
+
+                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
+                                    form.SettlementDate, User.Identity.Name,
+                                    $" CP: {item.InstrumentCode}, {item.StockCode}, {item.Maturity}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
                             }
                         }
                     }
@@ -513,12 +677,64 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
+                                if (foundItem.InstrumentCode != item.InstrumentCode)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.InstrumentCode, item.InstrumentCode, "Notes & Paper - Instrument Code");
+
+                                    foundItem.InstrumentCode = item.InstrumentCode;
+                                }
+
+                                if (foundItem.StockCode != item.StockCode)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.StockCode, item.StockCode, "Notes & Paper - Stock Code");
+
+                                    foundItem.StockCode = item.StockCode;
+                                }
+
+                                if (foundItem.Maturity != item.Maturity)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.Maturity.ToString(), item.Maturity.ToString(), "Notes & Paper - Maturity (+)");
+
+                                    foundItem.Maturity = item.Maturity;
+                                }
+
+                                if (foundItem.AmountPlus != item.AmountPlus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Notes & Paper - Amount (+)");
+
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                }
+
+                                if (foundItem.AmountMinus != item.AmountMinus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "Notes & Paper - Amount (-)");
+
+                                    foundItem.AmountMinus = item.AmountMinus;
+                                }
+
                                 if (foundItem.Remarks != item.Remarks)
                                 {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.Remarks, item.Remarks, "Notes & Paper - Remarks");
+
                                     foundItem.Remarks = item.Remarks;
-                                    foundItem.ModifiedBy = User.Identity.Name;
-                                    foundItem.ModifiedDate = DateTime.Now;
                                 }
+
+                                foundItem.ModifiedBy = User.Identity.Name;
+                                foundItem.ModifiedDate = DateTime.Now;
+                            }
+                            else
+                            {
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.NotesPapers, inputs.Currency));
+
+                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
+                                    form.SettlementDate, User.Identity.Name,
+                                    $" Notes & Paper: {item.InstrumentCode}, {item.StockCode}, {item.Maturity}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
                             }
                         }
                     }
@@ -530,24 +746,56 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
-                                if (foundItem.InstrumentCode != item.InstrumentCode ||
-                                    foundItem.StockCode != item.StockCode ||
-                                    foundItem.FirstLeg != item.FirstLeg ||
-                                    foundItem.SecondLeg != item.SecondLeg ||
-                                    foundItem.Remarks != item.Remarks)
+                                if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.InstrumentCode, item.InstrumentCode, "REPO - Instrument Code");
+
                                     foundItem.InstrumentCode = item.InstrumentCode;
-                                    foundItem.StockCode = item.StockCode;
-                                    foundItem.FirstLeg = item.FirstLeg;
-                                    foundItem.SecondLeg = item.SecondLeg;
-                                    foundItem.Remarks = item.Remarks;
-                                    foundItem.ModifiedBy = User.Identity.Name;
-                                    foundItem.ModifiedDate = DateTime.Now;
                                 }
+
+                                if (foundItem.StockCode != item.StockCode)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.StockCode, item.StockCode, "REPO - Stock Code");
+
+                                    foundItem.StockCode = item.StockCode;
+                                }
+
+                                if (foundItem.FirstLeg != item.FirstLeg)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.FirstLeg.ToString(), item.FirstLeg.ToString(), "REPO - First Leg");
+
+                                    foundItem.FirstLeg = item.FirstLeg;
+                                }
+
+                                if (foundItem.SecondLeg != item.SecondLeg)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.SecondLeg.ToString(), item.SecondLeg.ToString(), "REPO - Second Leg");
+
+                                    foundItem.SecondLeg = item.SecondLeg;
+                                }
+
+                                if (foundItem.Remarks != item.Remarks)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.Remarks, item.Remarks, "REPO - Remarks");
+
+                                    foundItem.Remarks = item.Remarks;
+                                }
+                                
+                                foundItem.ModifiedBy = User.Identity.Name;
+                                foundItem.ModifiedDate = DateTime.Now;
                             }
                             else
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Repo, inputs.Currency));
+
+                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
+                                    form.SettlementDate, User.Identity.Name,
+                                    $" REPO: {item.InstrumentCode}, {item.StockCode}, {item.FirstLeg}, {item.SecondLeg}, {item.Remarks}");
                             }
                         }
                     }
@@ -559,22 +807,56 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
-                                if (foundItem.InstrumentCode != item.InstrumentCode ||
-                                    foundItem.StockCode != item.StockCode ||
-                                    foundItem.AmountPlus != item.AmountPlus ||
-                                    foundItem.Remarks != item.Remarks)
+                                if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.InstrumentCode, item.InstrumentCode, "Coupon - Instrument Code");
+
                                     foundItem.InstrumentCode = item.InstrumentCode;
-                                    foundItem.StockCode = item.StockCode;
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                    foundItem.Remarks = item.Remarks;
-                                    foundItem.ModifiedBy = User.Identity.Name;
-                                    foundItem.ModifiedDate = DateTime.Now;
                                 }
+
+                                if (foundItem.StockCode != item.StockCode)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.StockCode, item.StockCode, "Coupon - Stock Code");
+
+                                    foundItem.StockCode = item.StockCode;
+                                }
+
+                                if (foundItem.AmountPlus != item.AmountPlus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Coupon - Amount (+)");
+
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                }
+
+                                if (foundItem.Remarks != item.Remarks)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.Remarks, item.Remarks, "Coupon - Remarks");
+
+                                    foundItem.Remarks = item.Remarks;
+                                }
+
+                                if (foundItem.CouponType != item.CouponType)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.CouponType, item.CouponType, "Coupon - Coupon Type");
+
+                                    foundItem.CouponType = item.CouponType;
+                                }
+
+                                foundItem.ModifiedBy = User.Identity.Name;
+                                foundItem.ModifiedDate = DateTime.Now;
                             }
                             else
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Coupon, inputs.Currency));
+
+                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
+                                    form.SettlementDate, User.Identity.Name,
+                                    $" Coupon: {item.InstrumentCode}, {item.StockCode}, {item.AmountPlus}, {item.Remarks}, {item.CouponType}");
                             }
                         }
                     }
@@ -586,25 +868,48 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
-                                if (foundItem.InstrumentCode != item.InstrumentCode ||
-                                    foundItem.StockCode != item.StockCode ||
-                                    foundItem.AmountPlus != item.AmountPlus ||
-                                    foundItem.AmountMinus != item.AmountMinus ||
-                                    foundItem.Remarks != item.Remarks)
+                                if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.InstrumentCode, item.InstrumentCode, "MTM - Payment/Receipt");
+
                                     foundItem.InstrumentCode = item.InstrumentCode;
-                                    foundItem.StockCode = item.StockCode;
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                    foundItem.AmountMinus = item.AmountMinus;
-                                    foundItem.Remarks = item.Remarks;
-                                    foundItem.ModifiedBy = User.Identity.Name;
-                                    foundItem.ModifiedDate = DateTime.Now;
                                 }
-                                    
+
+                                if (foundItem.AmountPlus != item.AmountPlus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "MTM - Amount (+)");
+
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                }
+
+                                if (foundItem.AmountMinus != item.AmountMinus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "MTM - Amount (-)");
+
+                                    foundItem.AmountMinus = item.AmountMinus;
+                                }
+
+                                if (foundItem.Remarks != item.Remarks)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.Remarks, item.Remarks, "MTM - Remarks");
+
+                                    foundItem.Remarks = item.Remarks;
+                                }
+
+                                foundItem.ModifiedBy = User.Identity.Name;
+                                foundItem.ModifiedDate = DateTime.Now;
                             }
                             else
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Mtm, inputs.Currency));
+
+                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
+                                    form.SettlementDate, User.Identity.Name,
+                                    $" MTM: {item.InstrumentCode}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
                             }
                         }
                     }
@@ -616,25 +921,48 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
-                                if (foundItem.InstrumentCode != item.InstrumentCode ||
-                                    foundItem.StockCode != item.StockCode ||
-                                    foundItem.AmountPlus != item.AmountPlus ||
-                                    foundItem.AmountMinus != item.AmountMinus ||
-                                    foundItem.Remarks != item.Remarks)
+                                if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.InstrumentCode, item.InstrumentCode, "FX - Instrument Code");
+
                                     foundItem.InstrumentCode = item.InstrumentCode;
-                                    foundItem.StockCode = item.StockCode;
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                    foundItem.AmountMinus = item.AmountMinus;
-                                    foundItem.Remarks = item.Remarks;
-                                    foundItem.ModifiedBy = User.Identity.Name;
-                                    foundItem.ModifiedDate = DateTime.Now;
                                 }
-                                    
+
+                                if (foundItem.AmountPlus != item.AmountPlus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "FX - Amount (+)");
+
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                }
+
+                                if (foundItem.AmountMinus != item.AmountMinus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "FX - Amount (-)");
+
+                                    foundItem.AmountMinus = item.AmountMinus;
+                                }
+
+                                if (foundItem.Remarks != item.Remarks)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.Remarks, item.Remarks, "FX - Remarks");
+
+                                    foundItem.Remarks = item.Remarks;
+                                }
+
+                                foundItem.ModifiedBy = User.Identity.Name;
+                                foundItem.ModifiedDate = DateTime.Now;
                             }
                             else
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Fx, inputs.Currency));
+
+                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
+                                    form.SettlementDate, User.Identity.Name,
+                                    $" FX: {item.InstrumentCode}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
                             }
                         }
                     }
@@ -646,24 +974,48 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
-                                if (foundItem.InstrumentCode != item.InstrumentCode ||
-                                    foundItem.StockCode != item.StockCode ||
-                                    foundItem.AmountPlus != item.AmountPlus ||
-                                    foundItem.AmountMinus != item.AmountMinus ||
-                                    foundItem.Remarks != item.Remarks)
+                                if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.InstrumentCode, item.InstrumentCode, "ALTID - Instrument Code");
+
                                     foundItem.InstrumentCode = item.InstrumentCode;
-                                    foundItem.StockCode = item.StockCode;
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                    foundItem.AmountMinus = item.AmountMinus;
-                                    foundItem.Remarks = item.Remarks;
-                                    foundItem.ModifiedBy = User.Identity.Name;
-                                    foundItem.ModifiedDate = DateTime.Now;
                                 }
+
+                                if (foundItem.AmountPlus != item.AmountPlus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "ALTID - Amount (+)");
+
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                }
+
+                                if (foundItem.AmountMinus != item.AmountMinus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "ALTID - Amount (-)");
+
+                                    foundItem.AmountMinus = item.AmountMinus;
+                                }
+
+                                if (foundItem.Remarks != item.Remarks)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.Remarks, item.Remarks, "ALTID - Remarks");
+
+                                    foundItem.Remarks = item.Remarks;
+                                }
+
+                                foundItem.ModifiedBy = User.Identity.Name;
+                                foundItem.ModifiedDate = DateTime.Now;
                             }
                             else
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Altid, inputs.Currency));
+
+                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
+                                    form.SettlementDate, User.Identity.Name,
+                                    $" ALTID: {item.InstrumentCode}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
                             }
                         }
                     }
@@ -675,24 +1027,41 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
-                                if (foundItem.InstrumentCode != item.InstrumentCode ||
-                                    foundItem.StockCode != item.StockCode ||
-                                    foundItem.AmountPlus != item.AmountPlus ||
-                                    foundItem.Remarks != item.Remarks)
+                                if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
-                                    foundItem.InstrumentCode = item.InstrumentCode;
-                                    foundItem.StockCode = item.StockCode;
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                    foundItem.Remarks = item.Remarks;
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.InstrumentCode, item.InstrumentCode, "Contribution - Instrument Code");
 
-                                    foundItem.ModifiedBy = User.Identity.Name;
-                                    foundItem.ModifiedDate = DateTime.Now;
+                                    foundItem.InstrumentCode = item.InstrumentCode;
                                 }
+
+                                if (foundItem.AmountPlus != item.AmountPlus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Contribution - Amount (+)");
+
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                }
+
+                                if (foundItem.Remarks != item.Remarks)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.Remarks, item.Remarks, "Contribution - Remarks");
+
+                                    foundItem.Remarks = item.Remarks;
+                                }
+
+                                foundItem.ModifiedBy = User.Identity.Name;
+                                foundItem.ModifiedDate = DateTime.Now;
                             }
                                     
                             else
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Cn, inputs.Currency));
+
+                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
+                                    form.SettlementDate, User.Identity.Name,
+                                    $" Contribution: {item.InstrumentCode}, {item.AmountPlus}, {item.Remarks}");
                             }
                         }
                     }
@@ -704,25 +1073,48 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
-                                if (foundItem.InstrumentCode != item.InstrumentCode ||
-                                    foundItem.StockCode != item.StockCode ||
-                                    foundItem.AmountPlus != item.AmountPlus ||
-                                    foundItem.AmountMinus != item.AmountMinus ||
-                                    foundItem.Remarks != item.Remarks)
+                                if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
-                                    foundItem.InstrumentCode = item.InstrumentCode;
-                                    foundItem.StockCode = item.StockCode;
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                    foundItem.AmountMinus = item.AmountMinus;
-                                    foundItem.Remarks = item.Remarks;
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.InstrumentCode, item.InstrumentCode, "Fees - Instrument Code");
 
-                                    foundItem.ModifiedBy = User.Identity.Name;
-                                    foundItem.ModifiedDate = DateTime.Now;
+                                    foundItem.InstrumentCode = item.InstrumentCode;
                                 }
+
+                                if (foundItem.AmountPlus != item.AmountPlus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Fees - Amount (+)");
+
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                }
+
+                                if (foundItem.AmountMinus != item.AmountMinus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "Fees - Amount (-)");
+
+                                    foundItem.AmountMinus = item.AmountMinus;
+                                }
+
+                                if (foundItem.Remarks != item.Remarks)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.Remarks, item.Remarks, "Fees - Remarks");
+
+                                    foundItem.Remarks = item.Remarks;
+                                }
+
+                                foundItem.ModifiedBy = User.Identity.Name;
+                                foundItem.ModifiedDate = DateTime.Now;
                             }
                             else
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Fees, inputs.Currency));
+
+                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
+                                    form.SettlementDate, User.Identity.Name,
+                                    $" Fees: {item.InstrumentCode}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
                             }
                         }
                     }
@@ -734,24 +1126,49 @@ namespace xDC_Web.Controllers.Api
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
-                                if (foundItem.InstrumentCode != item.InstrumentCode ||
-                                    foundItem.StockCode != item.StockCode||
-                                    foundItem.AmountPlus != item.AmountPlus||
-                                    foundItem.AmountMinus != item.AmountMinus ||
-                                    foundItem.Remarks != item.Remarks ||
-                                    foundItem.OthersType != item.OthersType)
+                                if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
-                                    foundItem.InstrumentCode = item.InstrumentCode;
-                                    foundItem.StockCode = item.StockCode;
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                    foundItem.AmountMinus = item.AmountMinus;
-                                    foundItem.Remarks = item.Remarks;
-                                    foundItem.OthersType = item.OthersType;
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.InstrumentCode, item.InstrumentCode, "Others - Instrument Code");
 
-                                    foundItem.ModifiedBy = User.Identity.Name;
-                                    foundItem.ModifiedDate = DateTime.Now;
+                                    foundItem.InstrumentCode = item.InstrumentCode;
                                 }
-                                
+
+                                if (foundItem.AmountPlus != item.AmountPlus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Others - Amount (+)");
+
+                                    foundItem.AmountPlus = item.AmountPlus;
+                                }
+
+                                if (foundItem.AmountMinus != item.AmountMinus)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "Others - Amount (-)");
+
+                                    foundItem.AmountMinus = item.AmountMinus;
+                                }
+
+                                if (foundItem.Remarks != item.Remarks)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.Remarks, item.Remarks, "Others - Remarks");
+
+                                    foundItem.Remarks = item.Remarks;
+                                }
+
+                                if (foundItem.OthersType != item.OthersType)
+                                {
+                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        foundItem.OthersType, item.OthersType, "Others - Others Type");
+
+                                    foundItem.OthersType = item.OthersType;
+                                }
+
+                                foundItem.ModifiedBy = User.Identity.Name;
+                                foundItem.ModifiedDate = DateTime.Now;
+
                             }
                             else
                             {
@@ -915,7 +1332,9 @@ namespace xDC_Web.Controllers.Api
         }
 
         #endregion
-        
+
+        #region Fetch EDW Data
+
         [HttpGet]
         [Route("TradeItemDW/{type}/{settlementDateEpoch}")]
         public HttpResponseMessage TradeItemDW(string type, long settlementDateEpoch, DataSourceLoadOptions loadOptions)
@@ -932,7 +1351,7 @@ namespace xDC_Web.Controllers.Api
                         settlementDate = settlementDate.Value.Date;
 
                         var result = db.EDW_TradeItem.AsNoTracking().Where(x => x.InstrumentType == type && x.SettlementDate == settlementDate).ToList();
-                        
+
                         return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                     }
                     else
@@ -990,14 +1409,14 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("ts/EdwAvailability/{part}/{settlementDateEpoch}/{currency}")]
-        public HttpResponseMessage TS_EdwAvailability(string part,long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
+        public HttpResponseMessage TS_EdwAvailability(string part, long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
                     var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
-                    
+
                     var instrumentTypes = new List<string>();
                     if (part == "a")
                     {
@@ -1027,7 +1446,7 @@ namespace xDC_Web.Controllers.Api
                             count = x.Count()
                         })
                         .ToList();
-                    
+
                     var result = new List<TsEdwAvailability>();
                     if (trades.Count > 0)
                     {
@@ -1053,6 +1472,8 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        #endregion
+        
         #region Trade Settlement Grid
 
         [HttpGet]
@@ -1206,8 +1627,7 @@ namespace xDC_Web.Controllers.Api
         }
 
         #endregion
-
-
+        
         #region FCA Tagging
 
         [HttpGet]
@@ -1248,7 +1668,12 @@ namespace xDC_Web.Controllers.Api
                             CountPendingMtm = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Mtm
                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0)),
                             CountPendingFx = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fx
-                                                           && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0))
+                                                           && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0)),
+
+                            CountUnclassifiedBond = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Bond
+                                                                 && y.ts_item.BondType == null),
+                            CountUnclassifiedCoupon = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Coupon
+                                                                   && y.ts_item.CouponType == null)
                         })
                         .ToList();
 
@@ -1425,8 +1850,10 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
         }
-        
+
         #endregion
+
+        #region Private Methods
 
         private void NewTsObjMapping(List<Trades> trades, int formId, string category, string currency, ref List<ISSD_TradeSettlement> tsItemObj)
         {
@@ -1461,7 +1888,9 @@ namespace xDC_Web.Controllers.Api
                     AssignedBy = null,
                     AssignedDate = null,
 
-                    OthersType = item.OthersType
+                    OthersType = item.OthersType,
+                    CouponType = item.CouponType,
+                    BondType = item.BondType
                 });
             }
         }
@@ -1469,37 +1898,42 @@ namespace xDC_Web.Controllers.Api
         private ISSD_TradeSettlement NewTsObjMapping(Trades item, int formId, string category, string currency)
         {
             return new ISSD_TradeSettlement
-                {
-                    FormId = formId,
-                    InstrumentType = category,
-                    InstrumentCode = item.InstrumentCode,
-                    StockCode =  item.StockCode,
-                    Maturity = item.Maturity,
-                    Sales = item.Sales,
-                    Purchase = item.Purchase,
-                    FirstLeg = item.FirstLeg,
-                    SecondLeg = item.SecondLeg,
-                    AmountPlus = item.AmountPlus,
-                    AmountMinus = item.AmountMinus,
-                    Remarks = item.Remarks,
-                    ModifiedBy = User.Identity.Name,
-                    ModifiedDate = DateTime.Now,
+            {
+                FormId = formId,
+                InstrumentType = category,
+                InstrumentCode = item.InstrumentCode,
+                StockCode = item.StockCode,
+                Maturity = item.Maturity,
+                Sales = item.Sales,
+                Purchase = item.Purchase,
+                FirstLeg = item.FirstLeg,
+                SecondLeg = item.SecondLeg,
+                AmountPlus = item.AmountPlus,
+                AmountMinus = item.AmountMinus,
+                Remarks = item.Remarks,
+                ModifiedBy = User.Identity.Name,
+                ModifiedDate = DateTime.Now,
 
-                    InflowAmount = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg),
-                    OutflowAmount = (item.AmountMinus + item.Purchase + item.SecondLeg),
+                InflowAmount = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg),
+                OutflowAmount = (item.AmountMinus + item.Purchase + item.SecondLeg),
 
-                    InflowTo = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg) > 0 && currency == "MYR"
+                InflowTo = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg) > 0 && currency == "MYR"
                         ? "RENTAS"
                         : null,
-                    OutflowFrom = (item.AmountMinus + item.Purchase + item.SecondLeg) > 0 && currency == "MYR"
+                OutflowFrom = (item.AmountMinus + item.Purchase + item.SecondLeg) > 0 && currency == "MYR"
                         ? "RENTAS"
                         : null,
-                    AssignedBy = null,
-                    AssignedDate = null,
+                AssignedBy = null,
+                AssignedDate = null,
 
-                    OthersType = item.OthersType
+                OthersType = item.OthersType,
+                CouponType = item.CouponType,
+                BondType = item.BondType
             };
-            
+
         }
+
+        #endregion
+
     }
 }

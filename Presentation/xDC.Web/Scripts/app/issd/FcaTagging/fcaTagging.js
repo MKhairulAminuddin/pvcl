@@ -70,6 +70,13 @@
                         if (options.data.countPendingOthers > 0) {
                             $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingOthers + " x Others").appendTo(container);
                         }
+
+                        if (options.data.countUnclassifiedBond > 0) {
+                            $("<span />").addClass("label label-primary").css("margin-left", "2px").text(options.data.countUnclassifiedBond + " x Unclassified Bond").appendTo(container);
+                        }
+                        if (options.data.countUnclassifiedCoupon > 0) {
+                            $("<span />").addClass("label label-primary").css("margin-left", "2px").text(options.data.countUnclassifiedCoupon + " x Unclassified Coupon").appendTo(container);
+                        }
                         
                     }
                 },

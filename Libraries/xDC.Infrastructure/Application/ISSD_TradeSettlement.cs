@@ -36,5 +36,7 @@ namespace xDC.Infrastructure.Application
         public string AssignedBy { get; set; }
         public Nullable<System.DateTime> AssignedDate { get; set; }
         public string OthersType { get; set; }
+        public string CouponType { get; set; }
+        public string BondType { get; set; }
     }
 }

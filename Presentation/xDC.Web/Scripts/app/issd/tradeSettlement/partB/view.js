@@ -223,6 +223,10 @@
                     allowEditing: false
                 },
                 {
+                    dataField: "couponType",
+                    caption: "Coupon Type"
+                },
+                {
                     dataField: "remarks",
                     caption: "Remarks",
                     dataType: "text"
@@ -519,6 +523,10 @@
                         type: "fixedPoint",
                         precision: 2
                     }
+                },
+                {
+                    dataField: "couponType",
+                    caption: "Coupon Type"
                 },
                 {
                     dataField: "remarks",

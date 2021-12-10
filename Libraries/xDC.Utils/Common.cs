@@ -57,6 +57,18 @@ namespace xDC.Utils
             public const string Others = "Others";
         }
 
+        public static class TsCouponTypeItem
+        {
+            public const string MGS = "MGS";
+            public const string PDS = "PDS";
+        }
+
+        public static class TsBondTypeItem
+        {
+            public const string MGS = "MGS";
+            public const string PDS = "PDS";
+        }
+
         public static class Cashflow
         {
             public const string Inflow = "INFLOW";

@@ -296,6 +296,14 @@
                                     }
                                 },
                                 {
+                                    dataField: "bondType",
+                                    caption: "Bond Type",
+                                    lookup: {
+                                        dataSource: ["MGS", "PDS"]
+                                    },
+                                    validationRules: [{ type: 'required' }]
+                                },
+                                {
                                     dataField: "instrumentCode",
                                     caption: "Bond",
                                     allowEditing: false
@@ -925,6 +933,13 @@
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
+                                    }
+                                },
+                                {
+                                    dataField: "couponType",
+                                    caption: "Coupon Type",
+                                    lookup: {
+                                        dataSource: ["MGS", "PDS"]
                                     }
                                 },
                                 {

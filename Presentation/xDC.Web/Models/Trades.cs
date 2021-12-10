@@ -17,5 +17,7 @@ namespace xDC_Web.Models
 
         public string Remarks { get; set; }
         public string OthersType { get; set; }
+        public string CouponType { get; set; }
+        public string BondType { get; set; }
     }
 }

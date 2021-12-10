@@ -390,6 +390,8 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="AssignedBy" Type="nvarchar" MaxLength="150" />
           <Property Name="AssignedDate" Type="datetime" />
           <Property Name="OthersType" Type="nvarchar" MaxLength="50" />
+          <Property Name="CouponType" Type="nvarchar" MaxLength="50" />
+          <Property Name="BondType" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="TenAmDealCutOff_ClosingBalance">
           <Key>
@@ -948,6 +950,8 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="AssignedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="AssignedDate" Type="DateTime" Precision="3" />
           <Property Name="OthersType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CouponType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="BondType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -1333,6 +1337,8 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySetMapping Name="ISSD_TradeSettlement">
             <EntityTypeMapping TypeName="kashflowDbModel.ISSD_TradeSettlement">
               <MappingFragment StoreEntitySet="ISSD_TradeSettlement">
+                <ScalarProperty Name="BondType" ColumnName="BondType" />
+                <ScalarProperty Name="CouponType" ColumnName="CouponType" />
                 <ScalarProperty Name="OthersType" ColumnName="OthersType" />
                 <ScalarProperty Name="AssignedDate" ColumnName="AssignedDate" />
                 <ScalarProperty Name="AssignedBy" ColumnName="AssignedBy" />

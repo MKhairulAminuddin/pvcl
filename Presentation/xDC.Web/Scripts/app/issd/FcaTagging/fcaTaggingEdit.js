@@ -252,6 +252,14 @@
                                     allowEditing: false
                                 },
                                 {
+                                    dataField: "bondType",
+                                    caption: "Bond Type",
+                                    lookup: {
+                                        dataSource: ["MGS", "PDS"]
+                                    },
+                                    validationRules: [{ type: 'required' }]
+                                },
+                                {
                                     dataField: "instrumentCode",
                                     caption: "Bond",
                                     allowEditing: false
@@ -340,6 +348,12 @@
                                         }
                                     }
                                 ]
+                            },
+                            editing: {
+                                mode: "batch",
+                                allowUpdating: true,
+                                allowDeleting: false,
+                                allowAdding: false
                             },
                             showBorders: true
                         });
@@ -767,6 +781,13 @@
                                     allowEditing: false
                                 },
                                 {
+                                    dataField: "couponType",
+                                    caption: "Coupon Type",
+                                    lookup: {
+                                        dataSource: ["MGS", "PDS"]
+                                    }
+                                },
+                                {
                                     dataField: "instrumentCode",
                                     caption: "Coupon Received",
                                     allowEditing: false
@@ -817,6 +838,12 @@
                                         }
                                     }
                                 ]
+                            },
+                            editing: {
+                                mode: "batch",
+                                allowUpdating: true,
+                                allowDeleting: false,
+                                allowAdding: false
                             },
                             showBorders: true
                         });

@@ -47,3 +47,18 @@ CREATE TABLE [dbo].[ISSD_TradeSettlementHistory](
     [ModifiedBy] NVARCHAR(150) NULL, 
     [ModifiedDate] DATETIME NULL DEFAULT GETDATE()
 )
+
+
+  update ISSD_TradeSettlement set CouponType = 'MGS' 
+  where InstrumentCode like 'MGS%' or InstrumentCode like 'GII%' or InstrumentCode like 'MGII%'
+
+  update ISSD_TradeSettlement set CouponType = 'PDS' 
+  where InstrumentCode not like 'MGS%' and InstrumentCode not like 'GII%' and InstrumentCode not like 'MGII%'
+
+  update ISSD_TradeSettlement set BondType = 'MGS' 
+  where (InstrumentCode like 'MGS%' or InstrumentCode like 'GII%' or InstrumentCode like 'MGII%') 
+  and InstrumentType = 'BOND'
+
+  update ISSD_TradeSettlement set BondType = 'PDS' 
+  where (InstrumentCode not like 'MGS%' and InstrumentCode not like 'GII%' and InstrumentCode not like 'MGII%')
+  and InstrumentType = 'BOND'

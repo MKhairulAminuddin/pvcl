@@ -182,6 +182,14 @@
                     }
                 },
                 {
+                    dataField: "bondType",
+                    caption: "Bond Type",
+                    lookup: {
+                        dataSource: app.tsBondTypes
+                    },
+                    validationRules: [{ type: 'required' }]
+                },
+                {
                     dataField: "remarks",
                     caption: "Remarks",
                     dataType: "text"
@@ -490,6 +498,14 @@
                         type: "fixedPoint",
                         precision: 2
                     }
+                },
+                {
+                    dataField: "couponType",
+                    caption: "Coupon Type",
+                    lookup: {
+                        dataSource: app.tsCouponTypes
+                    },
+                    validationRules: [{ type: 'required' }]
                 },
                 {
                     dataField: "remarks",
