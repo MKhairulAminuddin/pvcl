@@ -379,13 +379,6 @@
 
                         return Number(rowData.intProfitReceivable);
                     },
-                    calculateDisplayValue: function (rowData) {
-                        if (rowData.intProfitReceivable >= 0) {
-                            return treasury.toFixed(rowData.intProfitReceivable, 2);
-                        } else {
-                            return rowData.intProfitReceivable;
-                        }
-                    },
                     allowEditing: false
                 },
                 {
@@ -404,14 +397,6 @@
 
                         rowData.principalIntProfitReceivable = treasury.outflow_depo_PrincipalInt(currency, principal, tenor, rate);
                         return Number(rowData.principalIntProfitReceivable);
-                    },
-                    calculateDisplayValue: function (rowData) {
-                        if (rowData.principalIntProfitReceivable >= 0) {
-                            return treasury.toFixed(rowData.principalIntProfitReceivable, 2);
-
-                        } else {
-                            return rowData.principalIntProfitReceivable;
-                        }
                     },
                     allowEditing: false
                 },
@@ -503,8 +488,7 @@
                     },
                     {
                         column: "intProfitReceivable",
-                        name: "customSummary1",
-                        summaryType: "custom",
+                        summaryType: "sum",
                         displayFormat: "{0}",
                         valueFormat: {
                             type: "fixedPoint",
@@ -513,36 +497,14 @@
                     },
                     {
                         column: "principalIntProfitReceivable",
-                        name: "customSummary1",
-                        summaryType: "custom",
+                        summaryType: "sum",
                         displayFormat: "{0}",
                         valueFormat: {
                             type: "fixedPoint",
                             precision: 2
                         }
                     }
-                ],
-                calculateCustomSummary: function (options) {
-                    // Calculating "customSummary1"
-                    if (options.name == "customSummary1") {
-                        switch (options.summaryProcess) {
-                            case "start":
-                                // Initializing "totalValue" here
-                                options.totalValue = 0;
-
-                                break;
-                            case "calculate":
-                                // Modifying "totalValue" here
-                                options.totalValue += Number(treasury.toFixed(options.value, 2));
-
-                                break;
-                            case "finalize":
-                                // Assigning the final value to "totalValue" here
-                                break;
-                        }
-                    }
-
-                }
+                ]
             },
             editing: {
                 mode: "row",
@@ -691,13 +653,6 @@
 
                         return Number(rowData.intProfitReceivable);
                     },
-                    calculateDisplayValue: function (rowData) {
-                        if (rowData.intProfitReceivable >= 0) {
-                            return treasury.toFixed(rowData.intProfitReceivable, 2);
-                        } else {
-                            return rowData.intProfitReceivable;
-                        }
-                    },
                     allowEditing: false
                 },
                 {
@@ -716,14 +671,6 @@
 
                         rowData.principalIntProfitReceivable = treasury.outflow_depo_PrincipalInt(currency, principal, tenor, rate);
                         return Number(rowData.principalIntProfitReceivable);
-                    },
-                    calculateDisplayValue: function (rowData) {
-                        if (rowData.principalIntProfitReceivable >= 0) {
-                            return treasury.toFixed(rowData.principalIntProfitReceivable, 2);
-
-                        } else {
-                            return rowData.principalIntProfitReceivable;
-                        }
                     },
                     allowEditing: false
                 },
@@ -816,8 +763,7 @@
                     },
                     {
                         column: "intProfitReceivable",
-                        name: "customSummary1",
-                        summaryType: "custom",
+                        summaryType: "sum",
                         displayFormat: "{0}",
                         valueFormat: {
                             type: "fixedPoint",
@@ -826,36 +772,14 @@
                     },
                     {
                         column: "principalIntProfitReceivable",
-                        name: "customSummary1",
-                        summaryType: "custom",
+                        summaryType: "sum",
                         displayFormat: "{0}",
                         valueFormat: {
                             type: "fixedPoint",
                             precision: 2
                         }
                     }
-                ],
-                calculateCustomSummary: function (options) {
-                    // Calculating "customSummary1"
-                    if (options.name == "customSummary1") {
-                        switch (options.summaryProcess) {
-                            case "start":
-                                // Initializing "totalValue" here
-                                options.totalValue = 0;
-
-                                break;
-                            case "calculate":
-                                // Modifying "totalValue" here
-                                options.totalValue += Number(treasury.toFixed(options.value, 2));
-
-                                break;
-                            case "finalize":
-                                // Assigning the final value to "totalValue" here
-                                break;
-                        }
-                    }
-
-                }
+                ]
             },
             editing: {
                 mode: "row",

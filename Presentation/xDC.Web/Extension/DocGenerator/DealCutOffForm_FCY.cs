@@ -486,7 +486,7 @@ namespace xDC_Web.Extension.DocGenerator
                                 .Where(x => x.CashflowType == Common.Cashflow.Inflow
                                             && approvedFidForms.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
-                                .Select(x => Math.Truncate(100 * x.PrincipalIntProfitReceivable) / 100)
+                                .Select(x => x.PrincipalIntProfitReceivable)
                                 .DefaultIfEmpty(0)
                                 .Sum();
 
@@ -502,7 +502,7 @@ namespace xDC_Web.Extension.DocGenerator
                                 .Where(x => x.CashflowType == Common.Cashflow.Outflow
                                             && approvedFidForms.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
-                                .Select(x => Math.Truncate(100 * x.Principal) / 100)
+                                .Select(x => x.Principal)
                                 .DefaultIfEmpty(0)
                                 .Sum();
                             var OF_MoneyMarket = db.FID_Treasury_MMI
@@ -598,11 +598,11 @@ namespace xDC_Web.Extension.DocGenerator
                                         TradeDate = selectedDate.Value,
                                         MaturityDate = i.MaturityDate.Value,
                                         ValueDate = i.ValueDate.Value,
-                                        Amount = Math.Truncate(100 * i.Principal) / 100,
+                                        Amount = i.Principal,
                                         Tenor = i.Tenor.Value,
                                         Rate = i.RatePercent,
-                                        Interest = Math.Truncate(100 * i.IntProfitReceivable) / 100,
-                                        Principal_Interest = Math.Truncate(100 * i.PrincipalIntProfitReceivable) / 100,
+                                        Interest = i.IntProfitReceivable,
+                                        Principal_Interest = i.PrincipalIntProfitReceivable,
                                         InstrumentType = i.AssetType,
                                         Notes = i.Notes,
                                         Fca = i.FcaAccount,
@@ -662,11 +662,11 @@ namespace xDC_Web.Extension.DocGenerator
                                         TradeDate = selectedDate.Value,
                                         MaturityDate = i.MaturityDate.Value,
                                         ValueDate = i.ValueDate.Value,
-                                        Amount = Math.Truncate(100 * i.Principal) / 100,
+                                        Amount = i.Principal,
                                         Tenor = i.Tenor.Value,
                                         Rate = i.RatePercent,
-                                        Interest = Math.Truncate(100 * i.IntProfitReceivable) / 100,
-                                        Principal_Interest = Math.Truncate(100 * i.PrincipalIntProfitReceivable) / 100,
+                                        Interest = i.IntProfitReceivable,
+                                        Principal_Interest = i.PrincipalIntProfitReceivable,
                                         InstrumentType = i.AssetType,
                                         Notes = i.Notes,
                                         Fca = i.FcaAccount,
