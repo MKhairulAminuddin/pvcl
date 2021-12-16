@@ -23,42 +23,32 @@
 	[OutflowFrom] [nvarchar](150) NULL,
 	[AssignedBy] [nvarchar](150) NULL,
 	[AssignedDate] [datetime] NULL,
+	OthersType NVARCHAR(10),
+	CouponType NVARCHAR(10),
+	BondType NVARCHAR(10)
 )
 
-CREATE TABLE [dbo].[ISSD_TradeSettlementHistory](
-	[Id] INT NOT NULL Identity(1,1) PRIMARY KEY,
-	[FormId] INT NOT NULL,
-	[VersionNo] DECIMAL(5,2) NOT NULL, 
+ALTER TABLE [ISSD_TradeSettlement]
+ADD OthersType NVARCHAR(10);
 
-	[InstrumentType] NVARCHAR(MAX),
-	[InstrumentCode] NVARCHAR(MAX),
-	[StockCode] NVARCHAR(MAX),
+ALTER TABLE [ISSD_TradeSettlement]
+ADD CouponType NVARCHAR(10);
 
-	[Maturity] DECIMAL(18, 2),
-	[Sales] DECIMAL(18, 2),
-	[Purchase] DECIMAL(18, 2),
-	[FirstLeg] DECIMAL(18, 2),
-	[SecondLeg] DECIMAL(18, 2),
-	[AmountPlus] DECIMAL(18, 2),
-	[AmountMinus] DECIMAL(18, 2),
+ALTER TABLE [ISSD_TradeSettlement]
+ADD BondType NVARCHAR(10);
 
-	[Remarks] TEXT,
+update ISSD_TradeSettlement set CouponType = 'MGS' 
+where InstrumentCode like 'MGS%' or InstrumentCode like 'GII%' or InstrumentCode like 'MGII%'
+and InstrumentType = 'COUPON'
 
-    [ModifiedBy] NVARCHAR(150) NULL, 
-    [ModifiedDate] DATETIME NULL DEFAULT GETDATE()
-)
+update ISSD_TradeSettlement set CouponType = 'PDS' 
+where InstrumentCode not like 'MGS%' and InstrumentCode not like 'GII%' and InstrumentCode not like 'MGII%'
+and InstrumentType = 'COUPON'
 
+update ISSD_TradeSettlement set BondType = 'MGS' 
+where (InstrumentCode like 'MGS%' or InstrumentCode like 'GII%' or InstrumentCode like 'MGII%') 
+and InstrumentType = 'BOND'
 
-  update ISSD_TradeSettlement set CouponType = 'MGS' 
-  where InstrumentCode like 'MGS%' or InstrumentCode like 'GII%' or InstrumentCode like 'MGII%'
-
-  update ISSD_TradeSettlement set CouponType = 'PDS' 
-  where InstrumentCode not like 'MGS%' and InstrumentCode not like 'GII%' and InstrumentCode not like 'MGII%'
-
-  update ISSD_TradeSettlement set BondType = 'MGS' 
-  where (InstrumentCode like 'MGS%' or InstrumentCode like 'GII%' or InstrumentCode like 'MGII%') 
-  and InstrumentType = 'BOND'
-
-  update ISSD_TradeSettlement set BondType = 'PDS' 
-  where (InstrumentCode not like 'MGS%' and InstrumentCode not like 'GII%' and InstrumentCode not like 'MGII%')
-  and InstrumentType = 'BOND'
+update ISSD_TradeSettlement set BondType = 'PDS' 
+where (InstrumentCode not like 'MGS%' and InstrumentCode not like 'GII%' and InstrumentCode not like 'MGII%')
+and InstrumentType = 'BOND'

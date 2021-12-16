@@ -412,14 +412,14 @@ namespace xDC_Web.Extension.DocGenerator
                     .ToList();
 
             var ifTotalPrincipal = db.FID_Treasury_Deposit
-                .Where(x => treasuryFormIds.Contains(x.FormId) && x.CashflowType == Common.Cashflow.Inflow)
-                .Select(x => Math.Truncate(100 * x.Principal) / 100)
+                .Where(x => treasuryApprovedForms.Contains(x.FormId) && x.CashflowType == Common.Cashflow.Inflow)
+                .Select(x => x.Principal)
                 .DefaultIfEmpty(0)
                 .Sum();
 
             var ifTotalInterest = db.FID_Treasury_Deposit
-                .Where(x => treasuryFormIds.Contains(x.FormId) && x.CashflowType == Common.Cashflow.Inflow)
-                .Select(x => Math.Truncate(100 * x.IntProfitReceivable) / 100)
+                .Where(x => treasuryApprovedForms.Contains(x.FormId) && x.CashflowType == Common.Cashflow.Inflow)
+                .Select(x => x.IntProfitReceivable)
                 .DefaultIfEmpty(0)
                 .Sum();
 
@@ -520,7 +520,7 @@ namespace xDC_Web.Extension.DocGenerator
                 .Where(x => treasuryFormIds.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Outflow
                             && x.Notes == "New")
-                .Select(x => Math.Truncate(100 * x.Principal) / 100)
+                .Select(x => x.Principal)
                 .DefaultIfEmpty(0)
                 .Sum();
 
@@ -528,7 +528,7 @@ namespace xDC_Web.Extension.DocGenerator
                 .Where(x => treasuryFormIds.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Outflow
                             && x.Notes == "r/o p+i")
-                .Select(x => Math.Truncate(100 * x.IntProfitReceivable) / 100)
+                .Select(x => x.IntProfitReceivable)
                 .DefaultIfEmpty(0)
                 .Sum();
 
@@ -618,9 +618,9 @@ namespace xDC_Web.Extension.DocGenerator
                     Bank = x.Bank,
                     MaturityDate = x.MaturityDate.Value,
                     ValueDate = x.ValueDate.Value,
-                    Principal = Math.Truncate(100 * x.Principal) / 100,
-                    Interest = Math.Truncate(100 * x.IntProfitReceivable) / 100,
-                    PrincipalInterest = Math.Truncate(100 * x.PrincipalIntProfitReceivable) / 100,
+                    Principal = x.Principal,
+                    Interest = x.IntProfitReceivable,
+                    PrincipalInterest = x.PrincipalIntProfitReceivable,
                     Rate = x.RatePercent,
                     ContactPerson = x.ContactPerson,
                     Notes = x.Notes,
@@ -644,9 +644,9 @@ namespace xDC_Web.Extension.DocGenerator
                     Bank = x.Bank,
                     MaturityDate = x.MaturityDate.Value,
                     ValueDate = x.ValueDate.Value,
-                    Principal = Math.Truncate(100 * x.Principal) / 100,
-                    Interest = Math.Truncate(100 * x.IntProfitReceivable) / 100,
-                    PrincipalInterest = Math.Truncate(100 * x.PrincipalIntProfitReceivable) / 100,
+                    Principal = x.Principal,
+                    Interest = x.IntProfitReceivable,
+                    PrincipalInterest = x.PrincipalIntProfitReceivable,
                     Rate = x.RatePercent,
                     ContactPerson = x.ContactPerson,
                     Notes = x.Notes,
@@ -666,9 +666,9 @@ namespace xDC_Web.Extension.DocGenerator
                     Bank = x.Bank,
                     MaturityDate = x.MaturityDate.Value,
                     ValueDate = x.ValueDate.Value,
-                    Principal = Math.Truncate(100 * x.Principal) / 100,
-                    Interest = Math.Truncate(100 * x.IntProfitReceivable) / 100,
-                    PrincipalInterest = Math.Truncate(100 * x.PrincipalIntProfitReceivable) / 100,
+                    Principal = x.Principal,
+                    Interest = x.IntProfitReceivable,
+                    PrincipalInterest = x.PrincipalIntProfitReceivable,
                     Rate = x.RatePercent,
                     ContactPerson = x.ContactPerson,
                     Notes = x.Notes,
