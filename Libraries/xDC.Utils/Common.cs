@@ -59,14 +59,14 @@ namespace xDC.Utils
 
         public static class TsCouponTypeItem
         {
-            public const string MGS = "MGS";
-            public const string PDS = "PDS";
+            public const string GOV = "GOV";
+            public const string CORP = "CORP";
         }
 
         public static class TsBondTypeItem
         {
-            public const string MGS = "MGS";
-            public const string PDS = "PDS";
+            public const string GOV = "GOV";
+            public const string CORP = "CORP";
         }
 
         public static class Cashflow
