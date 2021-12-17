@@ -18,7 +18,7 @@ namespace xDC.Infrastructure.Application
         public string FormType { get; set; }
         public string FormStatus { get; set; }
         public string Currency { get; set; }
-        public Nullable<System.DateTime> TradeDate { get; set; }
+        public Nullable<System.DateTime> ValueDate { get; set; }
         public string PreparedBy { get; set; }
         public Nullable<System.DateTime> PreparedDate { get; set; }
         public string ApprovedBy { get; set; }

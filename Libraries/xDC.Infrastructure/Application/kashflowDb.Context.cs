@@ -34,20 +34,20 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<App_Notification> App_Notification { get; set; }
         public virtual DbSet<ISSD_FormHeader> ISSD_FormHeader { get; set; }
         public virtual DbSet<Config_Application> Config_Application { get; set; }
-        public virtual DbSet<FID_Treasury> FID_Treasury { get; set; }
         public virtual DbSet<EDW_FID_List> EDW_FID_List { get; set; }
         public virtual DbSet<EDW_BankBalance> EDW_BankBalance { get; set; }
         public virtual DbSet<AMSD_IF> AMSD_IF { get; set; }
         public virtual DbSet<Form_Workflow> Form_Workflow { get; set; }
         public virtual DbSet<AMSD_IF_Item> AMSD_IF_Item { get; set; }
         public virtual DbSet<Config_FcaBankAccount> Config_FcaBankAccount { get; set; }
-        public virtual DbSet<FID_Treasury_Deposit> FID_Treasury_Deposit { get; set; }
         public virtual DbSet<EDW_Maturity_Deposit> EDW_Maturity_Deposit { get; set; }
         public virtual DbSet<EDW_Maturity_MM> EDW_Maturity_MM { get; set; }
-        public virtual DbSet<FID_Treasury_MMI> FID_Treasury_MMI { get; set; }
         public virtual DbSet<EDW_TradeItem> EDW_TradeItem { get; set; }
         public virtual DbSet<Audit_Form> Audit_Form { get; set; }
         public virtual DbSet<TenAmDealCutOff_ClosingBalance> TenAmDealCutOff_ClosingBalance { get; set; }
         public virtual DbSet<ISSD_TradeSettlement> ISSD_TradeSettlement { get; set; }
+        public virtual DbSet<FID_Treasury> FID_Treasury { get; set; }
+        public virtual DbSet<FID_Treasury_MMI> FID_Treasury_MMI { get; set; }
+        public virtual DbSet<FID_Treasury_Deposit> FID_Treasury_Deposit { get; set; }
     }
 }

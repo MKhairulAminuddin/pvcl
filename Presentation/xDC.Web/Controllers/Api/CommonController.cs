@@ -419,7 +419,7 @@ namespace xDC_Web.Controllers.Api
                                     new WorkflowService().ReassignWorkflow(input.FormId, treasuryForm.FormType);
                                     new MailService().SubmitForApproval(input.FormId, treasuryForm.FormType, permittedApprover.Username, null);
                                     new NotificationService().NotifyApprovalRequest(permittedApprover.Username, input.FormId, User.Identity.Name, treasuryForm.FormType);
-                                    new AuditService().AuditForm_ReassignApprover(input.FormId, treasuryForm.FormType, treasuryForm.TradeDate, User.Identity.Name, currentApprover, permittedApprover.Username);
+                                    new AuditService().AuditForm_ReassignApprover(input.FormId, treasuryForm.FormType, treasuryForm.ValueDate, User.Identity.Name, currentApprover, permittedApprover.Username);
                                     return Request.CreateResponse(HttpStatusCode.Accepted);
                                 }
                                 else

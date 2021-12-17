@@ -6,6 +6,7 @@
 
     [Dealer] NVARCHAR(50), 
 	[Bank] NVARCHAR(250), 
+    [TradeDate] DATE,
     [ValueDate] DATE, 
     [MaturityDate] DATE, 
     [Tenor] INT,
@@ -21,3 +22,7 @@
     [ModifiedBy] NVARCHAR(150), 
     [ModifiedDate] DATETIME
 );
+
+update [FID_Treasury_Deposit] set TradeDate = FID_Treasury.PreparedDate
+from [FID_Treasury_Deposit]
+join FID_Treasury on FormId= FID_Treasury.Id

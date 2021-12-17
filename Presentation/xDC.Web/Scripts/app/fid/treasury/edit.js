@@ -56,6 +56,7 @@
                         return {
                             dealer: x.dealer,
                             bank: x.bank,
+                            tradeDate: (x.tradeDate instanceof Date) ? x.tradeDate.toISOString() : x.tradeDate,
                             valueDate: (x.valueDate instanceof Date) ? x.valueDate.toISOString() : x.valueDate,
                             maturityDate: (x.maturityDate instanceof Date) ? x.maturityDate.toISOString() : x.maturityDate,
                             principal: x.principal,
@@ -157,7 +158,7 @@
             });
         };
 
-        var populateData = function (tradeDate, currency) {
+        var populateData = function (valueDate, currency) {
             $.when(
                     dsInflowDeposit(),
                     dsOutflowDeposit(),
@@ -587,6 +588,16 @@
                     }
                 },
                 {
+                    dataField: "tradeDate",
+                    caption: "Trade Date",
+                    dataType: "date",
+                    format: "dd/MM/yyyy",
+                    editorOptions: {
+                        placeholder: "dd/MM/yyyy",
+                        showClearButton: true
+                    }
+                },
+                {
                     dataField: "valueDate",
                     caption: "Value Date",
                     dataType: "date",
@@ -803,6 +814,9 @@
                     };
                     e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
                 }
+            },
+            onInitNewRow: function (e) {
+                e.data.tradeDate = new Date();
             },
             showBorders: true,
             showRowLines: true,

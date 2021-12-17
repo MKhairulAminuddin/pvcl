@@ -310,7 +310,7 @@ namespace xDC_Web.Controllers.Api
                     var result = db.FID_Treasury.Select(x => new TreasuryGridVm
                     {
                         Id = x.Id,
-                        TradeDate = x.TradeDate,
+                        TradeDate = x.ValueDate,
                         Currency = x.Currency,
                         FormStatus = x.FormStatus,
                         PreparedBy = x.PreparedBy,
@@ -621,15 +621,15 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var tradeDateConverted = Common.ConvertEpochToDateTime(input.TradeDate);
-                    tradeDateConverted = tradeDateConverted.Value.Date;
+                    var valueDateConverted = Common.ConvertEpochToDateTime(input.TradeDate);
+                    valueDateConverted = valueDateConverted.Value.Date;
 
                     var form = new FID_Treasury
                     {
                         FormType = Common.FormType.FID_TREASURY,
                         FormStatus = !string.IsNullOrEmpty(input.Approver) ? Common.FormStatus.PendingApproval : Common.FormStatus.Draft,
                         Currency = input.Currency,
-                        TradeDate = tradeDateConverted,
+                        ValueDate = valueDateConverted,
                         PreparedBy = User.Identity.Name,
                         PreparedDate = DateTime.Now,
 
@@ -649,6 +649,7 @@ namespace xDC_Web.Controllers.Api
                                 CashflowType = Common.Cashflow.Inflow,
                                 Dealer = item.Dealer,
                                 Bank = item.Bank,
+                                TradeDate = form.PreparedDate,
                                 ValueDate = item.ValueDate,
                                 MaturityDate = item.MaturityDate,
                                 Principal = item.Principal,
@@ -680,6 +681,7 @@ namespace xDC_Web.Controllers.Api
                                 CashflowType = Common.Cashflow.Outflow,
                                 Dealer = item.Dealer,
                                 Bank = item.Bank,
+                                TradeDate = item.TradeDate,
                                 ValueDate = item.ValueDate,
                                 MaturityDate = item.MaturityDate,
                                 Tenor = item.Tenor,
@@ -713,6 +715,7 @@ namespace xDC_Web.Controllers.Api
                                 Issuer = item.Issuer,
                                 ProductType = item.ProductType,
                                 CounterParty = item.CounterParty,
+                                TradeDate = form.PreparedDate,
                                 ValueDate = item.ValueDate,
                                 MaturityDate = item.MaturityDate,
                                 HoldingDayTenor = item.HoldingDayTenor,
@@ -745,6 +748,7 @@ namespace xDC_Web.Controllers.Api
                                 Issuer = item.Issuer,
                                 ProductType = item.ProductType,
                                 CounterParty = item.CounterParty,
+                                TradeDate = form.PreparedDate,
                                 ValueDate = item.ValueDate,
                                 MaturityDate = item.MaturityDate,
                                 HoldingDayTenor = item.HoldingDayTenor,
@@ -764,14 +768,14 @@ namespace xDC_Web.Controllers.Api
                     db.FID_Treasury_MMI.AddRange(outflowMoneyMarket);
                     db.SaveChanges();
 
-                    new AuditService().AuditForm_Create(form.Id, form.FormType, form.TradeDate, User.Identity.Name);
+                    new AuditService().AuditForm_Create(form.Id, form.FormType, form.ValueDate, User.Identity.Name);
 
                     if (form.FormStatus == Common.FormStatus.PendingApproval)
                     {
                         new WorkflowService().SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
                         new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
                         new NotificationService().NotifyApprovalRequest(form.ApprovedBy, form.Id, form.PreparedBy, form.FormType);
-                        new AuditService().AuditForm_RequestApproval(form.Id, form.FormType, form.TradeDate, User.Identity.Name);
+                        new AuditService().AuditForm_RequestApproval(form.Id, form.FormType, form.ValueDate, User.Identity.Name);
                     }
                     
                     return Request.CreateResponse(HttpStatusCode.Created, form.Id);
@@ -838,98 +842,98 @@ namespace xDC_Web.Controllers.Api
                                     {
                                         foundItem.AssetType = item.AssetType;
                                         new AuditService().AuditForm_EditRow(form.Id, form.FormType,
-                                                form.TradeDate, User.Identity.Name, foundItem.AssetType,
+                                                form.ValueDate, User.Identity.Name, foundItem.AssetType,
                                                 item.AssetType, "Asset Type");
                                     }
                                     if (foundItem.Dealer != item.Dealer)
                                     {
                                         foundItem.Dealer = item.Dealer;
                                         new AuditService().AuditForm_EditRow(form.Id, form.FormType,
-                                                form.TradeDate, User.Identity.Name, foundItem.Dealer,
+                                                form.ValueDate, User.Identity.Name, foundItem.Dealer,
                                                 item.Dealer, "Dealer");
                                     }
                                     if (foundItem.Bank != item.Bank)
                                     {
                                         foundItem.Bank = item.Bank;
                                         new AuditService().AuditForm_EditRow(form.Id, form.FormType,
-                                                form.TradeDate, User.Identity.Name, foundItem.Bank,
+                                                form.ValueDate, User.Identity.Name, foundItem.Bank,
                                                 item.Bank, "Bank");
                                     }
                                     if (foundItem.ValueDate != item.ValueDate)
                                     {
                                         foundItem.ValueDate = item.ValueDate;
                                         new AuditService().AuditForm_EditRow(form.Id, form.FormType,
-                                                form.TradeDate, User.Identity.Name, foundItem.ValueDate?.ToString("dd/MM/yyyy"),
+                                                form.ValueDate, User.Identity.Name, foundItem.ValueDate?.ToString("dd/MM/yyyy"),
                                                 item.ValueDate.ToString("dd/MM/yyyy"), "Value Date");
                                     }
                                     if (foundItem.MaturityDate != item.MaturityDate)
                                     {
                                         foundItem.MaturityDate = item.MaturityDate;
                                         new AuditService().AuditForm_EditRow(form.Id, form.FormType,
-                                                form.TradeDate, User.Identity.Name, foundItem.MaturityDate?.ToString("dd/MM/yyyy"),
+                                                form.ValueDate, User.Identity.Name, foundItem.MaturityDate?.ToString("dd/MM/yyyy"),
                                                 item.MaturityDate.ToString("dd/MM/yyyy"), "Maturity Date");
                                     }
                                     if (foundItem.Tenor != item.Tenor)
                                     {
                                         foundItem.Tenor = item.Tenor;
                                         new AuditService().AuditForm_EditRow(form.Id, form.FormType,
-                                                form.TradeDate, User.Identity.Name, foundItem.Tenor.ToString(),
+                                                form.ValueDate, User.Identity.Name, foundItem.Tenor.ToString(),
                                                 item.Tenor.ToString(), "Tenor");
                                     }
                                     if (foundItem.Principal != item.Principal)
                                     {
                                         foundItem.Principal = item.Principal;
                                         new AuditService().AuditForm_EditRow(form.Id, form.FormType,
-                                                form.TradeDate, User.Identity.Name, foundItem.Principal.ToString(),
+                                                form.ValueDate, User.Identity.Name, foundItem.Principal.ToString(),
                                                 item.Principal.ToString(), "Principal");
                                     }
                                     if (foundItem.RatePercent != item.RatePercent)
                                     {
                                         foundItem.RatePercent = item.RatePercent;
                                         new AuditService().AuditForm_EditRow(form.Id, form.FormType,
-                                                form.TradeDate, User.Identity.Name, foundItem.RatePercent.ToString(),
+                                                form.ValueDate, User.Identity.Name, foundItem.RatePercent.ToString(),
                                                 item.RatePercent.ToString(), "Rate");
                                     }
                                     if (foundItem.IntProfitReceivable != item.IntProfitReceivable)
                                     {
                                         foundItem.IntProfitReceivable = item.IntProfitReceivable;
                                         new AuditService().AuditForm_EditRow(form.Id, form.FormType,
-                                                form.TradeDate, User.Identity.Name, foundItem.IntProfitReceivable.ToString(),
+                                                form.ValueDate, User.Identity.Name, foundItem.IntProfitReceivable.ToString(),
                                                 item.IntProfitReceivable.ToString(), "Interest Profit Receivable");
                                     }
                                     if (foundItem.PrincipalIntProfitReceivable != item.PrincipalIntProfitReceivable)
                                     {
                                         foundItem.PrincipalIntProfitReceivable = item.PrincipalIntProfitReceivable;
                                         new AuditService().AuditForm_EditRow(form.Id, form.FormType,
-                                                form.TradeDate, User.Identity.Name, foundItem.PrincipalIntProfitReceivable.ToString(),
+                                                form.ValueDate, User.Identity.Name, foundItem.PrincipalIntProfitReceivable.ToString(),
                                                 item.PrincipalIntProfitReceivable.ToString(), "Principal + Interest Profit Receivable");
                                     }
                                     if (foundItem.RepoTag != item.RepoTag)
                                     {
                                         foundItem.RepoTag = item.RepoTag;
                                         new AuditService().AuditForm_EditRow(form.Id, form.FormType,
-                                                form.TradeDate, User.Identity.Name, foundItem.RepoTag,
+                                                form.ValueDate, User.Identity.Name, foundItem.RepoTag,
                                                 item.RepoTag, "Repo Tag");
                                     }
                                     if (foundItem.ContactPerson != item.ContactPerson)
                                     {
                                         foundItem.ContactPerson = item.ContactPerson;
                                         new AuditService().AuditForm_EditRow(form.Id, form.FormType,
-                                                form.TradeDate, User.Identity.Name, foundItem.ContactPerson,
+                                                form.ValueDate, User.Identity.Name, foundItem.ContactPerson,
                                                 item.ContactPerson, "Contact Person");
                                     }
                                     if (foundItem.Notes != item.Notes)
                                     {
                                         foundItem.Notes = item.Notes;
                                         new AuditService().AuditForm_EditRow(form.Id, form.FormType,
-                                                form.TradeDate, User.Identity.Name, foundItem.Notes,
+                                                form.ValueDate, User.Identity.Name, foundItem.Notes,
                                                 item.Notes, "Notes");
                                     }
                                     if (foundItem.FcaAccount != item.FcaAccount)
                                     {
                                         foundItem.FcaAccount = item.FcaAccount;
                                         new AuditService().AuditForm_EditRow(form.Id, form.FormType,
-                                                form.TradeDate, User.Identity.Name, foundItem.FcaAccount,
+                                                form.ValueDate, User.Identity.Name, foundItem.FcaAccount,
                                                 item.FcaAccount, "FCA Account");
                                     }
 
@@ -942,7 +946,7 @@ namespace xDC_Web.Controllers.Api
                                 // add new
                                 db.FID_Treasury_Deposit.Add(FID_Treasury_Deposit_ObjMap(form.Id, Common.Cashflow.Inflow, item));
                                 new AuditService().AuditForm_AddRow(form.Id, form.FormType,
-                                                form.TradeDate, User.Identity.Name,
+                                                form.ValueDate , User.Identity.Name,
                                                 $"{item.Bank}, {item.CashflowType}, {item.Dealer}, {item.AssetType}...");
                             }
                         }
@@ -957,7 +961,7 @@ namespace xDC_Web.Controllers.Api
                         {
                             foreach (var item in existingInflowDeposit)
                             {
-                                new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.TradeDate, User.Identity.Name,
+                                new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.ValueDate, User.Identity.Name,
                                         $"{item.CashflowType}, {item.Bank}, {item.Dealer}, {item.AssetType}...");
                             }
 
@@ -980,7 +984,7 @@ namespace xDC_Web.Controllers.Api
                         {
                             foreach (var item in removedItems)
                             {
-                                new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.TradeDate, User.Identity.Name,
+                                new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.ValueDate, User.Identity.Name,
                                         $"{item.CashflowType}, {item.Bank}, {item.Dealer}, {item.AssetType}...");
                             }
 
@@ -1006,6 +1010,10 @@ namespace xDC_Web.Controllers.Api
                                     if (foundItem.Bank != item.Bank)
                                     {
                                         foundItem.Bank = item.Bank;
+                                    }
+                                    if (foundItem.TradeDate != item.TradeDate)
+                                    {
+                                        foundItem.TradeDate = item.TradeDate;
                                     }
                                     if (foundItem.ValueDate != item.ValueDate)
                                     {
@@ -1339,7 +1347,7 @@ namespace xDC_Web.Controllers.Api
                             new NotificationService().NotifyApprovalResult(form.PreparedBy, form.Id, form.ApprovedBy, form.FormType, form.FormStatus);
                             new MailService().SendApprovalStatus(form.Id, form.FormType, form.FormStatus, form.PreparedBy, input.ApprovalNote);
                             new WorkflowService().ApprovalResponse(form.Id, form.FormStatus, input.ApprovalNote, form.FormType, form.PreparedBy, form.ApprovedBy);
-                            new AuditService().AuditForm_Approval(form.Id, form.FormType, form.FormStatus, form.TradeDate, User.Identity.Name);
+                            new AuditService().AuditForm_Approval(form.Id, form.FormType, form.FormStatus, form.ValueDate, User.Identity.Name);
 
                             new MailService().Treasury_ApprovedFormSubmission(form.Id, form.FormType, form.Currency);
 
@@ -1393,7 +1401,7 @@ namespace xDC_Web.Controllers.Api
 
                         db.SaveChanges();
 
-                        new AuditService().AuditForm_Delete(form.Id, form.FormType, form.TradeDate, User.Identity.Name);
+                        new AuditService().AuditForm_Delete(form.Id, form.FormType, form.ValueDate, User.Identity.Name);
 
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
@@ -1423,6 +1431,7 @@ namespace xDC_Web.Controllers.Api
                 CashflowType = cashFlow,
                 Dealer = item.Dealer,
                 Bank = item.Bank,
+                TradeDate = item.TradeDate,
                 ValueDate = item.ValueDate,
                 MaturityDate = item.MaturityDate,
                 Tenor = item.Tenor,

@@ -397,15 +397,15 @@ namespace xDC_Web.Extension.DocGenerator
 
             #region 2 - IF MMI
 
-            var treasuryFormIds = (viewApproved)
+            var treasuryApprovedForms = (viewApproved)
                 ? db.FID_Treasury
-                    .Where(x => DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate)
+                    .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
                                 && x.Currency == "MYR"
                                 && x.FormStatus == Common.FormStatus.Approved)
                     .Select(x => x.Id)
                     .ToList()
                 : db.FID_Treasury
-                    .Where(x => DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate)
+                    .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
                                 && x.Currency == "MYR"
                                 && x.FormStatus != Common.FormStatus.Rejected)
                     .Select(x => x.Id)
@@ -470,7 +470,7 @@ namespace xDC_Web.Extension.DocGenerator
                 .Sum();
 
             var treasuryMmIf = db.FID_Treasury_MMI
-                .Where(x => treasuryFormIds.Contains(x.FormId)
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Inflow)
                 .Select(x => x.Proceeds)
                 .DefaultIfEmpty(0)
@@ -517,7 +517,7 @@ namespace xDC_Web.Extension.DocGenerator
             #region 6 - OF MMI 
 
             dataObj.OF_MM_NewPlacement = db.FID_Treasury_Deposit
-                .Where(x => treasuryFormIds.Contains(x.FormId)
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Outflow
                             && x.Notes == "New")
                 .Select(x => x.Principal)
@@ -525,7 +525,7 @@ namespace xDC_Web.Extension.DocGenerator
                 .Sum();
 
             dataObj.OF_MM_Rollover = db.FID_Treasury_Deposit
-                .Where(x => treasuryFormIds.Contains(x.FormId)
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Outflow
                             && x.Notes == "r/o p+i")
                 .Select(x => x.IntProfitReceivable)
@@ -560,7 +560,7 @@ namespace xDC_Web.Extension.DocGenerator
                 .Sum();
 
             var treasuryMmOf = db.FID_Treasury_MMI
-                .Where(x => treasuryFormIds.Contains(x.FormId)
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Outflow
                             )
                 .Select(x => x.Proceeds)
@@ -611,7 +611,7 @@ namespace xDC_Web.Extension.DocGenerator
             #region IF: Deposit Maturity
 
             var ifInflowItems = db.FID_Treasury_Deposit
-                .Where(x => treasuryFormIds.Contains(x.FormId)
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Inflow)
                 .Select(x => new MYR_DealCutOffData_Mmi
                 {
@@ -636,7 +636,7 @@ namespace xDC_Web.Extension.DocGenerator
             #region OF Rollover & New Placement
 
             var ofInflowRolloverItems = db.FID_Treasury_Deposit
-                .Where(x => treasuryFormIds.Contains(x.FormId)
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Outflow
                             && x.Notes == "r/o P+I")
                 .Select(x => new MYR_DealCutOffData_Mmi
@@ -658,7 +658,7 @@ namespace xDC_Web.Extension.DocGenerator
             dataObj.OF_MMI_RolloverItems = ofInflowRolloverItems;
 
             var ofInflowNewPlacementItems = db.FID_Treasury_Deposit
-                .Where(x => treasuryFormIds.Contains(x.FormId)
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Outflow
                             && x.Notes == "New")
                 .Select(x => new MYR_DealCutOffData_Mmi
@@ -742,7 +742,7 @@ namespace xDC_Web.Extension.DocGenerator
                 .ToList();
 
             var othersTab_pds_item = db.FID_Treasury_MMI
-                .Where(x => treasuryFormIds.Contains(x.FormId)
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Inflow)
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item1
                 {
@@ -840,7 +840,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             // Sales - from FID Treasury IF MMI tab
             var othersTab_of_pds_item = db.FID_Treasury_MMI
-                .Where(x => treasuryFormIds.Contains(x.FormId)
+                .Where(x => treasuryApprovedForms.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Outflow
                             )
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item1

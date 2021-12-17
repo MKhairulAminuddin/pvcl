@@ -33,6 +33,7 @@ namespace xDC_Web.Models
         public string CashflowType { get; set; }
         public string Dealer { get; set; }
         public string Bank { get; set; }
+        public DateTime TradeDate { get; set; }
         public DateTime ValueDate { get; set; }
         public DateTime MaturityDate { get; set; }
         public int Tenor { get; set; }

@@ -500,13 +500,13 @@ namespace xDC_Web.Extension.DocGenerator
                     {
                         var treasuryFormIds = (viewApproved)?
                             db.FID_Treasury
-                                .Where(x => DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate)
+                                .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
                                             && x.Currency == item.Currency
                                             && x.FormStatus == Common.FormStatus.Approved)
                                 .Select(x => x.Id)
                                 .ToList():
                             db.FID_Treasury
-                                .Where(x => DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate)
+                                .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
                                             && x.Currency == item.Currency
                                             && x.FormStatus != Common.FormStatus.Rejected)
                                 .Select(x => x.Id)
@@ -614,13 +614,13 @@ namespace xDC_Web.Extension.DocGenerator
                     {
                         var treasuryFormIds = (viewApproved)?
                             db.FID_Treasury
-                                .Where(x => DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate)
+                                .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
                                             && x.Currency == item.Currency
                                             && x.FormStatus == Common.FormStatus.Approved)
                                 .Select(x => x.Id)
                                 .ToList():
                             db.FID_Treasury
-                                .Where(x => DbFunctions.TruncateTime(x.TradeDate) == DbFunctions.TruncateTime(selectedDate)
+                                .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
                                             && x.Currency == item.Currency
                                             && x.FormStatus != Common.FormStatus.Rejected)
                                 .Select(x => x.Id)
@@ -644,7 +644,7 @@ namespace xDC_Web.Extension.DocGenerator
                                     {
                                         Item = i.Bank,
                                         Currency = item.Currency,
-                                        TradeDate = selectedDate.Value,
+                                        TradeDate = i.TradeDate.Value,
                                         MaturityDate = i.MaturityDate.Value,
                                         ValueDate = i.ValueDate.Value,
                                         Amount = i.Principal,
@@ -677,7 +677,7 @@ namespace xDC_Web.Extension.DocGenerator
                                     {
                                         Item = i.CounterParty,
                                         Currency = item.Currency,
-                                        TradeDate = selectedDate.Value,
+                                        TradeDate = i.TradeDate.Value,
                                         MaturityDate = i.MaturityDate.Value,
                                         ValueDate = i.ValueDate.Value,
                                         Amount = i.Proceeds,
@@ -708,7 +708,7 @@ namespace xDC_Web.Extension.DocGenerator
                                     {
                                         Item = i.Bank,
                                         Currency = item.Currency,
-                                        TradeDate = selectedDate.Value,
+                                        TradeDate = i.TradeDate.Value,
                                         MaturityDate = i.MaturityDate.Value,
                                         ValueDate = i.ValueDate.Value,
                                         Amount = i.Principal,
@@ -741,7 +741,7 @@ namespace xDC_Web.Extension.DocGenerator
                                     {
                                         Item = i.CounterParty,
                                         Currency = item.Currency,
-                                        TradeDate = selectedDate.Value,
+                                        TradeDate = i.TradeDate.Value,
                                         MaturityDate = i.MaturityDate.Value,
                                         ValueDate = i.ValueDate.Value,
                                         Amount = i.Proceeds,

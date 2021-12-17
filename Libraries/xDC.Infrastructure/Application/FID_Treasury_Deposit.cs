@@ -19,6 +19,7 @@ namespace xDC.Infrastructure.Application
         public string CashflowType { get; set; }
         public string Dealer { get; set; }
         public string Bank { get; set; }
+        public Nullable<System.DateTime> TradeDate { get; set; }
         public Nullable<System.DateTime> ValueDate { get; set; }
         public Nullable<System.DateTime> MaturityDate { get; set; }
         public Nullable<int> Tenor { get; set; }

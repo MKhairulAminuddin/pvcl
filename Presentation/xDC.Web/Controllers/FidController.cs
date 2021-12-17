@@ -116,7 +116,7 @@ namespace xDC_Web.Controllers
                         var model = new TreasuryFormVM
                         {
                             Currency = form.Currency,
-                            TradeDate = form.TradeDate,
+                            ValueDate = form.ValueDate,
                             FormStatus = form.FormStatus,
                             PreparedBy = form.PreparedBy,
                             PreparedDate = form.PreparedDate,
@@ -169,7 +169,7 @@ namespace xDC_Web.Controllers
                         {
                             Id = form.Id,
                             FormStatus = form.FormStatus,
-                            TradeDate = form.TradeDate,
+                            ValueDate = form.ValueDate,
                             Currency = form.Currency,
                             PreparedBy = form.PreparedBy,
                             PreparedDate = form.PreparedDate,

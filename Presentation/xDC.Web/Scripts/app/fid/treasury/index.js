@@ -24,8 +24,8 @@
                     visible: false
                 },
                 {
-                    dataField: "tradeDate",
-                    caption: "Trade Date",
+                    dataField: "valueDate",
+                    caption: "Value Date",
                     dataType: "date",
                     format: "dd/MM/yyyy",
                     sortIndex: 0,

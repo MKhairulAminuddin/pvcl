@@ -9,6 +9,7 @@ CREATE TABLE [dbo].[FID_Treasury_MMI](
 	[Issuer] NVARCHAR(250), 
     [ProductType] NVARCHAR(50), 
     [CounterParty] NVARCHAR(50), 
+    [TradeDate] DATE, 
     [ValueDate] DATE, 
     [MaturityDate] DATE, 
     [HoldingDayTenor] INT,
@@ -23,3 +24,8 @@ CREATE TABLE [dbo].[FID_Treasury_MMI](
     [ModifiedBy] NVARCHAR(150), 
     [ModifiedDate] DATETIME
 )
+
+
+update [FID_Treasury_MMI] set TradeDate = FID_Treasury.PreparedDate
+from [FID_Treasury_MMI]
+join FID_Treasury on FormId= FID_Treasury.Id

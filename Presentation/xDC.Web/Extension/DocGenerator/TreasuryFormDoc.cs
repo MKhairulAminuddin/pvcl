@@ -80,8 +80,8 @@ namespace xDC_Web.Extension.DocGenerator
             {
                 var sheet = workbook.Worksheets[0];
                 
-                if (form.TradeDate != null)
-                    sheet["B2"].Value = form.TradeDate.Value.ToString("dd/MM/yyyy");
+                if (form.ValueDate != null)
+                    sheet["B2"].Value = form.ValueDate.Value.ToString("dd/MM/yyyy");
                 sheet["B3"].Value = form.Currency;
 
                 sheet["N2"].Value = form.FormStatus;

@@ -20,7 +20,7 @@
             $submitForApprovalModalBtn,
             
             $currencySelectBox,
-            $tradeDate,
+            $valueDate,
             $approverDropdown,
             $approvalNotes,
 
@@ -54,6 +54,7 @@
                         return {
                             dealer: x.dealer,
                             bank: x.bank,
+                            tradeDate: (x.tradeDate instanceof Date) ? x.tradeDate.toISOString() : x.tradeDate,
                             valueDate: (x.valueDate instanceof Date) ? x.valueDate.toISOString() : x.valueDate,
                             maturityDate: (x.maturityDate instanceof Date) ? x.maturityDate.toISOString() : x.maturityDate,
                             principal: x.principal,
@@ -117,33 +118,33 @@
             };
         }
         
-        var dsMaturity = function (tradeDateEpoch, currency) {
+        var dsMaturity = function (valueDateEpoch, currency) {
             return $.ajax({
-                url: referenceUrl.dsMaturity + "/" + moment(tradeDateEpoch).unix() + "/" + currency,
+                url: referenceUrl.dsMaturity + "/" + moment(valueDateEpoch).unix() + "/" + currency,
                 type: "get"
             });
         };
 
-        var dsMm = function (tradeDateEpoch, currency) {
+        var dsMm = function (valueDateEpoch, currency) {
             return $.ajax({
-                url: referenceUrl.dsMm + "/" + moment(tradeDateEpoch).unix() + "/" + currency,
+                url: referenceUrl.dsMm + "/" + moment(valueDateEpoch).unix() + "/" + currency,
                 type: "get"
             });
         };
 
-        var dsEdwAvailability = function (tradeDateEpoch, currency) {
+        var dsEdwAvailability = function (valueDateEpoch, currency) {
             return $.ajax({
-                url: referenceUrl.dsEdwAvailability + "/" + moment(tradeDateEpoch).unix() + "/" + currency,
+                url: referenceUrl.dsEdwAvailability + "/" + moment(valueDateEpoch).unix() + "/" + currency,
                 type: "get"
             });
         };
 
-        var checkDwDataAvailibility = function (tradeDate, currency) {
+        var checkDwDataAvailibility = function (valueDate, currency) {
             app.clearAllGrid($inflowDepositGrid, $inflowMmiGrid, $outflowDepositGrid, $outflowMmiGrid);
 
-            if (tradeDate && currency) {
+            if (valueDate && currency) {
                 $.when(
-                    dsEdwAvailability(tradeDate, currency)
+                    dsEdwAvailability(valueDate, currency)
                     )
                     .done(function (data1) {
                         $edwAvailable.option("dataSource", data1);
@@ -159,11 +160,11 @@
             }
         }
 
-        var populateDwData = function (categoryType, tradeDate, currency) {
-            if (tradeDate && currency) {
+        var populateDwData = function (categoryType, valueDate, currency) {
+            if (valueDate && currency) {
                 if (categoryType == 1) {
                     $.when(
-                        dsMaturity(tradeDate, currency)
+                        dsMaturity(valueDate, currency)
                     )
                         .done(function (data1) {
                             $inflowDepositGrid.option("dataSource", []);
@@ -180,7 +181,7 @@
                         });
                 } else {
                     $.when(
-                        dsMm(tradeDate, currency)
+                        dsMm(valueDate, currency)
                     )
                         .done(function (data1) {
                             $inflowMmiGrid.option("dataSource", []);
@@ -213,7 +214,7 @@
 
             var data = {
                 currency: $currencySelectBox.option("value"),
-                tradeDate: moment($tradeDate.option("value")).unix(),
+                valueDate: moment($valueDate.option("value")).unix(),
                 
                 inflowDeposit: parseDepositArray($inflowDepositGrid.getDataSource().items()),
                 outflowDeposit: parseDepositArray($outflowDepositGrid.getDataSource().items()),
@@ -246,7 +247,7 @@
         
         //#region Other Widgets
 
-        $tradeDate = $("#tradeDate").dxDateBox({
+        $valueDate = $("#valueDate").dxDateBox({
             type: "date",
             displayFormat: "dd/MM/yyyy",
             value: new Date()
@@ -280,7 +281,7 @@
                 $("<div>").text(data.name + " × " + data.numbers).appendTo(result);
                 $("<a>").append("<i class='fa fa-download'></i> Populate").on("dxclick", function (e) {
 
-                    populateDwData(data.categoryType, $tradeDate.option("value"), $currencySelectBox.option("value"));
+                    populateDwData(data.categoryType, $valueDate.option("value"), $currencySelectBox.option("value"));
                     
                     e.stopPropagation();
                 }).appendTo(result);
@@ -648,6 +649,16 @@
                     }
                 },
                 {
+                    dataField: "tradeDate",
+                    caption: "Trade Date",
+                    dataType: "date",
+                    format: "dd/MM/yyyy",
+                    editorOptions: {
+                        placeholder: "dd/MM/yyyy",
+                        showClearButton: true
+                    }
+                },
+                {
                     dataField: "valueDate",
                     caption: "Value Date",
                     dataType: "date",
@@ -862,6 +873,9 @@
                     };
                     e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
                 }
+            },
+            onInitNewRow: function (e) {
+                e.data.tradeDate = new Date();
             },
             showBorders: true,
             showRowLines: true,
@@ -1457,12 +1471,12 @@
  
         //#region Events & Invocations
 
-        $tradeDate.on("valueChanged", function (data) {
+        $valueDate.on("valueChanged", function (data) {
             checkDwDataAvailibility(data.value, $currencySelectBox.option("value"));
         });
 
         $currencySelectBox.on("valueChanged", function (data) {
-            checkDwDataAvailibility($tradeDate.option("value"), data.value);
+            checkDwDataAvailibility($valueDate.option("value"), data.value);
         });
 
         $currencySelectBox.on("contentReady", function (e) {

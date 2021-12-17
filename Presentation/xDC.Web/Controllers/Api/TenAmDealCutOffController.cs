@@ -124,17 +124,17 @@ namespace xDC_Web.Controllers.Api
                     var treasuryMyrFormIds = (viewApprovedOnly)
                         ? db.FID_Treasury
                             .Where(x => x.FormStatus == Common.FormStatus.Approved
-                                        && x.TradeDate != null
+                                        && x.ValueDate != null
                                         && x.Currency == "MYR"
-                                        && DbFunctions.TruncateTime(x.TradeDate) ==
+                                        && DbFunctions.TruncateTime(x.ValueDate) ==
                                         DbFunctions.TruncateTime(reportDateParsed))
                             .Select(x => x.Id)
                             .ToList()
                         : db.FID_Treasury
                             .Where(x => x.FormStatus != Common.FormStatus.Rejected
-                                        && x.TradeDate != null
+                                        && x.ValueDate != null
                                         && x.Currency == "MYR"
-                                        && DbFunctions.TruncateTime(x.TradeDate) ==
+                                        && DbFunctions.TruncateTime(x.ValueDate) ==
                                         DbFunctions.TruncateTime(reportDateParsed))
                             .Select(x => x.Id)
                             .ToList();
@@ -196,17 +196,17 @@ namespace xDC_Web.Controllers.Api
                         var treasuryFcyFormIds = (viewApprovedOnly)
                             ? db.FID_Treasury
                                 .Where(x => x.FormStatus == Common.FormStatus.Approved
-                                            && x.TradeDate != null
+                                            && x.ValueDate != null
                                             && x.Currency == account.Currency
-                                            && DbFunctions.TruncateTime(x.TradeDate) ==
+                                            && DbFunctions.TruncateTime(x.ValueDate) ==
                                             DbFunctions.TruncateTime(reportDateParsed))
                                 .Select(x => x.Id)
                                 .ToList()
                             : db.FID_Treasury
                                 .Where(x => x.FormStatus != Common.FormStatus.Rejected
-                                            && x.TradeDate != null
+                                            && x.ValueDate != null
                                             && x.Currency == account.Currency
-                                            && DbFunctions.TruncateTime(x.TradeDate) ==
+                                            && DbFunctions.TruncateTime(x.ValueDate) ==
                                             DbFunctions.TruncateTime(reportDateParsed))
                                 .Select(x => x.Id)
                                 .ToList();

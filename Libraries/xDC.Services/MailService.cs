@@ -583,7 +583,7 @@ namespace xDC.Services
 
                     var bodyBuilder = new StringBuilder();
                     bodyBuilder.Append($"<p>Dear All, </p>");
-                    bodyBuilder.AppendLine($"<p>A {formType} ({currency}) form dated {theForm.TradeDate?.ToString("dd/MM/yyyy")} has been submitted and approved by FID side. Below are the details of the submission. </p>");
+                    bodyBuilder.AppendLine($"<p>A {formType} ({currency}) form dated {theForm.ValueDate?.ToString("dd/MM/yyyy")} has been submitted and approved by FID side. Below are the details of the submission. </p>");
 
                     var sb = new StringBuilder();
 
