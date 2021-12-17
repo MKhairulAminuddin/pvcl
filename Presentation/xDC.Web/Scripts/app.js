@@ -75,8 +75,8 @@
 var app = (function() {
     var _app = {};
 
-    _app.tsCouponTypes = ["MGS", "PDS"];
-    _app.tsBondTypes = ["MGS", "PDS"];
+    _app.tsCouponTypes = ["GOV", "CORP"];
+    _app.tsBondTypes = ["GOV", "CORP"];
     
     _app.toast = function (message, toastType = "info", delayTime = 3000) {
         var top = 0;

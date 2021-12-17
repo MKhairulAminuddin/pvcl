@@ -189,7 +189,7 @@
                     dataField: "closingBalance",
                     headerCellTemplate: function (container) {
                         container.append($(
-                            "<div><strong>Closing Balance</strong><br/>(Editable)</div>"));
+                            "<div><strong>Closing Balance</strong><br/>(EOD)</div>"));
                     },
                     dataType: "number",
                     format: {
