@@ -621,7 +621,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var valueDateConverted = Common.ConvertEpochToDateTime(input.TradeDate);
+                    var valueDateConverted = Common.ConvertEpochToDateTime(input.ValueDate);
                     valueDateConverted = valueDateConverted.Value.Date;
 
                     var form = new FID_Treasury
@@ -1348,8 +1348,7 @@ namespace xDC_Web.Controllers.Api
                             new MailService().SendApprovalStatus(form.Id, form.FormType, form.FormStatus, form.PreparedBy, input.ApprovalNote);
                             new WorkflowService().ApprovalResponse(form.Id, form.FormStatus, input.ApprovalNote, form.FormType, form.PreparedBy, form.ApprovedBy);
                             new AuditService().AuditForm_Approval(form.Id, form.FormType, form.FormStatus, form.ValueDate, User.Identity.Name);
-
-                            new MailService().Treasury_ApprovedFormSubmission(form.Id, form.FormType, form.Currency);
+                            
 
                             return Request.CreateResponse(HttpStatusCode.Accepted, input.FormId);
                         }

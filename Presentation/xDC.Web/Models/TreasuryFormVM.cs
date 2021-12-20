@@ -6,7 +6,7 @@ namespace xDC_Web.Models
     public class TreasuryFormVM
     {
         public int Id { get; set; }
-        public long TradeDate { get; set; }
+        public long ValueDate { get; set; }
         public string Currency { get; set; }
         public string SubmittedBy { get; set; }
         public string SubmittedDate { get; set; }
