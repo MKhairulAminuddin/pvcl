@@ -187,7 +187,7 @@ namespace xDC.Services
                     var message = new MimeMessage()
                     {
                         Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                        Subject = $"{SubjectAppend} Approved Trade Settlement for Part E (ALTID)"
+                        Subject = Common.MailSubjectWithDate(Config.NotificationTsPeEmailSubject)
                     };
 
                     var recipients = Config.NotificationTsPeEmail.Split(';');
@@ -273,8 +273,7 @@ namespace xDC.Services
 
                     var message = new MimeMessage()
                     {
-                        Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                        Subject = $"{SubjectAppend} Approved Trade Settlement for Part H (Others)"
+                        Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount)
                     };
 
                     var recipients = new List<string>();
@@ -283,6 +282,8 @@ namespace xDC.Services
 
                     if (othersType == Common.TsOthersTypeItem.Property)
                     {
+                        message.Subject = Common.MailSubjectWithDate(Config.NotificationTsPropertyEmailSubject);
+
                         recipients = Config.NotificationTsPropertyEmail.Split(';').ToList();
                         cc = Config.NotificationTsPropertyEmailCc.Split(';').ToList();
                         tsFormPartE = db.ISSD_TradeSettlement
@@ -291,6 +292,8 @@ namespace xDC.Services
                     }
                     else if (othersType == Common.TsOthersTypeItem.Loan)
                     {
+                        message.Subject = Common.MailSubjectWithDate(Config.NotificationTsLoanEmailSubject);
+
                         recipients = Config.NotificationTsLoanEmail.Split(';').ToList();
                         cc = Config.NotificationTsLoanEmailCc.Split(';').ToList();
                         tsFormPartE = db.ISSD_TradeSettlement

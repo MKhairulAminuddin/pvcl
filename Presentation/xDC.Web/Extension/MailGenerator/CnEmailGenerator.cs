@@ -91,9 +91,16 @@ namespace xDC_Web.Extension.MailGenerator
                     mailMessage.To.Add(recipient);
                 }
 
+                var ccConfig = Config.NotificationTsCnEmailCc;
+                var ccList = ccConfig.Split(';').ToList();
+                foreach (var cc in ccList.Where(recipient => !string.IsNullOrEmpty(recipient)))
+                {
+                    mailMessage.CC.Add(cc);
+                }
+
                 mailMessage.From = new MailAddress(senderEmail);
                 mailMessage.Headers.Add("X-Unsent", "1");
-                mailMessage.Subject = Config.NotificationTsCnEmailSubject;
+                mailMessage.Subject = Common.MailSubjectWithDate(Config.NotificationTsCnEmailSubject);
 
                 mailMessage.Body = MailBody(formId);
                 mailMessage.IsBodyHtml = true;

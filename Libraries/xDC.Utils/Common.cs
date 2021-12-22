@@ -527,6 +527,11 @@ namespace xDC.Utils
             }
         }
 
+        public static string MailSubjectWithDate(string subject)
+        {
+            return $"{subject} [{DateTime.Now:dd/MM/yyyy}]";
+        }
+
         #region Audit
 
         public static class ActionType

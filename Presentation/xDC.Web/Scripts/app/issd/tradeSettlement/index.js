@@ -2,7 +2,7 @@
 
     $(function () {
 
-        var $issdGrid, $issdGridFilterBtn, $newFormBtn, $consolidatedTradeSettlementGrid;
+        var $issdGrid, $issdGridFilterBtn, $newFormBtn, $consolidatedTradeSettlementGrid, $filterStatusSb, $clearFilterBtn;
 
         var statuses = [
             {
@@ -42,6 +42,8 @@
                 "DisplayName": "H - Others"
             }
         ];
+
+        var formStatus = ["All Statuses", "Approved", "Draft", "Pending Approval", "Rejected", "Pending Approval (Resubmission)", "Rejected"];
         
         $issdGrid = $("#issdGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
@@ -331,6 +333,27 @@
             }
         }).dxDataGrid("instance");
 
+        $filterStatusSb = $("#filterStatusSb").dxSelectBox({
+            dataSource: formStatus,
+            value: formStatus[0],
+            onValueChanged: function (data) {
+                if (data.value == "All Statuses") {
+                    if ($issdGridFilterBtn.option("value") !== "All") {
+                        $issdGrid.filter(["!", ["formStatus", "=", data.value]], "and", ["formType", "=", $issdGridFilterBtn.option("value")]);
+                    } else {
+                        $issdGrid.filter(["!", ["formStatus", "=", data.value]]);
+                    }
+
+                } else {
+                    if ($issdGridFilterBtn.option("value") !== "All") {
+                        $issdGrid.filter(["formStatus", "=", data.value], "and", ["formType", "=", $issdGridFilterBtn.option("value")]);
+                    } else {
+                        $issdGrid.filter(["formStatus", "=", data.value]);
+                    }
+                }
+            }
+        }).dxSelectBox("instance");
+
         $issdGridFilterBtn = $("#filterformBtn").dxSelectBox({
             dataSource: statuses,
             value: statuses[0].RefName,
@@ -338,12 +361,30 @@
             valueExpr: "RefName",
             onValueChanged: function (data) {
                 if (data.value == "All") {
-                    $issdGrid.clearFilter();
+                    if ($filterStatusSb.option("value") !== "All Statuses") {
+                        $issdGrid.filter(["!", ["formType", "=", data.value]], "and", ["formStatus", "=", $filterStatusSb.option("value")]);
+                    } else {
+                        $issdGrid.filter(["!", ["formType", "=", data.value]]);
+                    }
                 } else {
-                    $issdGrid.filter(["formType", "=", data.value]);
+                    if ($filterStatusSb.option("value") !== "All Statuses") {
+                        $issdGrid.filter(["formType", "=", data.value], "and", ["formStatus", "=", $filterStatusSb.option("value")]);
+                    } else {
+                        $issdGrid.filter(["formType", "=", data.value]);
+                    }
                 }
             }
-        });
+        }).dxSelectBox("instance");
+
+        $clearFilterBtn = $("#clearFilterBtn").dxButton({
+            icon: "refresh",
+            hint: "Clear filter",
+            onClick() {
+                $issdGrid.clearFilter();
+                $issdGridFilterBtn.option("value", statuses[0].RefName);
+                $filterStatusSb.option("value", formStatus[0]);
+            }
+        }).dxButton("instance");
 
         $newFormBtn = $("#newFormBtn").dxDropDownButton({
             text: "New Trade Settlement",

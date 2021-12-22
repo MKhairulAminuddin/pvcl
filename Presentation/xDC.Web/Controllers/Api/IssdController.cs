@@ -441,6 +441,9 @@ namespace xDC_Web.Controllers.Api
                     {
                         isResubmissionFromApproved = true;
 
+                        new AuditService().AuditForm_ReassignApprover(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                            form.ApprovedBy, inputs.Approver);
+                        
                         form.ApprovedBy = inputs.Approver;
                         form.ApprovedDate = null; // empty the date as this is new submission
                         form.FormStatus = Common.FormStatus.PendingApproval;
@@ -450,13 +453,31 @@ namespace xDC_Web.Controllers.Api
                     }
                     
                     var getTradeItems = db.ISSD_TradeSettlement.Where(x =>
-                        x.FormId == form.Id);
+                        x.FormId == form.Id).ToList();
 
                     var cc_itemBefore = getTradeItems;
                     var cc_itemBeforeList = cc_itemBefore.ToList();
 
                     if (inputs.Equity != null)
                     {
+                        // delete from existing
+                        if (inputs.Equity.Any())
+                        {
+                            var itemExistInGrid =
+                                inputs.Equity.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                            var removedItems =
+                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                            if (removedItems.Any())
+                            {
+                                foreach (var item in removedItems)
+                                {
+                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        item.InstrumentCode);
+                                }
+                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
+                            }
+                        }
+
                         foreach (var item in inputs.Equity)
                         {
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
@@ -526,6 +547,24 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.Bond != null)
                     {
+                        // delete from existing
+                        if (inputs.Bond.Any())
+                        {
+                            var itemExistInGrid =
+                                inputs.Bond.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                            var removedItems =
+                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                            if (removedItems.Any())
+                            {
+                                foreach (var item in removedItems)
+                                {
+                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        item.InstrumentCode);
+                                }
+                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
+                            }
+                        }
+
                         foreach (var item in inputs.Bond)
                         {
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
@@ -603,6 +642,24 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.Cp != null)
                     {
+                        // delete from existing
+                        if (inputs.Cp.Any())
+                        {
+                            var itemExistInGrid =
+                                inputs.Cp.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                            var removedItems =
+                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                            if (removedItems.Any())
+                            {
+                                foreach (var item in removedItems)
+                                {
+                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        item.InstrumentCode);
+                                }
+                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
+                            }
+                        }
+
                         foreach (var item in inputs.Cp)
                         {
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
@@ -672,6 +729,24 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.NotesPaper != null)
                     {
+                        // delete from existing
+                        if (inputs.NotesPaper.Any())
+                        {
+                            var itemExistInGrid =
+                                inputs.NotesPaper.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                            var removedItems =
+                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                            if (removedItems.Any())
+                            {
+                                foreach (var item in removedItems)
+                                {
+                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        item.InstrumentCode);
+                                }
+                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
+                            }
+                        }
+
                         foreach (var item in inputs.NotesPaper)
                         {
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
@@ -741,6 +816,24 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.Repo != null)
                     {
+                        // delete from existing
+                        if (inputs.Repo.Any())
+                        {
+                            var itemExistInGrid =
+                                inputs.Repo.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                            var removedItems =
+                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                            if (removedItems.Any())
+                            {
+                                foreach (var item in removedItems)
+                                {
+                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        item.InstrumentCode);
+                                }
+                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
+                            }
+                        }
+
                         foreach (var item in inputs.Repo)
                         {
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
@@ -802,6 +895,24 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.Coupon != null)
                     {
+                        // delete from existing
+                        if (inputs.Coupon.Any())
+                        {
+                            var itemExistInGrid =
+                                inputs.Coupon.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                            var removedItems =
+                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                            if (removedItems.Any())
+                            {
+                                foreach (var item in removedItems)
+                                {
+                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        item.InstrumentCode);
+                                }
+                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
+                            }
+                        }
+
                         foreach (var item in inputs.Coupon)
                         {
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
@@ -863,6 +974,24 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.Mtm != null)
                     {
+                        // delete from existing
+                        if (inputs.Mtm.Any())
+                        {
+                            var itemExistInGrid =
+                                inputs.Mtm.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                            var removedItems =
+                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                            if (removedItems.Any())
+                            {
+                                foreach (var item in removedItems)
+                                {
+                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        item.InstrumentCode);
+                                }
+                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
+                            }
+                        }
+
                         foreach (var item in inputs.Mtm)
                         {
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
@@ -916,6 +1045,24 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.FxSettlement != null)
                     {
+                        // delete from existing
+                        if (inputs.FxSettlement.Any())
+                        {
+                            var itemExistInGrid =
+                                inputs.FxSettlement.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                            var removedItems =
+                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                            if (removedItems.Any())
+                            {
+                                foreach (var item in removedItems)
+                                {
+                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        item.InstrumentCode);
+                                }
+                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
+                            }
+                        }
+
                         foreach (var item in inputs.FxSettlement)
                         {
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
@@ -969,6 +1116,24 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.Altid != null)
                     {
+                        // delete from existing
+                        if (inputs.Altid.Any())
+                        {
+                            var itemExistInGrid =
+                                inputs.Altid.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                            var removedItems =
+                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                            if (removedItems.Any())
+                            {
+                                foreach (var item in removedItems)
+                                {
+                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        item.InstrumentCode);
+                                }
+                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
+                            }
+                        }
+
                         foreach (var item in inputs.Altid)
                         {
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
@@ -1022,6 +1187,24 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.ContributionCredited != null)
                     {
+                        // delete from existing
+                        if (inputs.ContributionCredited.Any())
+                        {
+                            var itemExistInGrid =
+                                inputs.ContributionCredited.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                            var removedItems =
+                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                            if (removedItems.Any())
+                            {
+                                foreach (var item in removedItems)
+                                {
+                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        item.InstrumentCode);
+                                }
+                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
+                            }
+                        }
+
                         foreach (var item in inputs.ContributionCredited)
                         {
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
@@ -1068,6 +1251,24 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.Fees != null)
                     {
+                        // delete from existing
+                        if (inputs.Fees.Any())
+                        {
+                            var itemExistInGrid =
+                                inputs.Fees.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                            var removedItems =
+                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                            if (removedItems.Any())
+                            {
+                                foreach (var item in removedItems)
+                                {
+                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        item.InstrumentCode);
+                                }
+                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
+                            }
+                        }
+
                         foreach (var item in inputs.Fees)
                         {
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
@@ -1121,6 +1322,24 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.Others != null)
                     {
+                        // delete from existing
+                        if (inputs.Others.Any())
+                        {
+                            var itemExistInGrid =
+                                inputs.Others.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                            var removedItems =
+                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                            if (removedItems.Any())
+                            {
+                                foreach (var item in removedItems)
+                                {
+                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
+                                        item.InstrumentCode);
+                                }
+                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
+                            }
+                        }
+
                         foreach (var item in inputs.Others)
                         {
                             var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
