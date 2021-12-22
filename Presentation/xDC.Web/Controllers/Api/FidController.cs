@@ -310,7 +310,7 @@ namespace xDC_Web.Controllers.Api
                     var result = db.FID_Treasury.Select(x => new TreasuryGridVm
                     {
                         Id = x.Id,
-                        TradeDate = x.ValueDate,
+                        ValueDate = x.ValueDate,
                         Currency = x.Currency,
                         FormStatus = x.FormStatus,
                         PreparedBy = x.PreparedBy,

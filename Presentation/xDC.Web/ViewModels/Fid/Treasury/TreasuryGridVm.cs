@@ -5,7 +5,7 @@ namespace xDC_Web.ViewModels.Fid.Treasury
     public class TreasuryGridVm
     {
         public int Id { get; set; }
-        public DateTime? TradeDate { get; set; }
+        public DateTime? ValueDate { get; set; }
         public string Currency { get; set; }
         public string FormStatus { get; set; }
         public string PreparedBy { get; set; }
