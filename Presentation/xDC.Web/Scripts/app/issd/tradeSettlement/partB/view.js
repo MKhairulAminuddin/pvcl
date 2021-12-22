@@ -223,8 +223,8 @@
                     allowEditing: false
                 },
                 {
-                    dataField: "couponType",
-                    caption: "Coupon Type"
+                    dataField: "bondType",
+                    caption: "Bond Type"
                 },
                 {
                     dataField: "remarks",
