@@ -588,22 +588,20 @@ namespace xDC.Services
 
             var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}",
                 Config.EmailApplicationUrl, formId);
-
+            
             var bodyBuilder = new StringBuilder();
+
+            bodyBuilder.Append($"<p>Dear {approverName}, </p>");
+            bodyBuilder.AppendLine($"<p>A {formType} form is pending for your approval. </p>");
+            bodyBuilder.AppendLine($"<p>Click <a href='{approvalPageUrl}'>here</a> to view.</p>");
 
             if (formType == Common.FormType.FID_TREASURY)
             {
-                bodyBuilder.AppendLine(PendingApprovalBodyTreasury(formId, approverName));
+                bodyBuilder.AppendLine(TreasuryTable(formId));
             }
             else if (Common.IsTsFormType(formType))
             {
-                bodyBuilder.AppendLine(PendingApprovalBodyTs(formId, approverName));
-            }
-            else
-            {
-                bodyBuilder.Append($"<p>Hi {approverName}, </p>");
-                bodyBuilder.AppendLine($"<p>A {formType} form is pending for your approval. </p>");
-                bodyBuilder.AppendLine($"<p>Click <a href='{approvalPageUrl}'>here</a> to view.</p>");
+                bodyBuilder.AppendLine(TsTable(formId));
             }
             
             if (!string.IsNullOrEmpty(notes))
@@ -644,6 +642,15 @@ namespace xDC.Services
             else
             {
                 bodyBuilder.AppendLine($"<p>Bad News! Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#E74C3C;'>{formStatus}</span>");
+            }
+            
+            if (formType == Common.FormType.FID_TREASURY)
+            {
+                bodyBuilder.AppendLine(TreasuryTable(formId));
+            }
+            else if (Common.IsTsFormType(formType))
+            {
+                bodyBuilder.AppendLine(TsTable(formId));
             }
 
             if (!string.IsNullOrEmpty(notes))
@@ -864,19 +871,11 @@ namespace xDC.Services
 
         }
 
-        private string PendingApprovalBodyTreasury(int formId, string approverName)
+        private string TreasuryTable(int formId)
         {
             using (var db = new kashflowDBEntities())
             {
-                var theForm = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
-
-                var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(theForm.FormType) + "{1}",
-                    Config.EmailApplicationUrl, formId);
-
                 var bodyBuilder = new StringBuilder();
-                bodyBuilder.Append($"<p>Dear {approverName}, </p>");
-                bodyBuilder.AppendLine($"<p>A {theForm.FormType} form is pending for your approval. </p>");
-                bodyBuilder.AppendLine($"<p>Click <a href='{approvalPageUrl}'>here</a> to view.</p>");
 
                 var sb = new StringBuilder();
                 
@@ -1090,19 +1089,13 @@ namespace xDC.Services
             }
         }
 
-        private string PendingApprovalBodyTs(int formId, string approverName)
+        private string TsTable(int formId)
         {
             using (var db = new kashflowDBEntities())
             {
                 var theForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
-
-                var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(theForm.FormType) + "{1}",
-                    Config.EmailApplicationUrl, formId);
-
+                
                 var bodyBuilder = new StringBuilder();
-                bodyBuilder.Append($"<p>Dear {approverName}, </p>");
-                bodyBuilder.AppendLine($"<p>A {theForm.FormType} form is pending for your approval. </p>");
-                bodyBuilder.AppendLine($"<p>Click <a href='{approvalPageUrl}'>here</a> to view.</p>");
 
                 var sb = new StringBuilder();
 
