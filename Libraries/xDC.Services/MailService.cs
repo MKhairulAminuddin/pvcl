@@ -589,10 +589,22 @@ namespace xDC.Services
                 Config.EmailApplicationUrl, formId);
 
             var bodyBuilder = new StringBuilder();
-            bodyBuilder.Append($"<p>Hi {approverName}, </p>");
-            bodyBuilder.AppendLine($"<p>A {formType} form is pending for your approval. </p>");
-            bodyBuilder.AppendLine($"<p>Click <a href='{approvalPageUrl}'>here</a> to view.</p>");
 
+            if (formType == Common.FormType.FID_TREASURY)
+            {
+                bodyBuilder.AppendLine(PendingApprovalBodyTreasury(formId, approverName));
+            }
+            else if (Common.IsTsFormType(formType))
+            {
+                bodyBuilder.AppendLine(PendingApprovalBodyTs(formId, approverName));
+            }
+            else
+            {
+                bodyBuilder.Append($"<p>Hi {approverName}, </p>");
+                bodyBuilder.AppendLine($"<p>A {formType} form is pending for your approval. </p>");
+                bodyBuilder.AppendLine($"<p>Click <a href='{approvalPageUrl}'>here</a> to view.</p>");
+            }
+            
             if (!string.IsNullOrEmpty(notes))
             {
                 bodyBuilder.AppendLine($"<br/><br/><p style='font-weight:bold'>Notes from preparer: </p>");
@@ -850,6 +862,748 @@ namespace xDC.Services
             return output;
 
         }
-        
+
+        private string PendingApprovalBodyTreasury(int formId, string approverName)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var theForm = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
+
+                var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(theForm.FormType) + "{1}",
+                    Config.EmailApplicationUrl, formId);
+
+                var bodyBuilder = new StringBuilder();
+                bodyBuilder.Append($"<p>Dear {approverName}, </p>");
+                bodyBuilder.AppendLine($"<p>A {theForm.FormType} form is pending for your approval. </p>");
+                bodyBuilder.AppendLine($"<p>Click <a href='{approvalPageUrl}'>here</a> to view.</p>");
+
+                var sb = new StringBuilder();
+                
+                var treasuryDepositInflow = db.FID_Treasury_Deposit
+                    .Where(x => x.FormId == formId && x.CashflowType == Common.Cashflow.Inflow)
+                    .ToList();
+
+                var treasuryMmiInflow = db.FID_Treasury_MMI
+                    .Where(x => x.FormId == formId && x.CashflowType == Common.Cashflow.Inflow)
+                    .ToList();
+
+                var treasuryDepositOutflow = db.FID_Treasury_Deposit
+                    .Where(x => x.FormId == formId && x.CashflowType == Common.Cashflow.Outflow)
+                    .ToList();
+
+                var treasuryMmiOutflow = db.FID_Treasury_MMI
+                    .Where(x => x.FormId == formId && x.CashflowType == Common.Cashflow.Outflow)
+                    .ToList();
+
+                if (treasuryDepositInflow.Any())
+                {
+                    sb.AppendLine("<br/><b>Outflow Deposit</b><br/>");
+
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("Dealer");
+                            row.AddCell("Bank");
+                            row.AddCell("Trade Date");
+                            row.AddCell("Value Date");
+                            row.AddCell("Maturity Date");
+                            row.AddCell("Principal");
+                            row.AddCell("Tenor (day)");
+                            row.AddCell("Interest/ Profit Receivable");
+                            row.AddCell("Principal + Interest/ Profit Receivable");
+                            row.AddCell("Asset Type");
+                            row.AddCell("Repo Tag");
+                            row.AddCell("Contact Person");
+                            row.AddCell("Notes");
+                        }
+
+                        foreach (var item in treasuryDepositInflow)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(item.Dealer);
+                                row.AddCell(item.Bank);
+                                row.AddCell(item.TradeDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.ValueDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.MaturityDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.Principal.ToString("N"));
+                                row.AddCell(item.Tenor.ToString());
+                                row.AddCell(item.IntProfitReceivable.ToString("N"));
+                                row.AddCell(item.PrincipalIntProfitReceivable.ToString("N"));
+                                row.AddCell(item.AssetType);
+                                row.AddCell(item.RepoTag);
+                                row.AddCell(item.ContactPerson);
+                                row.AddCell(item.Notes);
+                            }
+                        }
+                    }
+                }
+
+                if (treasuryMmiInflow.Any())
+                {
+                    sb.AppendLine("<br/><b>Inflow Money Market</b><br/>");
+
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("Dealer");
+                            row.AddCell("Issuer");
+                            row.AddCell("Product Type");
+                            row.AddCell("CounterParty");
+                            row.AddCell("Trade Date");
+                            row.AddCell("Value Date");
+                            row.AddCell("Maturity Date");
+                            row.AddCell("Tenor");
+                            row.AddCell("Nominal");
+                            row.AddCell("Sell Rate/ Yield (%)");
+                            row.AddCell("Price");
+                            row.AddCell("Purchase Proceeds");
+                            row.AddCell("Interest/ Dividend Receivable");
+                            row.AddCell("Proceeds");
+                            row.AddCell("Cert No/ Stock Code");
+                        }
+
+                        foreach (var item in treasuryMmiInflow)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(item.Dealer);
+                                row.AddCell(item.Issuer);
+                                row.AddCell(item.ProductType);
+                                row.AddCell(item.CounterParty);
+                                row.AddCell(item.ValueDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.TradeDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.MaturityDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.HoldingDayTenor.ToString());
+                                row.AddCell(item.Nominal.ToString("N"));
+                                row.AddCell(item.SellPurchaseRateYield.ToString("N"));
+                                row.AddCell(item.Price.ToString("N"));
+                                row.AddCell(item.PurchaseProceeds.ToString("N"));
+                                row.AddCell(item.IntDividendReceivable.ToString("N"));
+                                row.AddCell(item.Proceeds.ToString("N"));
+                                row.AddCell(item.CertNoStockCode);
+                            }
+                        }
+                    }
+                }
+
+                if (treasuryDepositOutflow.Any())
+                {
+                    sb.AppendLine("<br/><b>Outflow Deposit</b><br/>");
+
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#F39C12", "black"))
+                        {
+                            row.AddCell("Dealer");
+                            row.AddCell("Bank");
+                            row.AddCell("Trade Date");
+                            row.AddCell("Value Date");
+                            row.AddCell("Maturity Date");
+                            row.AddCell("Principal");
+                            row.AddCell("Tenor (day)");
+                            row.AddCell("Interest/ Profit Receivable");
+                            row.AddCell("Principal + Interest/ Profit Receivable");
+                            row.AddCell("Asset Type");
+                            row.AddCell("Repo Tag");
+                            row.AddCell("Contact Person");
+                            row.AddCell("Notes");
+                        }
+
+                        foreach (var item in treasuryDepositOutflow)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(item.Dealer);
+                                row.AddCell(item.Bank);
+                                row.AddCell(item.TradeDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.ValueDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.MaturityDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.Principal.ToString("N"));
+                                row.AddCell(item.Tenor.ToString());
+                                row.AddCell(item.IntProfitReceivable.ToString("N"));
+                                row.AddCell(item.PrincipalIntProfitReceivable.ToString("N"));
+                                row.AddCell(item.AssetType);
+                                row.AddCell(item.RepoTag);
+                                row.AddCell(item.ContactPerson);
+                                row.AddCell(item.Notes);
+                            }
+                        }
+                    }
+                }
+
+                if (treasuryMmiOutflow.Any())
+                {
+                    sb.AppendLine("<br/><b>Outflow Money Market</b><br/>");
+
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#F39C12", "black"))
+                        {
+                            row.AddCell("Dealer");
+                            row.AddCell("Issuer");
+                            row.AddCell("Product Type");
+                            row.AddCell("CounterParty");
+                            row.AddCell("Trade Date");
+                            row.AddCell("Value Date");
+                            row.AddCell("Maturity Date");
+                            row.AddCell("Tenor");
+                            row.AddCell("Nominal");
+                            row.AddCell("Sell Rate/ Yield (%)");
+                            row.AddCell("Price");
+                            row.AddCell("Purchase Proceeds");
+                            row.AddCell("Interest/ Dividend Receivable");
+                            row.AddCell("Proceeds");
+                            row.AddCell("Cert No/ Stock Code");
+                        }
+
+                        foreach (var item in treasuryMmiOutflow)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(item.Dealer);
+                                row.AddCell(item.Issuer);
+                                row.AddCell(item.ProductType);
+                                row.AddCell(item.CounterParty);
+                                row.AddCell(item.TradeDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.ValueDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.MaturityDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.HoldingDayTenor.ToString());
+                                row.AddCell(item.Nominal.ToString("N"));
+                                row.AddCell(item.SellPurchaseRateYield.ToString("N"));
+                                row.AddCell(item.Price.ToString("N"));
+                                row.AddCell(item.PurchaseProceeds.ToString("N"));
+                                row.AddCell(item.IntDividendReceivable.ToString("N"));
+                                row.AddCell(item.Proceeds.ToString("N"));
+                                row.AddCell(item.CertNoStockCode);
+                            }
+                        }
+                    }
+                }
+
+                bodyBuilder.Append(sb);
+
+                return bodyBuilder.ToString();
+            }
+        }
+
+        private string PendingApprovalBodyTs(int formId, string approverName)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var theForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
+
+                var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(theForm.FormType) + "{1}",
+                    Config.EmailApplicationUrl, formId);
+
+                var bodyBuilder = new StringBuilder();
+                bodyBuilder.Append($"<p>Dear {approverName}, </p>");
+                bodyBuilder.AppendLine($"<p>A {theForm.FormType} form is pending for your approval. </p>");
+                bodyBuilder.AppendLine($"<p>Click <a href='{approvalPageUrl}'>here</a> to view.</p>");
+
+                var sb = new StringBuilder();
+
+                var tsEquity = db.ISSD_TradeSettlement
+                    .Where(x => x.FormId == formId && x.InstrumentType == Common.TsItemCategory.Equity)
+                    .ToList();
+
+                var tsBond = db.ISSD_TradeSettlement
+                    .Where(x => x.FormId == formId && x.InstrumentType == Common.TsItemCategory.Bond)
+                    .ToList();
+
+                var tsCoupon = db.ISSD_TradeSettlement
+                    .Where(x => x.FormId == formId && x.InstrumentType == Common.TsItemCategory.Coupon)
+                    .ToList();
+
+                var tsCp = db.ISSD_TradeSettlement
+                    .Where(x => x.FormId == formId && x.InstrumentType == Common.TsItemCategory.Cp)
+                    .ToList();
+
+                var tsRepo = db.ISSD_TradeSettlement
+                    .Where(x => x.FormId == formId && x.InstrumentType == Common.TsItemCategory.Repo)
+                    .ToList();
+
+                var tsNotesPapers = db.ISSD_TradeSettlement
+                    .Where(x => x.FormId == formId && x.InstrumentType == Common.TsItemCategory.NotesPapers)
+                    .ToList();
+
+                var tsMtm = db.ISSD_TradeSettlement
+                    .Where(x => x.FormId == formId && x.InstrumentType == Common.TsItemCategory.Mtm)
+                    .ToList();
+
+                var tsFx = db.ISSD_TradeSettlement
+                    .Where(x => x.FormId == formId && x.InstrumentType == Common.TsItemCategory.Fx)
+                    .ToList();
+
+                var tsAltid = db.ISSD_TradeSettlement
+                    .Where(x => x.FormId == formId && x.InstrumentType == Common.TsItemCategory.Altid)
+                    .ToList();
+
+                var tsFees = db.ISSD_TradeSettlement
+                    .Where(x => x.FormId == formId && x.InstrumentType == Common.TsItemCategory.Fees)
+                    .ToList();
+
+                var tsCn = db.ISSD_TradeSettlement
+                    .Where(x => x.FormId == formId && x.InstrumentType == Common.TsItemCategory.Cn)
+                    .ToList();
+
+                var tsOthers = db.ISSD_TradeSettlement
+                    .Where(x => x.FormId == formId && x.InstrumentType == Common.TsItemCategory.Others)
+                    .ToList();
+
+
+                if (tsEquity.Any())
+                {
+                    sb.AppendLine($"<br/><b>{Common.TsItemCategory.Equity}</b><br/>");
+
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell("Settlement Date");
+                            row.AddCell(Common.TsItemCategory.Equity);
+                            row.AddCell("Stock Code/ ISIN");
+                            row.AddCell("Maturity (+)");
+                            row.AddCell("Sales (+)");
+                            row.AddCell("Purchase (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tsEquity)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(theForm.SettlementDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.StockCode);
+                                row.AddCell(item.Maturity.ToString("N"));
+                                row.AddCell(item.Sales.ToString("N"));
+                                row.AddCell(item.Purchase.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tsBond.Any())
+                {
+                    sb.AppendLine($"<br/><b>{Common.TsItemCategory.Bond}</b><br/>");
+
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell("Settlement Date");
+                            row.AddCell(Common.TsItemCategory.Bond);
+                            row.AddCell("Stock Code/ ISIN");
+                            row.AddCell("Bond Type");
+                            row.AddCell("Maturity (+)");
+                            row.AddCell("Sales (+)");
+                            row.AddCell("Purchase (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tsBond)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(theForm.SettlementDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.StockCode);
+                                row.AddCell(item.BondType);
+                                row.AddCell(item.Maturity.ToString("N"));
+                                row.AddCell(item.Sales.ToString("N"));
+                                row.AddCell(item.Purchase.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tsCoupon.Any())
+                {
+                    sb.AppendLine($"<br/><b>{Common.TsItemCategory.Coupon}</b><br/>");
+
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell("Settlement Date");
+                            row.AddCell(Common.TsItemCategory.Coupon);
+                            row.AddCell("Stock Code/ ISIN");
+                            row.AddCell("Coupon Type");
+                            row.AddCell("Maturity (+)");
+                            row.AddCell("Sales (+)");
+                            row.AddCell("Purchase (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tsCoupon)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(theForm.SettlementDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.StockCode);
+                                row.AddCell(item.CouponType);
+                                row.AddCell(item.Maturity.ToString("N"));
+                                row.AddCell(item.Sales.ToString("N"));
+                                row.AddCell(item.Purchase.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tsCp.Any())
+                {
+                    sb.AppendLine($"<br/><b>{Common.TsItemCategory.Cp}</b><br/>");
+
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell("Settlement Date");
+                            row.AddCell(Common.TsItemCategory.Cp);
+                            row.AddCell("Stock Code/ ISIN");
+                            row.AddCell("Maturity (+)");
+                            row.AddCell("Sales (+)");
+                            row.AddCell("Purchase (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tsCp)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(theForm.SettlementDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.StockCode);
+                                row.AddCell(item.Maturity.ToString("N"));
+                                row.AddCell(item.Sales.ToString("N"));
+                                row.AddCell(item.Purchase.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tsNotesPapers.Any())
+                {
+                    sb.AppendLine($"<br/><b>{Common.TsItemCategory.NotesPapers}</b><br/>");
+
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell("Settlement Date");
+                            row.AddCell(Common.TsItemCategory.NotesPapers);
+                            row.AddCell("Stock Code/ ISIN");
+                            row.AddCell("Maturity (+)");
+                            row.AddCell("Sales (+)");
+                            row.AddCell("Purchase (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tsNotesPapers)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(theForm.SettlementDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.StockCode);
+                                row.AddCell(item.Maturity.ToString("N"));
+                                row.AddCell(item.Sales.ToString("N"));
+                                row.AddCell(item.Purchase.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tsRepo.Any())
+                {
+                    sb.AppendLine($"<br/><b>{Common.TsItemCategory.Repo}</b><br/>");
+
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell("Settlement Date");
+                            row.AddCell(Common.TsItemCategory.Repo);
+                            row.AddCell("Stock Code/ ISIN");
+                            row.AddCell("First Leg (+)");
+                            row.AddCell("Second Leg (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tsRepo)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(theForm.SettlementDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.StockCode);
+                                row.AddCell(item.FirstLeg.ToString("N"));
+                                row.AddCell(item.SecondLeg.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tsMtm.Any())
+                {
+                    sb.AppendLine($"<br/><b>{Common.TsItemCategory.Mtm}</b><br/>");
+
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell("Settlement Date");
+                            row.AddCell(Common.TsItemCategory.Mtm);
+                            row.AddCell("Amount (+)");
+                            row.AddCell("Amount (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tsMtm)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(theForm.SettlementDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.AmountPlus.ToString("N"));
+                                row.AddCell(item.AmountMinus.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tsFx.Any())
+                {
+                    sb.AppendLine($"<br/><b>{Common.TsItemCategory.Fx}</b><br/>");
+
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell("Settlement Date");
+                            row.AddCell(Common.TsItemCategory.Fx);
+                            row.AddCell("Amount (+)");
+                            row.AddCell("Amount (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tsFx)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(theForm.SettlementDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.AmountPlus.ToString("N"));
+                                row.AddCell(item.AmountMinus.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tsAltid.Any())
+                {
+                    sb.AppendLine($"<br/><b>{Common.TsItemCategory.Altid}</b><br/>");
+
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell("Settlement Date");
+                            row.AddCell(Common.TsItemCategory.Altid);
+                            row.AddCell("Amount (+)");
+                            row.AddCell("Amount (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tsAltid)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(theForm.SettlementDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.AmountPlus.ToString("N"));
+                                row.AddCell(item.AmountMinus.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tsFees.Any())
+                {
+                    sb.AppendLine($"<br/><b>{Common.TsItemCategory.Fees}</b><br/>");
+
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell("Settlement Date");
+                            row.AddCell(Common.TsItemCategory.Fees);
+                            row.AddCell("Amount (+)");
+                            row.AddCell("Amount (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tsFees)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(theForm.SettlementDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.AmountPlus.ToString("N"));
+                                row.AddCell(item.AmountMinus.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tsCn.Any())
+                {
+                    sb.AppendLine($"<br/><b>{Common.TsItemCategory.Cn}</b><br/>");
+
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell("Settlement Date");
+                            row.AddCell(Common.TsItemCategory.Cn);
+                            row.AddCell("Amount (+)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tsCn)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(theForm.SettlementDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.AmountPlus.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tsOthers.Any())
+                {
+                    sb.AppendLine($"<br/><b>{Common.TsItemCategory.Others}</b><br/>");
+
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell("Settlement Date");
+                            row.AddCell(Common.TsItemCategory.Others);
+                            row.AddCell("Amount (+)");
+                            row.AddCell("Amount (-)");
+                            row.AddCell("Type");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tsOthers)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(theForm.SettlementDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.AmountPlus.ToString("N"));
+                                row.AddCell(item.AmountMinus.ToString("N"));
+                                row.AddCell(item.OthersType);
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                bodyBuilder.Append(sb);
+
+                return bodyBuilder.ToString();
+            }
+        }
     }
 }

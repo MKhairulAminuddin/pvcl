@@ -300,11 +300,6 @@ namespace xDC_Web.Controllers.Api
 
                 using (var db = new kashflowDBEntities())
                 {
-                    if (TradeSettlementSvc.NewFormRules(db, settlementDateConverted.Value.Date, inputs.Currency, Common.FormTypeMapping(inputs.FormType), out var errorMessage))
-                    {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, errorMessage);
-                    }
-
                     var newFormHeader = new ISSD_FormHeader()
                     {
                         FormType = Common.FormTypeMapping(inputs.FormType),
@@ -418,12 +413,7 @@ namespace xDC_Web.Controllers.Api
                     {
                         return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not found!");
                     }
-
-                    if (TradeSettlementSvc.NewFormRules(db, form.SettlementDate.Value, inputs.Currency, Common.FormTypeMapping(inputs.FormType), out var errorMessage))
-                    {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, errorMessage);
-                    }
-
+                    
                     if (inputs.IsSaveAdminEdit)
                     {
                         form.AdminEditted = true;

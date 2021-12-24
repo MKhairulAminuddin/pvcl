@@ -532,6 +532,13 @@ namespace xDC.Utils
             return $"{subject} [{DateTime.Now:dd/MM/yyyy}]";
         }
 
+        public static bool IsTsFormType(string formType)
+        {
+            return formType == FormType.ISSD_TS_A || formType == FormType.ISSD_TS_B || formType == FormType.ISSD_TS_C || 
+                   formType == FormType.ISSD_TS_D || formType == FormType.ISSD_TS_E || formType == FormType.ISSD_TS_F || 
+                   formType == FormType.ISSD_TS_G || formType == FormType.ISSD_TS_H;
+        }
+
         #region Audit
 
         public static class ActionType
