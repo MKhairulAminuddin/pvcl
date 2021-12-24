@@ -299,7 +299,7 @@
                                     dataField: "bondType",
                                     caption: "Bond Type",
                                     lookup: {
-                                        dataSource: ["MGS", "PDS"]
+                                        dataSource: ["GOV", "CORP"]
                                     },
                                     validationRules: [{ type: 'required' }]
                                 },
@@ -939,7 +939,7 @@
                                     dataField: "couponType",
                                     caption: "Coupon Type",
                                     lookup: {
-                                        dataSource: ["MGS", "PDS"]
+                                        dataSource: ["GOV", "CORP"]
                                     }
                                 },
                                 {
