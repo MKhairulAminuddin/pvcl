@@ -521,6 +521,8 @@ namespace xDC_Web.Controllers.Api
                                     foundItem.Remarks = item.Remarks;
                                 }
 
+                                foundItem.InflowAmount = SumInflowAmount(item);
+                                foundItem.OutflowAmount = SumOutflowAmount(item);
                                 foundItem.ModifiedBy = User.Identity.Name;
                                 foundItem.ModifiedDate = DateTime.Now;
                             }
@@ -616,6 +618,8 @@ namespace xDC_Web.Controllers.Api
                                     foundItem.Remarks = item.Remarks;
                                 }
 
+                                foundItem.InflowAmount = SumInflowAmount(item);
+                                foundItem.OutflowAmount = SumOutflowAmount(item);
                                 foundItem.ModifiedBy = User.Identity.Name;
                                 foundItem.ModifiedDate = DateTime.Now;
                             }
@@ -703,6 +707,8 @@ namespace xDC_Web.Controllers.Api
                                     foundItem.Remarks = item.Remarks;
                                 }
 
+                                foundItem.InflowAmount = SumInflowAmount(item);
+                                foundItem.OutflowAmount = SumOutflowAmount(item);
                                 foundItem.ModifiedBy = User.Identity.Name;
                                 foundItem.ModifiedDate = DateTime.Now;
                             }
@@ -790,6 +796,8 @@ namespace xDC_Web.Controllers.Api
                                     foundItem.Remarks = item.Remarks;
                                 }
 
+                                foundItem.InflowAmount = SumInflowAmount(item);
+                                foundItem.OutflowAmount = SumOutflowAmount(item);
                                 foundItem.ModifiedBy = User.Identity.Name;
                                 foundItem.ModifiedDate = DateTime.Now;
                             }
@@ -868,7 +876,9 @@ namespace xDC_Web.Controllers.Api
 
                                     foundItem.Remarks = item.Remarks;
                                 }
-                                
+
+                                foundItem.InflowAmount = SumInflowAmount(item);
+                                foundItem.OutflowAmount = SumOutflowAmount(item);
                                 foundItem.ModifiedBy = User.Identity.Name;
                                 foundItem.ModifiedDate = DateTime.Now;
                             }
@@ -948,6 +958,8 @@ namespace xDC_Web.Controllers.Api
                                     foundItem.CouponType = item.CouponType;
                                 }
 
+                                foundItem.InflowAmount = SumInflowAmount(item);
+                                foundItem.OutflowAmount = SumOutflowAmount(item);
                                 foundItem.ModifiedBy = User.Identity.Name;
                                 foundItem.ModifiedDate = DateTime.Now;
                             }
@@ -1019,6 +1031,8 @@ namespace xDC_Web.Controllers.Api
                                     foundItem.Remarks = item.Remarks;
                                 }
 
+                                foundItem.InflowAmount = SumInflowAmount(item);
+                                foundItem.OutflowAmount = SumOutflowAmount(item);
                                 foundItem.ModifiedBy = User.Identity.Name;
                                 foundItem.ModifiedDate = DateTime.Now;
                             }
@@ -1090,6 +1104,8 @@ namespace xDC_Web.Controllers.Api
                                     foundItem.Remarks = item.Remarks;
                                 }
 
+                                foundItem.InflowAmount = SumInflowAmount(item);
+                                foundItem.OutflowAmount = SumOutflowAmount(item);
                                 foundItem.ModifiedBy = User.Identity.Name;
                                 foundItem.ModifiedDate = DateTime.Now;
                             }
@@ -1161,6 +1177,8 @@ namespace xDC_Web.Controllers.Api
                                     foundItem.Remarks = item.Remarks;
                                 }
 
+                                foundItem.InflowAmount = SumInflowAmount(item);
+                                foundItem.OutflowAmount = SumOutflowAmount(item);
                                 foundItem.ModifiedBy = User.Identity.Name;
                                 foundItem.ModifiedDate = DateTime.Now;
                             }
@@ -1224,6 +1242,8 @@ namespace xDC_Web.Controllers.Api
                                     foundItem.Remarks = item.Remarks;
                                 }
 
+                                foundItem.InflowAmount = SumInflowAmount(item);
+                                foundItem.OutflowAmount = SumOutflowAmount(item);
                                 foundItem.ModifiedBy = User.Identity.Name;
                                 foundItem.ModifiedDate = DateTime.Now;
                             }
@@ -1296,6 +1316,8 @@ namespace xDC_Web.Controllers.Api
                                     foundItem.Remarks = item.Remarks;
                                 }
 
+                                foundItem.InflowAmount = SumInflowAmount(item);
+                                foundItem.OutflowAmount = SumOutflowAmount(item);
                                 foundItem.ModifiedBy = User.Identity.Name;
                                 foundItem.ModifiedDate = DateTime.Now;
                             }
@@ -1375,6 +1397,8 @@ namespace xDC_Web.Controllers.Api
                                     foundItem.OthersType = item.OthersType;
                                 }
 
+                                foundItem.InflowAmount = SumInflowAmount(item);
+                                foundItem.OutflowAmount = SumOutflowAmount(item);
                                 foundItem.ModifiedBy = User.Identity.Name;
                                 foundItem.ModifiedDate = DateTime.Now;
 
@@ -2141,6 +2165,16 @@ namespace xDC_Web.Controllers.Api
                 BondType = item.BondType
             };
 
+        }
+
+        private double SumInflowAmount(Trades item)
+        {
+            return (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg);
+        }
+
+        private double SumOutflowAmount(Trades item)
+        {
+            return (item.AmountMinus + item.Purchase + item.SecondLeg);
         }
 
         #endregion
