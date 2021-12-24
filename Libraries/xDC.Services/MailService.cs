@@ -876,6 +876,7 @@ namespace xDC.Services
             using (var db = new kashflowDBEntities())
             {
                 var bodyBuilder = new StringBuilder();
+                bodyBuilder.AppendLine();
 
                 var sb = new StringBuilder();
                 
@@ -897,7 +898,7 @@ namespace xDC.Services
 
                 if (treasuryDepositInflow.Any())
                 {
-                    sb.AppendLine("<br/><b>Outflow Deposit</b><br/>");
+                    sb.AppendLine("<br/><b>Fund Inflow - Deposit</b><br/>");
 
                     using (var table = new Common.Table(sb))
                     {
@@ -942,7 +943,7 @@ namespace xDC.Services
 
                 if (treasuryMmiInflow.Any())
                 {
-                    sb.AppendLine("<br/><b>Inflow Money Market</b><br/>");
+                    sb.AppendLine("<br/><b>Fund Inflow - Money Market</b><br/>");
 
                     using (var table = new Common.Table(sb))
                     {
@@ -991,7 +992,7 @@ namespace xDC.Services
 
                 if (treasuryDepositOutflow.Any())
                 {
-                    sb.AppendLine("<br/><b>Outflow Deposit</b><br/>");
+                    sb.AppendLine("<br/><b>Fund Outflow - Deposit</b><br/>");
 
                     using (var table = new Common.Table(sb))
                     {
@@ -1036,7 +1037,7 @@ namespace xDC.Services
 
                 if (treasuryMmiOutflow.Any())
                 {
-                    sb.AppendLine("<br/><b>Outflow Money Market</b><br/>");
+                    sb.AppendLine("<br/><b>Fund Outflow - Money Market</b><br/>");
 
                     using (var table = new Common.Table(sb))
                     {
