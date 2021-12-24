@@ -95,6 +95,7 @@
                             productType: x.productType,
                             purchaseProceeds: x.purchaseProceeds,
                             sellPurchaseRateYield: x.sellPurchaseRateYield,
+                            tradeDate: (x.tradeDate instanceof Date) ? x.tradeDate.toISOString() : x.tradeDate,
                             valueDate: (x.valueDate instanceof Date) ? x.valueDate.toISOString() : x.valueDate,
                             fcaAccount: x.fcaAccount
                         };
@@ -376,6 +377,16 @@
                     }
                 },
                 {
+                    dataField: "tradeDate",
+                    caption: "Trade Date",
+                    dataType: "date",
+                    format: "dd/MM/yyyy",
+                    editorOptions: {
+                        placeholder: "dd/MM/yyyy",
+                        showClearButton: true
+                    }
+                },
+                {
                     dataField: "valueDate",
                     caption: "Value Date",
                     dataType: "date",
@@ -590,6 +601,9 @@
                     };
                     e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
                 }
+            },
+            onInitNewRow: function (e) {
+                e.data.tradeDate = new Date();
             },
             showBorders: true,
             showRowLines: true,
@@ -953,6 +967,16 @@
                     }
                 },
                 {
+                    dataField: "tradeDate",
+                    caption: "Trade Date",
+                    dataType: "date",
+                    format: "dd/MM/yyyy",
+                    editorOptions: {
+                        placeholder: "dd/MM/yyyy",
+                        showClearButton: true
+                    }
+                },
+                {
                     dataField: "valueDate",
                     caption: "Value Date",
                     dataType: "date",
@@ -1166,6 +1190,9 @@
                     e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
                 }
             },
+            onInitNewRow: function (e) {
+                e.data.tradeDate = new Date();
+            },
             showBorders: true,
             showRowLines: true,
             showColumnLines: true,
@@ -1236,6 +1263,16 @@
                         dataSource: treasury.dsBankCounterParty(),
                         valueExpr: "name",
                         displayExpr: "name"
+                    }
+                },
+                {
+                    dataField: "tradeDate",
+                    caption: "Trade Date",
+                    dataType: "date",
+                    format: "dd/MM/yyyy",
+                    editorOptions: {
+                        placeholder: "dd/MM/yyyy",
+                        showClearButton: true
                     }
                 },
                 {
@@ -1441,6 +1478,9 @@
                     };
                     e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
                 }
+            },
+            onInitNewRow: function (e) {
+                e.data.tradeDate = new Date();
             },
             showBorders: true,
             showRowLines: true,

@@ -1440,11 +1440,12 @@ namespace xDC_Web.Controllers.Api
 
                             if (form.FormType == Common.FormType.ISSD_TS_H && form.FormStatus == Common.FormStatus.Approved)
                             {
-                                var tsPropertyItemExist = db.ISSD_TradeSettlement.Any(x => x.FormId == form.Id && x.OthersType == Common.TsOthersTypeItem.Property);
+                                // 24/12/2021 - premah requested to remove
+                                /*var tsPropertyItemExist = db.ISSD_TradeSettlement.Any(x => x.FormId == form.Id && x.OthersType == Common.TsOthersTypeItem.Property);
                                 if (tsPropertyItemExist)
                                 {
                                     new MailService().TS_PartH_Notify(form.Id, Common.TsOthersTypeItem.Property);
-                                }
+                                }*/
 
                                 var tsLoanItemExist = db.ISSD_TradeSettlement.Any(x => x.FormId == form.Id && x.OthersType == Common.TsOthersTypeItem.Loan);
                                 if (tsLoanItemExist)

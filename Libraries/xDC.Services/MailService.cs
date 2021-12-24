@@ -280,7 +280,8 @@ namespace xDC.Services
                     var cc = new List<string>();
                     var tsFormPartE = new List<ISSD_TradeSettlement>();
 
-                    if (othersType == Common.TsOthersTypeItem.Property)
+                    // 24/12/2021 - premah requested to remove
+                    /*if (othersType == Common.TsOthersTypeItem.Property)
                     {
                         message.Subject = Common.MailSubjectWithDate(Config.NotificationTsPropertyEmailSubject);
 
@@ -289,8 +290,8 @@ namespace xDC.Services
                         tsFormPartE = db.ISSD_TradeSettlement
                             .Where(x => x.FormId == formId && x.OthersType == Common.TsOthersTypeItem.Property)
                             .ToList();
-                    }
-                    else if (othersType == Common.TsOthersTypeItem.Loan)
+                    }*/
+                    if (othersType == Common.TsOthersTypeItem.Loan)
                     {
                         message.Subject = Common.MailSubjectWithDate(Config.NotificationTsLoanEmailSubject);
 

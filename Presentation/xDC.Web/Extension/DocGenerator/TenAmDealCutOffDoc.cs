@@ -351,10 +351,10 @@ namespace xDC_Web.Extension.DocGenerator
 
                             var outflowDeposit = db.FID_Treasury_Deposit
                                 .Where(x => treasuryFcyFormIds.Contains(x.FormId)
-                                            && x.PrincipalIntProfitReceivable > 0
+                                            && x.Principal > 0
                                             && x.CashflowType == Common.Cashflow.Outflow
                                             && x.FcaAccount == account.AccountName3)
-                                .Select(l => l.PrincipalIntProfitReceivable)
+                                .Select(l => l.Principal)
                                 .DefaultIfEmpty(0)
                                 .Sum();
 
@@ -461,12 +461,14 @@ namespace xDC_Web.Extension.DocGenerator
                     })
                         .Select(x => new TenAmCutOffItemVM
                         {
+                            Id = $"{x.Key.Currency};{x.Key.Account}",
                             Currency = x.Key.Currency,
                             Account = x.Key.Account,
                             OpeningBalance = x.Sum(y => y.OpeningBalance),
                             TotalInflow = x.Sum(y => y.TotalInflow),
                             TotalOutflow = x.Sum(y => y.TotalOutflow),
-                            Net = x.Sum(y => y.OpeningBalance) + x.Sum(y => y.TotalInflow) - x.Sum(y => y.TotalOutflow)
+                            Net = x.Sum(y => y.OpeningBalance) + x.Sum(y => y.TotalInflow) - x.Sum(y => y.TotalOutflow),
+                            ClosingBalance = 0
                         })
                         .ToList();
 

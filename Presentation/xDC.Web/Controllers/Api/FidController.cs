@@ -649,7 +649,7 @@ namespace xDC_Web.Controllers.Api
                                 CashflowType = Common.Cashflow.Inflow,
                                 Dealer = item.Dealer,
                                 Bank = item.Bank,
-                                TradeDate = form.PreparedDate,
+                                TradeDate = item.TradeDate,
                                 ValueDate = item.ValueDate,
                                 MaturityDate = item.MaturityDate,
                                 Principal = item.Principal,
@@ -715,7 +715,7 @@ namespace xDC_Web.Controllers.Api
                                 Issuer = item.Issuer,
                                 ProductType = item.ProductType,
                                 CounterParty = item.CounterParty,
-                                TradeDate = form.PreparedDate,
+                                TradeDate = item.TradeDate,
                                 ValueDate = item.ValueDate,
                                 MaturityDate = item.MaturityDate,
                                 HoldingDayTenor = item.HoldingDayTenor,
@@ -748,7 +748,7 @@ namespace xDC_Web.Controllers.Api
                                 Issuer = item.Issuer,
                                 ProductType = item.ProductType,
                                 CounterParty = item.CounterParty,
-                                TradeDate = form.PreparedDate,
+                                TradeDate = item.TradeDate,
                                 ValueDate = item.ValueDate,
                                 MaturityDate = item.MaturityDate,
                                 HoldingDayTenor = item.HoldingDayTenor,
@@ -858,6 +858,13 @@ namespace xDC_Web.Controllers.Api
                                         new AuditService().AuditForm_EditRow(form.Id, form.FormType,
                                                 form.ValueDate, User.Identity.Name, foundItem.Bank,
                                                 item.Bank, "Bank");
+                                    }
+                                    if (foundItem.TradeDate != item.TradeDate)
+                                    {
+                                        foundItem.TradeDate = item.TradeDate;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.TradeDate?.ToString("dd/MM/yyyy"),
+                                            item.TradeDate.ToString("dd/MM/yyyy"), "Trade Date");
                                     }
                                     if (foundItem.ValueDate != item.ValueDate)
                                     {
@@ -1002,66 +1009,107 @@ namespace xDC_Web.Controllers.Api
                                     if (foundItem.AssetType != item.AssetType)
                                     {
                                         foundItem.AssetType = item.AssetType;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.AssetType,
+                                            item.AssetType, "Asset Type");
                                     }
                                     if (foundItem.Dealer != item.Dealer)
                                     {
                                         foundItem.Dealer = item.Dealer;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.Dealer,
+                                            item.Dealer, "Dealer");
                                     }
                                     if (foundItem.Bank != item.Bank)
                                     {
                                         foundItem.Bank = item.Bank;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.Bank,
+                                            item.Bank, "Bank");
                                     }
                                     if (foundItem.TradeDate != item.TradeDate)
                                     {
                                         foundItem.TradeDate = item.TradeDate;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.TradeDate?.ToString("dd/MM/yyyy"),
+                                            item.TradeDate.ToString("dd/MM/yyyy"), "Trade Date");
                                     }
                                     if (foundItem.ValueDate != item.ValueDate)
                                     {
                                         foundItem.ValueDate = item.ValueDate;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.ValueDate?.ToString("dd/MM/yyyy"),
+                                            item.ValueDate.ToString("dd/MM/yyyy"), "Value Date");
                                     }
                                     if (foundItem.MaturityDate != item.MaturityDate)
                                     {
                                         foundItem.MaturityDate = item.MaturityDate;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.MaturityDate?.ToString("dd/MM/yyyy"),
+                                            item.MaturityDate.ToString("dd/MM/yyyy"), "Maturity Date");
                                     }
                                     if (foundItem.Tenor != item.Tenor)
                                     {
                                         foundItem.Tenor = item.Tenor;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.Tenor.ToString(),
+                                            item.Tenor.ToString(), "Tenor");
                                     }
                                     if (foundItem.Principal != item.Principal)
                                     {
                                         foundItem.Principal = item.Principal;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.Principal.ToString(),
+                                            item.Principal.ToString(), "Principal");
                                     }
                                     if (foundItem.RatePercent != item.RatePercent)
                                     {
                                         foundItem.RatePercent = item.RatePercent;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.RatePercent.ToString(),
+                                            item.RatePercent.ToString(), "Rate");
                                     }
                                     if (foundItem.IntProfitReceivable != item.IntProfitReceivable)
                                     {
                                         foundItem.IntProfitReceivable = item.IntProfitReceivable;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.IntProfitReceivable.ToString(),
+                                            item.IntProfitReceivable.ToString(), "Interest Profit Receivable");
                                     }
                                     if (foundItem.PrincipalIntProfitReceivable != item.PrincipalIntProfitReceivable)
                                     {
                                         foundItem.PrincipalIntProfitReceivable = item.PrincipalIntProfitReceivable;
-                                    }
-                                    if (foundItem.AssetType != item.AssetType)
-                                    {
-                                        foundItem.AssetType = item.AssetType;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.PrincipalIntProfitReceivable.ToString(),
+                                            item.PrincipalIntProfitReceivable.ToString(), "Principal + Interest Profit Receivable");
                                     }
                                     if (foundItem.RepoTag != item.RepoTag)
                                     {
                                         foundItem.RepoTag = item.RepoTag;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.RepoTag,
+                                            item.RepoTag, "Repo Tag");
                                     }
                                     if (foundItem.ContactPerson != item.ContactPerson)
                                     {
                                         foundItem.ContactPerson = item.ContactPerson;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.ContactPerson,
+                                            item.ContactPerson, "Contact Person");
                                     }
                                     if (foundItem.Notes != item.Notes)
                                     {
                                         foundItem.Notes = item.Notes;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.Notes,
+                                            item.Notes, "Notes");
                                     }
                                     if (foundItem.FcaAccount != item.FcaAccount)
                                     {
                                         foundItem.FcaAccount = item.FcaAccount;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.FcaAccount,
+                                            item.FcaAccount, "FCA Account");
                                     }
 
                                     foundItem.ModifiedBy = User.Identity.Name;
@@ -1072,6 +1120,9 @@ namespace xDC_Web.Controllers.Api
                             {
                                 // add new
                                 db.FID_Treasury_Deposit.Add(FID_Treasury_Deposit_ObjMap(form.Id, Common.Cashflow.Outflow, item));
+                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
+                                    form.ValueDate, User.Identity.Name,
+                                    $"{item.Bank}, {item.CashflowType}, {item.Dealer}, {item.AssetType}...");
                             }
                         }
                     }
@@ -1114,62 +1165,114 @@ namespace xDC_Web.Controllers.Api
                                     if (foundItem.Dealer != item.Dealer)
                                     {
                                         foundItem.Dealer = item.Dealer;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.Dealer,
+                                            item.Dealer, "Dealer");
                                     }
                                     if (foundItem.Issuer != item.Issuer)
                                     {
                                         foundItem.Issuer = item.Issuer;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.Issuer,
+                                            item.Issuer, "Issuer");
                                     }
                                     if (foundItem.ProductType != item.ProductType)
                                     {
                                         foundItem.ProductType = item.ProductType;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.ProductType,
+                                            item.ProductType, "Product Type");
                                     }
                                     if (foundItem.CounterParty != item.CounterParty)
                                     {
                                         foundItem.CounterParty = item.CounterParty;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.CounterParty,
+                                            item.CounterParty, "Counter Party");
+                                    }
+                                    if (foundItem.TradeDate != item.TradeDate)
+                                    {
+                                        foundItem.TradeDate = item.TradeDate;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.TradeDate?.ToString("dd/MM/yyyy"),
+                                            item.TradeDate.ToString("dd/MM/yyyy"), "Trade Date");
                                     }
                                     if (foundItem.ValueDate != item.ValueDate)
                                     {
                                         foundItem.ValueDate = item.ValueDate;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.ValueDate?.ToString("dd/MM/yyyy"),
+                                            item.ValueDate.ToString("dd/MM/yyyy"), "Value Date");
                                     }
                                     if (foundItem.MaturityDate != item.MaturityDate)
                                     {
                                         foundItem.MaturityDate = item.MaturityDate;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.MaturityDate?.ToString("dd/MM/yyyy"),
+                                            item.MaturityDate.ToString("dd/MM/yyyy"), "Maturity Date");
                                     }
                                     if (foundItem.HoldingDayTenor != item.HoldingDayTenor)
                                     {
                                         foundItem.HoldingDayTenor = item.HoldingDayTenor;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.HoldingDayTenor.ToString(),
+                                            item.HoldingDayTenor.ToString(), "Tenor");
                                     }
                                     if (foundItem.Nominal != item.Nominal)
                                     {
                                         foundItem.Nominal = item.Nominal;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.Nominal.ToString(),
+                                            item.Nominal.ToString(), "Nominal");
                                     }
                                     if (foundItem.SellPurchaseRateYield != item.SellPurchaseRateYield)
                                     {
                                         foundItem.SellPurchaseRateYield = item.SellPurchaseRateYield;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.SellPurchaseRateYield.ToString(),
+                                            item.SellPurchaseRateYield.ToString(), "Sell Purchase Rate Yield");
                                     }
                                     if (foundItem.Price != item.Price)
                                     {
                                         foundItem.Price = item.Price;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.Price.ToString(),
+                                            item.Price.ToString(), "Price");
                                     }
                                     if (foundItem.IntDividendReceivable != item.IntDividendReceivable)
                                     {
                                         foundItem.IntDividendReceivable = item.IntDividendReceivable;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.IntDividendReceivable.ToString(),
+                                            item.IntDividendReceivable.ToString(), "Interest Dividend Receivable");
                                     }
                                     if (foundItem.Proceeds != item.Proceeds)
                                     {
                                         foundItem.Proceeds = item.Proceeds;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.Proceeds.ToString(),
+                                            item.Proceeds.ToString(), "Proceeds");
                                     }
                                     if (foundItem.PurchaseProceeds != item.PurchaseProceeds)
                                     {
                                         foundItem.PurchaseProceeds = item.PurchaseProceeds;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.PurchaseProceeds.ToString(),
+                                            item.PurchaseProceeds.ToString(), "Purchase Proceeds");
                                     }
                                     if (foundItem.CertNoStockCode != item.CertNoStockCode)
                                     {
                                         foundItem.CertNoStockCode = item.CertNoStockCode;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.CertNoStockCode,
+                                            item.CertNoStockCode, "Cert No Stock Code");
                                     }
                                     if (foundItem.FcaAccount != item.FcaAccount)
                                     {
                                         foundItem.FcaAccount = item.FcaAccount;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.FcaAccount,
+                                            item.FcaAccount, "FCA Account");
                                     }
 
                                     foundItem.ModifiedBy = User.Identity.Name;
@@ -1180,6 +1283,9 @@ namespace xDC_Web.Controllers.Api
                             {
                                 // add new
                                 db.FID_Treasury_MMI.Add(FID_Treasury_MMI_ObjMap(form.Id, Common.Cashflow.Inflow, item));
+                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
+                                    form.ValueDate, User.Identity.Name,
+                                    $"{item.Issuer}, {item.CashflowType}, {item.Dealer}, {item.CashflowType}...");
                             }
                         }
                     }
@@ -1222,62 +1328,114 @@ namespace xDC_Web.Controllers.Api
                                     if (foundItem.Dealer != item.Dealer)
                                     {
                                         foundItem.Dealer = item.Dealer;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.Dealer,
+                                            item.Dealer, "Dealer");
                                     }
                                     if (foundItem.Issuer != item.Issuer)
                                     {
                                         foundItem.Issuer = item.Issuer;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.Issuer,
+                                            item.Issuer, "Issuer");
                                     }
                                     if (foundItem.ProductType != item.ProductType)
                                     {
                                         foundItem.ProductType = item.ProductType;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.ProductType,
+                                            item.ProductType, "Product Type");
                                     }
                                     if (foundItem.CounterParty != item.CounterParty)
                                     {
                                         foundItem.CounterParty = item.CounterParty;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.CounterParty,
+                                            item.CounterParty, "Counter Party");
+                                    }
+                                    if (foundItem.TradeDate != item.TradeDate)
+                                    {
+                                        foundItem.TradeDate = item.TradeDate;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.TradeDate?.ToString("dd/MM/yyyy"),
+                                            item.TradeDate.ToString("dd/MM/yyyy"), "Trade Date");
                                     }
                                     if (foundItem.ValueDate != item.ValueDate)
                                     {
                                         foundItem.ValueDate = item.ValueDate;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.ValueDate?.ToString("dd/MM/yyyy"),
+                                            item.ValueDate.ToString("dd/MM/yyyy"), "Value Date");
                                     }
                                     if (foundItem.MaturityDate != item.MaturityDate)
                                     {
                                         foundItem.MaturityDate = item.MaturityDate;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.MaturityDate?.ToString("dd/MM/yyyy"),
+                                            item.MaturityDate.ToString("dd/MM/yyyy"), "Maturity Date");
                                     }
                                     if (foundItem.HoldingDayTenor != item.HoldingDayTenor)
                                     {
                                         foundItem.HoldingDayTenor = item.HoldingDayTenor;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.HoldingDayTenor.ToString(),
+                                            item.HoldingDayTenor.ToString(), "Tenor");
                                     }
                                     if (foundItem.Nominal != item.Nominal)
                                     {
                                         foundItem.Nominal = item.Nominal;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.Nominal.ToString(),
+                                            item.Nominal.ToString(), "Nominal");
                                     }
                                     if (foundItem.SellPurchaseRateYield != item.SellPurchaseRateYield)
                                     {
                                         foundItem.SellPurchaseRateYield = item.SellPurchaseRateYield;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.SellPurchaseRateYield.ToString(),
+                                            item.SellPurchaseRateYield.ToString(), "Sell Purchase Rate Yield");
                                     }
                                     if (foundItem.Price != item.Price)
                                     {
                                         foundItem.Price = item.Price;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.Price.ToString(),
+                                            item.Price.ToString(), "Price");
                                     }
                                     if (foundItem.IntDividendReceivable != item.IntDividendReceivable)
                                     {
                                         foundItem.IntDividendReceivable = item.IntDividendReceivable;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.IntDividendReceivable.ToString(),
+                                            item.IntDividendReceivable.ToString(), "Interest Dividend Receivable");
                                     }
                                     if (foundItem.Proceeds != item.Proceeds)
                                     {
                                         foundItem.Proceeds = item.Proceeds;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.Proceeds.ToString(),
+                                            item.Proceeds.ToString(), "Proceeds");
                                     }
                                     if (foundItem.PurchaseProceeds != item.PurchaseProceeds)
                                     {
                                         foundItem.PurchaseProceeds = item.PurchaseProceeds;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.PurchaseProceeds.ToString(),
+                                            item.PurchaseProceeds.ToString(), "Purchase Proceeds");
                                     }
                                     if (foundItem.CertNoStockCode != item.CertNoStockCode)
                                     {
                                         foundItem.CertNoStockCode = item.CertNoStockCode;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.CertNoStockCode,
+                                            item.CertNoStockCode, "Cert No Stock Code");
                                     }
                                     if (foundItem.FcaAccount != item.FcaAccount)
                                     {
                                         foundItem.FcaAccount = item.FcaAccount;
+                                        new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            form.ValueDate, User.Identity.Name, foundItem.FcaAccount,
+                                            item.FcaAccount, "FCA Account");
                                     }
 
                                     foundItem.ModifiedBy = User.Identity.Name;
@@ -1288,6 +1446,9 @@ namespace xDC_Web.Controllers.Api
                             {
                                 // add new
                                 db.FID_Treasury_MMI.Add(FID_Treasury_MMI_ObjMap(form.Id, Common.Cashflow.Outflow, item));
+                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
+                                    form.ValueDate, User.Identity.Name,
+                                    $"{item.Issuer}, {item.CashflowType}, {item.Dealer}, {item.CashflowType}...");
                             }
                         }
                     }

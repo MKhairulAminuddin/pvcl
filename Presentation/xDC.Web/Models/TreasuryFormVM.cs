@@ -59,6 +59,7 @@ namespace xDC_Web.Models
         public string Issuer { get; set; }
         public string ProductType { get; set; }
         public string CounterParty { get; set; }
+        public DateTime TradeDate { get; set; }
         public DateTime ValueDate { get; set; }
         public DateTime MaturityDate { get; set; }
         public int HoldingDayTenor { get; set; }

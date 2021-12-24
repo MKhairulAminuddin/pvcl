@@ -150,17 +150,18 @@ namespace xDC_Web.Extension.DocGenerator
                 sheet["A" + row].Value = "No.";
                 sheet["B" + row].Value = "Dealer";
                 sheet["C" + row].Value = "Bank";
-                sheet["D" + row].Value = "Value Date";
-                sheet["E" + row].Value = "Maturity Date (T)";
-                sheet["F" + row].Value = "Principal";
-                sheet["G" + row].Value = "Tenor (day)";
-                sheet["H" + row].Value = "Rate (%)";
-                sheet["I" + row].Value = "Interest/ Profit Receivable";
-                sheet["J" + row].Value = "Principal + Interest/ Profit Receivable";
-                sheet["K" + row].Value = "Asset Type";
-                sheet["L" + row].Value = "REPO Tag";
-                sheet["M" + row].Value = "Contact Person";
-                sheet["N" + row].Value = "Notes";
+                sheet["D" + row].Value = "Trade Date";
+                sheet["E" + row].Value = "Value Date";
+                sheet["F" + row].Value = "Maturity Date (T)";
+                sheet["G" + row].Value = "Principal";
+                sheet["H" + row].Value = "Tenor (day)";
+                sheet["I" + row].Value = "Rate (%)";
+                sheet["J" + row].Value = "Interest/ Profit Receivable";
+                sheet["K" + row].Value = "Principal + Interest/ Profit Receivable";
+                sheet["L" + row].Value = "Asset Type";
+                sheet["M" + row].Value = "REPO Tag";
+                sheet["N" + row].Value = "Contact Person";
+                sheet["O" + row].Value = "Notes";
 
                 foreach (var item in depo)
                 {
@@ -169,28 +170,29 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["A" + row].Formula = "=ROW(A" + rowNumberCount + ")";
                     sheet["B" + row].Value = item.Dealer;
                     sheet["C" + row].Value = item.Bank;
-                    sheet["D" + row].Value = item.ValueDate?.ToString("dd/MM/yyyy");
-                    sheet["E" + row].Value = item.MaturityDate?.ToString("dd/MM/yyyy");
-                    sheet["F" + row].Value = Math.Truncate(100 * item.Principal) / 100;
-                    sheet["G" + row].Value = item.Tenor;
-                    sheet["H" + row].Value = item.RatePercent;
-                    sheet["I" + row].Value = Math.Truncate(100 * item.IntProfitReceivable) / 100;
-                    sheet["J" + row].Value = Math.Truncate(100 * item.PrincipalIntProfitReceivable) / 100;
-                    sheet["K" + row].Value = item.AssetType;
-                    sheet["L" + row].Value = item.RepoTag;
-                    sheet["M" + row].Value = item.ContactPerson;
-                    sheet["N" + row].Value = item.Notes;
+                    sheet["D" + row].Value = item.TradeDate?.ToString("dd/MM/yyyy");
+                    sheet["E" + row].Value = item.ValueDate?.ToString("dd/MM/yyyy");
+                    sheet["F" + row].Value = item.MaturityDate?.ToString("dd/MM/yyyy");
+                    sheet["G" + row].Value = Math.Truncate(100 * item.Principal) / 100;
+                    sheet["H" + row].Value = item.Tenor;
+                    sheet["I" + row].Value = item.RatePercent;
+                    sheet["J" + row].Value = Math.Truncate(100 * item.IntProfitReceivable) / 100;
+                    sheet["K" + row].Value = Math.Truncate(100 * item.PrincipalIntProfitReceivable) / 100;
+                    sheet["L" + row].Value = item.AssetType;
+                    sheet["M" + row].Value = item.RepoTag;
+                    sheet["N" + row].Value = item.ContactPerson;
+                    sheet["O" + row].Value = item.Notes;
 
-                    sheet["F" + row].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+                    sheet["G" + row].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+                    sheet["H" + row].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     sheet["I" + row].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    sheet["J" + row].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
 
                     sheet["B" + row].Alignment.WrapText = true;
                     sheet["C" + row].Alignment.WrapText = true;
                 }
 
                 // Insert a table in the worksheet.
-                var tableRange = "A" + headerStartRow + ":N" + row;
+                var tableRange = "A" + headerStartRow + ":O" + row;
                 var table = sheet.Tables.Add(sheet[tableRange], true);
                 table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                 table.HeaderRowRange.Font.Color = Color.White;
@@ -200,12 +202,12 @@ namespace xDC_Web.Extension.DocGenerator
                 table.HeaderRowRange.FillColor = cashflowType == Common.Cashflow.Inflow ? _inflowColor : _outFlowColor;
 
                 
-                table.Columns[5].TotalRowFunction = TotalRowFunction.Sum;
-                table.Columns[5].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                table.Columns[8].TotalRowFunction = TotalRowFunction.Sum;
-                table.Columns[8].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+                table.Columns[6].TotalRowFunction = TotalRowFunction.Sum;
+                table.Columns[6].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                 table.Columns[9].TotalRowFunction = TotalRowFunction.Sum;
                 table.Columns[9].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+                table.Columns[10].TotalRowFunction = TotalRowFunction.Sum;
+                table.Columns[10].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                 
                 table.DataRange.Alignment.Vertical = SpreadsheetVerticalAlignment.Top;
                 table.HeaderRowRange.Alignment.WrapText = true;
@@ -229,16 +231,17 @@ namespace xDC_Web.Extension.DocGenerator
                 sheet["B" + row].Value = "Issuer";
                 sheet["C" + row].Value = "Product Type";
                 sheet["D" + row].Value = "Counterparty";
-                sheet["E" + row].Value = "Value Date";
-                sheet["F" + row].Value = "Maturity Date";
-                sheet["G" + row].Value = "Nominal";
-                sheet["H" + row].Value = "Tenor (days)";
-                sheet["I" + row].Value = "Sell Rate / Yield (%)";
-                sheet["J" + row].Value = "Price (RM)";
-                sheet["K" + row].Value = "Purchase Proceeds";
-                sheet["L" + row].Value = "Interest/ Dividend";
-                sheet["M" + row].Value = "Proceeds (RM)";
-                sheet["N" + row].Value = "Certificate No. / Stock Code";
+                sheet["E" + row].Value = "Trade Date";
+                sheet["F" + row].Value = "Value Date";
+                sheet["G" + row].Value = "Maturity Date";
+                sheet["H" + row].Value = "Nominal";
+                sheet["I" + row].Value = "Tenor (days)";
+                sheet["J" + row].Value = "Sell Rate / Yield (%)";
+                sheet["K" + row].Value = "Price (RM)";
+                sheet["L" + row].Value = "Purchase Proceeds";
+                sheet["M" + row].Value = "Interest/ Dividend";
+                sheet["N" + row].Value = "Proceeds (RM)";
+                sheet["O" + row].Value = "Certificate No. / Stock Code";
 
                 foreach (var item in mmi)
                 {
@@ -248,22 +251,23 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["B" + row].Value = item.Issuer;
                     sheet["C" + row].Value = item.ProductType;
                     sheet["D" + row].Value = item.CounterParty;
-                    sheet["E" + row].Value = item.ValueDate?.ToString("dd/MM/yyyy");
-                    sheet["F" + row].Value = item.MaturityDate?.ToString("dd/MM/yyyy");
-                    sheet["G" + row].Value = item.Nominal;
-                    sheet["H" + row].Value = item.HoldingDayTenor;
-                    sheet["I" + row].Value = item.SellPurchaseRateYield;
-                    sheet["J" + row].Value = item.Price;
-                    sheet["K" + row].Value = item.PurchaseProceeds;
-                    sheet["L" + row].Value = item.IntDividendReceivable;
-                    sheet["M" + row].Value = item.Proceeds;
-                    sheet["N" + row].Value = item.CertNoStockCode;
+                    sheet["E" + row].Value = item.TradeDate?.ToString("dd/MM/yyyy");
+                    sheet["F" + row].Value = item.ValueDate?.ToString("dd/MM/yyyy");
+                    sheet["G" + row].Value = item.MaturityDate?.ToString("dd/MM/yyyy");
+                    sheet["H" + row].Value = item.Nominal;
+                    sheet["I" + row].Value = item.HoldingDayTenor;
+                    sheet["J" + row].Value = item.SellPurchaseRateYield;
+                    sheet["K" + row].Value = item.Price;
+                    sheet["L" + row].Value = item.PurchaseProceeds;
+                    sheet["M" + row].Value = item.IntDividendReceivable;
+                    sheet["N" + row].Value = item.Proceeds;
+                    sheet["O" + row].Value = item.CertNoStockCode;
 
-                    sheet["G" + row].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+                    sheet["H" + row].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+                    sheet["I" + row].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     sheet["J" + row].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     sheet["K" + row].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                     sheet["L" + row].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                    sheet["M" + row].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
 
                     sheet["B" + row].Alignment.WrapText = true;
                     sheet["C" + row].Alignment.WrapText = true;
@@ -271,7 +275,7 @@ namespace xDC_Web.Extension.DocGenerator
                 }
 
                 // Insert a table in the worksheet.
-                var tableRange = "A" + headerStartRow + ":N" + row;
+                var tableRange = "A" + headerStartRow + ":O" + row;
                 var table = sheet.Tables.Add(sheet[tableRange], true);
                 table.Style = workbook.TableStyles[BuiltInTableStyleId.TableStyleMedium15];
                 table.HeaderRowRange.Font.Color = Color.White;
@@ -280,12 +284,12 @@ namespace xDC_Web.Extension.DocGenerator
                 table.ShowTotals = true;
                 table.HeaderRowRange.FillColor = cashflowType == Common.Cashflow.Inflow ? _inflowColor : _outFlowColor;
 
-                table.Columns[6].TotalRowFunction = TotalRowFunction.Sum;
-                table.Columns[6].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                table.Columns[10].TotalRowFunction = TotalRowFunction.Sum;
-                table.Columns[10].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+                table.Columns[7].TotalRowFunction = TotalRowFunction.Sum;
+                table.Columns[7].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                 table.Columns[11].TotalRowFunction = TotalRowFunction.Sum;
                 table.Columns[11].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+                table.Columns[12].TotalRowFunction = TotalRowFunction.Sum;
+                table.Columns[12].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
 
                 table.DataRange.Alignment.Vertical = SpreadsheetVerticalAlignment.Top;
                 table.HeaderRowRange.Alignment.WrapText = true;

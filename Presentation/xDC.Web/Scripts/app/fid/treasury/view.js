@@ -304,6 +304,12 @@
                     caption: "Bank"
                 },
                 {
+                    dataField: "tradeDate",
+                    caption: "Trade Date",
+                    dataType: "date",
+                    format: "dd/MM/yyyy"
+                },
+                {
                     dataField: "valueDate",
                     caption: "Value Date",
                     dataType: "date",
@@ -612,6 +618,12 @@
                     caption: "Counterparty"
                 },
                 {
+                    dataField: "tradeDate",
+                    caption: "Trade Date",
+                    dataType: "date",
+                    format: "dd/MM/yyyy"
+                },
+                {
                     dataField: "valueDate",
                     caption: "Value Date",
                     dataType: "date",
@@ -751,6 +763,12 @@
                 {
                     dataField: "counterParty",
                     caption: "Counterparty"
+                },
+                {
+                    dataField: "tradeDate",
+                    caption: "Trade Date",
+                    dataType: "date",
+                    format: "dd/MM/yyyy"
                 },
                 {
                     dataField: "valueDate",
