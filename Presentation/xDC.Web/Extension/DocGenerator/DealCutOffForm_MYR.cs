@@ -718,9 +718,9 @@ namespace xDC_Web.Extension.DocGenerator
 
             #region Others Tab - IF - PDS / CP / NID / BA / BNMN - Sales, maturity or coupon
 
-            var othersTab_if_pds = new List<MYR_DealCutOffData_OthersTab_Item1>();
+            var othersTabInflowCorp = new List<MYR_DealCutOffData_OthersTab_Item1>();
 
-            var othersTab_pds_itemCoupon = db.ISSD_TradeSettlement
+            var inflowCorpTsItems = db.ISSD_TradeSettlement
                 .Where(x => tsFormIds.Contains(x.FormId)
                             && ((x.InstrumentType == Common.TsItemCategory.Coupon && x.CouponType == Common.TsCouponTypeItem.CORP)
                                 || (x.InstrumentType == Common.TsItemCategory.Bond && x.BondType == Common.TsBondTypeItem.CORP)
@@ -736,12 +736,12 @@ namespace xDC_Web.Extension.DocGenerator
                     NominalAmount = null,
                     Price = null,
                     Rate = null,
-                    Proceed = x.AmountPlus,
+                    Proceed = x.InflowAmount,
                     Notes = x.Remarks
                 })
                 .ToList();
 
-            var othersTab_pds_item = db.FID_Treasury_MMI
+            var inflowCorpTreasuryItems = db.FID_Treasury_MMI
                 .Where(x => treasuryApprovedForms.Contains(x.FormId)
                             && x.CashflowType == Common.Cashflow.Inflow)
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item1
@@ -758,17 +758,17 @@ namespace xDC_Web.Extension.DocGenerator
                 })
                 .ToList();
             
-            if (othersTab_pds_item.Any())
+            if (inflowCorpTreasuryItems.Any())
             {
-                othersTab_if_pds.AddRange(othersTab_pds_item);
+                othersTabInflowCorp.AddRange(inflowCorpTreasuryItems);
             }
 
-            if (othersTab_pds_itemCoupon.Any())
+            if (inflowCorpTsItems.Any())
             {
-                othersTab_if_pds.AddRange(othersTab_pds_itemCoupon);
+                othersTabInflowCorp.AddRange(inflowCorpTsItems);
             }
 
-            dataObj.IF_OthersTab_PssCpNidBaBnm = othersTab_if_pds;
+            dataObj.IF_OthersTab_PssCpNidBaBnm = othersTabInflowCorp;
 
             #endregion
 
