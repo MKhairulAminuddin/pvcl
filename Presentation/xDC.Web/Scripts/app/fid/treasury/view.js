@@ -352,13 +352,6 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    calculateDisplayValue: function (rowData) {
-                        if (rowData.intProfitReceivable >= 0) {
-                            return rowData.intProfitReceivable.toFixed(2.5);
-                        } else {
-                            return rowData.intProfitReceivable;
-                        }
                     }
                 },
                 {
@@ -368,14 +361,6 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    calculateDisplayValue: function (rowData) {
-                        if (rowData.principalIntProfitReceivable >= 0) {
-                            return rowData.principalIntProfitReceivable.toFixed(2.5);
-
-                        } else {
-                            return rowData.principalIntProfitReceivable;
-                        }
                     }
                 },
                 {
@@ -505,13 +490,6 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    calculateDisplayValue: function (rowData) {
-                        if (rowData.intProfitReceivable >= 0) {
-                            return rowData.intProfitReceivable.toFixed(2.5);
-                        } else {
-                            return rowData.intProfitReceivable;
-                        }
                     }
                 },
                 {
@@ -521,15 +499,7 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    },
-                    calculateDisplayValue: function (rowData) {
-                        if (rowData.principalIntProfitReceivable >= 0) {
-                            return rowData.principalIntProfitReceivable.toFixed(2.5);
-
-                        } else {
-                            return rowData.principalIntProfitReceivable;
-                        }
-                    },
+                    }
                 },
                 {
                     dataField: "assetType",
