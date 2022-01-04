@@ -737,7 +737,7 @@ namespace xDC_Web.Extension.DocGenerator
                     Price = null,
                     Rate = null,
                     Proceed = x.InflowAmount,
-                    Notes = x.Remarks
+                    Notes = x.InstrumentType
                 })
                 .ToList();
 
