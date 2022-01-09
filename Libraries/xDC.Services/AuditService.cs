@@ -178,6 +178,42 @@ namespace xDC.Services
             AuditForm_Insert(obj);
         }
 
+        public void AuditForm_Resubmission(int formId, string formType, DateTime? formDate, string modifiedBy)
+        {
+            var obj = new Audit_Form()
+            {
+                FormId = formId,
+                FormType = formType,
+                FormDate = formDate,
+                ActionType = Common.ActionType.Resubmit,
+
+                ModifiedBy = modifiedBy,
+                ModifiedOn = DateTime.Now,
+
+                Remarks = $"Resubmit Form"
+            };
+
+            AuditForm_Insert(obj);
+        }
+
+        public void AuditForm_AdminEdit(int formId, string formType, DateTime? formDate, string modifiedBy)
+        {
+            var obj = new Audit_Form()
+            {
+                FormId = formId,
+                FormType = formType,
+                FormDate = formDate,
+                ActionType = Common.ActionType.AdminEdit,
+
+                ModifiedBy = modifiedBy,
+                ModifiedOn = DateTime.Now,
+
+                Remarks = $"Form editted by Power User/ Admin"
+            };
+
+            AuditForm_Insert(obj);
+        }
+
 
     }
 }

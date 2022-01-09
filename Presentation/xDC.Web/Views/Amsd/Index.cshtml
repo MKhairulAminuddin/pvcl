@@ -9,10 +9,16 @@
     <div class="row">
         <div class="col-md-6">
             <div class="left-container">
-                @if (Model.EnableCreateForm)
-                {
-                    <div id="newInflowFundBtn"></div>
-                }
+                <div>
+                    @(Html.DevExtreme().Button()
+                        .Type(ButtonType.Normal)
+                        .Icon("plus")
+                        .Text("New")
+                        .ID("newInflowFundBtn")
+                        .StylingMode(ButtonStylingMode.Contained)
+                        .OnClick(@<text> function(){ window.location = "@Url.Action("InflowFund_New", "Amsd")"; } </text>)
+                        )
+                </div>
             </div>
         </div>
         <div class="col-md-6">

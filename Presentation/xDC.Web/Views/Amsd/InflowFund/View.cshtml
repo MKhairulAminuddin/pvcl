@@ -22,7 +22,7 @@
                             .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
                             )
 
-                        @if (Model.ApprovePermission)
+                        @if (Model.EnableApproveRejectBtn)
                         {
                             @(Html.DevExtreme().Button()
                                 .ID("approveBtn")
@@ -31,6 +31,7 @@
                                 .Type(ButtonType.Success)
                                 .StylingMode(ButtonStylingMode.Contained)
                                 )
+
                             @(Html.DevExtreme().Button()
                                 .ID("rejectBtn")
                                 .Text("Reject")
@@ -39,6 +40,7 @@
                                 .StylingMode(ButtonStylingMode.Contained)
                                 )
                         }
+
                         @if (Model.EnableReassign)
                         {
                             @(Html.DevExtreme().Button()
@@ -49,14 +51,14 @@
                                 .StylingMode(ButtonStylingMode.Contained)
                                 )
                         }
-                        
 
                         @(Html.DevExtreme().Button()
                             .ID("viewWorkflowBtn")
                             .Text("Workflow Information")
                             .Icon("detailslayout")
                             .Type(ButtonType.Normal)
-                            .StylingMode(ButtonStylingMode.Contained))
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
                     </div>
                     
                     <div class="right-container pull-right">
@@ -121,12 +123,12 @@
                                         .ReadOnly(true))
                                 </div>
                             </div>
-                            @if (!string.IsNullOrEmpty(Model.ApprovalOrRejectionNotes))
+                            @if (!string.IsNullOrEmpty(Model.ApprovalNote))
                             {
                                 <div class="dx-field">
                                     <div class="dx-field-label">Approval/Rejection Notes</div>
                                     <div class="dx-field-value">
-                                        @(Html.DevExtreme().TextAreaFor(m => m.ApprovalOrRejectionNotes)
+                                        @(Html.DevExtreme().TextAreaFor(m => m.ApprovalNote)
                                             .StylingMode(EditorStylingMode.Filled)
                                             .ReadOnly(true))
                                     </div>

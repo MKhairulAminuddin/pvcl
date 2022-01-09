@@ -22,12 +22,11 @@ namespace xDC_Web.Controllers
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var isApprover = db.Config_Approver.Any(x => x.Username == User.Identity.Name);
                     var isAmsdUser = User.IsInRole(Config.Acl.Amsd) || User.IsInRole(Config.Acl.Administrator);
 
                     var model = new AmsdLandingPageVM()
                     {
-                        EnableCreateForm = (!isApprover && isAmsdUser)
+                        EnableCreateForm = isAmsdUser
                     };
 
                     return View(model);
@@ -62,7 +61,7 @@ namespace xDC_Web.Controllers
                         PreparedBy = User.Identity.Name,
                         PreparedDate = DateTime.Now,
                         FormStatus = Common.FormStatus.Draft,
-                        EnableSaveAsDraftBtn = true
+                        EnableDraftButton = true
                     };
 
                     return View("InflowFund/New", model);
@@ -87,13 +86,6 @@ namespace xDC_Web.Controllers
 
                     if (getForm != null)
                     {
-                        if (!User.IsInRole(Config.Acl.PowerUser) &&
-                            (getForm.FormStatus == Common.FormStatus.PendingApproval || getForm.FormStatus == Common.FormStatus.Approved))
-                        {
-                            TempData["ErrorMessage"] = "Hey! You cannot amend form that in Pending Approval or Approved status!";
-                            return View("Error");
-                        }
-
                         var getFormWorkflow = db.Form_Workflow
                             .Where(x => (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected) &&
                                         x.FormId == getForm.Id).OrderByDescending(x => x.RecordedDate)
@@ -110,16 +102,19 @@ namespace xDC_Web.Controllers
                             ApprovedBy = getForm.ApprovedBy,
                             ApprovedDate = getForm.ApprovedDate,
 
-                            EnableSaveAsDraftBtn = (getForm.FormStatus == Common.FormStatus.Draft),
-
                             IsAdminEdited = getForm.AdminEditted,
                             AdminEditedBy = getForm.AdminEdittedBy,
                             AdminEditedDate = getForm.AdminEdittedDate,
 
-                            ApprovePermission = getForm.ApprovedBy == User.Identity.Name,
-                            EnableAdminEditBtn = User.IsInRole(Config.Acl.PowerUser),
+                            EnableResubmit = (getForm.FormStatus == Common.FormStatus.Approved || getForm.FormStatus == Common.FormStatus.Rejected) 
+                                             && (!User.IsInRole(Config.Acl.PowerUser) 
+                                                 && (getForm.ApprovedBy != User.Identity.Name)),
+                            EnableSubmitForApproval = (getForm.FormStatus == Common.FormStatus.Draft || getForm.FormStatus == Common.FormStatus.Draft) 
+                                                      && (!User.IsInRole(Config.Acl.PowerUser)),
 
-                            ApprovalOrRejectionNotes = getFormWorkflow?.WorkflowNotes
+                            EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
+                            EnableSaveAdminChanges = User.IsInRole(Config.Acl.PowerUser) && (getForm.FormStatus == Common.FormStatus.Approved),
+                            EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Issd) && getForm.ApprovedBy == User.Identity.Name && getForm.FormStatus == Common.FormStatus.PendingApproval)
 
                         };
                         return View("InflowFund/Edit", formObj);
@@ -160,23 +155,29 @@ namespace xDC_Web.Controllers
                         var formObj = new InflowFundStatusFormVM()
                         {
                             Id = form.Id,
-                            PreparedBy = form.PreparedBy,
-                            PreparedDate = form.PreparedDate,
-                            ApprovedBy = form.ApprovedBy,
-                            ApprovedDate = form.ApprovedDate,
                             FormStatus = form.FormStatus,
 
+                            PreparedBy = form.PreparedBy,
+                            PreparedDate = form.PreparedDate,
+
+                            ApprovedBy = form.ApprovedBy,
+                            ApprovedDate = form.ApprovedDate,
+                            ApprovalNote = getFormWorkflow?.WorkflowNotes,
+                            
                             IsAdminEdited = form.AdminEditted,
                             AdminEditedBy = form.AdminEdittedBy,
                             AdminEditedDate = form.AdminEdittedDate,
-
-                            ApprovePermission = form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval,
-                            EnableAdminEditBtn = User.IsInRole(Config.Acl.PowerUser),
+                            
                             EnableReassign = (form.FormStatus == Common.FormStatus.PendingApproval && form.ApprovedBy != User.Identity.Name),
-
-                            IsApprovedOrRejected = isApprovedOrRejected,
                             IsApproved = (form.FormStatus == Common.FormStatus.Approved),
-                            ApprovalOrRejectionNotes = getFormWorkflow?.WorkflowNotes
+                            EnableResubmit = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected)
+                                             && (!User.IsInRole(Config.Acl.PowerUser)
+                                                 && (form.ApprovedBy != User.Identity.Name)),
+                            EnableSubmitForApproval = (form.FormStatus == Common.FormStatus.Draft || form.FormStatus == Common.FormStatus.Draft)
+                                                      && (!User.IsInRole(Config.Acl.PowerUser)),
+                            EnableDraftButton = (form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
+                            EnableSaveAdminChanges = User.IsInRole(Config.Acl.PowerUser) && (form.FormStatus == Common.FormStatus.Approved),
+                            EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Issd) && form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval)
                         };
 
                         return View("InflowFund/View", formObj);

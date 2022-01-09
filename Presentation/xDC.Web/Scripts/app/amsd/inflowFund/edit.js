@@ -7,13 +7,11 @@
         var $inflowFundsGrid,
             $approverDropdown,
             $approvalNotes,
-            $historyBtn,
-            $submitBtn,
             $tbFormStatus,
-            $selectApproverModal;
-
-        $selectApproverModal = $("#selectApproverModal");
-
+            $inflowFundForm,
+            isDraft = false,
+            isAdminEdit = false;
+        
         var referenceUrl = {
             loadGrid: window.location.origin + "/api/amsd/GetInflowFunds/" + app.getUrlId(),
 
@@ -22,6 +20,7 @@
             dsApprover: window.location.origin + "/api/common/GetApproverAmsdInflowFunds",
 
             formSubmit: window.location.origin + "/api/amsd/InflowFund/Edit/",
+            redirectResponse: window.location.origin + "/amsd/InflowFund/view/",
         };
 
         //#endregion 
@@ -58,27 +57,28 @@
             });
         }
 
-        var postData = function () {
+        var postData = function (isDraft, isAdminEdit) {
 
             var data = {
                 id: app.getUrlId(),
+                isSaveAsDraft: isDraft,
+                isSaveAdminEdit: isAdminEdit,
+
                 amsdInflowFunds: $inflowFundsGrid.getDataSource().items(),
-                approver: $approverDropdown.option("value"),
-                approvalNotes: $approvalNotes.option("value")
+                approver: (isDraft) ? null : $approverDropdown.option("value"),
+                approvalNotes: (isDraft) ? null : $approvalNotes.option("value")
             };
 
             $.ajax({
                 data: data,
                 dataType: 'json',
-                url: window.location.origin + '/api/amsd/InflowFund/Edit/' + app.getUrlId(),
+                url: referenceUrl.formSubmit + app.getUrlId(),
                 method: 'post',
                 success: function (data) {
-                    window.location.href = window.location.origin + "/amsd/inflowfund/view/" + data;
-
+                    window.location.href = referenceUrl.redirectResponse + data;
                 },
                 fail: function (jqXHR, textStatus, errorThrown) {
                     app.alertError(textStatus + ': ' + errorThrown);
-
                 },
                 complete: function (data) {
 
@@ -197,79 +197,55 @@
 
         //#endregion
 
-
-        $("#submitForApprovalBtn").dxButton("instance").option("onClick",
-            function(e) {
-                $inflowFundsGrid.saveEditData().then(function() {
-
-                    if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
-                        app.alertWarning("Please key in at least one item.");
-                    } else {
-                        cutOffTimeChecker();
-                        $selectApproverModal.modal('show');
-                    }
-
-                });
-
-                e.event.preventDefault();
-            }
-        );
-        
-        $("#submitForApprovalModalBtn").dxButton("instance").option("onClick",
-            function (e) {
-                postData();
-                e.event.preventDefault();
-            }
-        );
-
         $("#saveAsDraftBtn").on({
             "click": function (e) {
-                $inflowFundsGrid.saveEditData().then(function () {
+                isDraft = true;
+            }
+        });
 
-                    if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
-                        $("#error_container").bs_warning("Please key in at least one item.");
-                    }
-                    else {
-                        
+        $("#adminEditSaveChangesBtn").on({
+            "click": function (e) {
+                isAdminEdit = true;
+            }
+        });
 
-                        var data;
-                        if (!isNaN(app.getUrlId())) {
-                            data = {
-                                id: app.getUrlId(),
-                                amsdInflowFunds: $inflowFundsGrid.getDataSource().items()
-                            };
-                        } else {
-                            data = {
-                                amsdInflowFunds: $inflowFundsGrid.getDataSource().items()
-                            };
-                        }
+        $inflowFundForm = $("#inflowFundForm").on("submit",
+            function (e) {
+                app.saveAllGrids($inflowFundsGrid);
 
-                        $.ajax({
-                            data: data,
-                            dataType: 'json',
-                            url: window.location.origin + '/api/amsd/NewInflowFundsFormDraft',
-                            method: 'post',
-                            success: function (data) {
-                                window.location.href = window.location.origin + "/amsd";
-                            },
-                            fail: function (jqXHR, textStatus, errorThrown) {
-                                app.alertError(textStatus + ': ' + errorThrown);
-                            },
-                            complete: function (data) {
-                                window.location.href = window.location.origin + "/amsd";
-                            }
-                        });
-                    }
+                if (isDraft || isAdminEdit) {
+                    setTimeout(function () {
+                        postData(isDraft, isAdminEdit);
+                    }, 1000);
 
-                });
+                } else {
+                    $('#selectApproverModal').modal('show');
+                }
+
+                e.preventDefault();
+            });
+
+        $("#submitForApprovalModalBtn").on({
+            "click": function (e) {
+                app.saveAllGrids($inflowFundsGrid);
+
+                if ($approverDropdown.option("value") != null) {
+                    app.toast("Submitting for approval....", "info", 3000);
+                    setTimeout(function () { postData(false, false); },
+                        1000);
+                } else {
+                    alert("Please select an approver");
+                }
 
                 e.preventDefault();
             }
         });
 
-        
+        //#region Immediate Invocation function
 
         loadData();
 
+        //#endregion
+        
     });
 }(window.jQuery, window, document));

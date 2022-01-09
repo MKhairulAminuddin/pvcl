@@ -220,26 +220,42 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
-                    
+                    var isAdminEdit = User.IsInRole(Config.Acl.PowerUser) || User.IsInRole(Config.Acl.Administrator);
+
                     if (form != null)
                     {
-                        if (User.IsInRole(Config.Acl.PowerUser))
+                        if (isAdminEdit)
                         {
                             form.AdminEditted = true;
                             form.AdminEdittedBy = User.Identity.Name;
                             form.AdminEdittedDate = DateTime.Now;
+                            new AuditService().AuditForm_AdminEdit(form.Id, form.FormType, form.FormDate, User.Identity.Name);
                         }
-                        else
+
+                        if (input.IsSaveAsDraft)
                         {
                             form.PreparedBy = User.Identity.Name;
                             form.PreparedDate = DateTime.Now;
+                        }
 
-                            if (!string.IsNullOrEmpty(input.Approver))
+                        if (input.Approver != null && !isAdminEdit)
+                        {
+                            //reassign
+                            if (form.ApprovedBy != input.Approver)
                             {
-                                form.ApprovedBy = input.Approver;
-                                form.FormStatus = Common.FormStatus.PendingApproval;
-                                
+                                new AuditService().AuditForm_ReassignApprover(form.Id, form.FormType, form.FormDate, User.Identity.Name,
+                                    form.ApprovedBy, input.Approver);
                             }
+
+                            //resubmit
+                            if (form.FormStatus == Common.FormStatus.PendingApproval)
+                            {
+                                new AuditService().AuditForm_Resubmission(form.Id, form.FormType, form.FormDate, User.Identity.Name);
+                            }
+
+                            form.ApprovedBy = input.Approver;
+                            form.ApprovedDate = null; // empty the date as this is new submission
+                            form.FormStatus = Common.FormStatus.PendingApproval;
                         }
                         
                         if (input.AmsdInflowFunds.Any())
@@ -321,12 +337,10 @@ namespace xDC_Web.Controllers.Api
                         
                         db.SaveChanges();
 
-                        if (form.FormStatus == Common.FormStatus.PendingApproval)
+                        if (form.FormStatus == Common.FormStatus.PendingApproval && !isAdminEdit)
                         {
-                            new NotificationService().NotifyApprovalRequest(form.ApprovedBy, form.Id, form.PreparedBy, form.FormType);
-                            new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
-                            new WorkflowService().SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
-
+                            TradeSettlementSvc.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name,
+                                form.FormType, input.ApprovalNotes);
                             new AuditService().AuditForm_RequestApproval(form.Id, form.FormType, form.FormDate, User.Identity.Name);
                         }
 
@@ -357,8 +371,7 @@ namespace xDC_Web.Controllers.Api
                     var key = Convert.ToInt32(input.Get("id"));
 
                     var form = db.AMSD_IF.FirstOrDefault(x =>
-                        x.Id == key && x.FormStatus != Common.FormStatus.PendingApproval &&
-                        x.FormStatus != Common.FormStatus.Approved);
+                        x.Id == key && x.FormStatus != Common.FormStatus.PendingApproval);
                     
                     if (form != null)
                     {

@@ -17,42 +17,51 @@
                             .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
                             )
 
-                        @if (!Model.EnableAdminEditBtn)
+                        @if (Model.EnableSubmitForApproval)
                         {
-                            <div style="display: inline-block; margin-right: 3px">
-                                @(Html.DevExtreme().Button()
-                                    .ID("submitForApprovalBtn")
-                                    .Text("Submit for Approval")
-                                    .Icon("todo")
-                                    .Type(ButtonType.Default)
-                                    .StylingMode(ButtonStylingMode.Contained)
-                                        )
-                            </div>
-
-                            if (Model.EnableSaveAsDraftBtn)
-                            {
-                                <div style="display: inline-block; margin-right: 3px">
-                                    @(Html.DevExtreme().Button()
-                                        .ID("saveAsDraftBtn")
-                                        .Text("Save")
-                                        .Icon("save")
-                                        .Type(ButtonType.Normal)
-                                        .StylingMode(ButtonStylingMode.Contained)
-                                        )
-                                </div>
-                            }
+                            @(Html.DevExtreme().Button()
+                                .ID("submitForApprovalBtn")
+                                .Text("Submit for Approval")
+                                .UseSubmitBehavior(true)
+                                .Type(ButtonType.Default)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                )
                         }
-                        @if (Model.EnableAdminEditBtn)
+
+                        @if (Model.EnableResubmit)
                         {
-                            <div style="display: inline-block; margin-right: 3px">
-                                @(Html.DevExtreme().Button()
-                                    .ID("adminEditSaveChangesBtn")
-                                    .Text("Save")
-                                    .Icon("save")
-                                    .Type(ButtonType.Default)
-                                    .StylingMode(ButtonStylingMode.Contained)
-                                    )
-                            </div>
+                            @(Html.DevExtreme().Button()
+                                .ID("submitForApprovalBtn")
+                                .Icon("fa fa-repeat")
+                                .Text("Resubmit")
+                                .UseSubmitBehavior(true)
+                                .Type(ButtonType.Default)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                )
+                        }
+
+                        @if (Model.EnableDraftButton)
+                        {
+                            @(Html.DevExtreme().Button()
+                                .ID("saveAsDraftBtn")
+                                .Text("Save")
+                                .Icon("save")
+                                .UseSubmitBehavior(true)
+                                .Type(ButtonType.Normal)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                )
+                        }
+
+                        @if (Model.EnableSaveAdminChanges)
+                        {
+                            @(Html.DevExtreme().Button()
+                                .ID("adminEditSaveChangesBtn")
+                                .Text("Save")
+                                .Icon("save")
+                                .UseSubmitBehavior(true)
+                                .Type(ButtonType.Danger)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                )
                         }
                     </div>
                     <div class="box-body">
@@ -107,7 +116,7 @@
                                     <div class="dx-field">
                                         <div class="dx-field-label">Approval/Rejection Notes</div>
                                         <div class="dx-field-value">
-                                            @(Html.DevExtreme().TextAreaFor(m => m.ApprovalOrRejectionNotes)
+                                            @(Html.DevExtreme().TextAreaFor(m => m.ApprovalNote)
                                                 .StylingMode(EditorStylingMode.Filled)
                                                 .ReadOnly(true))
                                         </div>

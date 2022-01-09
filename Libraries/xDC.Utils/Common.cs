@@ -550,6 +550,8 @@ namespace xDC.Utils
             public const string Reject = "REJECT";
             public const string Reassign = "REASSIGN";
             public const string RequestApproval = "REQUEST APPROVAL";
+            public const string Resubmit = "RESUBMIT";
+            public const string AdminEdit = "ADMIN EDIT";
         }
 
         public static string FlattenStrings(params string[] parameters)

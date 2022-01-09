@@ -1,6 +1,11 @@
 ﻿(function ($, window, document) {
 
     $(function () {
+        var $submitForApprovalModalBtn = $("#submitForApprovalModalBtn"),
+            $inflowFundForm = $("#inflowFundForm"),
+            $selectApproverModal = $("#selectApproverModal");
+
+
         var fundTypeStore = DevExpress.data.AspNet.createStore({
             key: "id",
             loadUrl: window.location.origin + "/api/common/GetInflowFundsFundType"
@@ -20,23 +25,31 @@
         var $inflowFundsGrid, $approverDropdown, $historyBtn, $submitBtn, $tbFormId, $tbFormStatus, $approvalNotes;
 
         var referenceUrl = {
-
+            postForm: window.location.origin + "/api/amsd/InflowFund/New",
+            postResult: window.location.origin + "/amsd/InflowFund/View/"
         };
 
-        var postData = function() {
+        var postData = function (isDraft) {
+            if (isDraft) {
+                app.toast("Saving....", "info", 3000);
+            } else {
+                app.toast("Submitting for approval....", "info", 3000);
+            }
+
             var data = {
                 amsdInflowFunds: $inflowFundsGrid.getDataSource().items(),
-                approver: $approverDropdown.option('value'),
-                approvalNotes: $approvalNotes.option("value")
+
+                approver: (isDraft) ? null : $approverDropdown.option("value"),
+                approvalNotes: (isDraft) ? null : $approvalNotes.option("value")
             };
 
             $.ajax({
                 data: data,
                 dataType: 'json',
-                url: window.location.origin + '/api/amsd/InflowFund/New',
+                url: referenceUrl.postForm,
                 method: 'post',
                 success: function (data) {
-                    window.location.href = window.location.origin + "/amsd/InflowFund/View/" + data;
+                    window.location.href = referenceUrl.postResult + data;
                 },
                 fail: function (jqXHR, textStatus, errorThrown) {
                     app.alertError(textStatus + ': ' + errorThrown);
@@ -65,67 +78,53 @@
         $approvalNotes = $("#approvalNotes").dxTextArea({
             height: 90
         }).dxTextArea("instance");
-        
 
-        $("#submitForApprovalBtn").on({
+        //#region Events & Invocations
+
+        $("#saveAsDraftBtn").dxButton({
+            onClick: function (e) {
+                app.saveAllGrids($inflowFundsGrid);
+
+                if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
+                    $("#error_container").bs_warning("Please key in at least one item.");
+                } else {
+                    setTimeout(function () {
+                        postData(true);
+                    }, 1000);
+                }
+            }
+        });
+
+        $submitForApprovalModalBtn.on({
             "click": function (e) {
-                $inflowFundsGrid.saveEditData().then(function () {
-                    
-                    if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
-                        $("#error_container").bs_warning("Please key in at least one item.");
-                    } else {
-                        cutOffTimeChecker();
-                        $('#selectApproverModal').modal('show');
-                    }
+                app.saveAllGrids($inflowFundsGrid);
 
-                });
-                
+                if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
+                    $("#error_container").bs_warning("Please key in at least one item.");
+                } else {
+                    setTimeout(function () {
+                        postData(false);
+                    }, 1000);
+                }
+
                 e.preventDefault();
             }
         });
 
-        $("#adminEditSaveChangesBtn").on({
-            "click": function (e) {
-                $inflowFundsGrid.saveEditData().then(function () {
-
-                    if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
-                        $("#error_container").bs_warning("Please key in at least one item.");
-                    } else {
-                        $("#error_container").bs_success("Changes saved!");
-                    }
-
-                });
-
+        $inflowFundForm = $("#inflowFundForm").on("submit",
+            function (e) {
                 e.preventDefault();
-            }
-        });
-        
 
-        $("#submitForApprovalModalBtn").on({
-            "click": function (e) {
+                app.saveAllGrids($inflowFundsGrid);
 
-                postData();
+                if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
+                    $("#error_container").bs_warning("Please key in at least one item.");
+                } else {
+                    $selectApproverModal.modal("show");
+                }
+            });
 
-                e.preventDefault();
-            }
-        });
-        
-        $("#saveAsDraftBtn").on({
-            "click": function (e) {
-                $inflowFundsGrid.saveEditData().then(function () {
-
-                    if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
-                        $("#error_container").bs_warning("Please key in at least one item.");
-                    }
-                    else {
-                        postData();
-                    }
-
-                });
-                
-                e.preventDefault();
-            }
-        });
+        //#endregion
         
         $inflowFundsGrid = $("#inflowFundsGrid1").dxDataGrid({
             dataSource: [],
@@ -194,27 +193,6 @@
                 ]
             }
         }).dxDataGrid("instance");
-        
-        function cutOffTimeChecker() {
-            $.ajax({
-                dataType: 'json',
-                url: window.location.origin + '/api/amsd/IsViolatedCutOffTime',
-                method: 'get',
-                success: function (data) {
-                    if (data) {
-                        $("#cutOffTimeNotify").text("Cut Off Time Violated").addClass("label label-danger");
-                    } else {
-                        $("#cutOffTimeNotify").text("").removeClass("label label-danger");
-                    }
-                },
-                fail: function (jqXHR, textStatus, errorThrown) {
-                    
-                },
-                complete: function (data) {
-
-                }
-            });
-        }
         
     });
 }(window.jQuery, window, document));

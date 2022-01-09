@@ -24,28 +24,6 @@
             printRequest: window.location.origin + "/amsd/Print",
             printResponse: window.location.origin + "/amsd/Printed/",
         };
-
-        $newInflowFundBtn = $("#newInflowFundBtn").dxButton({
-            text: "New Inflow Fund",
-            type: "default",
-            icon: "plus",
-            stylingMode: "contained",
-            onClick: function(e) {
-                $.ajax({
-                    dataType: 'json',
-                    url: window.location.origin + '/api/amsd/IsTodayInflowFormExisted',
-                    method: 'get'
-                }).done(function (data) {
-                    if (data) {
-                        $("#error_container").bs_warning("Today's form already existed.");
-                    } else {
-                        window.location = window.location.origin + "/amsd/inflowfund/new";
-                    }
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    app.alertError(textStatus + ': ' + errorThrown);
-                });
-            } 
-        }).dxButton("instance");
         
         $amsdGrid = $("#amsdGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
@@ -266,5 +244,6 @@
                     $amsdGrid.filter(["formStatus", "=", data.value]);
             }
         });
+
     });
 }(window.jQuery, window, document));
