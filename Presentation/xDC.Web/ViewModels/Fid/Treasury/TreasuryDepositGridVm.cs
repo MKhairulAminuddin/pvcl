@@ -7,6 +7,7 @@ namespace xDC_Web.ViewModels.Fid.Treasury
         public int Id { get; set; }
         public string Dealer { get; set; }
         public string Bank { get; set; }
+        public DateTime TradeDate { get; set; }
         public DateTime ValueDate { get; set; }
         public DateTime MaturityDate { get; set; }
         public double Principal { get; set; }

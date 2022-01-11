@@ -355,6 +355,7 @@ namespace xDC_Web.Controllers.Api
                         {
                             Dealer = x.Operator,
                             Bank = x.Bank,
+                            TradeDate = DateTime.Now,
                             ValueDate = x.ValueDate,
                             MaturityDate = x.MaturityDate,
                             Principal = x.Principle,
@@ -405,6 +406,7 @@ namespace xDC_Web.Controllers.Api
                             CashflowType = Common.Cashflow.Inflow,
                             Dealer = x.Operator,
                             Issuer = x.Issuer,
+                            TradeDate = DateTime.Now,
                             ValueDate = x.ValueDate,
                             MaturityDate = x.MaturityDate,
                             HoldingDayTenor = x.Tenor,
