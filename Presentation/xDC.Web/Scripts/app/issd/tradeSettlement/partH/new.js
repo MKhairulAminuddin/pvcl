@@ -224,20 +224,15 @@
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function (e) {
                 ts.saveAllGrids($othersGrid);
-
-                if (ts.val_isTMinus1($settlementDateBox.option("value"))) {
-                    alert("T-n only available for viewing..");
+                
+                if (isSaveAsDraft) {
+                    // new clean draft
+                    setTimeout(function () {
+                        postData(true);
+                    }, 1000);
                 }
                 else {
-                    if (isSaveAsDraft) {
-                        // new clean draft
-                        setTimeout(function () {
-                            postData(true);
-                        }, 1000);
-                    }
-                    else {
-                        $selectApproverModal.modal('show');
-                    }
+                    $selectApproverModal.modal('show');
                 }
 
                 e.preventDefault();

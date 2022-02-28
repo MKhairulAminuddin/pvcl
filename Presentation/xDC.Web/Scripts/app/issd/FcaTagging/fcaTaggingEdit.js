@@ -873,13 +873,18 @@
                                     dataField: "inflowTo",
                                     width: "150px",
                                     caption: "Inflow To",
+                                    lookup: {
+                                        dataSource: dsAccountLookup,
+                                        valueExpr: "name",
+                                        displayExpr: "name",
+                                        allowClearing: true
+                                    },
                                     cellTemplate: function (container, options) {
                                         if (options.data.inflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
-                                    },
-                                    allowEditing: false
+                                    }
                                 },
                                 {
                                     dataField: "instrumentCode",
@@ -928,6 +933,19 @@
                                     }
                                 ]
                             },
+                            editing: {
+                                mode: "batch",
+                                allowUpdating: true,
+                                allowDeleting: false,
+                                allowAdding: false
+                            },
+                            onEditorPreparing: function (e) {
+                                if (e.parentType === "dataRow" && e.dataField === "inflowTo") {
+                                    if (e.row.data.inflowAmount == 0) {
+                                        e.editorOptions.disabled = true;
+                                    }
+                                }
+                            },
                             showBorders: true
                         });
                         $contributionCreditedGrid = newTabView.dxDataGrid("instance");
@@ -957,13 +975,18 @@
                                     dataField: "inflowTo",
                                     width: "150px",
                                     caption: "Inflow To",
+                                    lookup: {
+                                        dataSource: dsAccountLookup,
+                                        valueExpr: "name",
+                                        displayExpr: "name",
+                                        allowClearing: true
+                                    },
                                     cellTemplate: function (container, options) {
                                         if (options.data.inflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
-                                    },
-                                    allowEditing: false
+                                    }
                                 },
                                 {
                                     dataField: "outflowFrom",
@@ -1041,6 +1064,19 @@
                                     }
                                 ]
                             },
+                            editing: {
+                                mode: "batch",
+                                allowUpdating: true,
+                                allowDeleting: false,
+                                allowAdding: false
+                            },
+                            onEditorPreparing: function (e) {
+                                if (e.parentType === "dataRow" && e.dataField === "inflowTo") {
+                                    if (e.row.data.inflowAmount == 0) {
+                                        e.editorOptions.disabled = true;
+                                    }
+                                }
+                            },
                             showBorders: true
                         });
                         $mtmGrid = newTabView.dxDataGrid("instance");
@@ -1069,13 +1105,18 @@
                                     dataField: "inflowTo",
                                     width: "150px",
                                     caption: "Inflow To",
+                                    lookup: {
+                                        dataSource: dsAccountLookup,
+                                        valueExpr: "name",
+                                        displayExpr: "name",
+                                        allowClearing: true
+                                    },
                                     cellTemplate: function (container, options) {
                                         if (options.data.inflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.inflowTo == null) ? "" : options.data.inflowTo) + "</span>").appendTo(container);
-                                    },
-                                    allowEditing: false
+                                    }
                                 },
                                 {
                                     dataField: "outflowFrom",
@@ -1152,6 +1193,19 @@
                                         }
                                     }
                                 ]
+                            },
+                            editing: {
+                                mode: "batch",
+                                allowUpdating: true,
+                                allowDeleting: false,
+                                allowAdding: false
+                            },
+                            onEditorPreparing: function (e) {
+                                if (e.parentType === "dataRow" && e.dataField === "inflowTo") {
+                                    if (e.row.data.inflowAmount == 0) {
+                                        e.editorOptions.disabled = true;
+                                    }
+                                }
                             },
                             showBorders: true
                         });
@@ -1270,12 +1324,6 @@
                             onEditorPreparing: function (e) {
                                 if (e.parentType === "dataRow" && e.dataField === "inflowTo") {
                                     if (e.row.data.inflowAmount == 0) {
-                                        e.editorOptions.disabled = true;
-                                    }
-                                }
-
-                                if (e.parentType === "dataRow" && e.dataField === "outflowFrom") {
-                                    if (e.row.data.outflowAmount == 0) {
                                         e.editorOptions.disabled = true;
                                     }
                                 }
@@ -1409,12 +1457,6 @@
                                         e.editorOptions.disabled = true;
                                     }
                                 }
-
-                                if (e.parentType === "dataRow" && e.dataField === "outflowFrom") {
-                                    if (e.row.data.amountMinus == 0) {
-                                        e.editorOptions.disabled = true;
-                                    }
-                                }
                             },
                             showBorders: true
                         });
@@ -1542,12 +1584,6 @@
                             onEditorPreparing: function (e) {
                                 if (e.parentType === "dataRow" && e.dataField === "inflowTo") {
                                     if (e.row.data.inflowAmount == 0) {
-                                        e.editorOptions.disabled = true;
-                                    }
-                                }
-
-                                if (e.parentType === "dataRow" && e.dataField === "outflowFrom") {
-                                    if (e.row.data.outflowAmount == 0) {
                                         e.editorOptions.disabled = true;
                                     }
                                 }

@@ -27,69 +27,13 @@
 
         var referenceUrl = {
             postNewFormRequest: window.location.origin + "/api/issd/TradeSettlement/New",
-            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartC/View/",
-            dsEdwAvailability: window.location.origin + "/api/issd/ts/EdwAvailability/c"
+            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartC/View/"
         };
         
         //#endregion
 
         //#region Data Source & Functions
-
-        var populateDwData = function (categoryType, settlementDate, currency) {
-            if (categoryType == "repo") {
-                $.when(
-                    ts.dsTradeItemEdw("REPO", settlementDate, currency)
-                )
-                    .done(function (data1) {
-                        $repoGrid.option("dataSource", []);
-                        $repoGrid.option("dataSource", data1.data);
-                        $repoGrid.repaint();
-
-                        app.toastEdwCount(data1.data, "REPO");
-                    })
-                    .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-
-                    })
-                    .then(function () {
-
-                    });
-            }
-
-            ts.defineTabBadgeNumbers([
-                { titleId: "titleBadge5", dxDataGrid: $repoGrid }
-            ]);
-        }
-
-        var dsEdwAvailability = function (tradeDateEpoch, currency) {
-            return $.ajax({
-                url: referenceUrl.dsEdwAvailability + "/" + moment(tradeDateEpoch).unix() + "/" + currency,
-                type: "get"
-            });
-        };
-
-        var checkDwDataAvailability = function (settlementDate, currency) {
-            app.clearAllGrid($repoGrid);
-            ts.defineTabBadgeNumbers([
-                { titleId: "titleBadge5", dxDataGrid: $repoGrid }
-            ]);
-
-            if (settlementDate && currency) {
-                $.when(
-                        dsEdwAvailability(settlementDate, currency)
-                    )
-                    .done(function (data1) {
-                        $edwAvailable.option("dataSource", data1);
-                    })
-                    .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
-
-                    })
-                    .then(function () {
-
-                    });
-            } else {
-
-            }
-        }
+        
 
         function postData(isDraft) {
             var data = {
@@ -144,24 +88,7 @@
                 ]
             })
             .dxSelectBox("instance");
-
-        $edwAvailable = $("#edwAvailable").dxList({
-            activeStateEnabled: false,
-            focusStateEnabled: false,
-            itemTemplate: function (data, index) {
-                var result = $("<div>");
-
-                $("<div>").text(data.name + " × " + data.numbers).appendTo(result);
-                $("<a>").append("<i class='fa fa-download'></i> Populate").on("dxclick", function (e) {
-
-                    populateDwData(data.categoryType, $settlementDateBox.option("value"), $currencySelectBox.option("value"));
-
-                    e.stopPropagation();
-                }).appendTo(result);
-
-                return result;
-            }
-        }).dxList("instance");
+        
 
         $tabpanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
@@ -263,15 +190,7 @@
         // #endregion Data Grid
  
         //#region Events
-
-        $settlementDateBox.on("valueChanged", function (data) {
-            checkDwDataAvailability(data.value, $currencySelectBox.option("value"));
-        });
-
-        $currencySelectBox.on("valueChanged", function (data) {
-            checkDwDataAvailability($settlementDateBox.option("value"), data.value);
-        });
-
+        
 
         $saveAsDraftBtn = $("#saveAsDraftBtn").on({
             "click": function (e) {
@@ -288,20 +207,15 @@
         $tradeSettlementForm = $("#tradeSettlementForm").on("submit",
             function (e) {
                 ts.saveAllGrids($repoGrid);
-
-                if (ts.val_isTMinus1($settlementDateBox.option("value"))) {
-                    alert("T-n only available for viewing..");
+                
+                if (isSaveAsDraft) {
+                    // new clean draft
+                    setTimeout(function () {
+                        postData(true);
+                    }, 1000);
                 }
                 else {
-                    if (isSaveAsDraft) {
-                        // new clean draft
-                        setTimeout(function () {
-                            postData(true);
-                        }, 1000);
-                    }
-                    else {
-                        $selectApproverModal.modal('show');
-                    }
+                    $selectApproverModal.modal('show');
                 }
 
                 e.preventDefault();
