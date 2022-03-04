@@ -15,6 +15,7 @@ using xDC.Services;
 using xDC.Utils;
 using xDC_Web.Models;
 using System.Data.Entity;
+using xDC_Web.ViewModels.DealCutOff;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -582,6 +583,210 @@ namespace xDC_Web.Controllers.Api
                         .OrderByDescending(x => x.Id).ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region Forms Remarks Information
+
+        [HttpGet]
+        [Route("FormRemarksMyr/{selectedDateEpoch}")]
+        public HttpResponseMessage GetFormsRemarksMyr(long selectedDateEpoch, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formsRemarks = new List<FormRemarkVM>() { };
+                    var selectedDate = Common.ConvertEpochToDateTime(selectedDateEpoch);
+
+                    var approvedAmsdForms = db.AMSD_IF.Where(x => DbFunctions.TruncateTime(x.FormDate.Value) == DbFunctions.TruncateTime(selectedDate.Value) && x.Currency == "MYR").ToList();
+                    var approvedIssdForms = db.ISSD_FormHeader.Where(x => DbFunctions.TruncateTime(x.SettlementDate.Value) == DbFunctions.TruncateTime(selectedDate.Value) && x.Currency == "MYR").ToList();
+                    var approvedFidForms = db.FID_Treasury.Where(x => DbFunctions.TruncateTime(x.ValueDate.Value) == DbFunctions.TruncateTime(selectedDate.Value) && x.Currency == "MYR").ToList();
+
+                    foreach (var approvedAmsdForm in approvedAmsdForms)
+                    {
+                        var result =
+                            (from w in db.Form_Workflow
+                            where w.WorkflowStatus == "Approved"
+                            where w.FormId == approvedAmsdForm.Id
+                            where w.FormType == approvedAmsdForm.FormType
+                            group w by new { w.FormId, w.FormType }
+                            into gcs
+                            select gcs.OrderBy(p => p.RecordedDate).FirstOrDefault()).ToList();
+
+                        if (result.Any())
+                        {
+                            formsRemarks.Add(new FormRemarkVM
+                            {
+                                FormId = result.First().FormId,
+                                FormType = result.First().FormType,
+                                ApprovedBy = approvedAmsdForm.ApprovedBy,
+                                FormDate = approvedAmsdForm.FormDate.Value,
+                                ApprovalDate = approvedAmsdForm.ApprovedDate.Value,
+                                Remarks = result.First().WorkflowNotes
+                            });
+                        }
+                    }
+
+                    foreach (var approvedIssdForm in approvedIssdForms)
+                    {
+                        var result =
+                            (from w in db.Form_Workflow
+                            where w.WorkflowStatus == "Approved"
+                            where w.FormId == approvedIssdForm.Id
+                            where w.FormType == approvedIssdForm.FormType
+                            group w by new { w.FormId, w.FormType }
+                            into gcs
+                            select gcs.OrderBy(p => p.RecordedDate).FirstOrDefault()).ToList();
+
+                        if (result.Any())
+                        {
+                            formsRemarks.Add(new FormRemarkVM
+                            {
+                                FormId = result.First().FormId,
+                                FormType = result.First().FormType,
+                                ApprovedBy = approvedIssdForm.ApprovedBy,
+                                FormDate = approvedIssdForm.SettlementDate.Value,
+                                ApprovalDate = approvedIssdForm.ApprovedDate.Value,
+                                Remarks = result.First().WorkflowNotes
+                            });
+                        }
+                    }
+
+                    foreach (var approvedFidForm in approvedFidForms)
+                    {
+                        var result =
+                            (from w in db.Form_Workflow
+                            where w.WorkflowStatus == "Approved"
+                            where w.FormId == approvedFidForm.Id
+                            where w.FormType == approvedFidForm.FormType
+                            group w by new { w.FormId, w.FormType }
+                            into gcs
+                            select gcs.OrderBy(p => p.RecordedDate).FirstOrDefault()).ToList();
+
+                        if (result.Any())
+                        {
+                            formsRemarks.Add(new FormRemarkVM
+                            {
+                                FormId = result.First().FormId,
+                                FormType = result.First().FormType,
+                                ApprovedBy = approvedFidForm.ApprovedBy,
+                                FormDate = approvedFidForm.ValueDate.Value,
+                                ApprovalDate = approvedFidForm.ApprovedDate.Value,
+                                Remarks = result.First().WorkflowNotes
+                            });
+                        }
+                    }
+
+                    return Request.CreateResponse(DataSourceLoader.Load(formsRemarks, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("FormRemarksFcy/{selectedDateEpoch}")]
+        public HttpResponseMessage GetFormsRemarksFcy(long selectedDateEpoch, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formsRemarks = new List<FormRemarkVM>() { };
+                    var selectedDate = Common.ConvertEpochToDateTime(selectedDateEpoch);
+
+                    var approvedAmsdForms = db.AMSD_IF.Where(x => DbFunctions.TruncateTime(x.FormDate.Value) == DbFunctions.TruncateTime(selectedDate.Value) && x.Currency != "MYR").ToList();
+                    var approvedIssdForms = db.ISSD_FormHeader.Where(x => DbFunctions.TruncateTime(x.SettlementDate.Value) == DbFunctions.TruncateTime(selectedDate.Value) && x.Currency != "MYR").ToList();
+                    var approvedFidForms = db.FID_Treasury.Where(x => DbFunctions.TruncateTime(x.ValueDate.Value) == DbFunctions.TruncateTime(selectedDate.Value) && x.Currency != "MYR").ToList();
+
+                    foreach (var approvedAmsdForm in approvedAmsdForms)
+                    {
+                        var result =
+                            (from w in db.Form_Workflow
+                             where w.WorkflowStatus == "Approved"
+                             where w.FormId == approvedAmsdForm.Id
+                             where w.FormType == approvedAmsdForm.FormType
+                             group w by new { w.FormId, w.FormType }
+                            into gcs
+                             select gcs.OrderBy(p => p.RecordedDate).FirstOrDefault()).ToList();
+
+                        if (result.Any())
+                        {
+                            formsRemarks.Add(new FormRemarkVM
+                            {
+                                FormId = result.First().FormId,
+                                FormType = result.First().FormType,
+                                ApprovedBy = approvedAmsdForm.ApprovedBy,
+                                FormDate = approvedAmsdForm.FormDate.Value,
+                                ApprovalDate = approvedAmsdForm.ApprovedDate.Value,
+                                Remarks = result.First().WorkflowNotes
+                            });
+                        }
+                    }
+
+                    foreach (var approvedIssdForm in approvedIssdForms)
+                    {
+                        var result =
+                            (from w in db.Form_Workflow
+                             where w.WorkflowStatus == "Approved"
+                             where w.FormId == approvedIssdForm.Id
+                             where w.FormType == approvedIssdForm.FormType
+                             group w by new { w.FormId, w.FormType }
+                            into gcs
+                             select gcs.OrderBy(p => p.RecordedDate).FirstOrDefault()).ToList();
+
+                        if (result.Any())
+                        {
+                            formsRemarks.Add(new FormRemarkVM
+                            {
+                                FormId = result.First().FormId,
+                                FormType = result.First().FormType,
+                                ApprovedBy = approvedIssdForm.ApprovedBy,
+                                FormDate = approvedIssdForm.SettlementDate.Value,
+                                ApprovalDate = approvedIssdForm.ApprovedDate.Value,
+                                Remarks = result.First().WorkflowNotes
+                            });
+                        }
+                    }
+
+                    foreach (var approvedFidForm in approvedFidForms)
+                    {
+                        var result =
+                            (from w in db.Form_Workflow
+                             where w.WorkflowStatus == "Approved"
+                             where w.FormId == approvedFidForm.Id
+                             where w.FormType == approvedFidForm.FormType
+                             group w by new { w.FormId, w.FormType }
+                            into gcs
+                             select gcs.OrderBy(p => p.RecordedDate).FirstOrDefault()).ToList();
+
+                        if (result.Any())
+                        {
+                            formsRemarks.Add(new FormRemarkVM
+                            {
+                                FormId = result.First().FormId,
+                                FormType = result.First().FormType,
+                                ApprovedBy = approvedFidForm.ApprovedBy,
+                                FormDate = approvedFidForm.ValueDate.Value,
+                                ApprovalDate = approvedFidForm.ApprovedDate.Value,
+                                Remarks = result.First().WorkflowNotes
+                            });
+                        }
+                    }
+
+                    return Request.CreateResponse(DataSourceLoader.Load(formsRemarks, loadOptions));
                 }
             }
             catch (Exception ex)

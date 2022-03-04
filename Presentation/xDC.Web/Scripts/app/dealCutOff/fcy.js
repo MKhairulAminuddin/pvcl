@@ -4,11 +4,17 @@
 
         var $dateSelectionBtn,
             $printBtn,
-            $viewTypeDropdown;
+            $viewTypeDropdown,
+            $formRemarksBtn,
+            $formRemarksGrid;
+
+        var $viewFormRemarksModal = $("#viewFormRemarksModal");
 
         var referenceUrl = {
             printRequest: window.location.origin + "/DealCutOff/Fcy/Print",
-            printResponse: window.location.origin + "/DealCutOff/Fcy/Printed/"
+            printResponse: window.location.origin + "/DealCutOff/Fcy/Printed/",
+
+            loadFormRemarks: window.location.origin + "/api/common/FormRemarksFcy/"
         };
 
         //#endregion
@@ -36,6 +42,16 @@
 
             var iframeElement6 = document.getElementById("sheet6");
             iframeElement6.src = "./DealCutOffFcyPreview?" + params + "&SheetIndex=5";
+        }
+
+        var formRemarksFcyData = function () {
+            var selectedDate = moment($dateSelectionBtn.option("value")).unix();
+
+            return {
+                store: DevExpress.data.AspNet.createStore({
+                    loadUrl: referenceUrl.loadFormRemarks + selectedDate
+                })
+            };
         }
 
         //#endregion
@@ -102,6 +118,18 @@
             }
         }).dxDropDownButton("instance");
 
+        $formRemarksBtn = $("#formRemarksBtn").dxButton({
+            text: "Remarks",
+            icon: "fa fa-commenting-o",
+            type: "normal",
+            stylingMode: "contained",
+            onClick: function (e) {
+                $formRemarksGrid.option("dataSource", formRemarksFcyData());
+                $viewFormRemarksModal.modal("show");
+                e.event.preventDefault();
+            }
+        }).dxButton("instance");
+
         var tabPanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
                 { titleId: "summaryTab", title: "Summary", template: "summaryTab" },
@@ -119,6 +147,42 @@
 
         // #region DataGrid
 
+        $formRemarksGrid = $("#formRemarksGrid").dxDataGrid({
+            columns: [
+                {
+                    dataField: "formType",
+                    caption: "Form Type"
+                },
+                {
+                    dataField: "formDate",
+                    caption: "Form/Settlement/Value Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy"
+                },
+                {
+                    dataField: "approvedBy",
+                    caption: "Approved By"
+                },
+                {
+                    dataField: "approvalDate",
+                    caption: "Approval Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy hh:mm a"
+                },
+                {
+                    dataField: "remarks",
+                    caption: "Remarks"
+                }
+            ],
+            showRowLines: true,
+            rowAlternationEnabled: false,
+            showBorders: true,
+            sorting: {
+                mode: "multiple",
+                showSortIndexes: true
+            },
+            wordWrapEnabled: true
+        }).dxDataGrid("instance");
 
         // #endregion DataGrid
 

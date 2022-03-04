@@ -3,12 +3,18 @@
         //#region Variable Definition
         
         var $dateSelectionBtn,
+            $formRemarksBtn,
             $printBtn,
-            $viewTypeDropdown;
+            $viewTypeDropdown,
+            $formRemarksGrid;
+
+        var $viewFormRemarksModal = $("#viewFormRemarksModal");
 
         var referenceUrl = {
             printRequest: window.location.origin + "/DealCutOff/Myr/Print",
-            printResponse: window.location.origin + "/DealCutOff/Myr/Printed/"
+            printResponse: window.location.origin + "/DealCutOff/Myr/Printed/",
+
+            loadFormRemarks: window.location.origin + "/api/common/FormRemarksMyr/"
         };
 
         //#endregion
@@ -27,6 +33,16 @@
 
             var iframeElement3 = document.getElementById("sheet3");
             iframeElement3.src = "./DealCutOffMyrPreview?" + params + "&SheetIndex=2";
+        }
+
+        var formRemarksData = function () {
+            var selectedDate = moment($dateSelectionBtn.option("value")).unix();
+
+            return {
+                store: DevExpress.data.AspNet.createStore({
+                    loadUrl: referenceUrl.loadFormRemarks + selectedDate
+                })
+            };
         }
         
         //#endregion
@@ -93,6 +109,18 @@
             }
         }).dxDropDownButton("instance");
 
+        $formRemarksBtn = $("#formRemarksBtn").dxButton({
+            text: "Remarks",
+            icon: "fa fa-commenting-o",
+            type: "normal",
+            stylingMode: "contained",
+            onClick: function (e) {
+                $formRemarksGrid.option("dataSource", formRemarksData());
+                $viewFormRemarksModal.modal("show");
+                e.event.preventDefault();
+            }
+        }).dxButton("instance");
+
         var tabPanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
                 { titleId: "titleBadge2", title: "Cashflow", template: "bondTab" },
@@ -107,6 +135,43 @@
         //#endregion
 
         // #region DataGrid
+
+        $formRemarksGrid = $("#formRemarksGrid").dxDataGrid({
+            columns: [
+                {
+                    dataField: "formType",
+                    caption: "Form Type"
+                },
+                {
+                    dataField: "formDate",
+                    caption: "Form/Settlement/Value Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy"
+                },
+                {
+                    dataField: "approvedBy",
+                    caption: "Approved By"
+                },
+                {
+                    dataField: "approvalDate",
+                    caption: "Approval Date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy hh:mm a"
+                },
+                {
+                    dataField: "remarks",
+                    caption: "Remarks"
+                }
+            ],
+            showRowLines: true,
+            rowAlternationEnabled: false,
+            showBorders: true,
+            sorting: {
+                mode: "multiple",
+                showSortIndexes: true
+            },
+            wordWrapEnabled: true
+        }).dxDataGrid("instance");
         
         
         // #endregion DataGrid
