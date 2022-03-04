@@ -569,7 +569,7 @@ namespace xDC.Services
                     };
 
                     var recipients = new List<string>();
-                    recipients = Config.NotiTreasuryIssdEmail.Split(';').ToList();
+                    recipients = Config.NotiFcaTaggingIssdEmail.Split(';').ToList();
                     foreach (var recipient in recipients)
                     {
                         message.To.Add(MailboxAddress.Parse(recipient));
@@ -593,6 +593,7 @@ namespace xDC.Services
                                 using (var row = table.AddHeaderRow("#5B8EFB", "white"))
                                 {
                                     row.AddCell("Settlement Date");
+                                    row.AddCell("Currency");
                                     row.AddCell("Type");
                                     row.AddCell("Code");
                                     row.AddCell("Stock Code");
@@ -607,6 +608,7 @@ namespace xDC.Services
                                     using (var row = table.AddRow())
                                     {
                                         row.AddCell(f.SettlementDate?.ToString("dd/MM/yyyy"));
+                                        row.AddCell(f.Currency);
                                         row.AddCell(ts.InstrumentType);
                                         row.AddCell(ts.InstrumentCode);
                                         row.AddCell(ts.StockCode);
@@ -626,6 +628,7 @@ namespace xDC.Services
                         {
                             Text = bodyBuilder.ToString()
                         };
+                        message.Subject = $"{SubjectAppend}{Config.NotiFcaTaggingIssdEmailSubject}";
 
                         SendEmailToSmtp(message);
                     }
@@ -637,6 +640,42 @@ namespace xDC.Services
             }
         }
 
+        public void TreasuryToIssd()
+        {
+            try
+            {
+                var message = new MimeMessage()
+                {
+                    Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount)
+                };
+
+                var recipients = new List<string>();
+                recipients = Config.NotiTreasuryIssdEmail.Split(';').ToList();
+                foreach (var recipient in recipients)
+                {
+                    message.To.Add(MailboxAddress.Parse(recipient));
+                }
+
+                var bodyBuilder = new StringBuilder();
+                bodyBuilder.Append($"<p>Hello there, </p>");
+                bodyBuilder.AppendLine($"<p>FID has approved a Cash flow.</p>");
+                
+                bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
+
+                message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                {
+                    Text = bodyBuilder.ToString()
+                };
+                message.Subject = $"{SubjectAppend}{Config.NotiTreasuryIssdEmailSubject}";
+
+                SendEmailToSmtp(message);
+                    
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
 
         private void SendEmailToSmtp(MimeMessage message)
         {

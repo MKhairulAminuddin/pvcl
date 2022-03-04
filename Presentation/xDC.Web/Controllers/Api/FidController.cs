@@ -26,7 +26,7 @@ namespace xDC_Web.Controllers.Api
     [RoutePrefix("api/fid")]
     public class FidController : ApiController
     {
-        #region 10 AM Cut Off
+        #region FCA Tagging
 
         [HttpGet]
         [Route("FcaTagging")]
@@ -1511,6 +1511,11 @@ namespace xDC_Web.Controllers.Api
                             new MailService().SendApprovalStatus(form.Id, form.FormType, form.FormStatus, form.PreparedBy, input.ApprovalNote);
                             new WorkflowService().ApprovalResponse(form.Id, form.FormStatus, input.ApprovalNote, form.FormType, form.PreparedBy, form.ApprovedBy);
                             new AuditService().AuditForm_Approval(form.Id, form.FormType, form.FormStatus, form.ValueDate, User.Identity.Name);
+
+                            if (form.FormStatus == Common.FormStatus.Approved)
+                            {
+                                new MailService().TreasuryToIssd();
+                            }
                             
 
                             return Request.CreateResponse(HttpStatusCode.Accepted, input.FormId);

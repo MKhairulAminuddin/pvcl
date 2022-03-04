@@ -33,12 +33,16 @@ namespace xDC.Utils
         public static string NotificationTsLoanEmail => ConfigurationManager.AppSettings["Notification.TS.LoanEmail"];
         public static string NotificationTsLoanEmailCc => ConfigurationManager.AppSettings["Notification.TS.LoanEmail.CC"];
         public static string NotiTreasuryIssdEmail=> ConfigurationManager.AppSettings["Notification.T.IssdEmail"];
+        public static string NotiFcaTaggingIssdEmail=> ConfigurationManager.AppSettings["Notification.FcaTagging.IssdEmail"];
 
 
         public static string NotificationTsCnEmailSubject => ConfigurationManager.AppSettings["Notification.TS.CnEmailSubject"];
         public static string NotificationTsPeEmailSubject => ConfigurationManager.AppSettings["Notification.TS.PeEmailSubject"];
         public static string NotificationTsPropertyEmailSubject => ConfigurationManager.AppSettings["Notification.TS.PropertySubject"];
         public static string NotificationTsLoanEmailSubject => ConfigurationManager.AppSettings["Notification.TS.LoanSubject"];
+
+        public static string NotiTreasuryIssdEmailSubject => ConfigurationManager.AppSettings["Notification.T.IssdEmail.Subject"];
+        public static string NotiFcaTaggingIssdEmailSubject => ConfigurationManager.AppSettings["Notification.FcaTagging.IssdEmail.Subject"];
 
         public static class Acl
         {
