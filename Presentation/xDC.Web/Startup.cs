@@ -26,6 +26,8 @@ namespace xDC_Web
             
             RecurringJob.AddOrUpdate("ISSD TS - Currency", () => IssdTask.FetchNewCurrency(), Cron.Daily, TimeZoneInfo.Local);
             RecurringJob.AddOrUpdate("FID Treasury - Asset Type", () => FidTask.FetchAssetType(), Cron.Daily, TimeZoneInfo.Local);
+
+            RecurringJob.AddOrUpdate("[Notification] FCA Tagging to ISSD", () => NotiTask.FcaTag(), Cron.Minutely, TimeZoneInfo.Local);
             
         }
         

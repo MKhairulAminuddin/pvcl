@@ -241,7 +241,8 @@ namespace xDC.Services
                         }
 
                         bodyBuilder.Append(sb);
-                        
+                        bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
+
 
                         message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                         {
@@ -345,7 +346,7 @@ namespace xDC.Services
                         }
 
                         bodyBuilder.Append(sb);
-
+                        bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
 
                         message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                         {
@@ -534,6 +535,7 @@ namespace xDC.Services
                         bodyBuilder.Append(sb);
                         
                         bodyBuilder.AppendLine($"<p>Click <a href='{pageUrl}'>here</a> to view the submission in Kashflow.</p>");
+                        bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
 
                         message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                         {
@@ -554,7 +556,88 @@ namespace xDC.Services
                 Logger.LogError(ex);
             }
         }
-        
+
+        public void FcaBankTagging(List<ISSD_TradeSettlement> tradeSettlementItems)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var message = new MimeMessage()
+                    {
+                        Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount)
+                    };
+
+                    var recipients = new List<string>();
+                    recipients = Config.NotiTreasuryIssdEmail.Split(';').ToList();
+                    foreach (var recipient in recipients)
+                    {
+                        message.To.Add(MailboxAddress.Parse(recipient));
+                    }
+
+                    var Ids = tradeSettlementItems.Select(x => x.FormId).Distinct().ToList();
+                    var forms = db.ISSD_FormHeader.Where(x => Ids.Contains(x.Id)).ToList();
+
+                    if (forms.Any())
+                    {
+                        var bodyBuilder = new StringBuilder();
+                        bodyBuilder.Append($"<p>Hello there, </p>");
+                        bodyBuilder.AppendLine($"<p>Below Trade Settlement items has been tagged with Bank code. </p>");
+
+                        foreach (var f in forms)
+                        {
+                            bodyBuilder.AppendLine("<br/><b>" + f.FormType + " </b><br/>");
+                            
+                            using (var table = new Common.Table(bodyBuilder))
+                            {
+                                using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                                {
+                                    row.AddCell("Settlement Date");
+                                    row.AddCell("Type");
+                                    row.AddCell("Code");
+                                    row.AddCell("Stock Code");
+                                    row.AddCell("Inflow");
+                                    row.AddCell("Outflow");
+                                    row.AddCell("Tagged By");
+                                    row.AddCell("Tagged Datetime");
+                                }
+
+                                foreach (var ts in tradeSettlementItems.Where(x => x.FormId == f.Id))
+                                {
+                                    using (var row = table.AddRow())
+                                    {
+                                        row.AddCell(f.SettlementDate?.ToString("dd/MM/yyyy"));
+                                        row.AddCell(ts.InstrumentType);
+                                        row.AddCell(ts.InstrumentCode);
+                                        row.AddCell(ts.StockCode);
+                                        row.AddCell(ts.InflowTo);
+                                        row.AddCell(ts.OutflowFrom);
+                                        row.AddCell(ts.AssignedBy);
+                                        row.AddCell(ts.AssignedDate?.ToString("dd/MM/yyyy HH:mm"));
+                                    }
+                                }
+                                
+                            }
+                        }
+
+                        bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
+
+                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                        {
+                            Text = bodyBuilder.ToString()
+                        };
+
+                        SendEmailToSmtp(message);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
+
         private void SendEmailToSmtp(MimeMessage message)
         {
             try
@@ -610,6 +693,8 @@ namespace xDC.Services
                 bodyBuilder.AppendLine($"<p>{notes}</p>");
             }
 
+            bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
+
             message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
                 Text = bodyBuilder.ToString()
@@ -659,6 +744,7 @@ namespace xDC.Services
                 bodyBuilder.AppendLine($"<p>{notes}</p>");
             }
 
+            bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
             message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
                 Text = bodyBuilder.ToString()

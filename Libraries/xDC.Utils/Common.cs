@@ -137,7 +137,12 @@ namespace xDC.Utils
             }
             return String.Empty;
         }
-        
+
+        public static class EmailTemplate
+        {
+            public const string Footer = "<br/><br/><br/><br/><p style='font-size: smaller;font-style: italic;color: gray'>### This is a system generated email, please do not reply to this email. Don't you ever try. ###</p>";
+        }
+
         public static string TsCategoryUrlParamMapping(string value)
         {
             switch (value)

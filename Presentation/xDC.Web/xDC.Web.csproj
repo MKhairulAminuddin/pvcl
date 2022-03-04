@@ -679,6 +679,7 @@
     <Compile Include="Extension\MailGenerator\CnEmailGenerator.cs" />
     <Compile Include="Extension\MailMerge\HtmlContentGenerator.cs" />
     <Compile Include="Extension\MenuSecurity.cs" />
+    <Compile Include="Extension\SchedulerTask\NotiTask.cs" />
     <Compile Include="Extension\SchedulerTask\FidTask.cs" />
     <Compile Include="Extension\SchedulerTask\IssdTask.cs" />
     <Compile Include="Extension\SchedulerTask\SyncActiveDirectory.cs" />
