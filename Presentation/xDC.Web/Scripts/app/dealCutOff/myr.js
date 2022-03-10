@@ -14,7 +14,8 @@
             printRequest: window.location.origin + "/DealCutOff/Myr/Print",
             printResponse: window.location.origin + "/DealCutOff/Myr/Printed/",
 
-            loadFormRemarks: window.location.origin + "/api/common/FormRemarksMyr/"
+            loadFormLists: window.location.origin + "/api/common/FormList/",
+            loadFormRemarks: window.location.origin + "/api/common/FormRemarks/"
         };
 
         //#endregion
@@ -35,13 +36,54 @@
             iframeElement3.src = "./DealCutOffMyrPreview?" + params + "&SheetIndex=2";
         }
 
-        var formRemarksData = function () {
+        var formListData = function () {
             var selectedDate = moment($dateSelectionBtn.option("value")).unix();
+            var selectedFormStatus = $viewTypeDropdown.option("value");
 
             return {
                 store: DevExpress.data.AspNet.createStore({
-                    loadUrl: referenceUrl.loadFormRemarks + selectedDate
+                    loadUrl: referenceUrl.loadFormLists + "MYR/" + selectedFormStatus + "/" + selectedDate
                 })
+            };
+        }
+
+        var formRemarksData = function formRemarksData(formType, formId) {
+            return referenceUrl.loadFormRemarks + formType + "/" + formId;
+        }
+
+        function masterDetailTemplate(_, masterDetailOptions) {
+            return $("<div>").dxTabPanel({
+                items: [
+                    {
+                        title: "Forms Remark",
+                        template: createRemarksGrid(masterDetailOptions.data)
+                    }
+                ]
+            });
+        }
+
+        function createRemarksGrid(masterDetailData) {
+            return function () {
+                return $("<div>").dxDataGrid({
+                    dataSource: formRemarksData(masterDetailData.formType, masterDetailData.formId),
+                    showBorders: true,
+                    columns: [
+                        {
+                            caption: "Name",
+                            dataField: "actionBy"
+                        },
+                        {
+                            caption: "Date",
+                            dataField: "actionDate",
+                            dataType: "date",
+                            format: "dd/MM/yyyy hh:mm a",
+                        },
+                        {
+                            caption: "Remark",
+                            dataField: "remarks"
+                        }
+                    ]
+                });
             };
         }
         
@@ -115,7 +157,7 @@
             type: "normal",
             stylingMode: "contained",
             onClick: function (e) {
-                $formRemarksGrid.option("dataSource", formRemarksData());
+                $formRemarksGrid.option("dataSource", formListData());
                 $viewFormRemarksModal.modal("show");
                 e.event.preventDefault();
             }
@@ -139,14 +181,27 @@
         $formRemarksGrid = $("#formRemarksGrid").dxDataGrid({
             columns: [
                 {
+                    dataField: "formId",
+                    caption: "Form ID",
+                    visible: false
+                },
+                {
                     dataField: "formType",
                     caption: "Form Type"
+                },
+                {
+                    dataField: "formStatus",
+                    caption: "Form Status"
                 },
                 {
                     dataField: "formDate",
                     caption: "Form/Settlement/Value Date",
                     dataType: "datetime",
                     format: "dd/MM/yyyy"
+                },
+                {
+                    dataField: "preparedBy",
+                    caption: "Prepared By"
                 },
                 {
                     dataField: "approvedBy",
@@ -156,11 +211,8 @@
                     dataField: "approvalDate",
                     caption: "Approval Date",
                     dataType: "datetime",
-                    format: "dd/MM/yyyy hh:mm a"
-                },
-                {
-                    dataField: "remarks",
-                    caption: "Remarks"
+                    format: "dd/MM/yyyy hh:mm a",
+                    sortOrder: "desc"
                 }
             ],
             showRowLines: true,
@@ -170,7 +222,11 @@
                 mode: "multiple",
                 showSortIndexes: true
             },
-            wordWrapEnabled: true
+            wordWrapEnabled: true,
+            masterDetail: {
+                enabled: true,
+                template: masterDetailTemplate
+            }
         }).dxDataGrid("instance");
         
         

@@ -597,96 +597,82 @@ namespace xDC_Web.Controllers.Api
         #region Forms Remarks Information
 
         [HttpGet]
-        [Route("FormRemarksMyr/{selectedDateEpoch}")]
-        public HttpResponseMessage GetFormsRemarksMyr(long selectedDateEpoch, DataSourceLoadOptions loadOptions)
+        [Route("FormList/{currencyType}/{formStatus}/{selectedDateEpoch}")]
+        public HttpResponseMessage GetFormsList(string currencyType, string formStatus, long selectedDateEpoch, DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var formsRemarks = new List<FormRemarkVM>() { };
+                    var formsList = new List<FormListVM>() { };
                     var selectedDate = Common.ConvertEpochToDateTime(selectedDateEpoch);
+                    var selectedStatus = (formStatus == Common.FormStatus.Approved ? Common.FormStatus.Approved : string.Empty);
+                    var selectedCurrency = (currencyType.ToUpper() == "MYR" ? "MYR" : string.Empty);
 
-                    var approvedAmsdForms = db.AMSD_IF.Where(x => DbFunctions.TruncateTime(x.FormDate.Value) == DbFunctions.TruncateTime(selectedDate.Value) && x.Currency == "MYR").ToList();
-                    var approvedIssdForms = db.ISSD_FormHeader.Where(x => DbFunctions.TruncateTime(x.SettlementDate.Value) == DbFunctions.TruncateTime(selectedDate.Value) && x.Currency == "MYR").ToList();
-                    var approvedFidForms = db.FID_Treasury.Where(x => DbFunctions.TruncateTime(x.ValueDate.Value) == DbFunctions.TruncateTime(selectedDate.Value) && x.Currency == "MYR").ToList();
+                    var approvedAmsdForms = db.AMSD_IF.Where(x => DbFunctions.TruncateTime(x.FormDate.Value) == DbFunctions.TruncateTime(selectedDate.Value)).ToList();
+                    var approvedIssdForms = db.ISSD_FormHeader.Where(x => DbFunctions.TruncateTime(x.SettlementDate.Value) == DbFunctions.TruncateTime(selectedDate.Value)).ToList();
+                    var approvedFidForms = db.FID_Treasury.Where(x => DbFunctions.TruncateTime(x.ValueDate.Value) == DbFunctions.TruncateTime(selectedDate.Value)).ToList();
 
                     foreach (var approvedAmsdForm in approvedAmsdForms)
                     {
-                        var result =
-                            (from w in db.Form_Workflow
-                            where w.WorkflowStatus == "Approved"
-                            where w.FormId == approvedAmsdForm.Id
-                            where w.FormType == approvedAmsdForm.FormType
-                            group w by new { w.FormId, w.FormType }
-                            into gcs
-                            select gcs.OrderBy(p => p.RecordedDate).FirstOrDefault()).ToList();
-
-                        if (result.Any())
-                        {
-                            formsRemarks.Add(new FormRemarkVM
+                            formsList.Add(new FormListVM
                             {
-                                FormId = result.First().FormId,
-                                FormType = result.First().FormType,
+                                FormId = approvedAmsdForm.Id,
+                                FormType = approvedAmsdForm.FormType,
+                                FormStatus = approvedAmsdForm.FormStatus, 
+                                FormCurrency = approvedAmsdForm.Currency,
+                                PreparedBy = approvedAmsdForm.PreparedBy,
                                 ApprovedBy = approvedAmsdForm.ApprovedBy,
-                                FormDate = approvedAmsdForm.FormDate.Value,
-                                ApprovalDate = approvedAmsdForm.ApprovedDate.Value,
-                                Remarks = result.First().WorkflowNotes
+                                FormDate = approvedAmsdForm.FormDate,
+                                ApprovalDate = approvedAmsdForm.ApprovedDate
                             });
-                        }
                     }
 
                     foreach (var approvedIssdForm in approvedIssdForms)
                     {
-                        var result =
-                            (from w in db.Form_Workflow
-                            where w.WorkflowStatus == "Approved"
-                            where w.FormId == approvedIssdForm.Id
-                            where w.FormType == approvedIssdForm.FormType
-                            group w by new { w.FormId, w.FormType }
-                            into gcs
-                            select gcs.OrderBy(p => p.RecordedDate).FirstOrDefault()).ToList();
-
-                        if (result.Any())
+                        formsList.Add(new FormListVM
                         {
-                            formsRemarks.Add(new FormRemarkVM
-                            {
-                                FormId = result.First().FormId,
-                                FormType = result.First().FormType,
-                                ApprovedBy = approvedIssdForm.ApprovedBy,
-                                FormDate = approvedIssdForm.SettlementDate.Value,
-                                ApprovalDate = approvedIssdForm.ApprovedDate.Value,
-                                Remarks = result.First().WorkflowNotes
-                            });
-                        }
+                            FormId = approvedIssdForm.Id,
+                            FormType = approvedIssdForm.FormType,
+                            FormStatus = approvedIssdForm.FormStatus,
+                            FormCurrency = approvedIssdForm.Currency,
+                            PreparedBy = approvedIssdForm.PreparedBy,
+                            ApprovedBy = approvedIssdForm.ApprovedBy,
+                            FormDate = approvedIssdForm.SettlementDate,
+                            ApprovalDate = approvedIssdForm.ApprovedDate
+                        });
                     }
 
                     foreach (var approvedFidForm in approvedFidForms)
                     {
-                        var result =
-                            (from w in db.Form_Workflow
-                            where w.WorkflowStatus == "Approved"
-                            where w.FormId == approvedFidForm.Id
-                            where w.FormType == approvedFidForm.FormType
-                            group w by new { w.FormId, w.FormType }
-                            into gcs
-                            select gcs.OrderBy(p => p.RecordedDate).FirstOrDefault()).ToList();
-
-                        if (result.Any())
+                        formsList.Add(new FormListVM
                         {
-                            formsRemarks.Add(new FormRemarkVM
-                            {
-                                FormId = result.First().FormId,
-                                FormType = result.First().FormType,
-                                ApprovedBy = approvedFidForm.ApprovedBy,
-                                FormDate = approvedFidForm.ValueDate.Value,
-                                ApprovalDate = approvedFidForm.ApprovedDate.Value,
-                                Remarks = result.First().WorkflowNotes
-                            });
-                        }
+                            FormId = approvedFidForm.Id,
+                            FormType = approvedFidForm.FormType,
+                            FormStatus = approvedFidForm.FormStatus,
+                            FormCurrency = approvedFidForm.Currency,
+                            PreparedBy = approvedFidForm.PreparedBy,
+                            ApprovedBy = approvedFidForm.ApprovedBy,
+                            FormDate = approvedFidForm.ValueDate,
+                            ApprovalDate = approvedFidForm.ApprovedDate
+                        });
                     }
 
-                    return Request.CreateResponse(DataSourceLoader.Load(formsRemarks, loadOptions));
+                    if (!string.IsNullOrEmpty(selectedStatus))
+                    {
+                        formsList = formsList.Where(x => x.FormStatus == Common.FormStatus.Approved).ToList();
+                    }
+
+                    if (!string.IsNullOrEmpty(selectedCurrency))
+                    {
+                        formsList = formsList.Where(x => x.FormCurrency == selectedCurrency).ToList();
+                    }
+                    else
+                    {
+                        formsList = formsList.Where(x => x.FormCurrency != selectedCurrency).ToList();
+                    }
+
+                    return Request.CreateResponse(DataSourceLoader.Load(formsList, loadOptions));
                 }
             }
             catch (Exception ex)
@@ -697,93 +683,31 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpGet]
-        [Route("FormRemarksFcy/{selectedDateEpoch}")]
-        public HttpResponseMessage GetFormsRemarksFcy(long selectedDateEpoch, DataSourceLoadOptions loadOptions)
+        [Route("FormRemarks/{formType}/{formId}")]
+        public HttpResponseMessage GetFormsRemarks(string formType, int formId, DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
                     var formsRemarks = new List<FormRemarkVM>() { };
-                    var selectedDate = Common.ConvertEpochToDateTime(selectedDateEpoch);
 
-                    var approvedAmsdForms = db.AMSD_IF.Where(x => DbFunctions.TruncateTime(x.FormDate.Value) == DbFunctions.TruncateTime(selectedDate.Value) && x.Currency != "MYR").ToList();
-                    var approvedIssdForms = db.ISSD_FormHeader.Where(x => DbFunctions.TruncateTime(x.SettlementDate.Value) == DbFunctions.TruncateTime(selectedDate.Value) && x.Currency != "MYR").ToList();
-                    var approvedFidForms = db.FID_Treasury.Where(x => DbFunctions.TruncateTime(x.ValueDate.Value) == DbFunctions.TruncateTime(selectedDate.Value) && x.Currency != "MYR").ToList();
-
-                    foreach (var approvedAmsdForm in approvedAmsdForms)
-                    {
-                        var result =
+                    var workflowDetails =
                             (from w in db.Form_Workflow
-                             where w.WorkflowStatus == "Approved"
-                             where w.FormId == approvedAmsdForm.Id
-                             where w.FormType == approvedAmsdForm.FormType
-                             group w by new { w.FormId, w.FormType }
-                            into gcs
-                             select gcs.OrderBy(p => p.RecordedDate).FirstOrDefault()).ToList();
+                             where w.FormId == formId
+                             where w.FormType == formType
+                             select w).ToList();
 
-                        if (result.Any())
-                        {
-                            formsRemarks.Add(new FormRemarkVM
-                            {
-                                FormId = result.First().FormId,
-                                FormType = result.First().FormType,
-                                ApprovedBy = approvedAmsdForm.ApprovedBy,
-                                FormDate = approvedAmsdForm.FormDate.Value,
-                                ApprovalDate = approvedAmsdForm.ApprovedDate.Value,
-                                Remarks = result.First().WorkflowNotes
-                            });
-                        }
-                    }
-
-                    foreach (var approvedIssdForm in approvedIssdForms)
+                    foreach (var i in workflowDetails)
                     {
-                        var result =
-                            (from w in db.Form_Workflow
-                             where w.WorkflowStatus == "Approved"
-                             where w.FormId == approvedIssdForm.Id
-                             where w.FormType == approvedIssdForm.FormType
-                             group w by new { w.FormId, w.FormType }
-                            into gcs
-                             select gcs.OrderBy(p => p.RecordedDate).FirstOrDefault()).ToList();
-
-                        if (result.Any())
+                        formsRemarks.Add(new FormRemarkVM()
                         {
-                            formsRemarks.Add(new FormRemarkVM
-                            {
-                                FormId = result.First().FormId,
-                                FormType = result.First().FormType,
-                                ApprovedBy = approvedIssdForm.ApprovedBy,
-                                FormDate = approvedIssdForm.SettlementDate.Value,
-                                ApprovalDate = approvedIssdForm.ApprovedDate.Value,
-                                Remarks = result.First().WorkflowNotes
-                            });
-                        }
-                    }
-
-                    foreach (var approvedFidForm in approvedFidForms)
-                    {
-                        var result =
-                            (from w in db.Form_Workflow
-                             where w.WorkflowStatus == "Approved"
-                             where w.FormId == approvedFidForm.Id
-                             where w.FormType == approvedFidForm.FormType
-                             group w by new { w.FormId, w.FormType }
-                            into gcs
-                             select gcs.OrderBy(p => p.RecordedDate).FirstOrDefault()).ToList();
-
-                        if (result.Any())
-                        {
-                            formsRemarks.Add(new FormRemarkVM
-                            {
-                                FormId = result.First().FormId,
-                                FormType = result.First().FormType,
-                                ApprovedBy = approvedFidForm.ApprovedBy,
-                                FormDate = approvedFidForm.ValueDate.Value,
-                                ApprovalDate = approvedFidForm.ApprovedDate.Value,
-                                Remarks = result.First().WorkflowNotes
-                            });
-                        }
+                            FormId = i.FormId,
+                            FormType = i.FormType,
+                            ActionBy = i.RequestBy,
+                            ActionDate = i.RecordedDate,
+                            Remarks = (!string.IsNullOrEmpty(i.WorkflowNotes) ? i.WorkflowNotes : "N/A")
+                        });
                     }
 
                     return Request.CreateResponse(DataSourceLoader.Load(formsRemarks, loadOptions));
