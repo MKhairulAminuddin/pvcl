@@ -67,6 +67,7 @@
                 return $("<div>").dxDataGrid({
                     dataSource: formRemarksData(masterDetailData.formType, masterDetailData.formId),
                     showBorders: true,
+                    wordWrapEnabled: true,
                     columns: [
                         {
                             caption: "Name",
