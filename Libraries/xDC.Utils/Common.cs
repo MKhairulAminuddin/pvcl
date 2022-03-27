@@ -26,6 +26,37 @@ namespace xDC.Utils
             public const string Others = "OTHERS";
         }
 
+        public static int TsItemMapAmountColumn(string value)
+        {
+            switch (value)
+            {
+                // maturity +, sales +, purchase -
+                case TsItemCategory.Equity:
+                case TsItemCategory.Bond:
+                case TsItemCategory.Cp:
+                case TsItemCategory.NotesPapers:
+                case TsItemCategory.Coupon:
+                    return 1;
+
+                // 1st leg +, 2nd leg -
+                case TsItemCategory.Repo:
+                    return 2;
+
+                // amout +, amount -
+                case TsItemCategory.Mtm:
+                case TsItemCategory.Fx:
+                case TsItemCategory.Altid:
+                case TsItemCategory.Fees:
+                case TsItemCategory.Others:
+                    return 3;
+
+                // amout +
+                case TsItemCategory.Cn:
+                    return 4;
+            }
+            return 0;
+        }
+
         public static class FormStatus
         {
             public const string Draft = "Draft";

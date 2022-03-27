@@ -597,6 +597,28 @@ namespace xDC.Services
                                     row.AddCell("Type");
                                     row.AddCell("Code");
                                     row.AddCell("Stock Code");
+
+                                    if (Common.TsItemMapAmountColumn(tradeSettlementItems.FirstOrDefault(x => x.FormId == f.Id)?.InstrumentType) == 1)
+                                    {
+                                        row.AddCell("Maturity (+)");
+                                        row.AddCell("Sales (+)");
+                                        row.AddCell("Purchase (-)");
+                                    }
+                                    else if (Common.TsItemMapAmountColumn(tradeSettlementItems.FirstOrDefault(x => x.FormId == f.Id)?.InstrumentType) == 2)
+                                    {
+                                        row.AddCell("1st Leg (+)");
+                                        row.AddCell("2nd Leg (-)");
+                                    }
+                                    else if (Common.TsItemMapAmountColumn(tradeSettlementItems.FirstOrDefault(x => x.FormId == f.Id)?.InstrumentType) == 3)
+                                    {
+                                        row.AddCell("Amount (+)");
+                                        row.AddCell("Amount (-)");
+                                    }
+                                    else if (Common.TsItemMapAmountColumn(tradeSettlementItems.FirstOrDefault(x => x.FormId == f.Id)?.InstrumentType) == 4)
+                                    {
+                                        row.AddCell("Amount (+)");
+                                    }
+
                                     row.AddCell("Inflow");
                                     row.AddCell("Outflow");
                                     row.AddCell("Tagged By");
@@ -612,6 +634,28 @@ namespace xDC.Services
                                         row.AddCell(ts.InstrumentType);
                                         row.AddCell(ts.InstrumentCode);
                                         row.AddCell(ts.StockCode);
+
+                                        if (Common.TsItemMapAmountColumn(ts.InstrumentType) == 1)
+                                        {
+                                            row.AddCell(ts.Maturity.ToString("N"));
+                                            row.AddCell(ts.Sales.ToString("N"));
+                                            row.AddCell(ts.Purchase.ToString("N"));
+                                        }
+                                        else if (Common.TsItemMapAmountColumn(ts.InstrumentType) == 2)
+                                        {
+                                            row.AddCell(ts.FirstLeg.ToString("N"));
+                                            row.AddCell(ts.SecondLeg.ToString("N"));
+                                        }
+                                        else if (Common.TsItemMapAmountColumn(ts.InstrumentType) == 3)
+                                        {
+                                            row.AddCell(ts.AmountPlus.ToString("N"));
+                                            row.AddCell(ts.AmountMinus.ToString("N"));
+                                        }
+                                        else if (Common.TsItemMapAmountColumn(ts.InstrumentType) == 4)
+                                        {
+                                            row.AddCell(ts.AmountPlus.ToString("N"));
+                                        }
+
                                         row.AddCell(ts.InflowTo);
                                         row.AddCell(ts.OutflowFrom);
                                         row.AddCell(ts.AssignedBy);
