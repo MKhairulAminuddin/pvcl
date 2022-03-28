@@ -326,6 +326,40 @@ namespace xDC_Web.Extension.DocGenerator
 
                 #endregion
 
+                #region Sheet 4 - Audit Trails
+
+                var sheet4 = workbook.Worksheets[3];
+
+                var auditStartIndex = 5;
+                foreach (var auditItem in dataItem.FormAudits.OrderBy(x => x.FormId).ThenBy(x => x.RecordedDate).ToList())
+                {
+                    sheet4["B"+ auditStartIndex].Value = auditItem.FormId;
+                    sheet4["C"+ auditStartIndex].Value = auditItem.FormType;
+                    sheet4["D" + auditStartIndex].Value = auditItem.RecordedDate.HasValue ? auditItem.RecordedDate.Value.ToString("dd/MM/yyyy h:m tt") : "";
+                    sheet4["E"+ auditStartIndex].Value = dataItem.SelectedDate.HasValue ? dataItem.SelectedDate.Value.ToString("dd/MM/yyyy") : "";
+                    sheet4["F"+ auditStartIndex].Value = "MYR";
+                    sheet4["G" + auditStartIndex].Value = auditItem.WorkflowStatus;
+
+                    if (auditItem.WorkflowStatus == "Approved")
+                    {
+                        sheet4["G" + auditStartIndex].FillColor = Color.Yellow;
+                    }
+
+                    if (auditItem.WorkflowStatus == "Rejected")
+                    {
+                        sheet4["G" + auditStartIndex].FillColor = Color.Red;
+                    }
+
+                    sheet4["H"+ auditStartIndex].Value = auditItem.RequestBy;
+                    sheet4["I"+ auditStartIndex].Value = auditItem.WorkflowNotes;
+
+                    sheet4["B" + auditStartIndex + ":I" + auditStartIndex].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
+                    sheet4["I" + auditStartIndex].Alignment.WrapText = true;
+
+                    auditStartIndex++;
+                }
+
+                #endregion
 
             }
             catch (Exception ex)
@@ -923,7 +957,29 @@ namespace xDC_Web.Extension.DocGenerator
             #endregion
 
             #endregion
-            
+
+            #region Sheet 4 - Audit Listing
+
+            var wfListInflow = db.Form_Workflow.Where(x => x.FormType == Common.FormType.AMSD_IF && amsdApprovedForms.Contains(x.FormId)).ToList();
+            var wfListTs = db.Form_Workflow.Where(x => x.FormType.Contains("Settlement") && tsFormIds.Contains(x.FormId)).ToList();
+            var wfListTreasury = db.Form_Workflow.Where(x => x.FormType == Common.FormType.FID_TREASURY && treasuryApprovedForms.Contains(x.FormId)).ToList();
+
+            dataObj.FormAudits = new List<Form_Workflow>();
+            if (wfListInflow.Any())
+            {
+                dataObj.FormAudits.AddRange(wfListInflow);
+            }
+            if (wfListTs.Any())
+            {
+                dataObj.FormAudits.AddRange(wfListTs);
+            }
+            if (wfListTreasury.Any())
+            {
+                dataObj.FormAudits.AddRange(wfListTreasury);
+            }
+
+            #endregion
+
             return dataObj;
 
             
@@ -1112,6 +1168,7 @@ namespace xDC_Web.Extension.DocGenerator
         public List<MYR_DealCutOffData_OthersTab_Item1> OF_OthersTab_MGS_GII { get; set; }
         public List<MYR_DealCutOffData_OthersTab_Item1> OF_OthersTab_PssCpNidBaBnm { get; set; }
         public List<MYR_DealCutOffData_OthersTab_Item2> OF_OthersTab_Others { get; set; }
+        public List<Form_Workflow> FormAudits { get; set; }
 
     }
 
@@ -1148,6 +1205,18 @@ namespace xDC_Web.Extension.DocGenerator
         public string ContactPerson { get; set; }
         public string Notes { get; set; }
         public string AssetType { get; set; }
+    }
+
+    public class FormAudit
+    {
+        public int FormId { get; set; }
+        public string FormType { get; set; }
+        public DateTime Datesubmitted { get; set; }
+        public DateTime FormDate { get; set; }
+        public string FormStatus { get; set; }
+        public string Currency { get; set; }
+        public string PreparerApprover { get; set; }
+        public string Remarks { get; set; }
     }
 
 }

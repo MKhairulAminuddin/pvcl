@@ -43,6 +43,9 @@
 
             var iframeElement6 = document.getElementById("sheet6");
             iframeElement6.src = "./DealCutOffFcyPreview?" + params + "&SheetIndex=5";
+
+            var iframeElement7 = document.getElementById("sheet7");
+            iframeElement7.src = "./DealCutOffFcyPreview?" + params + "&SheetIndex=6";
         }
 
         var formListData = function () {
@@ -180,7 +183,8 @@
                 { titleId: "details2", title: "CITI MFCA", template: "details2" },
                 { titleId: "details3", title: "Hong Leong Bank MFCA", template: "details3" },
                 { titleId: "details4", title: "JP Morgan MFCA", template: "details4" },
-                { titleId: "details5", title: "Maybank MFCA", template: "details5" }
+                { titleId: "details5", title: "Maybank MFCA", template: "details5" },
+                { titleId: "formAudit", title: "Form Audit", template: "formAudit" }
             ],
             deferRendering: false,
             showNavButtons: true
@@ -223,8 +227,7 @@
                     dataField: "approvalDate",
                     caption: "Approval Date",
                     dataType: "datetime",
-                    format: "dd/MM/yyyy hh:mm a",
-                    sortOrder: "desc"
+                    format: "dd/MM/yyyy hh:mm a"
                 }
             ],
             showRowLines: true,

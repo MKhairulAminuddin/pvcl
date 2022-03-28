@@ -34,6 +34,9 @@
 
             var iframeElement3 = document.getElementById("sheet3");
             iframeElement3.src = "./DealCutOffMyrPreview?" + params + "&SheetIndex=2";
+
+            var iframeElement4 = document.getElementById("sheet4");
+            iframeElement4.src = "./DealCutOffMyrPreview?" + params + "&SheetIndex=3";
         }
 
         var formListData = function () {
@@ -166,9 +169,10 @@
 
         var tabPanel = $("#tabpanel-container").dxTabPanel({
             dataSource: [
-                { titleId: "titleBadge2", title: "Cashflow", template: "bondTab" },
-                { titleId: "titleBadge3", title: "Money Market", template: "cpTab" },
-                { titleId: "titleBadge4", title: "Others", template: "notesPaperTab" }
+                { titleId: "titleBadge2", title: "Cashflow", template: "cashflowTab" },
+                { titleId: "titleBadge3", title: "Money Market", template: "moneyMarketTab" },
+                { titleId: "titleBadge4", title: "Others", template: "othersTab" },
+                { titleId: "titleBadge5", title: "Form Audit", template: "auditListTab" }
             ],
             deferRendering: false,
             //itemTitleTemplate: $("#dxPanelTitle"),
@@ -212,8 +216,7 @@
                     dataField: "approvalDate",
                     caption: "Approval Date",
                     dataType: "datetime",
-                    format: "dd/MM/yyyy hh:mm a",
-                    sortOrder: "desc"
+                    format: "dd/MM/yyyy hh:mm a"
                 }
             ],
             showRowLines: true,

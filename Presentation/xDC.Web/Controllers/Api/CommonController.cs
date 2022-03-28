@@ -672,6 +672,8 @@ namespace xDC_Web.Controllers.Api
                         formsList = formsList.Where(x => x.FormCurrency != selectedCurrency).ToList();
                     }
 
+                    formsList.OrderBy(x => x.FormType).ThenBy(x => x.FormDate);
+
                     return Request.CreateResponse(DataSourceLoader.Load(formsList, loadOptions));
                 }
             }

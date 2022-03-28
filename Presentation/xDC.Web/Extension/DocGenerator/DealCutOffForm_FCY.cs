@@ -421,7 +421,48 @@ namespace xDC_Web.Extension.DocGenerator
 
                     workbook.Calculate();
                 }
+
+                #endregion
+
+                #region Sheet 7 - Audit Trails
+
+                var sheet4 = workbook.Worksheets[6];
+
+                var auditStartIndex = 5;
+                foreach (var i in dataItem.Accounts.Select(x => x.Currency).Distinct())
+                {
+                    foreach (var auditItem in dataItem.FormAudits.Where(x => x.Currency == i).OrderBy(x => x.FormId).ThenBy(x => x.FormType).ThenBy(x => x.RecordedDate).ToList())
+                    {
+                        sheet4["B" + auditStartIndex].Value = auditItem.FormId;
+                        sheet4["C" + auditStartIndex].Value = auditItem.FormType;
+                        sheet4["D" + auditStartIndex].Value = auditItem.RecordedDate.HasValue ? auditItem.RecordedDate.Value.ToString("dd/MM/yyyy h:m tt") : "";
+                        sheet4["E" + auditStartIndex].Value = dataItem.SelectedDate.HasValue ? dataItem.SelectedDate.Value.ToString("dd/MM/yyyy") : "";
+                        sheet4["F" + auditStartIndex].Value = i;
+                        sheet4["G" + auditStartIndex].Value = auditItem.WorkflowStatus;
+
+                        if (auditItem.WorkflowStatus == "Approved")
+                        {
+                            sheet4["G" + auditStartIndex].FillColor = Color.Yellow;
+                        }
+
+                        if (auditItem.WorkflowStatus == "Rejected")
+                        {
+                            sheet4["G" + auditStartIndex].FillColor = Color.Red;
+                        }
+
+                        sheet4["H" + auditStartIndex].Value = auditItem.RequestBy;
+                        sheet4["I" + auditStartIndex].Value = auditItem.WorkflowNotes;
+
+                        sheet4["B" + auditStartIndex + ":I" + auditStartIndex].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
+                        sheet4["I" + auditStartIndex].Alignment.WrapText = true;
+
+                        auditStartIndex++;
+                    }
+                }
+
                 
+                
+
                 #endregion
             }
             catch (Exception ex)
@@ -452,7 +493,8 @@ namespace xDC_Web.Extension.DocGenerator
                 var dataObj = new FCY_DealCutOffData()
                 {
                     SelectedDate = selectedDate,
-                    Accounts = new List<FCY_DealCutOffData_Account>()
+                    Accounts = new List<FCY_DealCutOffData_Account>(),
+                    FormAudits  = new List<FCY_Form_Workflow>()
                 };
 
                 foreach (var account in accounts)
@@ -826,12 +868,86 @@ namespace xDC_Web.Extension.DocGenerator
                     }
                 }
 
+            #endregion
+
+                #region Sheet 7 - Audit Listing
+
+                foreach (var item in dataObj.Accounts.Select(x => x.Currency).Distinct())
+                {
+                    var treasuryIds = (viewApproved) ?
+                            db.FID_Treasury
+                                .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
+                                            && x.Currency == item
+                                            && x.FormStatus == Common.FormStatus.Approved)
+                                .Select(x => x.Id)
+                                .ToList() :
+                            db.FID_Treasury
+                                .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
+                                            && x.Currency == item
+                                            && x.FormStatus != Common.FormStatus.Rejected)
+                                .Select(x => x.Id)
+                                .ToList();
+                    var wfListTreasury = db.Form_Workflow.Where(x => x.FormType == Common.FormType.FID_TREASURY && treasuryIds.Contains(x.FormId)).ToList();
+
+                    var tsIds = (viewApproved)
+                               ? db.ISSD_FormHeader
+                                   .Where(x => DbFunctions.TruncateTime(x.SettlementDate) ==
+                                               DbFunctions.TruncateTime(selectedDate)
+                                               && x.Currency == item
+                                               && x.FormStatus == Common.FormStatus.Approved)
+                                   .Select(x => x.Id)
+                                   .ToList()
+                               : db.ISSD_FormHeader
+                                   .Where(x => DbFunctions.TruncateTime(x.SettlementDate) ==
+                                               DbFunctions.TruncateTime(selectedDate)
+                                               && x.Currency == item
+                                               && x.FormStatus != Common.FormStatus.Rejected)
+                                   .Select(x => x.Id)
+                                   .ToList();
+                    var wfListTs = db.Form_Workflow.Where(x => x.FormType.Contains("Settlement") && tsIds.Contains(x.FormId)).ToList();
+
+                    if (wfListTs.Any())
+                    {
+                        foreach (var wf in wfListTs)
+                        {
+                            dataObj.FormAudits.Add(new FCY_Form_Workflow() 
+                            {
+                                FormId = wf.FormId,
+                                Currency = item, 
+                                FormType = wf.FormType,
+                                RecordedDate = wf.RecordedDate,
+                                RequestBy = wf.RequestBy,
+                                RequestTo = wf.RequestTo,
+                                WorkflowNotes = wf.WorkflowNotes,
+                                WorkflowStatus = wf.WorkflowStatus
+                            });
+                        }
+                    }
+                    if (wfListTreasury.Any())
+                    {
+                        foreach (var wf in wfListTreasury)
+                        {
+                            dataObj.FormAudits.Add(new FCY_Form_Workflow()
+                            {
+                                FormId = wf.FormId,
+                                Currency = item,
+                                FormType = wf.FormType,
+                                RecordedDate = wf.RecordedDate,
+                                RequestBy = wf.RequestBy,
+                                RequestTo = wf.RequestTo,
+                                WorkflowNotes = wf.WorkflowNotes,
+                                WorkflowStatus = wf.WorkflowStatus
+                            });
+                        }
+                    }
+                }
+
+                
+
                 #endregion
 
 
-
-
-                return dataObj;
+            return dataObj;
         }
 
         private void DetailsTab_Table1(List<FCY_Item> items, int startIndex, ref int endIndex, ref Worksheet sheet, bool withDealer = false, bool isDepositTable = false)
@@ -916,6 +1032,7 @@ namespace xDC_Web.Extension.DocGenerator
     {
         public DateTime? SelectedDate { get; set; }
         public List<FCY_DealCutOffData_Account> Accounts { get; set; }
+        public List<FCY_Form_Workflow> FormAudits { get; set; }
     }
 
     public class FCY_DealCutOffData_Account
@@ -939,6 +1056,8 @@ namespace xDC_Web.Extension.DocGenerator
         public List<FCY_Item> Details_OF_Deposit_Maturity { get; set; }
         public List<FCY_Item> Details_OF_MM { get; set; }
         public List<FCY_ItemOthers> Details_OF_Others { get; set; }
+
+        
 
         public FCY_DealCutOffData_Account()
         {
@@ -977,5 +1096,17 @@ namespace xDC_Web.Extension.DocGenerator
         public string Notes { get; set; }
         public string Fca { get; set; }
         public double Amount { get; set; }
+    }
+
+    public class FCY_Form_Workflow
+    {
+        public int FormId { get; set; }
+        public string FormType { get; set; }
+        public string RequestBy { get; set; }
+        public string RequestTo { get; set; }
+        public Nullable<System.DateTime> RecordedDate { get; set; }
+        public string WorkflowStatus { get; set; }
+        public string WorkflowNotes { get; set; }
+        public string Currency { get; set; }
     }
 }
