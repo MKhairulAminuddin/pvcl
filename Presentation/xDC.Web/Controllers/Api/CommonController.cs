@@ -669,7 +669,7 @@ namespace xDC_Web.Controllers.Api
                     }
                     else
                     {
-                        formsList = formsList.Where(x => x.FormCurrency != selectedCurrency).ToList();
+                        formsList = formsList.Where(x => x.FormCurrency != "MYR").ToList();
                     }
 
                     formsList.OrderBy(x => x.FormType).ThenBy(x => x.FormDate);

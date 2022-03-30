@@ -188,11 +188,15 @@
                 {
                     dataField: "formId",
                     caption: "Form ID",
-                    visible: false
+                    width: "50px"
                 },
                 {
                     dataField: "formType",
                     caption: "Form Type"
+                },
+                {
+                    dataField: "formCurrency",
+                    caption: "currency"
                 },
                 {
                     dataField: "formStatus",
