@@ -12,7 +12,7 @@ using xDC_Web.Models;
 
 namespace xDC_Web.Extension
 {
-	public class  AdAuthentication
+	public class AdAuthentication
 	{
 		private readonly IAuthenticationManager _authManager;
 
@@ -25,52 +25,57 @@ namespace xDC_Web.Extension
 		{
 			//#if DEBUG
 			// authenticates against your local machine - for development time
-			// ContextType authenticationType = ContextType.Machine;
+			ContextType authenticationType = ContextType.Machine;
 			//#else
 			// authenticates against your Domain AD
-			ContextType authenticationType = ContextType.Domain;
+			// ContextType authenticationType = ContextType.Domain;
 			//#endif
 
 			try
 			{
 				//var principalContext = new PrincipalContext(authenticationType, Utils.Config.AdDomain, Utils.Config.AdUsername, Utils.Config.AdPass);
 				var principalContext = new PrincipalContext(authenticationType);
-				var isAuthenticated = false;
+				// var isAuthenticated = false;
 				var userPrincipal = new UserPrincipal(principalContext);
 				userPrincipal.SamAccountName = username;
 				var searcher = new PrincipalSearcher(userPrincipal);
-                try
-                {
-                    userPrincipal = searcher.FindOne() as UserPrincipal;
-                    if (userPrincipal != null)
-                    {
-                        isAuthenticated = principalContext.ValidateCredentials(username, password, ContextOptions.Negotiate);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    return new AuthenticationResult("Incorrect Credential");
-                }
+				/*try
+				{
+					userPrincipal = searcher.FindOne() as UserPrincipal;
+					if (userPrincipal != null)
+					{
+						isAuthenticated = principalContext.ValidateCredentials(username, password, ContextOptions.Negotiate);
+					}
+				}
+				catch (Exception ex)
+				{
+					return new AuthenticationResult(Resources.ErrorMessages.AD_IncorrectCredential);
+				}
 
-                if (!isAuthenticated)
-                {
-                    return new AuthenticationResult("Incorrect Credential");
-                }
+				if (!isAuthenticated)
+				{
+					return new AuthenticationResult(Resources.ErrorMessages.AD_IncorrectCredential);
+				}
 
-                if (userPrincipal.IsAccountLockedOut())
-                {
-                    return new AuthenticationResult("Account Locked. AD Level.");
-                }
+				if (userPrincipal.IsAccountLockedOut())
+				{
+					return new AuthenticationResult(Resources.ErrorMessages.AD_UserAcctLocked);
+				}
 
-                if (userPrincipal.Enabled.HasValue && userPrincipal.Enabled.Value == false)
-                {
-                    return new AuthenticationResult("Account Disabled. AD Level.");
-                }
+				if (userPrincipal.Enabled.HasValue && userPrincipal.Enabled.Value == false)
+				{
+					return new AuthenticationResult(Resources.ErrorMessages.AD_UserAcctDisabled);
+				}
 
-                if (!new AuthService().IsUserExist(username))
-                {
-                    return new AuthenticationResult("You did not have access into the system.");
-                }
+				if (!new AuthService().IsUserExistAndNotLocked(username))
+				{
+					return new AuthenticationResult(Resources.ErrorMessages.AD_NoAccessKRC);
+				}*/
+
+				if (!new AuthService().IsUserExist(username))
+				{
+					return new AuthenticationResult("You did not have access into the system.");
+				}
 
 				var identity = CreateIdentity(userPrincipal);
 
@@ -98,7 +103,12 @@ namespace xDC_Web.Extension
 			}
 
 			// add your own claims if you need to add more information stored on the cookie
-			identity.AddClaim(new Claim(ClaimTypes.Role, new AuthService().GetUserRoles(userPrincipal.SamAccountName)));
+			// machine - local dev
+			identity.AddClaim(new Claim(ClaimTypes.Role, new AuthService().GetUserRoles(userPrincipal.Name)));
+			// prod/uat - domain
+			// identity.AddClaim(new Claim(ClaimTypes.Role, new AuthService().GetRoles(userPrincipal.SamAccountName)));
+
+			// identity.AddClaim(new Claim(ClaimTypes.Role, "Administrator"));
 
 			return identity;
 		}

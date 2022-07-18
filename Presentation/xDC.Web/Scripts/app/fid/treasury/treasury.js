@@ -20,6 +20,9 @@
             case "USD":
             case "AUD":
             case "EUR":
+                /*var calc = math.parse(principal + '*' tenor + '/ 36000 *' + rate);
+                return calc.evaluate();*/
+                console.log(math.sqrt(-4).toString());
                 result = principal * tenor / 36000 * rate;
                 return result.toFixed(2.5);
             default:
