@@ -1,4 +1,4 @@
-﻿var treasury = (function () {
+var treasury = (function () {
     var _treasury = {};
 
     _treasury.api = {
@@ -20,6 +20,9 @@
             case "USD":
             case "AUD":
             case "EUR":
+                /*var calc = math.parse(principal + '*' tenor + '/ 36000 *' + rate);
+                return calc.evaluate();*/
+                console.log(math.sqrt(-4).toString());
                 result = principal * tenor / 36000 * rate;
                 return Math.round(result.toPrecision(15) * 100) / 100;
             default:
@@ -101,7 +104,7 @@
         case "ICP":
             var proceedsCp = _treasury.outflow_proceeds(productType, nominal, rate, tenor);
             result = nominal - proceedsCp;
-                returnMath.round(result.toPrecision(15) * 100) / 100;
+                return Math.round(result.toPrecision(15) * 100) / 100;
 
         case "BA":
         case "AB-i":

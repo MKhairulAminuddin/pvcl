@@ -1,9 +1,9 @@
 /*!
  * DevExtreme (dx.vectormaputils.debug.js)
- * Version: 21.1.3
- * Build date: Tue May 18 2021
+ * Version: 22.1.3
+ * Build date: Mon Jun 13 2022
  *
- * Copyright (c) 2012 - 2021 Developer Express Inc. ALL RIGHTS RESERVED
+ * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
  * Read about DevExtreme licensing here: https://js.devexpress.com/Licensing/
  */
 "use strict";
@@ -618,7 +618,7 @@
         },
         N: function(stream, length) {
             var str = getAsciiString(stream, length);
-            return parseFloat(str, 10)
+            return parseFloat(str)
         },
         D: function(stream, length) {
             var str = getAsciiString(stream, length);
