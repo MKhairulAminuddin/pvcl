@@ -367,6 +367,8 @@ namespace xDC_Web.Controllers.Api
                             if (getResult != null)
                             {
                                 getResult.ClosingBalance = item.ClosingBalance;
+                                getResult.ClosingBalanceModifiedDate = item.ModifiedDate;
+                                getResult.ClosingBalanceModifiedBy = item.ModifiedBy;
                             }
                         }
                     }

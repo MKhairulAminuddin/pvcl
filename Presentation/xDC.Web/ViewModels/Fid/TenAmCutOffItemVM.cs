@@ -1,4 +1,6 @@
-﻿namespace xDC_Web.ViewModels.Fid
+﻿using System;
+
+namespace xDC_Web.ViewModels.Fid
 {
     public class TenAmCutOffItemVM
     {
@@ -12,5 +14,7 @@
         public double Net { get; set; }
 
         public double ClosingBalance { get; set; }
+        public DateTime? ClosingBalanceModifiedDate { get; set; }
+        public string ClosingBalanceModifiedBy { get; set; }
     }
 }

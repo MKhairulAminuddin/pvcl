@@ -201,6 +201,25 @@
                         container.addClass("cell-bg-gray");
                         $("<span>" + options.text + "</span>").appendTo(container);
                     }
+                },
+                {
+                    dataField: "closingBalanceModifiedDate",
+                    headerCellTemplate: function (container) {
+                        container.append($(
+                            "<div><strong>Closing Balance</strong><br/>(Inputted Date)</div>"));
+                    },
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy hh:mm a",
+                    allowEditing: false,
+                },
+                {
+                    dataField: "closingBalanceModifiedBy",
+                    headerCellTemplate: function (container) {
+                        container.append($(
+                            "<div><strong>Closing Balance</strong><br/>(Inputted By)</div>"));
+                    },
+                    allowEditing: false,
+                    visible: false
                 }
             ],
             summary: {
@@ -272,6 +291,10 @@
                 allowUpdating: true,
                 allowDeleting: false,
                 allowAdding: false
+            },
+            columnChooser: {
+                enabled: true,
+                mode: "select"
             }
         }).dxDataGrid("instance");
         
