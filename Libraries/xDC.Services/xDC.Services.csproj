@@ -74,6 +74,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplicationLogService.cs" />
     <Compile Include="App\AMSD_InflowFundSvc.cs" />
     <Compile Include="App\CommonService.cs" />
     <Compile Include="App\FidService.cs" />

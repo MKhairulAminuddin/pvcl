@@ -224,5 +224,77 @@ namespace xDC_Web.Controllers.Api
         }
 
         #endregion
+
+        #region User Access Log
+
+        [HttpGet]
+        public HttpResponseMessage UserAccessLog(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.Log_UserAccess.OrderByDescending(x => x.RecordedDate).ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        #endregion
+
+        #region User Activity Log
+
+        [HttpGet]
+        public HttpResponseMessage UserActivityLog(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.Log_UserAccess.ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        #endregion
+
+        #region Admin Log
+
+        [HttpGet]
+        public HttpResponseMessage AdminLog(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.Log_UserAccess.ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        #endregion
     }
 }

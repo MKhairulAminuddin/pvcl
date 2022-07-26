@@ -15,5 +15,9 @@ namespace xDC_Web.Models
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
+
+        public string IpAddress { get; set; }
+        public string ClientBrowser { get; set; }
+
     }
 }

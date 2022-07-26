@@ -210,6 +210,9 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="UAParser, Version=3.1.47.0, Culture=neutral, PublicKeyToken=f7377bf021646069, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\UAParser.3.1.47\lib\net45\UAParser.dll</HintPath>
+    </Reference>
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
     </Reference>
@@ -285,6 +288,7 @@
     <Content Include="Scripts\adminlte.js" />
     <Content Include="Scripts\adminlte.min.js" />
     <Content Include="Scripts\app.js" />
+    <Content Include="Scripts\app\admin\userAccessLog.js" />
     <Content Include="Scripts\app\admin\userManagement.js" />
     <Content Include="Scripts\app\admin\utility.js" />
     <Content Include="Scripts\app\amsd\inflowFund\edit.js" />
@@ -506,6 +510,10 @@
     <Content Include="Views\Audit\Form.cshtml" />
     <Content Include="Views\Shared\_AuditTrailModal.cshtml" />
     <Content Include="Views\Shared\_FormsRemarksModal.cshtml" />
+    <Content Include="Views\Admin\UserAccessLog.cshtml" />
+    <Content Include="Views\Admin\UserActivityLog.cshtml" />
+    <Content Include="Views\Admin\AdminLog.cshtml" />
+    <Content Include="Views\Admin\RoleManagement.cshtml" />
     <None Include="Web.UAT.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -695,6 +703,7 @@
     <Compile Include="Extension\SchedulerTask\FidTask.cs" />
     <Compile Include="Extension\SchedulerTask\IssdTask.cs" />
     <Compile Include="Extension\SchedulerTask\SyncActiveDirectory.cs" />
+    <Compile Include="Extension\WebUtils\fn.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

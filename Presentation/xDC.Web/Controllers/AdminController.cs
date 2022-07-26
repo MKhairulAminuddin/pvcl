@@ -14,6 +14,11 @@ namespace xDC_Web.Controllers
             return View();
         }
 
+        public ActionResult RoleManagement()
+        {
+            return View();
+        }
+
         public ActionResult ApplicationConfig()
         {
             return View();
@@ -30,6 +35,21 @@ namespace xDC_Web.Controllers
         }
 
         public ActionResult Utility()
+        {
+            return View();
+        }
+
+        public ActionResult UserAccessLog()
+        {
+            return View();
+        }
+
+        public ActionResult UserActivityLog()
+        {
+            return View();
+        }
+
+        public ActionResult AdminLog()
         {
             return View();
         }

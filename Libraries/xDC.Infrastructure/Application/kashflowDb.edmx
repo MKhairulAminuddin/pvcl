@@ -395,6 +395,16 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="CouponType" Type="nvarchar" MaxLength="10" />
           <Property Name="BondType" Type="nvarchar" MaxLength="10" />
         </EntityType>
+        <EntityType Name="Log_UserAccess">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="150" />
+          <Property Name="ClientAddress" Type="nvarchar" MaxLength="30" />
+          <Property Name="ClientBrowser" Type="nvarchar" MaxLength="50" />
+          <Property Name="RecordedDate" Type="datetime" />
+        </EntityType>
         <EntityType Name="TenAmDealCutOff_ClosingBalance">
           <Key>
             <PropertyRef Name="Id" />
@@ -456,6 +466,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="Form_Workflow" EntityType="Self.Form_Workflow" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ISSD_FormHeader" EntityType="Self.ISSD_FormHeader" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ISSD_TradeSettlement" EntityType="Self.ISSD_TradeSettlement" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Log_UserAccess" EntityType="Self.Log_UserAccess" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TenAmDealCutOff_ClosingBalance" EntityType="Self.TenAmDealCutOff_ClosingBalance" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EDW_BankBalance" EntityType="Self.EDW_BankBalance" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
@@ -564,6 +575,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="FID_Treasury" EntityType="kashflowDbModel.FID_Treasury" />
           <EntitySet Name="FID_Treasury_MMI" EntityType="kashflowDbModel.FID_Treasury_MMI" />
           <EntitySet Name="FID_Treasury_Deposit" EntityType="kashflowDbModel.FID_Treasury_Deposit" />
+          <EntitySet Name="Log_UserAccess" EntityType="kashflowDbModel.Log_UserAccess" />
           </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -956,6 +968,16 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="FcaAccount" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Log_UserAccess">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ClientAddress" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="ClientBrowser" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RecordedDate" Type="DateTime" Precision="3" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -1366,6 +1388,17 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
                 <ScalarProperty Name="Dealer" ColumnName="Dealer" />
                 <ScalarProperty Name="CashflowType" ColumnName="CashflowType" />
                 <ScalarProperty Name="FormId" ColumnName="FormId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Log_UserAccess">
+            <EntityTypeMapping TypeName="kashflowDbModel.Log_UserAccess">
+              <MappingFragment StoreEntitySet="Log_UserAccess">
+                <ScalarProperty Name="RecordedDate" ColumnName="RecordedDate" />
+                <ScalarProperty Name="ClientBrowser" ColumnName="ClientBrowser" />
+                <ScalarProperty Name="ClientAddress" ColumnName="ClientAddress" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

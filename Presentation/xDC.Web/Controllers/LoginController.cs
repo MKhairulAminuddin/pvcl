@@ -39,7 +39,10 @@ namespace xDC_Web.Controllers
             IAuthenticationManager authenticationManager = HttpContext.GetOwinContext().Authentication;
             var authService = new AdAuthentication(authenticationManager);
 
-            var authenticationResult = authService.SignIn(model.Username, model.Password);
+            // get client browser
+            model.ClientBrowser = Extension.WebUtils.fn.GetClientBrowser(Request.Headers["User-Agent"]);
+            model.IpAddress = Extension.WebUtils.fn.GetIPAddress();
+            var authenticationResult = authService.SignIn(model);
 
             if (authenticationResult.IsSuccess)
             {
