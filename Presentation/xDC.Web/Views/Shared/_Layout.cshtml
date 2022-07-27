@@ -201,8 +201,19 @@
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="@Url.Action("UserManagement","Admin")"><i class="fa fa-circle-thin"></i> <span>Users</span></a></li>
-                                <li><a href="./abc"><i class="fa fa-circle-thin"></i> <span>Roles</span></a></li>
+                                <li class="treeview">
+                                    <a href="#">
+                                        <i class="fa fa-circle-thin"></i> <span>Access Control</span>
+                                        <span class="pull-right-container">
+                                            <i class="fa fa-angle-left pull-right"></i>
+                                        </span>
+                                    </a>
+                                    <ul class="treeview-menu">
+                                        <li><a href="@Url.Action("UserManagement","Admin")"><i class="fa fa-circle-thin"></i> <span>Users</span></a></li>
+                                        <li><a href="@Url.Action("RoleManagement","Admin")"><i class="fa fa-circle-thin"></i> <span>Roles</span></a></li>
+                                    </ul>
+                                </li>
+                                
 
                                 <li class="treeview">
                                     <a href="#">
