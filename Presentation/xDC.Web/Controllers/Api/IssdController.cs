@@ -1585,8 +1585,26 @@ namespace xDC_Web.Controllers.Api
                         settlementDate = settlementDate.Value.Date;
 
                         var result = db.EDW_TradeItem.AsNoTracking().Where(x => x.InstrumentType == type && x.SettlementDate == settlementDate).ToList();
+                        Random rnd = new Random();
+                        var resultVM = result.Select(x => new EDW_TradeItemVM()
+                        {
+                            ISIN = x.ISIN,
+                            Currency = x.Currency,
+                            InstrumentName = x.InstrumentName,
+                            InstrumentType = x.InstrumentType,
+                            Amount = x.Amount,
+                            CreatedBy = x.CreatedBy,
+                            CreatedDate = x.CreatedDate,
+                            SettlementDate = x.SettlementDate,
+                            StockCode = x.StockCode,
+                            TradeDate = x.TradeDate,
+                            Type = x.Type,
+                            UpdatedBy = x.UpdatedBy,
+                            UpdatedDate = x.UpdatedDate
+                        }).ToList();
+                        resultVM.ForEach(x => x.Id = rnd.Next(1, 99999));
 
-                        return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                        return Request.CreateResponse(DataSourceLoader.Load(resultVM, loadOptions));
                     }
                     else
                     {
@@ -1730,11 +1748,30 @@ namespace xDC_Web.Controllers.Api
                         var result = db.EDW_TradeItem.AsNoTracking().Where(x =>
                             x.InstrumentType == type && x.SettlementDate == settlementDate &&
                             x.Currency == currency);
+                        Random rnd = new Random();
+                        var resultVM = result.Select(x => new EDW_TradeItemVM()
+                        {
+                            ISIN = x.ISIN,
+                            Currency = x.Currency,
+                            InstrumentName = x.InstrumentName,
+                            InstrumentType = x.InstrumentType,
+                            Amount = x.Amount,
+                            CreatedBy = x.CreatedBy,
+                            CreatedDate = x.CreatedDate,
+                            SettlementDate = x.SettlementDate,
+                            StockCode = x.StockCode,
+                            TradeDate = x.TradeDate,
+                            Type = x.Type,
+                            UpdatedBy = x.UpdatedBy,
+                            UpdatedDate = x.UpdatedDate
+                        }).ToList();
+                        resultVM.ForEach(x => x.Id = rnd.Next(1, 99999));
 
                         var finalResult = new List<ISSD_TradeSettlement>();
-                        foreach (var item in result)
+                        foreach (var item in resultVM)
                         {
                             var tradeItem = new ISSD_TradeSettlement();
+                            tradeItem.Id = item.Id;
                             tradeItem.InstrumentType = item.InstrumentType;
                             tradeItem.InstrumentCode = item.InstrumentName;
                             tradeItem.StockCode = string.IsNullOrEmpty(item.ISIN) ? item.StockCode : string.Concat(item.StockCode, " / " + item.ISIN);

@@ -261,6 +261,12 @@
                     width: "30px"
                 },
                 {
+                    dataField: "id",
+                    caption: "Id",
+                    allowEditing: false,
+                    visible: false
+                },
+                {
                     dataField: "instrumentCode",
                     caption: "Bond"
                 },
@@ -561,6 +567,12 @@
                     },
                     allowEditing: false,
                     width: "30px"
+                },
+                {
+                    dataField: "id",
+                    caption: "Id",
+                    allowEditing: false,
+                    visible: false
                 },
                 {
                     dataField: "instrumentCode",
