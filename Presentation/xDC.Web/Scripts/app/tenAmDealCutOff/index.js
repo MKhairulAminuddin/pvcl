@@ -67,6 +67,14 @@
             }
         }).dxSelectBox("instance");
 
+        $closingBalanceHistoryBtn = $("#closingBalanceHistoryBtn").dxButton({
+            icon: "fa fa-history",
+            text: "Closing Balance",
+            onClick: function (e) {
+                alert("Clicked history");
+            }
+        }).dxButton("instance");
+
         $printBtn = $("#printBtn").dxDropDownButton({
             text: "Print",
             icon: "print",
@@ -211,6 +219,7 @@
                     dataType: "datetime",
                     format: "dd/MM/yyyy hh:mm a",
                     allowEditing: false,
+                    visible: false
                 },
                 {
                     dataField: "closingBalanceModifiedBy",
