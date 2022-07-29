@@ -47,7 +47,6 @@ namespace xDC_Web.Controllers
             if (authenticationResult.IsSuccess)
             {
                 // we are in!
-
                 return RedirectToLocal(returnUrl);
             }
 

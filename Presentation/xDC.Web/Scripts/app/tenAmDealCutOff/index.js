@@ -67,13 +67,13 @@
             }
         }).dxSelectBox("instance");
 
-        $closingBalanceHistoryBtn = $("#closingBalanceHistoryBtn").dxButton({
+        /*$closingBalanceHistoryBtn = $("#closingBalanceHistoryBtn").dxButton({
             icon: "fa fa-history",
             text: "Closing Balance",
             onClick: function (e) {
                 alert("Clicked history");
             }
-        }).dxButton("instance");
+        }).dxButton("instance");*/
 
         $printBtn = $("#printBtn").dxDropDownButton({
             text: "Print",

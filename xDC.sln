@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{71
 		Database\App_Notification.sql = Database\App_Notification.sql
 		Database\AspNetActiveDirectoryUsers.sql = Database\AspNetActiveDirectoryUsers.sql
 		Database\AspNetAuth.sql = Database\AspNetAuth.sql
+		Database\Audit_10AMDCO_ClosingBalance.sql = Database\Audit_10AMDCO_ClosingBalance.sql
 		Database\Audit_Form.sql = Database\Audit_Form.sql
 		Database\Config_Application.sql = Database\Config_Application.sql
 		Database\Config_Approver.sql = Database\Config_Approver.sql

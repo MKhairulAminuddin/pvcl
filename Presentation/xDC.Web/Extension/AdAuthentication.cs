@@ -21,7 +21,7 @@ namespace xDC_Web.Extension
 			this._authManager = authenticationManager;
 		}
 
-		public AuthenticationResult SignIn(String username, String password)
+		public AuthenticationResult SignIn(LoginViewModel model)
 		{
 			//#if DEBUG
 			// authenticates against your local machine - for development time
@@ -37,14 +37,14 @@ namespace xDC_Web.Extension
 				var principalContext = new PrincipalContext(authenticationType);
 				var isAuthenticated = false;
 				var userPrincipal = new UserPrincipal(principalContext);
-				userPrincipal.SamAccountName = username;
+				userPrincipal.SamAccountName = model.Username;
 				var searcher = new PrincipalSearcher(userPrincipal);
 				try
 				{
 					userPrincipal = searcher.FindOne() as UserPrincipal;
 					if (userPrincipal != null)
 					{
-						isAuthenticated = principalContext.ValidateCredentials(username, password, ContextOptions.Negotiate);
+						isAuthenticated = principalContext.ValidateCredentials(model.Username, model.Password, ContextOptions.Negotiate);
 					}
 				}
 				catch (Exception ex)
@@ -67,7 +67,7 @@ namespace xDC_Web.Extension
 					return new AuthenticationResult("Account Disabled. AD Level.");
 				}
 
-				if (!new AuthService().IsUserExist(username))
+				if (!new AuthService().IsUserExist(model.Username))
 				{
 					return new AuthenticationResult("You did not have access into the system.");
 				}
@@ -76,6 +76,8 @@ namespace xDC_Web.Extension
 
 				_authManager.SignOut(xDcAuth.ApplicationCookie);
 				_authManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, identity);
+
+				TrackerService.TrackUserLogin(model.Username, model.IpAddress, model.ClientBrowser);
 
 				return new AuthenticationResult();
 			}
