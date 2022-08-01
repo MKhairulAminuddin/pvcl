@@ -50,5 +50,6 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<FID_Treasury_MMI> FID_Treasury_MMI { get; set; }
         public virtual DbSet<FID_Treasury_Deposit> FID_Treasury_Deposit { get; set; }
         public virtual DbSet<Log_UserAccess> Log_UserAccess { get; set; }
+        public virtual DbSet<Audit_10AMDCO_ClosingBalance> Audit_10AMDCO_ClosingBalance { get; set; }
     }
 }

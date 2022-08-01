@@ -9,9 +9,13 @@
             $refreshBtn,
             $viewTypeDropdown;
 
+        var $viewClosingBalanceAuditModal = $("#viewClosingBalanceAuditModal");
+
         var referenceUrl = {
             load10amCutOff: window.location.origin + "/api/TenAmDealCutOff/Summary/",
             update10amCutOffClosingBalance: window.location.origin + "/api/TenAmDealCutOff/Summary/ClosingBalance/",
+
+            loadClosingBalanceAudit: "/api/TenAmDealCutOff/Audit/ClosingBalance/"
         };
 
         //#endregion
@@ -32,6 +36,16 @@
                     $grid.option("dataSource", data1);
                     $grid.repaint();
                 });
+        }
+
+        var formListData = function () {
+            var selectedDate = moment($dateSelectionBtn.option("value")).unix();
+
+            return {
+                store: DevExpress.data.AspNet.createStore({
+                    loadUrl: referenceUrl.loadClosingBalanceAudit + selectedDate
+                })
+            };
         }
 
         //#endregion
@@ -67,13 +81,15 @@
             }
         }).dxSelectBox("instance");
 
-        /*$closingBalanceHistoryBtn = $("#closingBalanceHistoryBtn").dxButton({
+        $closingBalanceAuditBtn = $("#closingBalanceAuditBtn").dxButton({
             icon: "fa fa-history",
             text: "Closing Balance",
             onClick: function (e) {
-                alert("Clicked history");
+                $closingBalanceAuditGrid.option("dataSource", formListData());
+                $viewClosingBalanceAuditModal.modal("show");
+                e.event.preventDefault();
             }
-        }).dxButton("instance");*/
+        }).dxButton("instance");
 
         $printBtn = $("#printBtn").dxDropDownButton({
             text: "Print",
@@ -305,6 +321,64 @@
                 enabled: true,
                 mode: "select"
             }
+        }).dxDataGrid("instance");
+
+        $closingBalanceAuditGrid = $("#closingBalanceAuditGrid").dxDataGrid({
+            columns: [
+                {
+                    caption: "Modified By",
+                    dataField: "modifiedBy"
+                },
+                {
+                    caption: "Modified Date",
+                    dataField: "modifiedOn",
+                    dataType: "date",
+                    format: "dd/MM/yyyy hh:mm a",
+                    sortIndex: 1,
+                    sortOrder: "asc"
+                },
+                {
+                    caption: "Currency",
+                    dataField: "currency",
+                    groupIndex: 0
+                },
+                {
+                    caption: "Account",
+                    dataField: "account",
+                    sortIndex: 0,
+                    sortOrder: "asc"
+                },
+                {
+                    caption: "Operation",
+                    dataField: "operation"
+                },
+                {
+                    caption: "Value Before",
+                    dataField: "valueBefore",
+                    dataType: "number",
+                    format: {
+                        type: "fixedPoint",
+                        precision: 2
+                    }
+                },
+                {
+                    caption: "Value After",
+                    dataField: "valueAfter",
+                    dataType: "number",
+                    format: {
+                        type: "fixedPoint",
+                        precision: 2
+                    }
+                }
+            ],
+            showRowLines: true,
+            rowAlternationEnabled: false,
+            showBorders: true,
+            sorting: {
+                mode: "multiple",
+                showSortIndexes: true
+            },
+            wordWrapEnabled: true
         }).dxDataGrid("instance");
         
         // #endregion DataGrid

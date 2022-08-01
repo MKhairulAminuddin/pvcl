@@ -463,6 +463,29 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [HttpGet]
+        [Route("Audit/ClosingBalance/{dateEpoch}")]
+        public HttpResponseMessage AuditClosingBalance(long dateEpoch, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var selectedDate = Common.ConvertEpochToDateTime(dateEpoch);
+
+                    var result = db.Audit_10AMDCO_ClosingBalance
+                         .Where(x => DbFunctions.TruncateTime(x.ReportDate) == DbFunctions.TruncateTime(selectedDate))
+                         .ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+
+        }
 
     }
 }

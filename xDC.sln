@@ -50,6 +50,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.Logging", "Libraries\xD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.Services", "Libraries\xDC.Services\xDC.Services.csproj", "{2743CD31-64AE-483D-8B52-02AE6F2550DC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Trigger", "Trigger", "{D8DE35BD-BEF9-489C-9D91-6119E78743D6}"
+	ProjectSection(SolutionItems) = preProject
+		Database\Trigger\Audit_10AMDCO_ClosingBalance.sql = Database\Trigger\Audit_10AMDCO_ClosingBalance.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +109,7 @@ Global
 		{2EC9C2B9-4657-4A3A-8484-14AC09BC11FA} = {D82837EF-EEC1-4823-9684-DA51B9FDC489}
 		{6522DC6D-0BA9-4D84-944E-0127E120E3B1} = {288D30C0-C4F9-4D78-BD96-15D52D9FEB14}
 		{2743CD31-64AE-483D-8B52-02AE6F2550DC} = {288D30C0-C4F9-4D78-BD96-15D52D9FEB14}
+		{D8DE35BD-BEF9-489C-9D91-6119E78743D6} = {7122A0F2-D963-4FF2-A899-44463EA526B5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {34EB544F-2415-4B65-AE15-70E167AB330D}

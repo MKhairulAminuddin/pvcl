@@ -11,6 +11,8 @@ namespace xDC.Services
 {
     public class AuditService
     {
+        #region Audit form
+
         public void AuditForm_Insert(Audit_Form obj)
         {
             try
@@ -38,7 +40,7 @@ namespace xDC.Services
 
                 ModifiedBy = modifiedBy,
                 ModifiedOn = DateTime.Now,
-                
+
                 Remarks = $"Created an {formType} form"
             };
 
@@ -96,7 +98,7 @@ namespace xDC.Services
                 Remarks = $"Modify existing record. Column {columnName}",
                 ValueBefore = valueBefore,
                 ValueAfter = valueAfter
-                
+
             };
 
             AuditForm_Insert(obj);
@@ -147,7 +149,7 @@ namespace xDC.Services
                 FormId = formId,
                 FormType = formType,
                 FormDate = formDate,
-                ActionType = (approvalStatus == Common.FormStatus.Approved)?Common.ActionType.Approve:Common.ActionType.Reject,
+                ActionType = (approvalStatus == Common.FormStatus.Approved) ? Common.ActionType.Approve : Common.ActionType.Reject,
 
                 ModifiedBy = modifiedBy,
                 ModifiedOn = DateTime.Now,
@@ -214,6 +216,12 @@ namespace xDC.Services
             AuditForm_Insert(obj);
         }
 
+        #endregion
+
+        #region Audit 10AM Deal Cut Off Closing Balance
+
+
+        #endregion
 
     }
 }

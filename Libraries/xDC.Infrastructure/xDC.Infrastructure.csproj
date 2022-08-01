@@ -77,6 +77,9 @@
     <Compile Include="Application\AspNetUsers.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
+    <Compile Include="Application\Audit_10AMDCO_ClosingBalance.cs">
+      <DependentUpon>kashflowDb.tt</DependentUpon>
+    </Compile>
     <Compile Include="Application\Audit_Form.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>

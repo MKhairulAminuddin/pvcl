@@ -98,6 +98,20 @@
           <Property Name="LastLogin" Type="datetime" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="Audit_10AMDCO_ClosingBalance">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ReportDate" Type="date" />
+          <Property Name="Currency" Type="nvarchar" MaxLength="10" />
+          <Property Name="Account" Type="nvarchar" MaxLength="150" />
+          <Property Name="ValueBefore" Type="float" Nullable="false" />
+          <Property Name="ValueAfter" Type="float" Nullable="false" />
+          <Property Name="Operation" Type="nvarchar" MaxLength="10" />
+          <Property Name="ModifiedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="ModifiedOn" Type="datetime" />
+        </EntityType>
         <EntityType Name="Audit_Form">
           <Key>
             <PropertyRef Name="Id" />
@@ -453,6 +467,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Audit_10AMDCO_ClosingBalance" EntityType="Self.Audit_10AMDCO_ClosingBalance" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Audit_Form" EntityType="Self.Audit_Form" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Config_Application" EntityType="Self.Config_Application" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Config_Approver" EntityType="Self.Config_Approver" Schema="dbo" store:Type="Tables" />
@@ -576,6 +591,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="FID_Treasury_MMI" EntityType="kashflowDbModel.FID_Treasury_MMI" />
           <EntitySet Name="FID_Treasury_Deposit" EntityType="kashflowDbModel.FID_Treasury_Deposit" />
           <EntitySet Name="Log_UserAccess" EntityType="kashflowDbModel.Log_UserAccess" />
+          <EntitySet Name="Audit_10AMDCO_ClosingBalance" EntityType="kashflowDbModel.Audit_10AMDCO_ClosingBalance" />
           </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -978,6 +994,20 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="ClientAddress" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
           <Property Name="ClientBrowser" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="RecordedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Audit_10AMDCO_ClosingBalance">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ReportDate" Type="DateTime" Precision="0" />
+          <Property Name="Currency" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Account" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ValueBefore" Type="Double" Nullable="false" />
+          <Property Name="ValueAfter" Type="Double" Nullable="false" />
+          <Property Name="Operation" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -1399,6 +1429,21 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
                 <ScalarProperty Name="ClientBrowser" ColumnName="ClientBrowser" />
                 <ScalarProperty Name="ClientAddress" ColumnName="ClientAddress" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Audit_10AMDCO_ClosingBalance">
+            <EntityTypeMapping TypeName="kashflowDbModel.Audit_10AMDCO_ClosingBalance">
+              <MappingFragment StoreEntitySet="Audit_10AMDCO_ClosingBalance">
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="Operation" ColumnName="Operation" />
+                <ScalarProperty Name="ValueAfter" ColumnName="ValueAfter" />
+                <ScalarProperty Name="ValueBefore" ColumnName="ValueBefore" />
+                <ScalarProperty Name="Account" ColumnName="Account" />
+                <ScalarProperty Name="Currency" ColumnName="Currency" />
+                <ScalarProperty Name="ReportDate" ColumnName="ReportDate" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

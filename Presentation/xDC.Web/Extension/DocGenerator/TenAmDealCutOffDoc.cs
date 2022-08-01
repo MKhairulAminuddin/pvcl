@@ -31,11 +31,12 @@ namespace xDC_Web.Extension.DocGenerator
                 {
 
                     var dataObj = ConstructData(selectedDate, viewApproved);
+                    var auditDataObj = ConstructDataClosingBalanceAudit(selectedDate);
 
                     IWorkbook workbook = new Workbook();
                     workbook.Options.Culture = new CultureInfo("en-US");
                     workbook.LoadDocument(MapPath(Common.ExcelTemplateLocation.FID_TenAmDealCutOff));
-                    workbook = GenerateDocument(workbook, dataObj, selectedDate, viewApproved);
+                    workbook = GenerateDocument(workbook, dataObj, auditDataObj, selectedDate, viewApproved);
 
                     return workbook;
 
@@ -76,11 +77,13 @@ namespace xDC_Web.Extension.DocGenerator
             }
         }
 
-        private IWorkbook GenerateDocument(IWorkbook workbook, List<TenAmCutOffItemVM> items, DateTime selectedDate, bool viewApproved)
+        private IWorkbook GenerateDocument(IWorkbook workbook, List<TenAmCutOffItemVM> items, List<Audit_10AMDCO_ClosingBalance> closingBalanceItems, DateTime selectedDate, bool viewApproved)
         {
             workbook.BeginUpdate();
             try
             {
+                #region First Worksheet
+
                 var sheet = workbook.Worksheets[0];
 
                 if (!viewApproved)
@@ -93,7 +96,7 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["A1"].Font.Size = 10;
                 }
 
-                sheet["B2"].Value =  selectedDate.ToString("dd/MM/yyyy");
+                sheet["C2"].Value = selectedDate.ToString("dd/MM/yyyy");
 
                 var startIndex = 6;
                 var currentIndex = startIndex;
@@ -139,6 +142,49 @@ namespace xDC_Web.Extension.DocGenerator
                     startGroupIndex = currentIndex;
                 }
                 workbook.Calculate();
+
+                #endregion
+
+                #region 2nd Worksheet
+
+                var sheet2 = workbook.Worksheets[1];
+
+                var startIndexS2 = 6;
+                var currentIndexS2 = startIndexS2;
+
+                sheet2["D2"].Value = selectedDate.ToString("dd/MM/yyyy");
+
+                foreach (var item in closingBalanceItems)
+                {
+                    if (currentIndexS2 != 6)
+                    {
+                        sheet2.Rows[currentIndexS2-1].Insert(InsertCellsMode.ShiftCellsDown);
+                        sheet2.Rows[currentIndexS2-1].CopyFrom(sheet2.Rows[startIndexS2-1], PasteSpecial.All);
+
+
+                        sheet2["B" + currentIndexS2 + ":I" + currentIndexS2].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
+                    }
+
+
+                    sheet2["B" + currentIndexS2].Value = currentIndexS2 - 5;
+                    sheet2["C" + currentIndexS2].Value = item.Currency;
+                    sheet2["D" + currentIndexS2].Value = item.Account;
+                    sheet2["E" + currentIndexS2].Value = item.ModifiedBy;
+                    sheet2["F" + currentIndexS2].Value = item.ModifiedOn?.ToString("dd/MM/yyyy hh:mm");
+                    sheet2["G" + currentIndexS2].Value = item.Operation;
+                    sheet2["H" + currentIndexS2].Value = item.ValueBefore;
+                    sheet2["I" + currentIndexS2].Value = item.ValueAfter;
+
+                    currentIndexS2++;
+                }
+
+                workbook.Calculate();
+
+                #endregion
+
+
+
+
             }
             catch (Exception ex)
             {
@@ -499,6 +545,29 @@ namespace xDC_Web.Extension.DocGenerator
                 return null;
             }
         }
-        
+
+        private List<Audit_10AMDCO_ClosingBalance> ConstructDataClosingBalanceAudit(DateTime selectedDate)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.Audit_10AMDCO_ClosingBalance
+                        .Where(x => DbFunctions.TruncateTime(x.ReportDate) == DbFunctions.TruncateTime(selectedDate))
+                        .OrderBy(x => x.Currency)
+                        .ThenBy(x => x.Account)
+                        .ThenBy(x => x.ModifiedOn)
+                        .ToList();
+
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return null;
+            }
+        }
+
     }
 }
