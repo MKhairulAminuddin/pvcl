@@ -968,8 +968,8 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["D" + currentIndex].Value = item.Currency;
                     sheet["E" + currentIndex].Value = item.Notes;
                     sheet["F" + currentIndex].Value = item.TradeDate;
-                    sheet["G" + currentIndex].Value = item.MaturityDate;
-                    sheet["H" + currentIndex].Value = item.ValueDate;
+                    sheet["G" + currentIndex].Value = item.ValueDate;
+                    sheet["H" + currentIndex].Value = item.MaturityDate;
                     sheet["I" + currentIndex].Value = item.Amount;
                     sheet["J" + currentIndex].Value = item.Tenor;
                     sheet["K" + currentIndex].Value = item.Rate;
