@@ -775,7 +775,7 @@ namespace xDC_Web.Controllers.Api
                     if (form.FormStatus == Common.FormStatus.PendingApproval)
                     {
                         new WorkflowService().SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
-                        new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
+                        new MailService().TreasuryForm_SubmitApproval(form.Id, form.ApprovedBy, input.ApprovalNotes);
                         new NotificationService().NotifyApprovalRequest(form.ApprovedBy, form.Id, form.PreparedBy, form.FormType);
                         new AuditService().AuditForm_RequestApproval(form.Id, form.FormType, form.ValueDate, User.Identity.Name);
                     }
@@ -1471,7 +1471,7 @@ namespace xDC_Web.Controllers.Api
                     if (form.FormStatus == Common.FormStatus.PendingApproval)
                     {
                         new WorkflowService().SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
-                        new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
+                        new MailService().TreasuryForm_SubmitApproval(form.Id, form.ApprovedBy, input.ApprovalNotes);
                         new NotificationService().NotifyApprovalRequest(form.ApprovedBy, form.Id, form.PreparedBy, form.FormType);
                     }
 
@@ -1508,7 +1508,7 @@ namespace xDC_Web.Controllers.Api
                             db.SaveChanges();
 
                             new NotificationService().NotifyApprovalResult(form.PreparedBy, form.Id, form.ApprovedBy, form.FormType, form.FormStatus);
-                            new MailService().SendApprovalStatus(form.Id, form.FormType, form.FormStatus, form.PreparedBy, input.ApprovalNote);
+                            new MailService().TreasuryForm_Approval(form.Id, form.PreparedBy, input.ApprovalNote);
                             new WorkflowService().ApprovalResponse(form.Id, form.FormStatus, input.ApprovalNote, form.FormType, form.PreparedBy, form.ApprovedBy);
                             new AuditService().AuditForm_Approval(form.Id, form.FormType, form.FormStatus, form.ValueDate, User.Identity.Name);
 

@@ -172,7 +172,13 @@ namespace xDC.Utils
 
         public static class EmailTemplate
         {
-            public const string Footer = "<br/><br/><br/><br/><p style='font-size: smaller;font-style: italic;color: gray'>### This is a system generated email, please do not reply to this email. Don't you ever try. ###</p>";
+            public const string HeaderTitleNotification = "<div style='background-color:#5B8EFB;padding:1px 4px 1px 4px'><h2 style='color:#ffffff;'> &#128276; KASHFLOW NOTIFICATION</h2></div>";
+            public const string Footer = "<br/><br/><p style='font-size: smaller;font-style: italic;color: gray'>### This is a system generated email, please do not reply to this email. Don't you ever try. ###</p>";
+        }
+
+        public static string EmailTemplate_WorkflowNotesArea(string notes)
+        {
+            return $"<p><strong>Notes from preparer:</strong></p><div style='background-color:#FFF;border-radius:10px;padding:5px 10px;'><p>{notes}</p></div>";
         }
 
         public static string TsCategoryUrlParamMapping(string value)
@@ -417,6 +423,9 @@ namespace xDC.Utils
             public const string AMSD_IF_Notification = "Amsd.InflowFunds.Notification";
 
             public const string ISSD_TS_CnEmail = "Issd.TradeSettlement.ContributionEmail";
+
+            public const string Email_CC_Treasury_SubmitForApproval = "Email.CC.Treasury.SubmitForApproval";
+            public const string Email_CC_Treasury_ApprovalResult = "Email.CC.Treasury.ApprovalResult";
         }
 
         public static class  CutOffViolationAction
@@ -479,7 +488,7 @@ namespace xDC.Utils
             public Table(StringBuilder sb, string id = "default", string classValue = "")
             {
                 _sb = sb;
-                _sb.Append($"<table id=\"{id}\" style='border-collapse: collapse;' class=\"{classValue}\">\n");
+                _sb.Append($"<table id=\"{id}\" style='border-collapse: collapse;font-size:12px;' class=\"{classValue}\">\n");
             }
 
             public void Dispose()
@@ -520,7 +529,7 @@ namespace xDC.Utils
                 _isHeader = isHeader;
                 if (_isHeader)
                 {
-                    _sb.Append("<thead style='border: 1px solid #999;padding: 8px;font-weight: bold;" +
+                    _sb.Append("<thead style='border: 1px solid #999;padding: 8px;" +
                                (!string.IsNullOrEmpty(headerColor) ? "background-color:" + headerColor + ";" : "") +
                                (!string.IsNullOrEmpty(fontColor) ? "color:" + fontColor : "") +
                                "'>\n");

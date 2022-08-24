@@ -222,6 +222,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\EmailTemplates\Treasury_Approval.html" />
+    <Content Include="App_Data\EmailTemplates\Treasury_SubmitForApproval.html" />
     <Content Include="Content\AdminLTE.css" />
     <Content Include="Content\AdminLTE.min.css" />
     <Content Include="Content\bootstrap-theme.css" />

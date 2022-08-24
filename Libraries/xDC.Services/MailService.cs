@@ -786,6 +786,109 @@ namespace xDC.Services
             return message;
         }
 
+        public void TreasuryForm_SubmitApproval(int formId, string approverName, string notes)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var approver = db.AspNetUsers.FirstOrDefault(x => x.UserName == approverName);
+                var ccs = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.Email_CC_Treasury_SubmitForApproval)?.Value;
+
+                var message = new MimeMessage()
+                {
+                    Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                    Subject = $"{SubjectAppend} Request for Approval {Common.FormType.FID_TREASURY} form",
+                    To =  { new MailboxAddress(approver.UserName, approver.Email) }
+                };
+
+                if (ccs != null)
+                {
+                    var ccsList = ccs.Split(';').ToList();
+                    foreach (var ccEmail in ccsList)
+                    {
+                        message.Cc.Add(MailboxAddress.Parse(ccEmail));
+                    }
+                }
+
+                var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(Common.FormType.FID_TREASURY) + "{1}",
+                    Config.EmailApplicationUrl, formId);
+
+                var bodyBuilder = new StringBuilder();
+
+                var root = AppDomain.CurrentDomain.BaseDirectory; 
+                using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/Treasury_SubmitForApproval.html"))
+                {
+                    string readFile = reader.ReadToEnd();
+                    string StrContent = string.Empty;
+                    StrContent = readFile;
+                    //Assing the field values in the template
+                    StrContent = StrContent.Replace("[ApproverName]", approver.FullName);
+                    StrContent = StrContent.Replace("[ApprovalUrl]", approvalPageUrl);
+                    StrContent = StrContent.Replace("[TreasuryTable]", TreasuryTable(formId));
+                    StrContent = StrContent.Replace("[Notes]", notes);
+                    bodyBuilder.Append(StrContent);
+                }
+
+                message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                {
+                    Text = bodyBuilder.ToString()
+                };
+
+                SendEmailToSmtp(message);
+            }
+        }
+
+        public void TreasuryForm_Approval(int formId, string preparerName, string notes)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var preparer = db.AspNetUsers.FirstOrDefault(x => x.UserName == preparerName);
+                var ccs = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.Email_CC_Treasury_ApprovalResult)?.Value;
+                var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
+
+                var message = new MimeMessage()
+                {
+                    Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                    Subject = $"{SubjectAppend} Approval Status for submitted {Common.FormType.FID_TREASURY} form",
+                    To =
+                    {
+                        new MailboxAddress(preparer.UserName, preparer.Email)
+                    }
+                };
+
+                var approvalPageUrl = $"{Config.EmailApplicationUrl}{Common.Email_FormUrlMap(Common.FormType.FID_TREASURY)}{formId}";
+
+                var bodyBuilder = new StringBuilder();
+
+                var root = AppDomain.CurrentDomain.BaseDirectory;
+                using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/Treasury_Approval.html"))
+                {
+                    string readFile = reader.ReadToEnd();
+                    string StrContent = string.Empty;
+                    StrContent = readFile;
+                    //Assing the field values in the template
+                    StrContent = StrContent.Replace("[PreparerName]", preparer.FullName);
+                    StrContent = StrContent.Replace("[TreasuryTable]", TreasuryTable(formId));
+                    StrContent = StrContent.Replace("[Notes]", notes);
+                    if (form.FormStatus == Common.FormStatus.Approved)
+                    {
+                        StrContent = StrContent.Replace("[ApprovalResult]", $"<p>Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#2ECC71;'><strong>{form.FormStatus}</strong> ✔️</span>");
+                    }
+                    else
+                    {
+                        StrContent = StrContent.Replace("[ApprovalResult]", $"<p>Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#E74C3C;'><strong>{form.FormStatus}</strong> 💔</span>");
+                    }
+                    bodyBuilder.Append(StrContent);
+                }
+
+                message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                {
+                    Text = bodyBuilder.ToString()
+                };
+
+                SendEmailToSmtp(message);
+            }
+        }
+
         private MimeMessage ComposeApprovalFeedbackMail(int formId, string formType, string formStatus, string preparerName, string preparerMail, string notes)
         {
             var message = new MimeMessage()
@@ -1067,7 +1170,7 @@ namespace xDC.Services
 
                 if (treasuryDepositInflow.Any())
                 {
-                    sb.AppendLine("<br/><b>Fund Inflow - Deposit</b><br/>");
+                    sb.AppendLine("<p style='margin:0;font-size:14px;mso-line-height-alt:21px'><span style='font-size:14px;'><strong>Fund Inflow - Deposit</strong></span></p><br/>");
 
                     using (var table = new Common.Table(sb))
                     {
@@ -1112,7 +1215,7 @@ namespace xDC.Services
 
                 if (treasuryMmiInflow.Any())
                 {
-                    sb.AppendLine("<br/><b>Fund Inflow - Money Market</b><br/>");
+                    sb.AppendLine("<p style='margin:0;font-size:14px;mso-line-height-alt:21px'><span style='font-size:14px;'><strong>Fund Inflow - Money Market</strong></span></p><br/>");
 
                     using (var table = new Common.Table(sb))
                     {
@@ -1161,7 +1264,7 @@ namespace xDC.Services
 
                 if (treasuryDepositOutflow.Any())
                 {
-                    sb.AppendLine("<br/><b>Fund Outflow - Deposit</b><br/>");
+                    sb.AppendLine("<p style='margin:0;font-size:14px;mso-line-height-alt:21px'><span style='font-size:14px;'><strong>Fund Outflow - Deposit</strong></span></p><br/>");
 
                     using (var table = new Common.Table(sb))
                     {
@@ -1206,7 +1309,7 @@ namespace xDC.Services
 
                 if (treasuryMmiOutflow.Any())
                 {
-                    sb.AppendLine("<br/><b>Fund Outflow - Money Market</b><br/>");
+                    sb.AppendLine("<p style='margin:0;font-size:14px;mso-line-height-alt:21px'><span style='font-size:14px;'><strong>Fund Outflow - Money Market</strong></span></p><br/>");
 
                     using (var table = new Common.Table(sb))
                     {
@@ -1769,5 +1872,6 @@ namespace xDC.Services
                 return bodyBuilder.ToString();
             }
         }
+
     }
 }
