@@ -1183,6 +1183,7 @@ namespace xDC.Services
                             row.AddCell("Maturity Date");
                             row.AddCell("Principal");
                             row.AddCell("Tenor (day)");
+                            row.AddCell("Rate (%)");
                             row.AddCell("Interest/ Profit Receivable");
                             row.AddCell("Principal + Interest/ Profit Receivable");
                             row.AddCell("Asset Type");
@@ -1202,6 +1203,7 @@ namespace xDC.Services
                                 row.AddCell(item.MaturityDate?.ToString("dd/MM/yyyy"));
                                 row.AddCell(item.Principal.ToString("N"));
                                 row.AddCell(item.Tenor.ToString());
+                                row.AddCell(item.RatePercent.ToString("N"));
                                 row.AddCell(item.IntProfitReceivable.ToString("N"));
                                 row.AddCell(item.PrincipalIntProfitReceivable.ToString("N"));
                                 row.AddCell(item.AssetType);
@@ -1277,6 +1279,7 @@ namespace xDC.Services
                             row.AddCell("Maturity Date");
                             row.AddCell("Principal");
                             row.AddCell("Tenor (day)");
+                            row.AddCell("Rate (%)");
                             row.AddCell("Interest/ Profit Receivable");
                             row.AddCell("Principal + Interest/ Profit Receivable");
                             row.AddCell("Asset Type");
@@ -1296,6 +1299,7 @@ namespace xDC.Services
                                 row.AddCell(item.MaturityDate?.ToString("dd/MM/yyyy"));
                                 row.AddCell(item.Principal.ToString("N"));
                                 row.AddCell(item.Tenor.ToString());
+                                row.AddCell(item.RatePercent.ToString("N"));
                                 row.AddCell(item.IntProfitReceivable.ToString("N"));
                                 row.AddCell(item.PrincipalIntProfitReceivable.ToString("N"));
                                 row.AddCell(item.AssetType);
@@ -1324,7 +1328,7 @@ namespace xDC.Services
                             row.AddCell("Maturity Date");
                             row.AddCell("Tenor");
                             row.AddCell("Nominal");
-                            row.AddCell("Sell Rate/ Yield (%)");
+                            row.AddCell("Purchase Rate/ Yield (%)");
                             row.AddCell("Price");
                             row.AddCell("Purchase Proceeds");
                             row.AddCell("Interest/ Dividend Receivable");
