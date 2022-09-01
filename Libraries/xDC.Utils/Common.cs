@@ -422,7 +422,16 @@ namespace xDC.Utils
             public const string AMSD_IF_CutOffTime = "Amsd.InflowFunds.CutOffTime";
             public const string AMSD_IF_Notification = "Amsd.InflowFunds.Notification";
 
-            public const string ISSD_TS_CnEmail = "Issd.TradeSettlement.ContributionEmail";
+            public const string ISSD_TS_CnEmail = "Notify.TS.CnEmail";
+            public const string ISSD_TS_CnEmailCc = "Notify.TS.CnEmail.Cc";
+            public const string ISSD_TS_PeEmail = "Notify.TS.PeEmail";
+            public const string ISSD_TS_PeEmailCc = "Notify.TS.PeEmail.Cc";
+            public const string ISSD_TS_PropertyEmail = "Notify.TS.PropertyEmail";
+            public const string ISSD_TS_PropertyEmailCc = "Notify.TS.PropertyEmail.Cc";
+            public const string ISSD_TS_LoanEmail = "Notify.TS.LoanEmail";
+            public const string ISSD_TS_LoanEmailCc = "Notify.TS.LoanEmail.Cc";
+            public const string ISSD_TS_FcaTagging = "Notify.TS.FcaTagging";
+            public const string ISSD_TS_TreasuryApproval = "Notify.TS.TreasuryApproval";
 
             public const string Email_CC_Treasury_SubmitForApproval = "Email.CC.Treasury.SubmitForApproval";
             public const string Email_CC_Treasury_ApprovalResult = "Email.CC.Treasury.ApprovalResult";

@@ -23,6 +23,9 @@ namespace xDC.Utils
 
         public static string FormViewAllSubmittedData => ConfigurationManager.AppSettings["Form.DealCutOff.ViewAllSubmittedFormText"];
 
+        #region Email Receipients & CCs
+
+        public static string NotificationTApprovedCc => ConfigurationManager.AppSettings["Notification.T.Approved.CC"];
 
         public static string NotificationTsCnEmail => ConfigurationManager.AppSettings["Notification.TS.CnEmail"];
         public static string NotificationTsCnEmailCc => ConfigurationManager.AppSettings["Notification.TS.CnEmail.CC"];
@@ -32,9 +35,10 @@ namespace xDC.Utils
         public static string NotificationTsPropertyEmailCc => ConfigurationManager.AppSettings["Notification.TS.PropertyEmail.CC"];
         public static string NotificationTsLoanEmail => ConfigurationManager.AppSettings["Notification.TS.LoanEmail"];
         public static string NotificationTsLoanEmailCc => ConfigurationManager.AppSettings["Notification.TS.LoanEmail.CC"];
-        public static string NotiTreasuryIssdEmail=> ConfigurationManager.AppSettings["Notification.T.IssdEmail"];
-        public static string NotiFcaTaggingIssdEmail=> ConfigurationManager.AppSettings["Notification.FcaTagging.IssdEmail"];
+        public static string NotiTreasuryIssdEmail => ConfigurationManager.AppSettings["Notification.T.IssdEmail"];
+        public static string NotiFcaTaggingIssdEmail => ConfigurationManager.AppSettings["Notification.FcaTagging.IssdEmail"];
 
+        #endregion
 
         public static string NotificationTsCnEmailSubject => ConfigurationManager.AppSettings["Notification.TS.CnEmailSubject"];
         public static string NotificationTsPeEmailSubject => ConfigurationManager.AppSettings["Notification.TS.PeEmailSubject"];

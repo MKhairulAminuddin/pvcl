@@ -1,10 +1,17 @@
 ﻿(function ($, window, document) {
 
     $(function () {
-        var adUsersStore = DevExpress.data.AspNet.createStore({
+        var adUsers = DevExpress.data.AspNet.createStore({
             key: "username",
-            loadUrl: "../api/common/GetActiveDirectoryUsersByDepartment/Contribution"
+            loadUrl: "../api/common/GetActiveDirectoryUsersByDepartment/"
         });
+
+        var cnEmailDs = function () {
+            return $.ajax({
+                url: referenceUrl.dsInflowDeposit + window.location.pathname.split("/").pop(),
+                type: "get"
+            });
+        };
 
         $("#inflowFundSaveButton").dxButton("instance").option("onClick", function (e) {
 
@@ -29,8 +36,8 @@
 
         });
 
-        $("#contributionEmailList").dxTagBox({
-            dataSource: adUsersStore,
+        $("#cnEmail").dxTagBox({
+            dataSource: adUsers,
             displayExpr: "displayName",
             valueExpr: "email",
             searchEnabled: true,
@@ -40,26 +47,35 @@
                     "<p class='active-directory-subtitle'>" + data.title + ", " + data.department + "</p>" +
                     "<p class='active-directory-subtitle'>" + data.email + "</p>" +
                     "</div>";
-            }
+            },
+            value
         }).dxTagBox("instance");
 
         $("#tradeSettlementSaveButton").dxButton("instance").option("onClick", function (e) {
             
-            var selectedContributionEmail = $("#contributionEmailList").dxTagBox("instance").option('selectedItems');
-            var emailList = [];
-            $.each(selectedContributionEmail, function (key, value) {
-                //console.log(key, value);
-                emailList.push(value.email);
+            var selectedCnEmail = $("#cnEmail").dxTagBox("instance").option('selectedItems');
+            var cnEmail = [];
+            $.each(selectedCnEmail, function (key, value) {
+                cnEmail.push(value.email);
             });
 
             var data = {
-                "tradeSettlementContributionEmail": emailList
+                "tsCnEmail": cnEmail,
+                "tsCnEmailCc": cnEmailCc,
+                "tsPeEmail": peEmail,
+                "tsPeEmailCc": peEmailCc,
+                "tsPropertyEmail": propertyEmail,
+                "tsPropertyEmailCc": propertyEmailCc,
+                "tsLoanEmail": loanEmail,
+                "tsLoanEmailCc": loanEmailCc,
+                "tsFcaTaggingEmail": fcaTaggingEmail,
+                "tsApprovedTreasury": approvedTreasury
             }
 
             $.ajax({
                 data: data,
                 dataType: 'json',
-                url: '../api/setting/UpdateTradeSettlementNotificationSetting',
+                url: '../api/setting/UpdateTsNotificationSetting',
                 method: 'post'
             }).done(function (data) {
                 $("#error_container").bs_success("Trade Settlement setting updated");

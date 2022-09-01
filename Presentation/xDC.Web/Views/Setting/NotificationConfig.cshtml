@@ -88,8 +88,98 @@
                             <p>Contribution Email</p>
                         </div>
                         <div class="col-md-6">
-                            @(Html.DevExtreme().TagBoxFor(m => m.TradeSettlementContributionEmail)
-                                .ID("contributionEmailList")
+                            @(Html.DevExtreme().TagBoxFor(m => m.tsCnEmail)
+                                .ID("cnEmail")
+                                )
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Contribution Email CC</p>
+                        </div>
+                        <div class="col-md-6">
+                            @(Html.DevExtreme().TagBoxFor(m => m.tsCnEmailCc)
+                                .ID("cnEmailCc")
+                                )
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>PE Email</p>
+                        </div>
+                        <div class="col-md-6">
+                            @(Html.DevExtreme().TagBoxFor(m => m.tsPeEmail)
+                                .ID("peEmail")
+                                )
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>PE Email CC</p>
+                        </div>
+                        <div class="col-md-6">
+                            @(Html.DevExtreme().TagBoxFor(m => m.tsPeEmailCc)
+                                .ID("peEmailCc")
+                                )
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Property Email</p>
+                        </div>
+                        <div class="col-md-6">
+                            @(Html.DevExtreme().TagBoxFor(m => m.tsPropertyEmail)
+                                .ID("propertyEmail")
+                                )
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Property Email CC</p>
+                        </div>
+                        <div class="col-md-6">
+                            @(Html.DevExtreme().TagBoxFor(m => m.tsPropertyEmailCc)
+                                .ID("propertyEmailCc")
+                                )
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Loan Email</p>
+                        </div>
+                        <div class="col-md-6">
+                            @(Html.DevExtreme().TagBoxFor(m => m.tsLoanEmail)
+                                .ID("loanEmail")
+                                )
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Loan Email CC</p>
+                        </div>
+                        <div class="col-md-6">
+                            @(Html.DevExtreme().TagBoxFor(m => m.tsLoanEmailCc)
+                                .ID("loanEmailCc")
+                                )
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>FCA Tagging Email</p>
+                        </div>
+                        <div class="col-md-6">
+                            @(Html.DevExtreme().TagBoxFor(m => m.tsFcaTaggingEmail)
+                                .ID("fcaTaggingEmail")
+                                )
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Treasury Approval Notification</p>
+                        </div>
+                        <div class="col-md-6">
+                            @(Html.DevExtreme().TagBoxFor(m => m.tsApprovedTreasury)
+                                .ID("approvedTreasury")
                                 )
                         </div>
                     </div>
