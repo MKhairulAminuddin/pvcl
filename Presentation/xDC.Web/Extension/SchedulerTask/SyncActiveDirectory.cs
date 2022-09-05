@@ -101,7 +101,68 @@ namespace xDC_Web.Extension.SchedulerTask
                         db.Database.ExecuteSqlCommand("TRUNCATE TABLE [AspNetActiveDirectoryUsers]");
                         db.AspNetActiveDirectoryUsers.AddRange(adUserList);
                         db.SaveChanges();
-                        Logger.LogInfo("Sync AD Completed!");
+                        Logger.LogInfo("Sync AD Users Completed!");
+                    }
+                }
+
+                var adGroupList = new List<AspNetActiveDirectoryGroup>();
+
+                using (var context = new PrincipalContext(ContextType.Domain))
+                {
+                    UserPrincipal userPrincipal = new UserPrincipal(context);
+                    userPrincipal.Enabled = false;
+                    userPrincipal.EmailAddress = "*@kwap.gov.my";
+
+                    using (var searcher = new PrincipalSearcher(userPrincipal))
+                    {
+                        foreach (var result in searcher.FindAll())
+                        {
+                            UserPrincipal group = UserPrincipal.FindByIdentity(context, result.UserPrincipalName);
+                            DirectoryEntry directoryEntry = result.GetUnderlyingObject() as DirectoryEntry;
+
+                            if (group != null)
+                            {
+                                if (!string.IsNullOrEmpty(group.EmailAddress))
+                                {
+                                    var adGroup = new AspNetActiveDirectoryGroup()
+                                    {
+                                        DisplayName = group.DisplayName,
+                                        TelNo = group.VoiceTelephoneNumber,
+                                        Username = group.SamAccountName,
+                                        Email = group.EmailAddress,
+                                        AdType = group.StructuralObjectClass,
+                                        DistinguishedName = group.DistinguishedName,
+                                        LastBadPasswordAttempt = group.LastBadPasswordAttempt,
+                                        LastLogon = group.LastLogon,
+                                        LastPasswordSet = group.LastPasswordSet
+                                    };
+
+                                    if (directoryEntry != null)
+                                    {
+                                        adGroup.Title = (string)directoryEntry?.Properties["title"].Value;
+                                        adGroup.Department = (string)directoryEntry?.Properties["department"].Value;
+                                        adGroup.Office = (string)directoryEntry?.Properties["physicalDeliveryOfficeName"].Value;
+                                        adGroup.AdAccountCreated =
+                                            (DateTime?)directoryEntry?.Properties["whenCreated"].Value;
+                                        adGroup.AdAccountChanged =
+                                            (DateTime?)directoryEntry?.Properties["whenChanged"].Value;
+                                    }
+
+                                    adGroupList.Add(adGroup);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                using (var db = new kashflowDBEntities())
+                {
+                    if (adGroupList.Count > 0)
+                    {
+                        db.Database.ExecuteSqlCommand("TRUNCATE TABLE [AspNetActiveDirectoryGroup]");
+                        db.AspNetActiveDirectoryGroup.AddRange(adGroupList);
+                        db.SaveChanges();
+                        Logger.LogInfo("Sync AD Group Completed!");
                     }
                 }
             }

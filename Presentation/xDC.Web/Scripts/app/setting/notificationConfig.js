@@ -3,7 +3,7 @@
     $(function () {
         var adUsers = DevExpress.data.AspNet.createStore({
             key: "username",
-            loadUrl: "../api/common/GetActiveDirectoryUsersByDepartment/"
+            loadUrl: "../api/common/GetActiveDirectoryUsers"
         });
 
         var cnEmailDs = function () {
@@ -47,8 +47,7 @@
                     "<p class='active-directory-subtitle'>" + data.title + ", " + data.department + "</p>" +
                     "<p class='active-directory-subtitle'>" + data.email + "</p>" +
                     "</div>";
-            },
-            value
+            }
         }).dxTagBox("instance");
 
         $("#tradeSettlementSaveButton").dxButton("instance").option("onClick", function (e) {

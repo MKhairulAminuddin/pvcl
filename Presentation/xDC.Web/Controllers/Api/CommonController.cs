@@ -26,6 +26,38 @@ namespace xDC_Web.Controllers.Api
         #region Active Directory
 
         [HttpGet]
+        [Route("GetActiveDirectory")]
+        public HttpResponseMessage GetActiveDirectory(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var users = db.AspNetActiveDirectoryUsers.ToList();
+                    var groups = db.AspNetActiveDirectoryGroup.Select(x => new AspNetActiveDirectoryUsers {
+                        Username = x.Username,
+                        Email = x.Email,
+                        DisplayName = x.DisplayName,
+                        Title = x.Title,
+                        Department = x.Department,
+                        TelNo = x.TelNo,
+                        Office = x.Office,
+                        AdType = x.AdType,
+                        DistinguishedName = x.DistinguishedName
+                    });
+
+                    var result = users.Union(groups).ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
         [Route("GetActiveDirectoryUsers")]
         public HttpResponseMessage GetActiveDirectoryUsers(DataSourceLoadOptions loadOptions)
         {

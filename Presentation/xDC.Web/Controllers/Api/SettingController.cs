@@ -489,7 +489,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var config = db.Config_Application.ToList();
+                    var result = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.AMSD_IF_CutOffTime);
 
                     if (result != null)
                     {

@@ -50,6 +50,25 @@
           <Property Name="NotificationUrl" Type="nvarchar" MaxLength="150" />
           <Property Name="CreatedOn" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="AspNetActiveDirectoryGroup">
+          <Key>
+            <PropertyRef Name="Username" />
+          </Key>
+          <Property Name="Username" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="DisplayName" Type="nvarchar" MaxLength="256" />
+          <Property Name="Title" Type="nvarchar" MaxLength="256" />
+          <Property Name="Department" Type="nvarchar" MaxLength="256" />
+          <Property Name="TelNo" Type="nvarchar" MaxLength="256" />
+          <Property Name="Office" Type="nvarchar" MaxLength="256" />
+          <Property Name="AdType" Type="nvarchar" MaxLength="256" />
+          <Property Name="DistinguishedName" Type="nvarchar" MaxLength="256" />
+          <Property Name="AdAccountCreated" Type="datetime" />
+          <Property Name="AdAccountChanged" Type="datetime" />
+          <Property Name="LastBadPasswordAttempt" Type="datetime" />
+          <Property Name="LastLogon" Type="datetime" />
+          <Property Name="LastPasswordSet" Type="datetime" />
+        </EntityType>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
             <PropertyRef Name="Username" />
@@ -463,6 +482,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="AMSD_IF" EntityType="Self.AMSD_IF" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AMSD_IF_Item" EntityType="Self.AMSD_IF_Item" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="App_Notification" EntityType="Self.App_Notification" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetActiveDirectoryGroup" EntityType="Self.AspNetActiveDirectoryGroup" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetActiveDirectoryUsers" EntityType="Self.AspNetActiveDirectoryUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
@@ -592,6 +612,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="FID_Treasury_Deposit" EntityType="kashflowDbModel.FID_Treasury_Deposit" />
           <EntitySet Name="Log_UserAccess" EntityType="kashflowDbModel.Log_UserAccess" />
           <EntitySet Name="Audit_10AMDCO_ClosingBalance" EntityType="kashflowDbModel.Audit_10AMDCO_ClosingBalance" />
+          <EntitySet Name="AspNetActiveDirectoryGroup" EntityType="kashflowDbModel.AspNetActiveDirectoryGroup" />
           </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -1008,6 +1029,25 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="Operation" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="AspNetActiveDirectoryGroup">
+          <Key>
+            <PropertyRef Name="Username" />
+          </Key>
+          <Property Name="Username" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="DisplayName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Department" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="TelNo" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Office" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="AdType" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="DistinguishedName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="AdAccountCreated" Type="DateTime" Precision="3" />
+          <Property Name="AdAccountChanged" Type="DateTime" Precision="3" />
+          <Property Name="LastBadPasswordAttempt" Type="DateTime" Precision="3" />
+          <Property Name="LastLogon" Type="DateTime" Precision="3" />
+          <Property Name="LastPasswordSet" Type="DateTime" Precision="3" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -1445,6 +1485,26 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
                 <ScalarProperty Name="Currency" ColumnName="Currency" />
                 <ScalarProperty Name="ReportDate" ColumnName="ReportDate" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AspNetActiveDirectoryGroup">
+            <EntityTypeMapping TypeName="kashflowDbModel.AspNetActiveDirectoryGroup">
+              <MappingFragment StoreEntitySet="AspNetActiveDirectoryGroup">
+                <ScalarProperty Name="LastPasswordSet" ColumnName="LastPasswordSet" />
+                <ScalarProperty Name="LastLogon" ColumnName="LastLogon" />
+                <ScalarProperty Name="LastBadPasswordAttempt" ColumnName="LastBadPasswordAttempt" />
+                <ScalarProperty Name="AdAccountChanged" ColumnName="AdAccountChanged" />
+                <ScalarProperty Name="AdAccountCreated" ColumnName="AdAccountCreated" />
+                <ScalarProperty Name="DistinguishedName" ColumnName="DistinguishedName" />
+                <ScalarProperty Name="AdType" ColumnName="AdType" />
+                <ScalarProperty Name="Office" ColumnName="Office" />
+                <ScalarProperty Name="TelNo" ColumnName="TelNo" />
+                <ScalarProperty Name="Department" ColumnName="Department" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Username" ColumnName="Username" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
