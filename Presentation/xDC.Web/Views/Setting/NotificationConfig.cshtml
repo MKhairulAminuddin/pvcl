@@ -26,33 +26,36 @@
 <section class="content container-fluid">
     <div class="row">
         <div class="col-md-12">
-            <div class="box box-solid">
-                <div class="box-header">
+            <div class="box box-danger">
+                <div class="box-header with-border">
                     <div class="box-title">AMSD - Inflow Fund</div>
                     <div class="pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="box-body">
                     @*<div class="row">
-                        <div class="col-md-6">
-                            <p>Enable Notification</p>
-                        </div>
-                        <div class="col-md-6">
-                            @(Html.DevExtreme()
-                                .CheckBoxFor(m => m.InflowFundEnableNotification)
-                                .ID("inFundEnableNotiCb"))
-                        </div>
-                    </div>*@
+                    <div class="col-md-6">
+                        <p>Enable Notification</p>
+                    </div>
+                    <div class="col-md-6">
+                        @(Html.DevExtreme()
+                            .CheckBoxFor(m => m.InflowFundEnableNotification)
+                            .ID("inFundEnableNotiCb"))
+                    </div>
+                </div>*@
                     @*<div class="row">
-                        <div class="col-md-6">
-                            <p>Enable Admin Modification Notification</p>
-                        </div>
-                        <div class="col-md-6">
-                            @(Html.DevExtreme()
-                                .CheckBoxFor(m => m.InflowFundEnableAdminModificationNotification)
-                                .ID("inFundEnableAdminEditNotiCb"))
-                        </div>
-                    </div>*@
+                    <div class="col-md-6">
+                        <p>Enable Admin Modification Notification</p>
+                    </div>
+                    <div class="col-md-6">
+                        @(Html.DevExtreme()
+                            .CheckBoxFor(m => m.InflowFundEnableAdminModificationNotification)
+                            .ID("inFundEnableAdminEditNotiCb"))
+                    </div>
+                </div>*@
                     <div class="row">
                         <div class="col-md-6">
                             <p>Cut Off Time</p>
@@ -76,109 +79,180 @@
                 </div>
             </div>
 
-            <div class="box box-solid">
-                <div class="box-header">
-                    <div class="box-title">ISSD - Trade Settlement</div>
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <div class="box-title">
+                        ISSD - Trade Settlement
+                    </div>
                     <div class="pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="box-body">
                     <div class="row">
-                        <div class="col-md-6">
-                            <p>Contribution Email</p>
+                        <div class="col-md-4">
+                            <small>Additional notification based for ISSD user group.</small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5><strong>Notification Type</strong></h5>
+                        </div>
+                        <div class="col-md-2">
+                            <h5><strong>Enable</strong></h5>
                         </div>
                         <div class="col-md-6">
-                            @(Html.DevExtreme().TagBoxFor(m => m.tsCnEmail)
+                            <h5><strong>Receipient</strong></h5>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p>Contribution Email</p>
+                        </div>
+                        <div class="col-md-2">
+                            @(Html.DevExtreme().Switch()
+                                .ID("cnEmailEnable")
+                                )
+                        </div>
+                        <div class="col-md-6">
+                            @(Html.DevExtreme().TextBoxFor(m => m.tsCnEmail)
                                 .ID("cnEmail")
                                 )
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
-                            <p>Contribution Email CC</p>
+                        <div class="col-md-4">
+                            <p>Contribution Email <strong>CC</strong></p>
+                        </div>
+                        <div class="col-md-2">
+                            @(Html.DevExtreme().Switch()
+                                .ID("cnEmailCcEnable")
+                                )
                         </div>
                         <div class="col-md-6">
-                            @(Html.DevExtreme().TagBoxFor(m => m.tsCnEmailCc)
+                            @(Html.DevExtreme().TextBoxFor(m => m.tsCnEmailCc)
                                 .ID("cnEmailCc")
                                 )
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <p>PE Email</p>
                         </div>
+                        <div class="col-md-2">
+                            @(Html.DevExtreme().Switch()
+                                .ID("peEmailEnable")
+                                )
+                        </div>
                         <div class="col-md-6">
-                            @(Html.DevExtreme().TagBoxFor(m => m.tsPeEmail)
+                            @(Html.DevExtreme().TextBoxFor(m => m.tsPeEmail)
                                 .ID("peEmail")
                                 )
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
-                            <p>PE Email CC</p>
+                        <div class="col-md-4">
+                            <p>PE Email <strong>CC</strong></p>
+                        </div>
+                        <div class="col-md-2">
+                            @(Html.DevExtreme().Switch()
+                                .ID("peEmailCcEnable")
+                                )
                         </div>
                         <div class="col-md-6">
-                            @(Html.DevExtreme().TagBoxFor(m => m.tsPeEmailCc)
+                            @(Html.DevExtreme().TextBoxFor(m => m.tsPeEmailCc)
                                 .ID("peEmailCc")
                                 )
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <p>Property Email</p>
                         </div>
+                        <div class="col-md-2">
+                            @(Html.DevExtreme().Switch()
+                                .ID("propertyEmailEnable")
+                                )
+                        </div>
                         <div class="col-md-6">
-                            @(Html.DevExtreme().TagBoxFor(m => m.tsPropertyEmail)
+                            @(Html.DevExtreme().TextBoxFor(m => m.tsPropertyEmail)
                                 .ID("propertyEmail")
                                 )
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
-                            <p>Property Email CC</p>
+                        <div class="col-md-4">
+                            <p>Property Email <strong>CC</strong></p>
+                        </div>
+                        <div class="col-md-2">
+                            @(Html.DevExtreme().Switch()
+                                .ID("propertyEmailCcEnable")
+                                )
                         </div>
                         <div class="col-md-6">
-                            @(Html.DevExtreme().TagBoxFor(m => m.tsPropertyEmailCc)
+                            @(Html.DevExtreme().TextBoxFor(m => m.tsPropertyEmailCc)
                                 .ID("propertyEmailCc")
                                 )
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <p>Loan Email</p>
                         </div>
+                        <div class="col-md-2">
+                            @(Html.DevExtreme().Switch()
+                                .ID("loanEmailEnable")
+                                )
+                        </div>
                         <div class="col-md-6">
-                            @(Html.DevExtreme().TagBoxFor(m => m.tsLoanEmail)
+                            @(Html.DevExtreme().TextBoxFor(m => m.tsLoanEmail)
                                 .ID("loanEmail")
                                 )
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
-                            <p>Loan Email CC</p>
+                        <div class="col-md-4">
+                            <p>Loan Email <strong>CC</strong></p>
+                        </div>
+                        <div class="col-md-2">
+                            @(Html.DevExtreme().Switch()
+                                .ID("loanEmailCcEnable")
+                                )
                         </div>
                         <div class="col-md-6">
-                            @(Html.DevExtreme().TagBoxFor(m => m.tsLoanEmailCc)
+                            @(Html.DevExtreme().TextBoxFor(m => m.tsLoanEmailCc)
                                 .ID("loanEmailCc")
                                 )
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <p>FCA Tagging Email</p>
                         </div>
+                        <div class="col-md-2">
+                            @(Html.DevExtreme().Switch()
+                                .ID("fcaTaggingEmailEnable")
+                                )
+                        </div>
                         <div class="col-md-6">
-                            @(Html.DevExtreme().TagBoxFor(m => m.tsFcaTaggingEmail)
+                            @(Html.DevExtreme().TextBoxFor(m => m.tsFcaTaggingEmail)
                                 .ID("fcaTaggingEmail")
                                 )
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <p>Treasury Approval Notification</p>
                         </div>
+                        <div class="col-md-2">
+                            @(Html.DevExtreme().Switch()
+                                .ID("approvedTreasuryEnable")
+                                )
+                        </div>
                         <div class="col-md-6">
-                            @(Html.DevExtreme().TagBoxFor(m => m.tsApprovedTreasury)
+                            @(Html.DevExtreme().TextBoxFor(m => m.tsApprovedTreasury)
                                 .ID("approvedTreasury")
                                 )
                         </div>
@@ -194,8 +268,39 @@
                     </div>
                 </div>
             </div>
-            
 
+            <div class="box box-warning">
+                <div class="box-header with-border">
+                    <div class="box-title">FID Notifications</div>
+                    <div class="pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Cut Off Time</p>
+                        </div>
+                        <div class="col-md-6">
+                            @(Html.DevExtreme()
+                                .DateBoxFor(m => m.InflowFundCutOffTime)
+                                .ID("inFundCutOffTimeDb")
+                                .Type(DateBoxType.Time))
+                        </div>
+                    </div>
+                </div>
+                <div class="box-footer">
+                    <div class="pull-right">
+                        @(Html.DevExtreme().Button()
+                            .ID("inflowFundSaveButton")
+                            .StylingMode(ButtonStylingMode.Contained)
+                            .Text("Save Changes")
+                            .Type(ButtonType.Default))
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
