@@ -82,7 +82,7 @@
             <div class="box box-success">
                 <div class="box-header with-border">
                     <div class="box-title">
-                        ISSD - Trade Settlement
+                        ISSD related email notifications
                     </div>
                     <div class="pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse">
@@ -93,7 +93,7 @@
                 <div class="box-body">
                     <div class="row">
                         <div class="col-md-4">
-                            <small>Additional notification based for ISSD user group.</small>
+                            <small>Additional notification for ISSD user group.</small>
                         </div>
                     </div>
                     <div class="row">
@@ -112,7 +112,7 @@
                             <p>Contribution Email</p>
                         </div>
                         <div class="col-md-2">
-                            @(Html.DevExtreme().Switch()
+                            @(Html.DevExtreme().SwitchFor(m => m.tsCnEmailEnable)
                                 .ID("cnEmailEnable")
                                 )
                         </div>
@@ -127,7 +127,7 @@
                             <p>Contribution Email <strong>CC</strong></p>
                         </div>
                         <div class="col-md-2">
-                            @(Html.DevExtreme().Switch()
+                            @(Html.DevExtreme().SwitchFor(m => m.tsCnEmailCcEnable)
                                 .ID("cnEmailCcEnable")
                                 )
                         </div>
@@ -142,7 +142,7 @@
                             <p>PE Email</p>
                         </div>
                         <div class="col-md-2">
-                            @(Html.DevExtreme().Switch()
+                            @(Html.DevExtreme().SwitchFor(m => m.tsPeEmailEnable)
                                 .ID("peEmailEnable")
                                 )
                         </div>
@@ -157,7 +157,7 @@
                             <p>PE Email <strong>CC</strong></p>
                         </div>
                         <div class="col-md-2">
-                            @(Html.DevExtreme().Switch()
+                            @(Html.DevExtreme().SwitchFor(m => m.tsPeEmailCcEnable)
                                 .ID("peEmailCcEnable")
                                 )
                         </div>
@@ -172,7 +172,7 @@
                             <p>Property Email</p>
                         </div>
                         <div class="col-md-2">
-                            @(Html.DevExtreme().Switch()
+                            @(Html.DevExtreme().SwitchFor(m => m.tsPropertyEmailEnable)
                                 .ID("propertyEmailEnable")
                                 )
                         </div>
@@ -187,7 +187,7 @@
                             <p>Property Email <strong>CC</strong></p>
                         </div>
                         <div class="col-md-2">
-                            @(Html.DevExtreme().Switch()
+                            @(Html.DevExtreme().SwitchFor(m => m.tsPropertyEmailCcEnable)
                                 .ID("propertyEmailCcEnable")
                                 )
                         </div>
@@ -202,7 +202,7 @@
                             <p>Loan Email</p>
                         </div>
                         <div class="col-md-2">
-                            @(Html.DevExtreme().Switch()
+                            @(Html.DevExtreme().SwitchFor(m => m.tsLoanEmailEnable)
                                 .ID("loanEmailEnable")
                                 )
                         </div>
@@ -217,7 +217,7 @@
                             <p>Loan Email <strong>CC</strong></p>
                         </div>
                         <div class="col-md-2">
-                            @(Html.DevExtreme().Switch()
+                            @(Html.DevExtreme().SwitchFor(m => m.tsLoanEmailCcEnable)
                                 .ID("loanEmailCcEnable")
                                 )
                         </div>
@@ -232,7 +232,7 @@
                             <p>FCA Tagging Email</p>
                         </div>
                         <div class="col-md-2">
-                            @(Html.DevExtreme().Switch()
+                            @(Html.DevExtreme().SwitchFor(m => m.tsFcaTaggingEmailEnable)
                                 .ID("fcaTaggingEmailEnable")
                                 )
                         </div>
@@ -247,7 +247,7 @@
                             <p>Treasury Approval Notification</p>
                         </div>
                         <div class="col-md-2">
-                            @(Html.DevExtreme().Switch()
+                            @(Html.DevExtreme().SwitchFor(m => m.tsApprovedTreasuryEnable)
                                 .ID("approvedTreasuryEnable")
                                 )
                         </div>

@@ -152,7 +152,7 @@
             }
             console.log(data);
 
-            /*$.ajax({
+            $.ajax({
                 data: data,
                 dataType: 'json',
                 url: '../api/setting/UpdateTsNotificationSetting',
@@ -162,7 +162,7 @@
 
             }).fail(function (jqXHR, textStatus, errorThrown) {
                 app.alertError(textStatus + ': ' + errorThrown);
-            });*/
+            });
 
         });
 

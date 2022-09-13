@@ -482,7 +482,7 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpGet]
-        [Route("TS/Notifications")]
+        [Route("TS/EmailNotification")]
         public HttpResponseMessage GetTsNotificationSetting()
         {
             try
@@ -515,7 +515,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
 
-        public HttpResponseMessage UpdateTsNotificationSetting([FromBody] NotificationConfigViewModel req)
+        public HttpResponseMessage UpdateTsNotificationSetting(NotificationConfigViewModel req)
         {
             try
             {
@@ -526,94 +526,146 @@ namespace xDC_Web.Controllers.Api
                         var config = db.Config_Application.ToList();
                         
                         var cnEmailConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmail);
-                        var cnEmail = String.Join(";", req.tsCnEmail);
-                        if (cnEmailConfig.Value != cnEmail)
+                        if (cnEmailConfig != null)
                         {
-                            cnEmailConfig.Value = cnEmail;
-                            cnEmailConfig.UpdatedBy = User.Identity.Name;
-                            cnEmailConfig.UpdatedDate = DateTime.Now;
+                            var cnEmail = String.Join(",", req.tsCnEmail != null ? req.tsCnEmail : new List<string> ());
+                            if (cnEmailConfig.Value != cnEmail)
+                            {
+                                cnEmailConfig.Value = cnEmail;
+                                cnEmailConfig.UpdatedBy = User.Identity.Name;
+                                cnEmailConfig.UpdatedDate = DateTime.Now;
+                            }
                         }
 
                         var cnEmailCcConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmailCc);
-                        var cnEmailCc = String.Join(";", req.tsCnEmailCc);
-                        if (cnEmailCcConfig.Value != cnEmailCc)
+                        if (cnEmailCcConfig != null)
                         {
-                            cnEmailCcConfig.Value = cnEmail;
-                            cnEmailCcConfig.UpdatedBy = User.Identity.Name;
-                            cnEmailCcConfig.UpdatedDate = DateTime.Now;
+                            var cnEmailCc = String.Join(",", req.tsCnEmailCc != null ? req.tsCnEmailCc : new List<string>());
+                            if (cnEmailCcConfig.Value != cnEmailCc)
+                            {
+                                cnEmailCcConfig.Value = cnEmailCc;
+                                cnEmailCcConfig.UpdatedBy = User.Identity.Name;
+                                cnEmailCcConfig.UpdatedDate = DateTime.Now;
+                            }
                         }
 
                         var peEmailConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PeEmail);
-                        var peEmail = String.Join(";", req.tsPeEmail);
-                        if (peEmailConfig.Value != peEmail)
+                        if (peEmailConfig != null)
                         {
-                            peEmailConfig.Value = cnEmail;
-                            peEmailConfig.UpdatedBy = User.Identity.Name;
-                            peEmailConfig.UpdatedDate = DateTime.Now;
+                            var peEmail = String.Join(",", req.tsPeEmail != null ? req.tsPeEmail : new List<string>());
+                            if (peEmailConfig.Value != peEmail)
+                            {
+                                peEmailConfig.Value = peEmail;
+                                peEmailConfig.UpdatedBy = User.Identity.Name;
+                                peEmailConfig.UpdatedDate = DateTime.Now;
+                            }
                         }
-
+                        
                         var peEmailCcConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PeEmailCc);
-                        var peEmailCc = String.Join(";", req.tsPeEmailCc);
-                        if (peEmailCcConfig.Value != peEmailCc)
+                        if (peEmailCcConfig != null)
                         {
-                            peEmailCcConfig.Value = peEmailCc;
-                            peEmailCcConfig.UpdatedBy = User.Identity.Name;
-                            peEmailCcConfig.UpdatedDate = DateTime.Now;
+                            var peEmailCc = String.Join(",", req.tsPeEmailCc != null ? req.tsPeEmailCc : new List<string>());
+                            if (peEmailCcConfig.Value != peEmailCc)
+                            {
+                                peEmailCcConfig.Value = peEmailCc;
+                                peEmailCcConfig.UpdatedBy = User.Identity.Name;
+                                peEmailCcConfig.UpdatedDate = DateTime.Now;
+                            }
                         }
-
+                        
                         var propertyEmailConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PropertyEmail);
-                        var propertyEmail = String.Join(";", req.tsPropertyEmail);
-                        if (propertyEmailConfig.Value != propertyEmail)
-                        {   
-                            propertyEmailConfig.Value = propertyEmail;
-                            propertyEmailConfig.UpdatedBy = User.Identity.Name;
-                            propertyEmailConfig.UpdatedDate = DateTime.Now;
+                        if (propertyEmailConfig != null)
+                        {
+                            var propertyEmail = String.Join(",", (req.tsPropertyEmail ?? new List<string>()));
+                            if (propertyEmailConfig.Value != propertyEmail)
+                            {
+                                propertyEmailConfig.Value = propertyEmail;
+                                propertyEmailConfig.UpdatedBy = User.Identity.Name;
+                                propertyEmailConfig.UpdatedDate = DateTime.Now;
+                            }
                         }
-
+                        
                         var propertyEmailCcConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PropertyEmailCc);
-                        var propertyEmailCc = String.Join(";", req.tsPropertyEmailCc);
-                        if (propertyEmailCcConfig.Value != propertyEmailCc)
+                        if (propertyEmailCcConfig != null)
                         {
-                            propertyEmailCcConfig.Value = propertyEmailCc;
-                            propertyEmailCcConfig.UpdatedBy = User.Identity.Name;
-                            propertyEmailCcConfig.UpdatedDate = DateTime.Now;
+                            var propertyEmailCc = String.Join(",", req.tsPropertyEmailCc != null ? req.tsPropertyEmailCc : new List<string>());
+                            if (propertyEmailCcConfig.Value != propertyEmailCc)
+                            {
+                                propertyEmailCcConfig.Value = propertyEmailCc;
+                                propertyEmailCcConfig.UpdatedBy = User.Identity.Name;
+                                propertyEmailCcConfig.UpdatedDate = DateTime.Now;
+                            }
                         }
-
+                        
                         var loanEmailConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_LoanEmail);
-                        var loanEmail = String.Join(";", req.tsLoanEmail);
-                        if (loanEmailConfig.Value != loanEmail)
+                        if (loanEmailConfig != null)
                         {
-                            loanEmailConfig.Value = loanEmail;
-                            loanEmailConfig.UpdatedBy = User.Identity.Name;
-                            loanEmailConfig.UpdatedDate = DateTime.Now;
+                            var loanEmail = String.Join(",", req.tsLoanEmail != null ? req.tsLoanEmail : new List<string>());
+                            if (loanEmailConfig.Value != loanEmail)
+                            {
+                                loanEmailConfig.Value = loanEmail;
+                                loanEmailConfig.UpdatedBy = User.Identity.Name;
+                                loanEmailConfig.UpdatedDate = DateTime.Now;
+                            }
                         }
 
                         var loanEmailCcConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_LoanEmailCc);
-                        var loanEmailCc = String.Join(";", req.tsLoanEmailCc);
-                        if (loanEmailCcConfig.Value != loanEmailCc)
+                        if (loanEmailCcConfig != null)
                         {
-                            loanEmailCcConfig.Value = loanEmailCc;
-                            loanEmailCcConfig.UpdatedBy = User.Identity.Name;
-                            loanEmailCcConfig.UpdatedDate = DateTime.Now;
+                            var loanEmailCc = String.Join(",", req.tsLoanEmailCc != null ? req.tsLoanEmailCc : new List<string>());
+                            if (loanEmailCcConfig.Value != loanEmailCc)
+                            {
+                                loanEmailCcConfig.Value = loanEmailCc;
+                                loanEmailCcConfig.UpdatedBy = User.Identity.Name;
+                                loanEmailCcConfig.UpdatedDate = DateTime.Now;
+                            }
                         }
 
                         var fcaTaggingEmailConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_FcaTagging);
-                        var fcaTaggingEmail = String.Join(";", req.tsFcaTaggingEmail);
-                        if (fcaTaggingEmailConfig.Value != fcaTaggingEmail)
+                        if (fcaTaggingEmailConfig != null)
                         {
-                            fcaTaggingEmailConfig.Value = fcaTaggingEmail;
-                            fcaTaggingEmailConfig.UpdatedBy = User.Identity.Name;
-                            fcaTaggingEmailConfig.UpdatedDate = DateTime.Now;
+                            var fcaTaggingEmail = String.Join(",", req.tsFcaTaggingEmail != null ? req.tsFcaTaggingEmail : new List<string>());
+                            if (fcaTaggingEmailConfig.Value != fcaTaggingEmail)
+                            {
+                                fcaTaggingEmailConfig.Value = fcaTaggingEmail;
+                                fcaTaggingEmailConfig.UpdatedBy = User.Identity.Name;
+                                fcaTaggingEmailConfig.UpdatedDate = DateTime.Now;
+                            }
                         }
-
+                        
                         var approvedTreasuryEmailConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_TreasuryApproval);
-                        var approvedTreasuryEmail = String.Join(";", req.tsApprovedTreasury);
-                        if (approvedTreasuryEmailConfig.Value != approvedTreasuryEmail)
-                        {   
-                            approvedTreasuryEmailConfig.Value = approvedTreasuryEmail;
-                            approvedTreasuryEmailConfig.UpdatedBy = User.Identity.Name;
-                            approvedTreasuryEmailConfig.UpdatedDate = DateTime.Now;
+                        if(approvedTreasuryEmailConfig != null)
+                        {
+                            var approvedTreasuryEmail = String.Join(",", req.tsApprovedTreasury != null ? req.tsApprovedTreasury : new List<string>());
+                            if (approvedTreasuryEmailConfig.Value != approvedTreasuryEmail)
+                            {
+                                approvedTreasuryEmailConfig.Value = approvedTreasuryEmail;
+                                approvedTreasuryEmailConfig.UpdatedBy = User.Identity.Name;
+                                approvedTreasuryEmailConfig.UpdatedDate = DateTime.Now;
+                            }
                         }
+                        
+
+                        var cnEmailEnable = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmail_Enable);
+                        if (cnEmailEnable!=null) cnEmailEnable.Value = req.tsCnEmailEnable.ToString().ToLower();
+                        var cnEmailCcEnable = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmailCc_Enable);
+                        if (cnEmailCcEnable != null) cnEmailCcEnable.Value = req.tsCnEmailCcEnable.ToString().ToLower();
+                        var peEmailEnable = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PeEmail_Enable);
+                        if (peEmailEnable != null) peEmailEnable.Value = req.tsPeEmailEnable.ToString().ToLower();
+                        var peEmailCcEnable = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PeEmailCc_Enable);
+                        if (peEmailCcEnable != null) peEmailCcEnable.Value = req.tsPeEmailCcEnable.ToString().ToLower();
+                        var propertyEmailEnable = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PropertyEmail_Enable);
+                        if (propertyEmailEnable != null) propertyEmailEnable.Value = req.tsPropertyEmailEnable.ToString().ToLower();
+                        var propertyEmailCcEnable = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PropertyEmailCc_Enable);
+                        if (propertyEmailCcEnable != null) propertyEmailCcEnable.Value = req.tsPropertyEmailCcEnable.ToString().ToLower();
+                        var loanEmailEnable = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_LoanEmail_Enable);
+                        if (loanEmailEnable != null) loanEmailEnable.Value = req.tsLoanEmailEnable.ToString().ToLower();
+                        var loanEmailCcEnable = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_LoanEmailCc_Enable);
+                        if (loanEmailCcEnable != null) loanEmailCcEnable.Value = req.tsLoanEmailCcEnable.ToString().ToLower();
+                        var fcaTaggingEnable = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_FcaTagging_Enable);
+                        if (fcaTaggingEnable != null) fcaTaggingEnable.Value = req.tsFcaTaggingEmailEnable.ToString().ToLower();
+                        var treasuryApprovalEmailEnable = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_TreasuryApproval_Enable);
+                        if (treasuryApprovalEmailEnable != null) treasuryApprovalEmailEnable.Value = req.tsApprovedTreasuryEnable.ToString().ToLower();
 
                         db.SaveChanges();
 

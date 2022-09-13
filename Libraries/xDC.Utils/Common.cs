@@ -433,6 +433,17 @@ namespace xDC.Utils
             public const string ISSD_TS_FcaTagging = "Notify.TS.FcaTagging";
             public const string ISSD_TS_TreasuryApproval = "Notify.TS.TreasuryApproval";
 
+            public const string ISSD_TS_CnEmail_Enable = "Notify.TS.CnEmail.Enable";
+            public const string ISSD_TS_CnEmailCc_Enable = "Notify.TS.CnEmail.Cc.Enable";
+            public const string ISSD_TS_PeEmail_Enable = "Notify.TS.PeEmail.Enable";
+            public const string ISSD_TS_PeEmailCc_Enable = "Notify.TS.PeEmail.Cc.Enable";
+            public const string ISSD_TS_PropertyEmail_Enable = "Notify.TS.PropertyEmail.Enable";
+            public const string ISSD_TS_PropertyEmailCc_Enable = "Notify.TS.PropertyEmail.Cc.Enable";
+            public const string ISSD_TS_LoanEmail_Enable = "Notify.TS.LoanEmail.Enable";
+            public const string ISSD_TS_LoanEmailCc_Enable = "Notify.TS.LoanEmail.Cc.Enable";
+            public const string ISSD_TS_FcaTagging_Enable = "Notify.TS.FcaTagging.Enable";
+            public const string ISSD_TS_TreasuryApproval_Enable = "Notify.TS.TreasuryApproval.Enable";
+
             public const string Email_CC_Treasury_SubmitForApproval = "Email.CC.Treasury.SubmitForApproval";
             public const string Email_CC_Treasury_ApprovalResult = "Email.CC.Treasury.ApprovalResult";
         }
