@@ -576,7 +576,7 @@ namespace xDC_Web.Controllers.Api
                         var propertyEmailConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PropertyEmail);
                         if (propertyEmailConfig != null)
                         {
-                            var propertyEmail = String.Join(",", (req.tsPropertyEmail ?? new List<string>()));
+                            var propertyEmail = String.Join(",", req.tsPropertyEmail != null ? req.tsPropertyEmail : new List<string>());
                             if (propertyEmailConfig.Value != propertyEmail)
                             {
                                 propertyEmailConfig.Value = propertyEmail;

@@ -182,79 +182,94 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var theForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId && x.FormType == Common.FormType.ISSD_TS_E);
-                    
-                    var message = new MimeMessage()
+                    var configApp = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmail_Enable);
+                    var isEmailNotificationEnable = Convert.ToBoolean(configApp.Value);
+                    var configAppCc = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmailCc_Enable);
+                    var isEmailNotificationCcEnable = Convert.ToBoolean(configAppCc.Value);
+
+
+                    if (isEmailNotificationEnable)
                     {
-                        Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                        Subject = Common.MailSubjectWithDate(Config.NotificationTsPeEmailSubject)
-                    };
+                        var theForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId && x.FormType == Common.FormType.ISSD_TS_E);
 
-                    var recipients = Config.NotificationTsPeEmail.Split(';');
-
-                    foreach (var recipient in recipients)
-                    {
-                        message.To.Add(MailboxAddress.Parse(recipient));
-                    }
-
-                    var cc = Config.NotificationTsPeEmailCc.Split(';');
-
-                    foreach (var recipient in cc)
-                    {
-                        message.Cc.Add(MailboxAddress.Parse(recipient));
-                    }
-                    
-                    var bodyBuilder = new StringBuilder();
-                    bodyBuilder.Append($"<p>Dear All, </p>");
-                    bodyBuilder.AppendLine($"<p>A Trade Settlement ({theForm.FormType}) ({theForm.Currency}) form dated {theForm.SettlementDate?.ToString("dd/MM/yyyy")} has been submitted and approved by ISSD. Below are the details of the submission. </p>");
-
-                    var sb = new StringBuilder();
-                    
-                    var tsFormPartE = db.ISSD_TradeSettlement
-                        .Where(x => x.FormId == formId)
-                        .ToList();
-                
-                    if (tsFormPartE.Any())
-                    {
-                        sb.AppendLine("<br/><b>Trade Settlement (Part E - ALTID)</b><br/>");
-
-                        using (var table = new Common.Table(sb))
+                        var message = new MimeMessage()
                         {
-                            using (var row = table.AddHeaderRow("#5B8EFB", "white"))
-                            {
-                                row.AddCell("ALTID Distribution & Drawdown");
-                                row.AddCell("Amount (+)");
-                                row.AddCell("Amount (-)");
-                                row.AddCell("Remarks");
-                            }
-
-                            foreach (var item in tsFormPartE)
-                            {
-                                using (var row = table.AddRow())
-                                {
-                                    row.AddCell(item.InstrumentCode);
-                                    row.AddCell(item.AmountPlus.ToString("N"));
-                                    row.AddCell(item.AmountMinus.ToString("N"));
-                                    row.AddCell(item.Remarks);
-                                }
-                            }
-                        }
-
-                        bodyBuilder.Append(sb);
-                        bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
-
-
-                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                        {
-                            Text = bodyBuilder.ToString()
+                            Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                            Subject = Common.MailSubjectWithDate(Config.NotificationTsPeEmailSubject)
                         };
 
+                        var dbRecipient = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmail);
+                        var recipients = dbRecipient.Value.ToString().Split(',');
 
-                        SendEmailToSmtp(message);
+                        foreach (var recipient in recipients)
+                        {
+                            message.To.Add(MailboxAddress.Parse(recipient));
+                        }
+
+                        var dbRecipientCc = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmailCc);
+                        var recipientsCc = dbRecipientCc.Value.ToString().Split(',');
+
+                        foreach (var recipient in recipientsCc)
+                        {
+                            message.Cc.Add(MailboxAddress.Parse(recipient));
+                        }
+
+                        var bodyBuilder = new StringBuilder();
+                        bodyBuilder.Append($"<p>Dear All, </p>");
+                        bodyBuilder.AppendLine($"<p>A Trade Settlement ({theForm.FormType}) ({theForm.Currency}) form dated {theForm.SettlementDate?.ToString("dd/MM/yyyy")} has been submitted and approved by ISSD. Below are the details of the submission. </p>");
+
+                        var sb = new StringBuilder();
+
+                        var tsFormPartE = db.ISSD_TradeSettlement
+                            .Where(x => x.FormId == formId)
+                            .ToList();
+
+                        if (tsFormPartE.Any())
+                        {
+                            sb.AppendLine("<br/><b>Trade Settlement (Part E - ALTID)</b><br/>");
+
+                            using (var table = new Common.Table(sb))
+                            {
+                                using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                                {
+                                    row.AddCell("ALTID Distribution & Drawdown");
+                                    row.AddCell("Amount (+)");
+                                    row.AddCell("Amount (-)");
+                                    row.AddCell("Remarks");
+                                }
+
+                                foreach (var item in tsFormPartE)
+                                {
+                                    using (var row = table.AddRow())
+                                    {
+                                        row.AddCell(item.InstrumentCode);
+                                        row.AddCell(item.AmountPlus.ToString("N"));
+                                        row.AddCell(item.AmountMinus.ToString("N"));
+                                        row.AddCell(item.Remarks);
+                                    }
+                                }
+                            }
+
+                            bodyBuilder.Append(sb);
+                            bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
+
+
+                            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                            {
+                                Text = bodyBuilder.ToString()
+                            };
+
+
+                            SendEmailToSmtp(message);
+                        }
+                        else
+                        {
+                            Logger.LogError("TS_PartE_NotifyPe email failed");
+                        }
                     }
                     else
                     {
-                        Logger.LogError("TS_PartE_NotifyPe email failed");
+                        Logger.LogError("TS_PartE_NotifyPe email disabled");
                     }
                 }
             }

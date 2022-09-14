@@ -93,11 +93,6 @@
                 <div class="box-body">
                     <div class="row">
                         <div class="col-md-4">
-                            <small>Additional notification for ISSD user group.</small>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
                             <h5><strong>Notification Type</strong></h5>
                         </div>
                         <div class="col-md-2">
@@ -110,6 +105,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <p>Contribution Email</p>
+                            <p><small><i>*Turn off this will disable this email notification even the CC is on.</i></small></p>
                         </div>
                         <div class="col-md-2">
                             @(Html.DevExtreme().SwitchFor(m => m.tsCnEmailEnable)
@@ -140,6 +136,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <p>PE Email</p>
+                            <p><small><i>*Turn off this will disable this email notification even the CC is on.</i></small></p>
                         </div>
                         <div class="col-md-2">
                             @(Html.DevExtreme().SwitchFor(m => m.tsPeEmailEnable)
@@ -170,6 +167,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <p>Property Email</p>
+                            <p><small><i>*Turn off this will disable this email notification even the CC is on.</i></small></p>
                         </div>
                         <div class="col-md-2">
                             @(Html.DevExtreme().SwitchFor(m => m.tsPropertyEmailEnable)
@@ -200,6 +198,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <p>Loan Email</p>
+                            <p><small><i>*Turn off this will disable this email notification even the CC is on.</i></small></p>
                         </div>
                         <div class="col-md-2">
                             @(Html.DevExtreme().SwitchFor(m => m.tsLoanEmailEnable)
