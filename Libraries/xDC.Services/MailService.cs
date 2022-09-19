@@ -34,7 +34,7 @@ namespace xDC.Services
                             new MailboxAddress(recipient, recipient)
                         }
                     };
-                    
+
                     var bodyBuilder = new StringBuilder();
                     bodyBuilder.Append($"<p>Testing, testing....</p>");
                     bodyBuilder.AppendLine($"<p>Plz ignore...</p>");
@@ -54,72 +54,8 @@ namespace xDC.Services
             }
 
         }
+
         
-        public void NewApprovedInflowFund(int formId, List<AspNetUsers> fidAdmins)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
-
-                    if (form != null)
-                    {
-                        var inflowFunds = db.AMSD_IF_Item.Where(x => x.FormId == form.Id).ToList();
-
-                        var message = new MimeMessage()
-                        {
-                            Sender = new MailboxAddress(Config.SmtpSenderAccountName,
-                                Config.SmtpSenderAccount),
-                            Subject = $"{SubjectAppend} New AMSD Inflow Funds Approved"
-                        };
-                        
-                        var bodyBuilder = new StringBuilder();
-                        bodyBuilder.Append($"<p>Hello there, </p>");
-                        bodyBuilder.AppendLine(
-                            $"There's new AMSD Inflow Funds approved. The details are as follows:");
-
-                        bodyBuilder.Append(
-                                    @"<table style='border-collapse: collapse;'>
-                                      <tr>
-                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Bank</th>
-                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount</th>
-                                      </tr>");
-                        var tableRows = string.Empty;
-                        foreach (var item in inflowFunds)
-                        {
-                            tableRows += string.Format(@"<tr>
-                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td>
-                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1:C}</td>
-                                          </tr>", item.Bank, item.Amount);
-                        }
-                        bodyBuilder.Append(tableRows);
-                        bodyBuilder.Append(@"</table>");
-
-
-                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                        {
-                            Text = bodyBuilder.ToString()
-                        };
-
-                        foreach (var admin in fidAdmins)
-                        {
-                            message.To.Add(new MailboxAddress(admin.FullName, admin.Email));
-                        }
-
-                        SendEmailToSmtp(message);
-                    }
-                    else
-                    {
-                        Logger.LogError("SendApprovalStatusEmail FAILED, form data error: " + formId);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-            }
-        }
 
         public void SubmitForApproval(int formId, string formType, string approvedBy, string notes)
         {
@@ -175,7 +111,327 @@ namespace xDC.Services
                 Logger.LogError(ex);
             }
         }
-        
+
+
+        private void SendEmailToSmtp(MimeMessage message)
+        {
+            try
+            {
+                using (var client = new SmtpClient())
+                {
+                    client.Connect(Config.SmtpServerIp, Convert.ToInt32(Config.SmtpServerPort), false);
+
+                    client.Send(message);
+                    client.Disconnect(true);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+
+        }
+
+        private MimeMessage ComposeSubmitForApprovalMail(int formId, string formType, string approverName, string approverMail, string notes)
+        {
+            var message = new MimeMessage()
+            {
+                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                Subject = $"{SubjectAppend} Request for Approval {formType}",
+                To =
+                {
+                    new MailboxAddress(approverName, approverMail)
+                }
+            };
+
+            var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}",
+                Config.EmailApplicationUrl, formId);
+
+            var bodyBuilder = new StringBuilder();
+
+            bodyBuilder.Append($"<p>Dear {approverName}, </p>");
+            bodyBuilder.AppendLine($"<p>A {formType} form is pending for your approval. </p>");
+            bodyBuilder.AppendLine($"<p>Click <a href='{approvalPageUrl}'>here</a> to view.</p>");
+
+            if (formType == Common.FormType.FID_TREASURY)
+            {
+                bodyBuilder.AppendLine(TreasuryTable(formId));
+            }
+            else if (Common.IsTsFormType(formType))
+            {
+                bodyBuilder.AppendLine(TsTable(formId));
+            }
+
+            if (!string.IsNullOrEmpty(notes))
+            {
+                bodyBuilder.AppendLine($"<br/><br/><p style='font-weight:bold'>Notes from preparer: </p>");
+                bodyBuilder.AppendLine($"<p>{notes}</p>");
+            }
+
+            bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
+
+            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            {
+                Text = bodyBuilder.ToString()
+            };
+
+            return message;
+        }
+
+        #region Inflow Fund Form Notification
+
+        public void NewApprovedInflowFund(int formId, List<AspNetUsers> fidAdmins)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
+
+                    if (form != null)
+                    {
+                        var inflowFunds = db.AMSD_IF_Item.Where(x => x.FormId == form.Id).ToList();
+
+                        var message = new MimeMessage()
+                        {
+                            Sender = new MailboxAddress(Config.SmtpSenderAccountName,
+                                Config.SmtpSenderAccount),
+                            Subject = $"{SubjectAppend} New AMSD Inflow Funds Approved"
+                        };
+
+                        var bodyBuilder = new StringBuilder();
+                        bodyBuilder.Append($"<p>Hello there, </p>");
+                        bodyBuilder.AppendLine(
+                            $"There's new AMSD Inflow Funds approved. The details are as follows:");
+
+                        bodyBuilder.Append(
+                                    @"<table style='border-collapse: collapse;'>
+                                      <tr>
+                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Bank</th>
+                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount</th>
+                                      </tr>");
+                        var tableRows = string.Empty;
+                        foreach (var item in inflowFunds)
+                        {
+                            tableRows += string.Format(@"<tr>
+                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td>
+                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1:C}</td>
+                                          </tr>", item.Bank, item.Amount);
+                        }
+                        bodyBuilder.Append(tableRows);
+                        bodyBuilder.Append(@"</table>");
+
+
+                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                        {
+                            Text = bodyBuilder.ToString()
+                        };
+
+                        foreach (var admin in fidAdmins)
+                        {
+                            message.To.Add(new MailboxAddress(admin.FullName, admin.Email));
+                        }
+
+                        SendEmailToSmtp(message);
+                    }
+                    else
+                    {
+                        Logger.LogError("SendApprovalStatusEmail FAILED, form data error: " + formId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
+        #endregion
+
+        #region Trade Settlement Form Notification
+
+        public void TS_AmendAfterCutOff(List<ISSD_TradeSettlement> itemBefore, List<ISSD_TradeSettlement> itemAfter, ISSD_FormHeader form)
+        {
+            try
+            {
+                if (form.FormStatus == Common.FormStatus.PendingApproval && DateTime.Now.Hour >= 10)
+                {
+                    using (var db = new kashflowDBEntities())
+                    {
+                        var listOfPowerUsers = new InternetAddressList();
+                        var powerUsers =
+                            db.AspNetRoles.Where(x => x.Name == Config.Acl.PowerUser).ToList();
+                        foreach (var user in powerUsers)
+                        {
+                            foreach (var item in user.AspNetUsers)
+                            {
+                                listOfPowerUsers.Add(new MailboxAddress(item.FullName, item.Email));
+                            }
+                        }
+
+                        var message = ComposeAmendmentAfterCutOffMail(itemBefore, itemAfter, form, listOfPowerUsers);
+                        SendEmailToSmtp(message);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
+        public void TS_IncomingFund(int formId, string formType, string currency)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var fidUsers = db.AspNetUsers.Where(user =>
+                        user.AspNetRoles.Any(r => r.Name == Config.Acl.Fid || r.Name == Config.Acl.PowerUser));
+
+                    var message = new MimeMessage()
+                    {
+                        Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                        Subject = $"{SubjectAppend} Approved ISSD Trade Settlement "
+                    };
+
+                    foreach (var fidUser in fidUsers)
+                    {
+                        message.To.Add(new MailboxAddress(fidUser.FullName, fidUser.Email));
+                    }
+
+                    var pageUrl = string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}", Config.EmailApplicationUrl, formId);
+
+                    var bodyBuilder = new StringBuilder();
+                    bodyBuilder.Append($"<p>Dear All, </p>");
+                    bodyBuilder.AppendLine($"<p>A {formType} ({currency}) form has been approved. Below are the details of it. </p>");
+
+                    var sb = new StringBuilder();
+
+                    if (fidUsers.Any())
+                    {
+                        var tsItems = db.ISSD_TradeSettlement.Where(x => x.FormId == formId).ToList();
+
+                        if (tsItems.Any(x => x.InstrumentType == Common.TsItemCategory.Equity ||
+                                             x.InstrumentType == Common.TsItemCategory.Bond ||
+                                             x.InstrumentType == Common.TsItemCategory.Cp ||
+                                             x.InstrumentType == Common.TsItemCategory.NotesPapers))
+                        {
+                            using (var table = new Common.Table(sb))
+                            {
+                                using (var row = table.AddHeaderRow())
+                                {
+                                    row.AddCell("Type");
+                                    row.AddCell("Details");
+                                    row.AddCell("Stock Code/ ISIN");
+                                    row.AddCell("Maturity (+)");
+                                    row.AddCell("Sales (+)");
+                                    row.AddCell("Purchase (-)");
+                                    row.AddCell("Remarks");
+                                }
+
+                                foreach (var item in tsItems)
+                                {
+                                    using (var row = table.AddRow())
+                                    {
+                                        row.AddCell(item.InstrumentType);
+                                        row.AddCell(item.InstrumentCode);
+                                        row.AddCell(item.StockCode);
+                                        row.AddCell_IntegerType(item.Maturity.ToString("N"), true);
+                                        row.AddCell_IntegerType(item.Sales.ToString("N"), true);
+                                        row.AddCell_IntegerType(item.Purchase.ToString("N"), false);
+                                        row.AddCell(item.Remarks);
+                                    }
+                                }
+
+
+                            }
+                        }
+                        else if (tsItems.Any(x => x.InstrumentType == Common.TsItemCategory.Repo))
+                        {
+                            using (var table = new Common.Table(sb))
+                            {
+                                using (var row = table.AddHeaderRow())
+                                {
+                                    row.AddCell("Type");
+                                    row.AddCell("Details");
+                                    row.AddCell("Stock Code/ ISIN");
+                                    row.AddCell("1st Leg (+)");
+                                    row.AddCell("2nd Leg (-)");
+                                    row.AddCell("Remarks");
+                                }
+
+                                foreach (var item in tsItems)
+                                {
+                                    using (var row = table.AddRow())
+                                    {
+                                        row.AddCell(item.InstrumentType);
+                                        row.AddCell(item.InstrumentCode);
+                                        row.AddCell(item.StockCode);
+                                        row.AddCell_IntegerType(item.FirstLeg.ToString("N"), true);
+                                        row.AddCell_IntegerType(item.SecondLeg.ToString("N"), false);
+                                        row.AddCell(item.Remarks);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            using (var table = new Common.Table(sb))
+                            {
+                                using (var row = table.AddHeaderRow())
+                                {
+                                    row.AddCell("Type");
+                                    row.AddCell("Details");
+                                    row.AddCell("Stock Code/ ISIN");
+                                    row.AddCell_IntegerType("Amount (+)", true);
+                                    row.AddCell_IntegerType("Amount (-)", false);
+                                    row.AddCell("Remarks");
+                                }
+
+                                foreach (var item in tsItems)
+                                {
+                                    using (var row = table.AddRow())
+                                    {
+                                        row.AddCell(item.InstrumentType);
+                                        row.AddCell(item.InstrumentCode);
+                                        row.AddCell(item.StockCode);
+                                        row.AddCell(item.AmountPlus.ToString("N"));
+                                        row.AddCell(item.AmountMinus.ToString("N"));
+                                        row.AddCell(item.Remarks);
+                                    }
+                                }
+
+
+                            }
+                        }
+
+                        bodyBuilder.Append(sb);
+
+                        bodyBuilder.AppendLine($"<p>Click <a href='{pageUrl}'>here</a> to view the submission in Kashflow.</p>");
+                        bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
+
+                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                        {
+                            Text = bodyBuilder.ToString()
+                        };
+
+
+                        SendEmailToSmtp(message);
+                    }
+                    else
+                    {
+                        Logger.LogError("TS_IncomingFund email failed");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
         public void TS_PartE_NotifyPe(int formId)
         {
             try
@@ -322,7 +578,7 @@ namespace xDC.Services
                     {
                         message.To.Add(MailboxAddress.Parse(recipient));
                     }
-                    
+
                     foreach (var recipient in cc)
                     {
                         message.Cc.Add(MailboxAddress.Parse(recipient));
@@ -383,444 +639,37 @@ namespace xDC.Services
             }
         }
 
-        public void TS_AmendAfterCutOff(List<ISSD_TradeSettlement> itemBefore, List<ISSD_TradeSettlement> itemAfter, ISSD_FormHeader form)
-        {
-            try
-            {
-                if (form.FormStatus == Common.FormStatus.PendingApproval && DateTime.Now.Hour >= 10)
-                {
-                    using (var db = new kashflowDBEntities())
-                    {
-                        var listOfPowerUsers = new InternetAddressList();
-                        var powerUsers =
-                            db.AspNetRoles.Where(x => x.Name == Config.Acl.PowerUser).ToList();
-                        foreach (var user in powerUsers)
-                        {
-                            foreach (var item in user.AspNetUsers)
-                            {
-                                listOfPowerUsers.Add(new MailboxAddress(item.FullName, item.Email));
-                            }
-                        }
 
-                        var message = ComposeAmendmentAfterCutOffMail(itemBefore, itemAfter, form, listOfPowerUsers);
-                        SendEmailToSmtp(message);
-                    }
-                }
-                
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-            }
-        }
+        #endregion
 
-
-        /// <summary>
-        /// Notification on approved TS to FID user group
-        /// </summary>
-        /// <param name="formId"></param>
-        /// <param name="formType"></param>
-        /// <param name="currency"></param>
-        public void TS_IncomingFund(int formId, string formType, string currency)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var fidUsers = db.AspNetUsers.Where(user =>
-                        user.AspNetRoles.Any(r => r.Name == Config.Acl.Fid || r.Name == Config.Acl.PowerUser));
-
-                    var message = new MimeMessage()
-                    {
-                        Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                        Subject = $"{SubjectAppend} Approved ISSD Trade Settlement "
-                    };
-
-                    foreach (var fidUser in fidUsers)
-                    {
-                        message.To.Add(new MailboxAddress(fidUser.FullName, fidUser.Email));
-                    }
-
-                    var pageUrl = string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}", Config.EmailApplicationUrl, formId);
-
-                    var bodyBuilder = new StringBuilder();
-                    bodyBuilder.Append($"<p>Dear All, </p>");
-                    bodyBuilder.AppendLine($"<p>A {formType} ({currency}) form has been approved. Below are the details of it. </p>");
-
-                    var sb = new StringBuilder();
-
-                    if (fidUsers.Any())
-                    {
-                        var tsItems = db.ISSD_TradeSettlement.Where(x => x.FormId == formId).ToList();
-
-                        if (tsItems.Any(x => x.InstrumentType == Common.TsItemCategory.Equity ||
-                                             x.InstrumentType == Common.TsItemCategory.Bond ||
-                                             x.InstrumentType == Common.TsItemCategory.Cp ||
-                                             x.InstrumentType == Common.TsItemCategory.NotesPapers))
-                        {
-                            using (var table = new Common.Table(sb))
-                            {
-                                using (var row = table.AddHeaderRow())
-                                {
-                                    row.AddCell("Type");
-                                    row.AddCell("Details");
-                                    row.AddCell("Stock Code/ ISIN");
-                                    row.AddCell("Maturity (+)");
-                                    row.AddCell("Sales (+)");
-                                    row.AddCell("Purchase (-)");
-                                    row.AddCell("Remarks");
-                                }
-
-                                foreach (var item in tsItems)
-                                {
-                                    using (var row = table.AddRow())
-                                    {
-                                        row.AddCell(item.InstrumentType);
-                                        row.AddCell(item.InstrumentCode);
-                                        row.AddCell(item.StockCode);
-                                        row.AddCell_IntegerType(item.Maturity.ToString("N"), true);
-                                        row.AddCell_IntegerType(item.Sales.ToString("N"), true);
-                                        row.AddCell_IntegerType(item.Purchase.ToString("N"), false);
-                                        row.AddCell(item.Remarks);
-                                    }
-                                }
-
-                                
-                            }
-                        }
-                        else if (tsItems.Any(x => x.InstrumentType == Common.TsItemCategory.Repo))
-                        {
-                            using (var table = new Common.Table(sb))
-                            {
-                                using (var row = table.AddHeaderRow())
-                                {
-                                    row.AddCell("Type");
-                                    row.AddCell("Details");
-                                    row.AddCell("Stock Code/ ISIN");
-                                    row.AddCell("1st Leg (+)");
-                                    row.AddCell("2nd Leg (-)");
-                                    row.AddCell("Remarks");
-                                }
-
-                                foreach (var item in tsItems)
-                                {
-                                    using (var row = table.AddRow())
-                                    {
-                                        row.AddCell(item.InstrumentType);
-                                        row.AddCell(item.InstrumentCode);
-                                        row.AddCell(item.StockCode);
-                                        row.AddCell_IntegerType(item.FirstLeg.ToString("N"), true);
-                                        row.AddCell_IntegerType(item.SecondLeg.ToString("N"), false);
-                                        row.AddCell(item.Remarks);
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            using (var table = new Common.Table(sb))
-                            {
-                                using (var row = table.AddHeaderRow())
-                                {
-                                    row.AddCell("Type");
-                                    row.AddCell("Details");
-                                    row.AddCell("Stock Code/ ISIN");
-                                    row.AddCell_IntegerType("Amount (+)", true);
-                                    row.AddCell_IntegerType("Amount (-)", false);
-                                    row.AddCell("Remarks");
-                                }
-
-                                foreach (var item in tsItems)
-                                {
-                                    using (var row = table.AddRow())
-                                    {
-                                        row.AddCell(item.InstrumentType);
-                                        row.AddCell(item.InstrumentCode);
-                                        row.AddCell(item.StockCode);
-                                        row.AddCell(item.AmountPlus.ToString("N"));
-                                        row.AddCell(item.AmountMinus.ToString("N"));
-                                        row.AddCell(item.Remarks);
-                                    }
-                                }
-
-                                
-                            }
-                        }
-
-                        bodyBuilder.Append(sb);
-                        
-                        bodyBuilder.AppendLine($"<p>Click <a href='{pageUrl}'>here</a> to view the submission in Kashflow.</p>");
-                        bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
-
-                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                        {
-                            Text = bodyBuilder.ToString()
-                        };
-
-
-                        SendEmailToSmtp(message);
-                    }
-                    else
-                    {
-                        Logger.LogError("TS_IncomingFund email failed");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-            }
-        }
-
-        public void FcaBankTagging(List<ISSD_TradeSettlement> tradeSettlementItems)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var message = new MimeMessage()
-                    {
-                        Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount)
-                    };
-
-                    var recipients = new List<string>();
-                    recipients = Config.NotiFcaTaggingIssdEmail.Split(';').ToList();
-                    foreach (var recipient in recipients)
-                    {
-                        message.To.Add(MailboxAddress.Parse(recipient));
-                    }
-
-                    var Ids = tradeSettlementItems.Select(x => x.FormId).Distinct().ToList();
-                    var forms = db.ISSD_FormHeader.Where(x => Ids.Contains(x.Id)).ToList();
-
-                    if (forms.Any())
-                    {
-                        var bodyBuilder = new StringBuilder();
-                        bodyBuilder.Append($"<p>Hello there, </p>");
-                        bodyBuilder.AppendLine($"<p>Below Trade Settlement items has been tagged with Bank code. </p>");
-
-                        foreach (var f in forms)
-                        {
-                            bodyBuilder.AppendLine("<br/><b>" + f.FormType + " </b><br/>");
-                            
-                            using (var table = new Common.Table(bodyBuilder))
-                            {
-                                using (var row = table.AddHeaderRow("#5B8EFB", "white"))
-                                {
-                                    row.AddCell("Settlement Date");
-                                    row.AddCell("Currency");
-                                    row.AddCell("Type");
-                                    row.AddCell("Code");
-                                    row.AddCell("Stock Code");
-
-                                    if (Common.TsItemMapAmountColumn(tradeSettlementItems.FirstOrDefault(x => x.FormId == f.Id)?.InstrumentType) == 1)
-                                    {
-                                        row.AddCell("Maturity (+)");
-                                        row.AddCell("Sales (+)");
-                                        row.AddCell("Purchase (-)");
-                                    }
-                                    else if (Common.TsItemMapAmountColumn(tradeSettlementItems.FirstOrDefault(x => x.FormId == f.Id)?.InstrumentType) == 2)
-                                    {
-                                        row.AddCell("1st Leg (+)");
-                                        row.AddCell("2nd Leg (-)");
-                                    }
-                                    else if (Common.TsItemMapAmountColumn(tradeSettlementItems.FirstOrDefault(x => x.FormId == f.Id)?.InstrumentType) == 3)
-                                    {
-                                        row.AddCell("Amount (+)");
-                                        row.AddCell("Amount (-)");
-                                    }
-                                    else if (Common.TsItemMapAmountColumn(tradeSettlementItems.FirstOrDefault(x => x.FormId == f.Id)?.InstrumentType) == 4)
-                                    {
-                                        row.AddCell("Amount (+)");
-                                    }
-
-                                    row.AddCell("Inflow");
-                                    row.AddCell("Outflow");
-                                    row.AddCell("Tagged By");
-                                    row.AddCell("Tagged Datetime");
-                                }
-
-                                foreach (var ts in tradeSettlementItems.Where(x => x.FormId == f.Id))
-                                {
-                                    using (var row = table.AddRow())
-                                    {
-                                        row.AddCell(f.SettlementDate?.ToString("dd/MM/yyyy"));
-                                        row.AddCell(f.Currency);
-                                        row.AddCell(ts.InstrumentType);
-                                        row.AddCell(ts.InstrumentCode);
-                                        row.AddCell(ts.StockCode);
-
-                                        if (Common.TsItemMapAmountColumn(ts.InstrumentType) == 1)
-                                        {
-                                            row.AddCell(ts.Maturity.ToString("N"));
-                                            row.AddCell(ts.Sales.ToString("N"));
-                                            row.AddCell(ts.Purchase.ToString("N"));
-                                        }
-                                        else if (Common.TsItemMapAmountColumn(ts.InstrumentType) == 2)
-                                        {
-                                            row.AddCell(ts.FirstLeg.ToString("N"));
-                                            row.AddCell(ts.SecondLeg.ToString("N"));
-                                        }
-                                        else if (Common.TsItemMapAmountColumn(ts.InstrumentType) == 3)
-                                        {
-                                            row.AddCell(ts.AmountPlus.ToString("N"));
-                                            row.AddCell(ts.AmountMinus.ToString("N"));
-                                        }
-                                        else if (Common.TsItemMapAmountColumn(ts.InstrumentType) == 4)
-                                        {
-                                            row.AddCell(ts.AmountPlus.ToString("N"));
-                                        }
-
-                                        row.AddCell(ts.InflowTo);
-                                        row.AddCell(ts.OutflowFrom);
-                                        row.AddCell(ts.AssignedBy);
-                                        row.AddCell(ts.AssignedDate?.ToString("dd/MM/yyyy HH:mm"));
-                                    }
-                                }
-                                
-                            }
-                        }
-
-                        bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
-
-                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                        {
-                            Text = bodyBuilder.ToString()
-                        };
-                        message.Subject = $"{SubjectAppend}{Config.NotiFcaTaggingIssdEmailSubject}";
-
-                        SendEmailToSmtp(message);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-            }
-        }
-
-        public void TreasuryToIssd()
-        {
-            try
-            {
-                var message = new MimeMessage()
-                {
-                    Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount)
-                };
-
-                var recipients = new List<string>();
-                recipients = Config.NotiTreasuryIssdEmail.Split(';').ToList();
-                foreach (var recipient in recipients)
-                {
-                    message.To.Add(MailboxAddress.Parse(recipient));
-                }
-
-                var bodyBuilder = new StringBuilder();
-                bodyBuilder.Append($"<p>Hello there, </p>");
-                bodyBuilder.AppendLine($"<p>FID has approved a Cash flow.</p>");
-                
-                bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
-
-                message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                {
-                    Text = bodyBuilder.ToString()
-                };
-                message.Subject = $"{SubjectAppend}{Config.NotiTreasuryIssdEmailSubject}";
-
-                SendEmailToSmtp(message);
-                    
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-            }
-        }
-
-        private void SendEmailToSmtp(MimeMessage message)
-        {
-            try
-            {
-                using (var client = new SmtpClient())
-                {
-                    client.Connect(Config.SmtpServerIp, Convert.ToInt32(Config.SmtpServerPort), false);
-                    
-                    client.Send(message);
-                    client.Disconnect(true);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-            }
-            
-        }
-
-        private MimeMessage ComposeSubmitForApprovalMail(int formId, string formType, string approverName, string approverMail, string notes)
-        {
-            var message = new MimeMessage()
-            {
-                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                Subject = $"{SubjectAppend} Request for Approval {formType}",
-                To =
-                {
-                    new MailboxAddress(approverName, approverMail)
-                }
-            };
-
-            var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}",
-                Config.EmailApplicationUrl, formId);
-            
-            var bodyBuilder = new StringBuilder();
-
-            bodyBuilder.Append($"<p>Dear {approverName}, </p>");
-            bodyBuilder.AppendLine($"<p>A {formType} form is pending for your approval. </p>");
-            bodyBuilder.AppendLine($"<p>Click <a href='{approvalPageUrl}'>here</a> to view.</p>");
-
-            if (formType == Common.FormType.FID_TREASURY)
-            {
-                bodyBuilder.AppendLine(TreasuryTable(formId));
-            }
-            else if (Common.IsTsFormType(formType))
-            {
-                bodyBuilder.AppendLine(TsTable(formId));
-            }
-            
-            if (!string.IsNullOrEmpty(notes))
-            {
-                bodyBuilder.AppendLine($"<br/><br/><p style='font-weight:bold'>Notes from preparer: </p>");
-                bodyBuilder.AppendLine($"<p>{notes}</p>");
-            }
-
-            bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
-
-            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-            {
-                Text = bodyBuilder.ToString()
-            };
-
-            return message;
-        }
+        #region Treasury Form Notification
 
         public void TreasuryForm_SubmitApproval(int formId, string approverName, string notes)
         {
             using (var db = new kashflowDBEntities())
             {
                 var approver = db.AspNetUsers.FirstOrDefault(x => x.UserName == approverName);
-                var ccs = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.Email_CC_Treasury_SubmitForApproval)?.Value;
+
+                var ccEnable = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasurySubmissionCc_Enable)?.Value;
+                var ccs = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasurySubmissionCc)?.Value;
 
                 var message = new MimeMessage()
                 {
                     Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
                     Subject = $"{SubjectAppend} Request for Approval {Common.FormType.FID_TREASURY} form",
-                    To =  { new MailboxAddress(approver.UserName, approver.Email) }
+                    To = { new MailboxAddress(approver.UserName, approver.Email) }
                 };
 
-                if (ccs != null)
+                if (ccs != null && ccEnable != null)
                 {
-                    var ccsList = ccs.Split(';').ToList();
-                    foreach (var ccEmail in ccsList)
+                    bool enableIncludeCc = bool.Parse(ccEnable);
+                    if (enableIncludeCc)
                     {
-                        message.Cc.Add(MailboxAddress.Parse(ccEmail));
+                        var ccsList = ccs.Split(',').ToList();
+                        foreach (var ccEmail in ccsList)
+                        {
+                            message.Cc.Add(MailboxAddress.Parse(ccEmail));
+                        }
                     }
                 }
 
@@ -829,7 +678,7 @@ namespace xDC.Services
 
                 var bodyBuilder = new StringBuilder();
 
-                var root = AppDomain.CurrentDomain.BaseDirectory; 
+                var root = AppDomain.CurrentDomain.BaseDirectory;
                 using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/Treasury_SubmitForApproval.html"))
                 {
                     string readFile = reader.ReadToEnd();
@@ -857,7 +706,8 @@ namespace xDC.Services
             using (var db = new kashflowDBEntities())
             {
                 var preparer = db.AspNetUsers.FirstOrDefault(x => x.UserName == preparerName);
-                var ccs = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.Email_CC_Treasury_ApprovalResult)?.Value;
+                var ccEnable = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasurySubmissionCc_Enable)?.Value;
+                var ccs = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasuryApprovalCc)?.Value;
                 var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
 
                 var message = new MimeMessage()
@@ -887,6 +737,18 @@ namespace xDC.Services
                     if (form.FormStatus == Common.FormStatus.Approved)
                     {
                         StrContent = StrContent.Replace("[ApprovalResult]", $"<p>Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#2ECC71;'><strong>{form.FormStatus}</strong> ✔️</span>");
+
+                        if (ccs != null && ccEnable != null)
+                        {
+                            bool enableIncludeCc = bool.Parse(ccEnable);
+                            if (enableIncludeCc)
+                            {
+                                foreach (var cc in ccs.Split(',').ToList())
+                                {
+                                    message.Cc.Add(MailboxAddress.Parse(cc));
+                                }
+                            }
+                        }
                     }
                     else
                     {
@@ -903,6 +765,123 @@ namespace xDC.Services
                 SendEmailToSmtp(message);
             }
         }
+
+        public void ApprovedTreasuryToIssd()
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var enable = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_TreasuryApproval_Enable)?.Value;
+                    var to = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_TreasuryApproval)?.Value;
+
+                    if (enable != null && to != null)
+                    {
+                        var enableNotify = Convert.ToBoolean(enable);
+
+                        if (enableNotify)
+                        {
+                            var message = new MimeMessage()
+                            {
+                                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                                Subject = $"{SubjectAppend}{Config.NotiTreasuryIssdEmailSubject}"
+                            };
+
+                            var toEmailList = to.Split(',').ToList();
+                            foreach (var recipient in toEmailList)
+                            {
+                                message.To.Add(MailboxAddress.Parse(recipient));
+                            }
+
+                            var bodyBuilder = new StringBuilder();
+
+                            var root = AppDomain.CurrentDomain.BaseDirectory;
+                            using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/Treasury_approved_toISSD.html"))
+                            {
+                                
+                                string readFile = reader.ReadToEnd();
+                                string StrContent = string.Empty;
+                                StrContent = readFile;
+                                //Assing the field values in the template
+                                StrContent = StrContent.Replace("[Message]", "FID has approved a Cash flow.");
+                                bodyBuilder.Append(StrContent);
+                            }
+
+                            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                            {
+                                Text = bodyBuilder.ToString()
+                            };
+                            SendEmailToSmtp(message);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
+        #endregion
+
+        #region FCA Bank Tagging Notification
+
+        public void FcaBankTaggingToIssd(List<ISSD_TradeSettlement> tradeSettlementItems)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var enableValue = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_FcaTagging_Enable)?.Value;
+                    var to = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_FcaTagging)?.Value;
+
+                    if (enableValue != null && to != null)
+                    {
+                        var enableNotification = bool.Parse(enableValue);
+                        if (enableNotification)
+                        {
+                            var message = new MimeMessage()
+                            {
+                                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                                Subject = $"{SubjectAppend}{Config.NotiFcaTaggingIssdEmailSubject}"
+                            };
+
+                            var toList = to.Split(',').ToList();
+                            foreach (var toEmail in toList)
+                            {
+                                message.To.Add(MailboxAddress.Parse(toEmail));
+                            }
+
+                            var bodyBuilder = new StringBuilder();
+                            var root = AppDomain.CurrentDomain.BaseDirectory;
+                            using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/FcaTaggingStatus_ToISSD.html"))
+                            {
+                                string readFile = reader.ReadToEnd();
+                                string StrContent = string.Empty;
+                                StrContent = readFile;
+                                StrContent = StrContent.Replace("[Message]", "Below Trade Settlement items has been tagged with Bank code.");
+                                StrContent = StrContent.Replace("[FcaTaggingTable]", FcaTaggingTable(tradeSettlementItems));
+                                bodyBuilder.Append(StrContent);
+                            }
+
+                            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                            {
+                                Text = bodyBuilder.ToString()
+                            };
+
+                            SendEmailToSmtp(message);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
+        #endregion
+
 
         private MimeMessage ComposeApprovalFeedbackMail(int formId, string formType, string formStatus, string preparerName, string preparerMail, string notes)
         {
@@ -929,7 +908,7 @@ namespace xDC.Services
             {
                 bodyBuilder.AppendLine($"<p>Bad News! Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#E74C3C;'>{formStatus}</span>");
             }
-            
+
             if (formType == Common.FormType.FID_TREASURY)
             {
                 bodyBuilder.AppendLine(TreasuryTable(formId));
@@ -982,11 +961,11 @@ namespace xDC.Services
 
             return message;
         }
-        
+
         private StringBuilder ConstructTable(List<ISSD_TradeSettlement> tradeItems)
         {
             var output = new StringBuilder();
-            
+
             var equity = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Equity).ToList();
             if (equity.Any())
             {
@@ -996,8 +975,8 @@ namespace xDC.Services
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{5}</td></tr>",
                         item.InstrumentCode, item.StockCode,
-                        item.Maturity.ToString("N"), 
-                         item.Sales.ToString("N"),  item.Purchase.ToString("N"),
+                        item.Maturity.ToString("N"),
+                         item.Sales.ToString("N"), item.Purchase.ToString("N"),
                         item.Remarks));
                 }
                 output.Append("</table>");
@@ -1012,7 +991,7 @@ namespace xDC.Services
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{5}</td></tr>",
                         item.InstrumentCode, item.StockCode,
-                         item.Maturity.ToString("N"),  item.Sales.ToString("N"),  item.Purchase.ToString("N"),
+                         item.Maturity.ToString("N"), item.Sales.ToString("N"), item.Purchase.ToString("N"),
                         item.Remarks));
                 }
                 output.Append("</table>");
@@ -1027,7 +1006,7 @@ namespace xDC.Services
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{5}</td></tr>",
                         item.InstrumentCode, item.StockCode,
-                         item.Maturity.ToString("N"),  item.Sales.ToString("N"),  item.Purchase.ToString("N"),
+                         item.Maturity.ToString("N"), item.Sales.ToString("N"), item.Purchase.ToString("N"),
                         item.Remarks));
                 }
                 output.Append("</table>");
@@ -1042,7 +1021,7 @@ namespace xDC.Services
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{5}</td></tr>",
                         item.InstrumentCode, item.StockCode,
-                         item.Maturity.ToString("N"),  item.Sales.ToString("N"),  item.Purchase.ToString("N"),
+                         item.Maturity.ToString("N"), item.Sales.ToString("N"), item.Purchase.ToString("N"),
                         item.Remarks));
                 }
                 output.Append("</table>");
@@ -1057,7 +1036,7 @@ namespace xDC.Services
                     output.Append(string.Format(
                         "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td></tr>",
                         item.InstrumentCode, item.StockCode,
-                        item.FirstLeg.ToString("N"), item.SecondLeg.ToString("N"), 
+                        item.FirstLeg.ToString("N"), item.SecondLeg.ToString("N"),
                         item.Remarks));
                 }
                 output.Append("</table>");
@@ -1166,7 +1145,7 @@ namespace xDC.Services
                 bodyBuilder.AppendLine();
 
                 var sb = new StringBuilder();
-                
+
                 var treasuryDepositInflow = db.FID_Treasury_Deposit
                     .Where(x => x.FormId == formId && x.CashflowType == Common.Cashflow.Inflow)
                     .ToList();
@@ -1386,7 +1365,7 @@ namespace xDC.Services
             using (var db = new kashflowDBEntities())
             {
                 var theForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
-                
+
                 var bodyBuilder = new StringBuilder();
 
                 var sb = new StringBuilder();
@@ -1892,5 +1871,108 @@ namespace xDC.Services
             }
         }
 
+        private string FcaTaggingTable(List<ISSD_TradeSettlement> tradeSettlementItems)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var Ids = tradeSettlementItems.Select(x => x.FormId).Distinct().ToList();
+                var forms = db.ISSD_FormHeader.Where(x => Ids.Contains(x.Id)).ToList();
+
+                if (forms.Any())
+                {
+                    var fcaTable = new StringBuilder();
+
+                    foreach (var f in forms)
+                    {
+                        fcaTable.AppendLine("<br/><b>" + f.FormType + " </b><br/>");
+
+                        using (var table = new Common.Table(fcaTable))
+                        {
+                            using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                            {
+                                row.AddCell("Settlement Date");
+                                row.AddCell("Currency");
+                                row.AddCell("Type");
+                                row.AddCell("Code");
+                                row.AddCell("Stock Code");
+
+                                if (Common.TsItemMapAmountColumn(tradeSettlementItems.FirstOrDefault(x => x.FormId == f.Id)?.InstrumentType) == 1)
+                                {
+                                    row.AddCell("Maturity (+)");
+                                    row.AddCell("Sales (+)");
+                                    row.AddCell("Purchase (-)");
+                                }
+                                else if (Common.TsItemMapAmountColumn(tradeSettlementItems.FirstOrDefault(x => x.FormId == f.Id)?.InstrumentType) == 2)
+                                {
+                                    row.AddCell("1st Leg (+)");
+                                    row.AddCell("2nd Leg (-)");
+                                }
+                                else if (Common.TsItemMapAmountColumn(tradeSettlementItems.FirstOrDefault(x => x.FormId == f.Id)?.InstrumentType) == 3)
+                                {
+                                    row.AddCell("Amount (+)");
+                                    row.AddCell("Amount (-)");
+                                }
+                                else if (Common.TsItemMapAmountColumn(tradeSettlementItems.FirstOrDefault(x => x.FormId == f.Id)?.InstrumentType) == 4)
+                                {
+                                    row.AddCell("Amount (+)");
+                                }
+
+                                row.AddCell("Inflow");
+                                row.AddCell("Outflow");
+                                row.AddCell("Tagged By");
+                                row.AddCell("Tagged Datetime");
+                            }
+
+                            foreach (var ts in tradeSettlementItems.Where(x => x.FormId == f.Id))
+                            {
+                                using (var row = table.AddRow())
+                                {
+                                    row.AddCell(f.SettlementDate?.ToString("dd/MM/yyyy"));
+                                    row.AddCell(f.Currency);
+                                    row.AddCell(ts.InstrumentType);
+                                    row.AddCell(ts.InstrumentCode);
+                                    row.AddCell(ts.StockCode);
+
+                                    if (Common.TsItemMapAmountColumn(ts.InstrumentType) == 1)
+                                    {
+                                        row.AddCell(ts.Maturity.ToString("N"));
+                                        row.AddCell(ts.Sales.ToString("N"));
+                                        row.AddCell(ts.Purchase.ToString("N"));
+                                    }
+                                    else if (Common.TsItemMapAmountColumn(ts.InstrumentType) == 2)
+                                    {
+                                        row.AddCell(ts.FirstLeg.ToString("N"));
+                                        row.AddCell(ts.SecondLeg.ToString("N"));
+                                    }
+                                    else if (Common.TsItemMapAmountColumn(ts.InstrumentType) == 3)
+                                    {
+                                        row.AddCell(ts.AmountPlus.ToString("N"));
+                                        row.AddCell(ts.AmountMinus.ToString("N"));
+                                    }
+                                    else if (Common.TsItemMapAmountColumn(ts.InstrumentType) == 4)
+                                    {
+                                        row.AddCell(ts.AmountPlus.ToString("N"));
+                                    }
+
+                                    row.AddCell(ts.InflowTo);
+                                    row.AddCell(ts.OutflowFrom);
+                                    row.AddCell(ts.AssignedBy);
+                                    row.AddCell(ts.AssignedDate?.ToString("dd/MM/yyyy HH:mm"));
+                                }
+                            }
+
+                        }
+                    }
+
+                    return fcaTable.ToString();
+                }
+                else
+                {
+                    return string.Empty;
+                }
+
+            }
+
+        }
     }
 }

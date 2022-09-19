@@ -28,7 +28,7 @@
         <div class="col-md-12">
             <div class="box box-danger">
                 <div class="box-header with-border">
-                    <div class="box-title">AMSD - Inflow Fund</div>
+                    <div class="box-title">AMSD related email notification</div>
                     <div class="pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse">
                             <i class="fa fa-minus"></i>
@@ -279,14 +279,44 @@
                 </div>
                 <div class="box-body">
                     <div class="row">
-                        <div class="col-md-6">
-                            <p>Cut Off Time</p>
+                        <div class="col-md-4">
+                            <h5><strong>Notification Type</strong></h5>
+                        </div>
+                        <div class="col-md-2">
+                            <h5><strong>Enable</strong></h5>
                         </div>
                         <div class="col-md-6">
-                            @(Html.DevExtreme()
-                                .DateBoxFor(m => m.InflowFundCutOffTime)
-                                .ID("inFundCutOffTimeDb")
-                                .Type(DateBoxType.Time))
+                            <h5><strong>Receipient</strong></h5>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p>Treasury Form Submission <strong>CC</strong></p>
+                        </div>
+                        <div class="col-md-2">
+                            @(Html.DevExtreme().SwitchFor(m => m.tSubmissionEmailCcEnable)
+                                .ID("tSubmissionEmailCcEnable")
+                                )
+                        </div>
+                        <div class="col-md-6">
+                            @(Html.DevExtreme().TextBoxFor(m => m.tSubmissionEmailCc)
+                                .ID("tSubmissionEmailCc")
+                                )
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p>Treasury Form Approval <strong>CC</strong></p>
+                        </div>
+                        <div class="col-md-2">
+                            @(Html.DevExtreme().SwitchFor(m => m.tApprovedEmailCcEnable)
+                                .ID("tApprovalEmailCcEnable")
+                                )
+                        </div>
+                        <div class="col-md-6">
+                            @(Html.DevExtreme().TextBoxFor(m => m.tApprovedEmailCc)
+                                .ID("tApprovedEmailCc")
+                                )
                         </div>
                     </div>
                 </div>

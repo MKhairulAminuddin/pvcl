@@ -55,6 +55,12 @@ namespace xDC_Web.Controllers
                     var fcaTaggingEmailEnable = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_FcaTagging_Enable);
                     var approvedTreasuryEmailEnable = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_TreasuryApproval_Enable);
 
+                    var tSubmissionEmailCcList = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasurySubmissionCc);
+                    var tApprovedCcEmailList = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasuryApprovalCc);
+
+                    var tSubmissionEmailCcEnable = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasurySubmissionCc_Enable);
+                    var tApprovedEmailCcEnable = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasuryApprovalCc_Enable);
+
 
                     NotificationConfigViewModel viewModel = new NotificationConfigViewModel()
                     {
@@ -69,6 +75,8 @@ namespace xDC_Web.Controllers
                         tsLoanEmailCc = loanEmailCcList?.Value,
                         tsFcaTaggingEmail = fcaTaggingEmailList?.Value,
                         tsApprovedTreasury = approvedTreasuryEmailList?.Value,
+                        tSubmissionEmailCc = tSubmissionEmailCcList?.Value,
+                        tApprovedEmailCc = tApprovedCcEmailList?.Value,
 
                         tsCnEmailEnable = Convert.ToBoolean(cnEmailEnable?.Value),
                         tsCnEmailCcEnable = Convert.ToBoolean(cnEmailCcEnable?.Value),
@@ -79,7 +87,9 @@ namespace xDC_Web.Controllers
                         tsLoanEmailEnable = Convert.ToBoolean(loanEmailEnable?.Value),
                         tsLoanEmailCcEnable = Convert.ToBoolean(loanEmailCcEnable?.Value),
                         tsFcaTaggingEmailEnable = Convert.ToBoolean(fcaTaggingEmailEnable?.Value),
-                        tsApprovedTreasuryEnable = Convert.ToBoolean(approvedTreasuryEmailEnable?.Value)
+                        tsApprovedTreasuryEnable = Convert.ToBoolean(approvedTreasuryEmailEnable?.Value),
+                        tSubmissionEmailCcEnable = Convert.ToBoolean(tSubmissionEmailCcEnable?.Value),
+                        tApprovedEmailCcEnable = Convert.ToBoolean(tApprovedEmailCcEnable?.Value)
                     };
 
                     return View(viewModel);

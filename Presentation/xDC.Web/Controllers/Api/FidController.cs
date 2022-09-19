@@ -1514,7 +1514,7 @@ namespace xDC_Web.Controllers.Api
 
                             if (form.FormStatus == Common.FormStatus.Approved)
                             {
-                                new MailService().TreasuryToIssd();
+                                new MailService().ApprovedTreasuryToIssd();
                             }
                             
 

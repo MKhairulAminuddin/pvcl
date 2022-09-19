@@ -1,18 +1,6 @@
 ﻿(function ($, window, document) {
 
     $(function () {
-        var adUsers = DevExpress.data.AspNet.createStore({
-            key: "username",
-            loadUrl: "../api/common/GetActiveDirectoryUsers"
-        });
-
-        var cnEmailDs = function () {
-            return $.ajax({
-                url: referenceUrl.dsInflowDeposit + window.location.pathname.split("/").pop(),
-                type: "get"
-            });
-        };
-
         $("#inflowFundSaveButton").dxButton("instance").option("onClick", function (e) {
 
             var data = {
@@ -53,6 +41,9 @@
         var loanEmailCcEnable = $("#loanEmailCcEnable").dxSwitch('instance');
         var fcaTaggingEmailEnable = $("#fcaTaggingEmailEnable").dxSwitch('instance');
         var approvedTreasuryEnable = $("#approvedTreasuryEnable").dxSwitch('instance');
+
+        var tSubmissionEmailCcEnable = $("#tSubmissionEmailCcEnable").dxSwitch('instance');
+        var tApprovedEmailCcEnable = $("#tApprovedEmailCcEnable").dxSwitch('instance');
 
         var cnEmail = $("#cnEmail").dxTextBox({}).dxValidator({
             validationRules: [{
@@ -124,6 +115,20 @@
                 validationCallback(params) { return validateEmails(params.value); }
             }],
         }).dxTextBox("instance");
+        var tSubmissionEmailCc = $("#tSubmissionEmailCc").dxValidator({
+            validationRules: [{
+                type: 'custom',
+                message: 'Invalid input',
+                validationCallback(params) { return validateEmails(params.value); }
+            }],
+        }).dxTextBox("instance");
+        var tApprovedEmailCc = $("#tApprovedEmailCc").dxValidator({
+            validationRules: [{
+                type: 'custom',
+                message: 'Invalid input',
+                validationCallback(params) { return validateEmails(params.value); }
+            }],
+        }).dxTextBox("instance");
 
         $("#tradeSettlementSaveButton").dxButton("instance").option("onClick", function (e) {
             
@@ -138,6 +143,8 @@
                 "tsLoanEmailCcEnable": loanEmailCcEnable.option('value'),
                 "tsFcaTaggingEmailEnable": fcaTaggingEmailEnable.option('value'),
                 "tsApprovedTreasuryEnable": approvedTreasuryEnable.option('value'),
+                "tSubmissionEmailCcEnable": tSubmissionEmailCcEnable.option('value'),
+                "tApprovedEmailCcEnable": tApprovedEmailCcEnable.option('value'),
 
                 "tsCnEmail": cnEmail.option('value'),
                 "tsCnEmailCc": cnEmailCc.option('value'),
@@ -148,7 +155,9 @@
                 "tsLoanEmail": loanEmail.option('value'),
                 "tsLoanEmailCc": loanEmailCc.option('value'),
                 "tsFcaTaggingEmail": fcaTaggingEmail.option('value'),
-                "tsApprovedTreasury": approvedTreasury.option('value')
+                "tsApprovedTreasury": approvedTreasury.option('value'),
+                "tSubmissionEmailCc": tSubmissionEmailCc.option('value'),
+                "tApprovedEmailCc": tApprovedEmailCc.option('value'),
             }
             console.log(data);
 

@@ -44,7 +44,7 @@ namespace xDC_Web.Extension.SchedulerTask
 
                         if (issdTaggedItems.Any())
                         {
-                            new MailService().FcaBankTagging(issdTaggedItems);
+                            new MailService().FcaBankTaggingToIssd(issdTaggedItems);
                         }
                     }
                 }

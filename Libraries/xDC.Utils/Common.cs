@@ -444,8 +444,12 @@ namespace xDC.Utils
             public const string ISSD_TS_FcaTagging_Enable = "Notify.TS.FcaTagging.Enable";
             public const string ISSD_TS_TreasuryApproval_Enable = "Notify.TS.TreasuryApproval.Enable";
 
-            public const string Email_CC_Treasury_SubmitForApproval = "Email.CC.Treasury.SubmitForApproval";
-            public const string Email_CC_Treasury_ApprovalResult = "Email.CC.Treasury.ApprovalResult";
+
+            public const string FID_T_TreasurySubmissionCc = "FID.T.TreasurySubmission.Cc";
+            public const string FID_T_TreasuryApprovalCc = "FID.T.TreasuryApproval.Cc";
+
+            public const string FID_T_TreasurySubmissionCc_Enable = "FID.T.TreasurySubmission.Cc.Enable";
+            public const string FID_T_TreasuryApprovalCc_Enable = "FID.T.TreasuryApproval.Cc.Enable";
         }
 
         public static class  CutOffViolationAction

@@ -30,5 +30,12 @@ namespace xDC_Web.ViewModels
         public bool tsLoanEmailCcEnable { get; set; }
         public bool tsFcaTaggingEmailEnable { get; set; }
         public bool tsApprovedTreasuryEnable { get; set; }
+
+        public string tSubmissionEmailCc { get; set; }
+        public string tApprovedEmailCc { get; set; }
+
+        public bool tSubmissionEmailCcEnable { get; set; }
+        public bool tApprovedEmailCcEnable { get; set; }
+
     }
 }
