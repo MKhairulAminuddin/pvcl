@@ -7,8 +7,6 @@
             forceIsoDateParsing: true
         });
 
-        console.log(math.evaluate('1517700 * 6 / 36000 * 0.3').toString());
-        console.log(math.round(math.evaluate('1517700 * 6 / 36000 * 0.3'), 2).toString());
 
         var $inflowTabpanel,
             $inflowDepositGrid,
