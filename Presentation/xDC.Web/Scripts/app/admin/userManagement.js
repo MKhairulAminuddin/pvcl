@@ -76,7 +76,8 @@
             {
                 caption: "Title",
                 dataField: "title",
-                allowEditing: false
+                allowEditing: false,
+                visible: false
             },
             {
                 caption: "Department",
@@ -91,7 +92,8 @@
             {
                 caption: "Tel No",
                 dataField: "telephoneNumber",
-                allowEditing: false
+                allowEditing: false,
+                visible: false
             },
             {
                 caption: "Last Activity",
@@ -105,7 +107,8 @@
                     } else {
                         element.append(info.text);
                     }
-                }
+                },
+                visible: false
             },
             {
                 caption: "Created Date",
@@ -123,12 +126,22 @@
             visible: true
         },
         filterPanel: { visible: true },
+        showRowLines: true,
+        showBorders: true,
+        allowColumnReordering: true,
+        allowColumnResizing: true,
+        sorting: {
+            mode: "multiple",
+            showSortIndexes: true
+        },
+        columnChooser: {
+            enabled: true,
+            mode: "select"
+        },
         stateStoring: {
             enabled: true,
             type: "localStorage",
             storageKey: "xDC_Admin_User"
         }
     }).dxDataGrid('instance');
-
-    $grid1.option(dxGridUtils.editingGridConfig);
 });

@@ -18,18 +18,20 @@ using xDC_Web.Models;
 using xReport.Web.ViewModels;
 using System.Data.Entity;
 using xDC.Services;
-
+using xDC.Logging;
+using xDC.Domain.WebApi.Administration;
 
 namespace xDC_Web.Controllers.Api
 {
     [Authorize(Roles = "Administrator")]
-    [Route("api/admin/{action}", Name = "admin")]
+    [RoutePrefix("api/admin")]
     public class AdminController : ApiController
     {
         #region User Management
         
 
         [HttpGet]
+        [Route("GetUsers")]
         public HttpResponseMessage GetUsers(DataSourceLoadOptions loadOptions)
         {
             try
@@ -64,6 +66,7 @@ namespace xDC_Web.Controllers.Api
         
         
         [HttpPost]
+        [Route("InsertUser")]
         public HttpResponseMessage InsertUser(FormDataCollection form)
         {
             try
@@ -122,6 +125,7 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpPut]
+        [Route("UpdateUser")]
         public HttpResponseMessage UpdateUser(FormDataCollection form)
         {
             try
@@ -165,6 +169,7 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpDelete]
+        [Route("DeleteUser")]
         public HttpResponseMessage DeleteUser(FormDataCollection form)
         {
             try
@@ -198,9 +203,145 @@ namespace xDC_Web.Controllers.Api
 
         #endregion
 
+        #region Role Management
+
+        [HttpGet]
+        [Route("GetRoles")]
+        public HttpResponseMessage GetRoles(DataSourceLoadOptions loadOptions)
+        {
+            var response = new AuthService().GetRoles(out bool statusRequest);
+
+            if (statusRequest)
+            {
+                return Request.CreateResponse(DataSourceLoader.Load(response, loadOptions));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
+            }
+        }
+
+        [HttpPut]
+        [Route("UpdateRole")]
+        public HttpResponseMessage UpdateRole(FormDataCollection form)
+        {
+            try
+            {
+                var key = int.Parse(form.Get("key"));
+                var values = form.Get("values");
+                var roleReq = new RoleReq();
+                JsonConvert.PopulateObject(values, roleReq);
+
+                var result = new AuthService().UpdateRoleName(key, roleReq.RoleName);
+
+                if (result)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Error. Check application logs.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        [HttpDelete]
+        [Route("DeleteRole")]
+        public HttpResponseMessage DeleteRole(FormDataCollection form)
+        {
+            try
+            {
+                var key = int.Parse(form.Get("key"));
+
+                var result = new AuthService().DeleteRole(key);
+
+                if (result)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "rror. Check application logs.");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("GetPermissions")]
+        public HttpResponseMessage GetPermissions(DataSourceLoadOptions loadOptions)
+        {
+            var result = new AuthService().GetPermissions(out bool statusRequest);
+            if (statusRequest)
+            {
+                return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
+            }
+
+        }
+
+        [HttpGet]
+        [Route("GetRolePermissions/{roleId}")]
+        public HttpResponseMessage GetRolePermissions(int roleId, DataSourceLoadOptions loadOptions)
+        {
+            var result = new AuthService().GetRolePermissions(roleId, out bool statusRequest);
+            if (statusRequest)
+            {
+                return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
+            }
+            
+        }
+
+        [HttpPost]
+        [Route("UpdateRolePermission/{roleId}")]
+        public HttpResponseMessage UpdateRolePermissions(int roleId,[FromBody] UpdatePremissionReq req)
+        {
+            if (new AuthService().UpdateRolePermission(roleId, req))
+            {
+                return Request.CreateResponse(HttpStatusCode.Created);
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Error. Check application logs.");
+            }
+        }
+
+        [HttpPost]
+        [Route("AddNewRole")]
+        public HttpResponseMessage AddNewRole([FromBody] NewRoleReq req)
+        {
+            if (new AuthService().AddNewRole(req.RoleName, req.Permissions))
+            {
+                return Request.CreateResponse(HttpStatusCode.Created);
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Error. Check application logs.");
+            }
+        }
+
+        #endregion
+
         #region Utility
 
         [HttpPost]
+        [Route("TestEmail")]
         public HttpResponseMessage TestEmail(FormDataCollection form)
         {
             try
@@ -228,6 +369,7 @@ namespace xDC_Web.Controllers.Api
         #region User Access Log
 
         [HttpGet]
+        [Route("UserAccessLog")]
         public HttpResponseMessage UserAccessLog(DataSourceLoadOptions loadOptions)
         {
             try
@@ -252,6 +394,7 @@ namespace xDC_Web.Controllers.Api
         #region User Activity Log
 
         [HttpGet]
+        [Route("UserActivityLog")]
         public HttpResponseMessage UserActivityLog(DataSourceLoadOptions loadOptions)
         {
             try
@@ -276,6 +419,7 @@ namespace xDC_Web.Controllers.Api
         #region Admin Log
 
         [HttpGet]
+        [Route("AdminLog")]
         public HttpResponseMessage AdminLog(DataSourceLoadOptions loadOptions)
         {
             try

@@ -6,11 +6,19 @@ using System.Threading.Tasks;
 using xDC.Infrastructure.Application;
 using System.Data.Entity;
 using xDC.Logging;
+using xDC.Domain.WebApi.Administration;
+using Org.BouncyCastle.Asn1.Ocsp;
+using System.Net;
+using System.Xml.Linq;
+using System.Web.Security;
+using System.Runtime.Remoting.Contexts;
 
 namespace xDC.Services
 {
     public class AuthService
     {
+        #region User Management
+
         public bool IsUserExist(string username)
         {
             try
@@ -26,7 +34,7 @@ namespace xDC.Services
                 Logger.LogError(ex);
                 return false;
             }
-            
+
         }
 
         public bool IsUserExistInAd(string username)
@@ -123,31 +131,6 @@ namespace xDC.Services
             }
         }
 
-        public AspNetRoles GetRole(string roleName)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var getRole = db.AspNetRoles.FirstOrDefault(x => x.Name == roleName);
-
-                    if (getRole != null)
-                    {
-                        return getRole;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return null;
-            }
-        }
-
         public AspNetUsers InsertUser(AspNetUsers user)
         {
             try
@@ -165,24 +148,6 @@ namespace xDC.Services
                 return null;
             }
         }
-
-        /*public AspNetRoles InsertUserRole(sapnet user)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var newUser = db.AspNetRoles.Add(user);
-                    db.SaveChanges();
-                    return newUser;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return null;
-            }
-        }*/
 
         public bool UpdateUser(string username, string roleName, bool? locked)
         {
@@ -205,7 +170,7 @@ namespace xDC.Services
 
                         if (locked != null)
                         {
-                            existingUser.Locked = (bool) locked;
+                            existingUser.Locked = (bool)locked;
                         }
 
                         db.SaveChanges();
@@ -245,5 +210,320 @@ namespace xDC.Services
             }
 
         }
+
+        #endregion
+
+        #region Role Management
+
+        public AspNetRoles GetRole(string roleName)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var getRole = db.AspNetRoles.FirstOrDefault(x => x.Name == roleName);
+
+                    if (getRole != null)
+                    {
+                        return getRole;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return null;
+            }
+        }
+
+        public List<RolesRes> GetRoles(out bool status)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.AspNetRoles.Select(y => new RolesRes
+                    {
+                        RoleId = y.Id,
+                        RoleName = y.Name
+                    }).ToList();
+
+                    status = true;
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+
+                status = false;
+                return new List<RolesRes>();
+            }
+        }
+
+        public List<PermissionsRes> GetPermissions(out bool status)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var permissions = db.AspNetPermission.ToList();
+                    var permissionTreeView = new List<PermissionsRes>();
+                    foreach (var item in permissions)
+                    {
+                        permissionTreeView.Add(new PermissionsRes
+                        {
+                            PermissionId = item.Id,
+                            PermissionName = item.PermissionName,
+                            Selected = false,
+                            ParentId = item.Parent
+                        });
+                    }
+                    foreach (var item in permissionTreeView)
+                    {
+                        if (item.ParentId == 0)
+                        {
+                            item.TotalChild = permissionTreeView.Count(x => x.ParentId == item.PermissionId);
+                        }
+                    }
+
+                    status = true;
+                    return permissionTreeView;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+
+                status = false;
+                return new List<PermissionsRes>();
+            }
+        }
+
+        public List<RolePermissionsRes> GetRolePermissions(int roleId, out bool status)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var permissions = db.AspNetPermission.ToList();
+                    var permissionTreeView = new List<RolePermissionsRes>();
+                    foreach (var item in permissions)
+                    {
+                        permissionTreeView.Add(new RolePermissionsRes
+                        {
+                            PermissionId = item.Id,
+                            PermissionName = item.PermissionName,
+                            Selected = false,
+                            ParentId = item.Parent,
+                            RoleId = roleId
+                        });
+                    }
+                    foreach (var item in permissionTreeView)
+                    {
+                        if (item.ParentId == 0)
+                        {
+                            item.TotalChild = permissionTreeView.Count(x => x.ParentId == item.PermissionId);
+                        }
+                    }
+
+                    var selectedRolePermission = db.AspNetRoles.Include(x => x.AspNetPermission).FirstOrDefault(x => x.Id == roleId);
+
+                    foreach (var item in selectedRolePermission.AspNetPermission)
+                    {
+                        if (permissionTreeView.FirstOrDefault(x => x.PermissionId == item.Id) != null && item.PermissionLevel == 2)
+                        {
+                            if (permissionTreeView.FirstOrDefault(x => x.PermissionId == item.Parent) != null)
+                            {
+                                permissionTreeView.First(x => x.PermissionId == item.Parent).Expanded = true;
+                                permissionTreeView.First(x => x.PermissionId == item.Parent).Selected = (selectedRolePermission.AspNetPermission.Count(x => x.Parent == item.Parent) == permissionTreeView.First(x => x.PermissionId == item.Parent).TotalChild);
+                            }
+
+                            permissionTreeView.FirstOrDefault(x => x.PermissionId == item.Id).Selected = true;
+                        }
+                    }
+
+                    status = true;
+                    return permissionTreeView;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+
+                status = false;
+                return new List<RolePermissionsRes>();
+            }
+        }
+
+        public bool UpdateRolePermission(int roleId, UpdatePremissionReq req)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    if (req != null)
+                    {
+                        // delete first
+                        var rolePermissions = db.AspNetRoles.Include(x => x.AspNetPermission).FirstOrDefault(a => a.Id == roleId);
+                        if (rolePermissions != null)
+                        {
+                            var permissionToDelete = rolePermissions.AspNetPermission;
+                            if (permissionToDelete != null)
+                            {
+                                foreach (var permission in permissionToDelete.ToList())
+                                {
+                                    rolePermissions.AspNetPermission.Remove(permission);
+                                }
+                                db.SaveChanges();
+                            }
+                        }
+
+                        // then add back new
+                        if (req.data != null)
+                        {
+                            foreach (var item in req.data)
+                            {
+                                var newAssignedPermission = db.AspNetPermission.FirstOrDefault(x => x.Id == item.PermissionId);
+                                if (newAssignedPermission != null)
+                                {
+                                    rolePermissions.AspNetPermission.Add(newAssignedPermission);
+                                }
+                            }
+                            db.SaveChanges();
+                        }
+                    }
+                    else
+                    {
+                        // delete first
+                        var rolePermissions = db.AspNetRoles.Include(x => x.AspNetPermission).FirstOrDefault(a => a.Id == roleId);
+                        if (rolePermissions != null)
+                        {
+                            var permissionToDelete = rolePermissions.AspNetPermission;
+                            if (permissionToDelete != null)
+                            {
+                                foreach (var permission in permissionToDelete.ToList())
+                                {
+                                    rolePermissions.AspNetPermission.Remove(permission);
+                                }
+                                db.SaveChanges();
+                            }
+                        }
+                    }
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return false;
+            }
+        }
+
+        public bool AddNewRole(string newRoleName, List<NewPermissionReq> req)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var isSameRoleNameExist = db.AspNetRoles.FirstOrDefault(x => x.Name == newRoleName);
+                    if (isSameRoleNameExist == null)
+                    {
+                        var newRole = new AspNetRoles() { Name = newRoleName };
+                        var addNewRole = db.AspNetRoles.Add(newRole);
+                        db.SaveChanges();
+
+                        int addRoleId = newRole.Id;
+
+                        if (addRoleId != 0)
+                        {
+                            if (req != null)
+                            {
+                                if (req.Any())
+                                {
+                                    foreach (var item in req)
+                                    {
+                                        var newAssignedPermission = db.AspNetPermission.FirstOrDefault(x => x.Id == item.PermissionId);
+                                        if (newAssignedPermission != null)
+                                        {
+                                            addNewRole.AspNetPermission.Add(newAssignedPermission);
+                                        }
+                                    }
+                                    db.SaveChanges();
+                                }
+                            }
+                        }
+                        
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return false;
+            }
+        }
+
+        public bool UpdateRoleName(int roleId, string newRoleName)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var selectedRole = db.AspNetRoles.FirstOrDefault(x => x.Id == roleId);
+                    if (selectedRole!=null)
+                    {
+                        selectedRole.Name = newRoleName;
+                        db.SaveChanges();
+                    }
+
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+
+                return false;
+            }
+        }
+
+        public bool DeleteRole(int roleId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var selectedRole = db.AspNetRoles.FirstOrDefault(x => x.Id == roleId);
+                    if (selectedRole != null)
+                    {
+                        db.AspNetRoles.Remove(selectedRole);
+                        db.SaveChanges();
+                    }
+
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+
+                return false;
+            }
+        }
+
+        #endregion
+
     }
 }

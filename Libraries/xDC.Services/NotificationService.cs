@@ -33,6 +33,7 @@ namespace xDC.Services
             {
                 Title = "Request for approval",
                 ShortMessage = $"<a href='{Common.PushNotification_FormUrlMap(formType)}{formId}'>{formType}</a> form pending your approval",
+                NotificationUrl = $"{Common.PushNotification_FormUrlMap(formType)}{formId}",
                 Message = $"{formType} form was submitted by {formSubmittedBy} and is now pending your approval. Please approve it <a href='{Common.PushNotification_FormUrlMap(formType)}{formId}'>here</a>.",
                 NotificationIconClass = "fa fa-exclamation",
                 NotificationType = "bg-aqua",
@@ -50,6 +51,7 @@ namespace xDC.Services
             var notificationObj = new App_Notification()
             {
                 Title = "Approval Result",
+                NotificationUrl = $"{Common.PushNotification_FormUrlMap(formType)}{formId}",
                 ShortMessage = $"Your <a href='{Common.PushNotification_FormUrlMap(formType)}{formId}'>{formType}</a> form has been {approvalResult}",
                 Message = $"Your submitted <a href='{Common.PushNotification_FormUrlMap(formType)}{formId}'>{formType}</a> form has been approved by {formApprovalBy}",
                 NotificationIconClass = "fa fa-exclamation",
@@ -79,6 +81,7 @@ namespace xDC.Services
                             var notificationObj = new App_Notification()
                             {
                                 Title = message,
+                                NotificationUrl = $"{Common.PushNotification_FormUrlMap(formType)}{formId}",
                                 ShortMessage = message,
                                 Message = message,
                                 NotificationIconClass = "fa fa-usd",

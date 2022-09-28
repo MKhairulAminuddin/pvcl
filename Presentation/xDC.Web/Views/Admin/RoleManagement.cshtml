@@ -3,3 +3,35 @@
     ViewBag.Subtitle = "Configuration for each of the role permission";
 }
 
+
+<section class="content container-fluid">
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-solid">
+                <div class="box-header">
+                    @(Html.DevExtreme().Button()
+                            .ID("addNewRole")
+                            .Icon("fa fa-user-plus")
+                            .Text("Add New Role")
+                            .UseSubmitBehavior(false)
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
+                </div>
+                <div class="box-body">
+                    <div id="grid1" class="grid-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@Html.Partial("_AddNewRoleModal")
+@Html.Partial("_RolePermissionModal")
+
+@section scripts
+{
+    <script src="~/Scripts/app/admin/roleManagement.js"></script>
+}
+

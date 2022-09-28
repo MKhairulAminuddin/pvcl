@@ -203,20 +203,6 @@
                             <ul class="treeview-menu">
                                 <li class="treeview">
                                     <a href="#">
-                                        <i class="fa fa-circle-thin"></i> <span>Access Control</span>
-                                        <span class="pull-right-container">
-                                            <i class="fa fa-angle-left pull-right"></i>
-                                        </span>
-                                    </a>
-                                    <ul class="treeview-menu">
-                                        <li><a href="@Url.Action("UserManagement","Admin")"><i class="fa fa-circle-thin"></i> <span>Users</span></a></li>
-                                        @*<li><a href="@Url.Action("RoleManagement","Admin")"><i class="fa fa-circle-thin"></i> <span>Roles</span></a></li>*@
-                                    </ul>
-                                </li>
-                                
-
-                                <li class="treeview">
-                                    <a href="#">
                                         <i class="fa fa-circle-thin"></i> <span>Logs</span>
                                         <span class="pull-right-container">
                                             <i class="fa fa-angle-left pull-right"></i>
@@ -229,6 +215,8 @@
                                     </ul>
                                 </li>
 
+                                <li><a href="@Url.Action("UserManagement","Admin")"><i class="fa fa-circle-thin"></i> <span>Users Management</span></a></li>
+                                <li><a href="@Url.Action("RoleManagement","Admin")"><i class="fa fa-circle-thin"></i> <span>Roles Management</span></a></li>
                                 <li><a href="@Url.Action("ApplicationConfig","Admin")"><i class="fa fa-circle-thin"></i> <span>Application Config</span></a></li>
                                 <li><a href="@Url.Action("Utility","Admin")"><i class="fa fa-circle-thin"></i> <span>Utility</span></a></li>
                                 <li><a href="~/hangfire"><i class="fa fa-circle-thin"></i> <span>Task Scheduler</span></a></li>
@@ -333,8 +321,7 @@
                 visible: false,
                 showIndicator: true,
                 showPane: true,
-                shading: true,
-                closeOnOutsideClick: false
+                shading: true
             }).dxLoadPanel("instance");
         });
 

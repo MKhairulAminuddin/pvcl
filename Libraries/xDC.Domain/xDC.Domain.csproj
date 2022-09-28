@@ -57,6 +57,13 @@
     <Compile Include="ISSD_TS\TS_OpeningBalance.cs" />
     <Compile Include="ISSD_TS\TS_TotalFlow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebApi\Administration\NewPermissionReq.cs" />
+    <Compile Include="WebApi\Administration\NewRoleReq.cs" />
+    <Compile Include="WebApi\Administration\PermissionRes.cs" />
+    <Compile Include="WebApi\Administration\PermissionsRes.cs" />
+    <Compile Include="WebApi\Administration\RoleReq.cs" />
+    <Compile Include="WebApi\Administration\UpdatePremissionReq.cs" />
+    <Compile Include="WebApi\Administration\RolesRes.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Audit\" />

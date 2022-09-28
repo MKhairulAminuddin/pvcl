@@ -68,10 +68,10 @@
     <Compile Include="Application\App_Notification.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Application\AspNetActiveDirectoryGroup.cs">
+    <Compile Include="Application\AspNetActiveDirectoryUsers.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
-    <Compile Include="Application\AspNetActiveDirectoryUsers.cs">
+    <Compile Include="Application\AspNetPermission.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
     <Compile Include="Application\AspNetRoles.cs">

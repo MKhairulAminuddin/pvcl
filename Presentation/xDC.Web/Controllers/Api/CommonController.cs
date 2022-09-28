@@ -34,19 +34,8 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var users = db.AspNetActiveDirectoryUsers.ToList();
-                    var groups = db.AspNetActiveDirectoryGroup.Select(x => new AspNetActiveDirectoryUsers {
-                        Username = x.Username,
-                        Email = x.Email,
-                        DisplayName = x.DisplayName,
-                        Title = x.Title,
-                        Department = x.Department,
-                        TelNo = x.TelNo,
-                        Office = x.Office,
-                        AdType = x.AdType,
-                        DistinguishedName = x.DistinguishedName
-                    });
 
-                    var result = users.Union(groups).ToList();
+                    var result = users.ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }

@@ -12,23 +12,20 @@ namespace xDC.Infrastructure.Application
     using System;
     using System.Collections.Generic;
     
-    public partial class AspNetRoles
+    public partial class AspNetPermission
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public AspNetRoles()
+        public AspNetPermission()
         {
-            this.AspNetUsers = new HashSet<AspNetUsers>();
-            this.AspNetPermission = new HashSet<AspNetPermission>();
+            this.AspNetRoles = new HashSet<AspNetRoles>();
         }
     
         public int Id { get; set; }
-        public string Name { get; set; }
-        public Nullable<System.DateTime> CreatedDate { get; set; }
-        public string CreatedBy { get; set; }
+        public string PermissionName { get; set; }
+        public int PermissionLevel { get; set; }
+        public int Parent { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AspNetUsers> AspNetUsers { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AspNetPermission> AspNetPermission { get; set; }
+        public virtual ICollection<AspNetRoles> AspNetRoles { get; set; }
     }
 }

@@ -50,25 +50,6 @@
           <Property Name="NotificationUrl" Type="nvarchar" MaxLength="150" />
           <Property Name="CreatedOn" Type="datetime" Nullable="false" />
         </EntityType>
-        <EntityType Name="AspNetActiveDirectoryGroup">
-          <Key>
-            <PropertyRef Name="Username" />
-          </Key>
-          <Property Name="Username" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="Email" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="DisplayName" Type="nvarchar" MaxLength="256" />
-          <Property Name="Title" Type="nvarchar" MaxLength="256" />
-          <Property Name="Department" Type="nvarchar" MaxLength="256" />
-          <Property Name="TelNo" Type="nvarchar" MaxLength="256" />
-          <Property Name="Office" Type="nvarchar" MaxLength="256" />
-          <Property Name="AdType" Type="nvarchar" MaxLength="256" />
-          <Property Name="DistinguishedName" Type="nvarchar" MaxLength="256" />
-          <Property Name="AdAccountCreated" Type="datetime" />
-          <Property Name="AdAccountChanged" Type="datetime" />
-          <Property Name="LastBadPasswordAttempt" Type="datetime" />
-          <Property Name="LastLogon" Type="datetime" />
-          <Property Name="LastPasswordSet" Type="datetime" />
-        </EntityType>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
             <PropertyRef Name="Username" />
@@ -88,12 +69,31 @@
           <Property Name="LastLogon" Type="datetime" />
           <Property Name="LastPasswordSet" Type="datetime" />
         </EntityType>
+        <EntityType Name="AspNetPermission">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PermissionName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PermissionLevel" Type="int" Nullable="false" />
+          <Property Name="Parent" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AspNetRolePermissions">
+          <Key>
+            <PropertyRef Name="RoleId" />
+            <PropertyRef Name="PermissionId" />
+          </Key>
+          <Property Name="RoleId" Type="int" Nullable="false" />
+          <Property Name="PermissionId" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="AspNetRoles">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="CreatedDate" Type="date" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="AspNetUserRoles">
           <Key>
@@ -450,6 +450,34 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="ModifiedBy" Type="nvarchar" MaxLength="150" />
           <Property Name="ModifiedDate" Type="datetime" />
         </EntityType>
+        <Association Name="FK_dbo_AspNetRolePermissions_dbo_AspNetPermission_PermissionId">
+          <End Role="AspNetPermission" Type="Self.AspNetPermission" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AspNetRolePermissions" Type="Self.AspNetRolePermissions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetPermission">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetRolePermissions">
+              <PropertyRef Name="PermissionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_AspNetRolePermissions_dbo_AspNetRoles_RoleId">
+          <End Role="AspNetRoles" Type="Self.AspNetRoles" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AspNetRolePermissions" Type="Self.AspNetRolePermissions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetRoles">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetRolePermissions">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId">
           <End Role="AspNetRoles" Type="Self.AspNetRoles" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -482,8 +510,9 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="AMSD_IF" EntityType="Self.AMSD_IF" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AMSD_IF_Item" EntityType="Self.AMSD_IF_Item" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="App_Notification" EntityType="Self.App_Notification" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="AspNetActiveDirectoryGroup" EntityType="Self.AspNetActiveDirectoryGroup" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetActiveDirectoryUsers" EntityType="Self.AspNetActiveDirectoryUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetPermission" EntityType="Self.AspNetPermission" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetRolePermissions" EntityType="Self.AspNetRolePermissions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
@@ -568,6 +597,14 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
     [EDW_TradeItem].[UpdatedDate] AS [UpdatedDate]
     FROM [dbo].[EDW_TradeItem] AS [EDW_TradeItem]</DefiningQuery>
           </EntitySet>
+          <AssociationSet Name="FK_dbo_AspNetRolePermissions_dbo_AspNetPermission_PermissionId" Association="Self.FK_dbo_AspNetRolePermissions_dbo_AspNetPermission_PermissionId">
+            <End Role="AspNetPermission" EntitySet="AspNetPermission" />
+            <End Role="AspNetRolePermissions" EntitySet="AspNetRolePermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_AspNetRolePermissions_dbo_AspNetRoles_RoleId" Association="Self.FK_dbo_AspNetRolePermissions_dbo_AspNetRoles_RoleId">
+            <End Role="AspNetRoles" EntitySet="AspNetRoles" />
+            <End Role="AspNetRolePermissions" EntitySet="AspNetRolePermissions" />
+          </AssociationSet>
           <AssociationSet Name="FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId" Association="Self.FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId">
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
             <End Role="AspNetUserRoles" EntitySet="AspNetUserRoles" />
@@ -612,7 +649,11 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="FID_Treasury_Deposit" EntityType="kashflowDbModel.FID_Treasury_Deposit" />
           <EntitySet Name="Log_UserAccess" EntityType="kashflowDbModel.Log_UserAccess" />
           <EntitySet Name="Audit_10AMDCO_ClosingBalance" EntityType="kashflowDbModel.Audit_10AMDCO_ClosingBalance" />
-          <EntitySet Name="AspNetActiveDirectoryGroup" EntityType="kashflowDbModel.AspNetActiveDirectoryGroup" />
+          <EntitySet Name="AspNetPermission" EntityType="kashflowDbModel.AspNetPermission" />
+          <AssociationSet Name="AspNetRolePermissions" Association="kashflowDbModel.AspNetRolePermissions">
+            <End Role="AspNetPermission" EntitySet="AspNetPermission" />
+            <End Role="AspNetRoles" EntitySet="AspNetRoles" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -640,6 +681,9 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AspNetUsers" Relationship="kashflowDbModel.AspNetUserRoles" FromRole="AspNetRoles" ToRole="AspNetUsers" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="0" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AspNetPermission" Relationship="kashflowDbModel.AspNetRolePermissions" FromRole="AspNetRoles" ToRole="AspNetPermission" />
         </EntityType>
         <EntityType Name="AspNetUsers">
           <Key>
@@ -1030,25 +1074,20 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="ModifiedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedOn" Type="DateTime" Precision="3" />
         </EntityType>
-        <EntityType Name="AspNetActiveDirectoryGroup">
+        <EntityType Name="AspNetPermission">
           <Key>
-            <PropertyRef Name="Username" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Username" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="Email" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="DisplayName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="Title" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="Department" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="TelNo" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="Office" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="AdType" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="DistinguishedName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
-          <Property Name="AdAccountCreated" Type="DateTime" Precision="3" />
-          <Property Name="AdAccountChanged" Type="DateTime" Precision="3" />
-          <Property Name="LastBadPasswordAttempt" Type="DateTime" Precision="3" />
-          <Property Name="LastLogon" Type="DateTime" Precision="3" />
-          <Property Name="LastPasswordSet" Type="DateTime" Precision="3" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PermissionName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PermissionLevel" Type="Int32" Nullable="false" />
+          <Property Name="Parent" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="AspNetRoles" Relationship="kashflowDbModel.AspNetRolePermissions" FromRole="AspNetPermission" ToRole="AspNetRoles" />
         </EntityType>
+        <Association Name="AspNetRolePermissions">
+          <End Type="kashflowDbModel.AspNetPermission" Role="AspNetPermission" Multiplicity="*" />
+          <End Type="kashflowDbModel.AspNetRoles" Role="AspNetRoles" Multiplicity="*" />
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1078,6 +1117,8 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySetMapping Name="AspNetRoles">
             <EntityTypeMapping TypeName="kashflowDbModel.AspNetRoles">
               <MappingFragment StoreEntitySet="AspNetRoles">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
@@ -1488,26 +1529,24 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="AspNetActiveDirectoryGroup">
-            <EntityTypeMapping TypeName="kashflowDbModel.AspNetActiveDirectoryGroup">
-              <MappingFragment StoreEntitySet="AspNetActiveDirectoryGroup">
-                <ScalarProperty Name="LastPasswordSet" ColumnName="LastPasswordSet" />
-                <ScalarProperty Name="LastLogon" ColumnName="LastLogon" />
-                <ScalarProperty Name="LastBadPasswordAttempt" ColumnName="LastBadPasswordAttempt" />
-                <ScalarProperty Name="AdAccountChanged" ColumnName="AdAccountChanged" />
-                <ScalarProperty Name="AdAccountCreated" ColumnName="AdAccountCreated" />
-                <ScalarProperty Name="DistinguishedName" ColumnName="DistinguishedName" />
-                <ScalarProperty Name="AdType" ColumnName="AdType" />
-                <ScalarProperty Name="Office" ColumnName="Office" />
-                <ScalarProperty Name="TelNo" ColumnName="TelNo" />
-                <ScalarProperty Name="Department" ColumnName="Department" />
-                <ScalarProperty Name="Title" ColumnName="Title" />
-                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Username" ColumnName="Username" />
+          <EntitySetMapping Name="AspNetPermission">
+            <EntityTypeMapping TypeName="kashflowDbModel.AspNetPermission">
+              <MappingFragment StoreEntitySet="AspNetPermission">
+                <ScalarProperty Name="Parent" ColumnName="Parent" />
+                <ScalarProperty Name="PermissionLevel" ColumnName="PermissionLevel" />
+                <ScalarProperty Name="PermissionName" ColumnName="PermissionName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <AssociationSetMapping Name="AspNetRolePermissions" TypeName="kashflowDbModel.AspNetRolePermissions" StoreEntitySet="AspNetRolePermissions">
+            <EndProperty Name="AspNetRoles">
+              <ScalarProperty Name="Id" ColumnName="RoleId" />
+            </EndProperty>
+            <EndProperty Name="AspNetPermission">
+              <ScalarProperty Name="Id" ColumnName="PermissionId" />
+            </EndProperty>
+          </AssociationSetMapping>
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
