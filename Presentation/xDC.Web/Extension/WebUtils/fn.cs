@@ -12,7 +12,7 @@ namespace xDC_Web.Extension.WebUtils
             var ua = UAParser.Parser.GetDefault();
             var client = ua.Parse(userAgent);
 
-            var finalString = $"{client.UserAgent.Family} {client.UserAgent.Major}.{client.UserAgent.Minor}.{client.UserAgent.Patch}";
+            var finalString = $"{client.UA.Family} {client.UA.Major}.{client.UA.Minor}.{client.UA.Patch}";
 
             return finalString;
         }

@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using xDC.Services;
 using xDC_Web.Models;
+using xDC.Logging;
 
 namespace xDC_Web.Extension
 {
@@ -49,6 +50,7 @@ namespace xDC_Web.Extension
 				}
 				catch (Exception ex)
 				{
+					Logger.LogError(ex.Message);
 					return new AuthenticationResult("Incorrect Credential");
 				}
 
