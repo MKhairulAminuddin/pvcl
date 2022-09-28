@@ -1,8 +1,8 @@
 @charset "UTF-8";
 /**
 * DevExtreme (dx.material.purple.dark.compact.css)
-* Version: 22.1.3
-* Build date: Mon Jun 13 2022
+* Version: 22.1.5
+* Build date: Fri Sep 02 2022
 *
 * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
 * Read about DevExtreme licensing here: https://js.devexpress.com/Licensing/
@@ -4105,13 +4105,20 @@
 }
 .dx-checkbox-checked .dx-checkbox-icon::before {
   content: "\f005";
-  position: absolute;
+  position: relative;
   display: block;
   width: 1em;
   top: 50%;
   margin-top: -.5em;
   left: 50%;
   margin-left: -.5em;
+}
+.dx-rtl .dx-checkbox-checked .dx-checkbox-icon::before,
+.dx-rtl.dx-checkbox-checked .dx-checkbox-icon::before {
+  left: 0;
+  margin-left: 0;
+  right: 50%;
+  margin-right: -.5em;
 }
 .dx-checkbox-indeterminate .dx-checkbox-icon {
   background-color: #9c27b0;
@@ -4122,13 +4129,20 @@
 }
 .dx-checkbox-indeterminate .dx-checkbox-icon::before {
   content: "\f074";
-  position: absolute;
+  position: relative;
   display: block;
   width: 1em;
   top: 50%;
   margin-top: -.5em;
   left: 50%;
   margin-left: -.5em;
+}
+.dx-rtl .dx-checkbox-indeterminate .dx-checkbox-icon::before,
+.dx-rtl.dx-checkbox-indeterminate .dx-checkbox-icon::before {
+  left: 0;
+  margin-left: 0;
+  right: 50%;
+  margin-right: -.5em;
 }
 .dx-invalid .dx-checkbox-icon {
   border: 2px solid #f44336;
@@ -6900,12 +6914,6 @@
 .dx-rtl .dx-editor-outlined.dx-texteditor-with-label.dx-invalid .dx-texteditor-label .dx-label-after {
   -webkit-box-shadow: inset 0 -1px rgba(244,67,54,.4),inset 0 1px rgba(244,67,54,.4),inset -1px 0 transparent,inset 1px 0 rgba(244,67,54,.4);
   box-shadow: inset 0 -1px rgba(244,67,54,.4),inset 0 1px rgba(244,67,54,.4),inset -1px 0 transparent,inset 1px 0 rgba(244,67,54,.4);
-}
-.dx-editor-outlined.dx-texteditor-with-floating-label .dx-dropdowneditor-input-wrapper,
-.dx-editor-outlined.dx-texteditor-with-floating-label .dx-texteditor-container,
-.dx-editor-outlined.dx-texteditor-with-label .dx-dropdowneditor-input-wrapper,
-.dx-editor-outlined.dx-texteditor-with-label .dx-texteditor-container {
-  overflow: visible;
 }
 .dx-editor-outlined.dx-texteditor-with-floating-label .dx-texteditor-label,
 .dx-editor-outlined.dx-texteditor-with-label .dx-texteditor-label {
@@ -12225,6 +12233,7 @@
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
+  z-index: 9500;
 }
 .dx-toast-stack .dx-toast-wrapper {
   -webkit-transform: translate(0)!important;
@@ -19713,6 +19722,9 @@ input.dx-hidden {
 .dx-pivotgrid .dx-popup-content .dx-pivotgrid-fields-area-head td {
   padding: 0 2px;
 }
+.dx-pivotgrid.dx-context-menu .dx-pivotgrid.dx-submenu {
+  width: auto;
+}
 .dx-pivotgridfieldchooser .dx-area-fields {
   overflow: hidden;
 }
@@ -21697,18 +21709,13 @@ input.dx-hidden {
   border-top: none;
 }
 .dx-scheduler-all-day-table-cell,
-.dx-scheduler-date-table-cell,
-.dx-scheduler-header-panel-cell {
+.dx-scheduler-date-table-cell {
+  border-top: 1px solid #515159;
   border-left: 1px solid #515159;
 }
 .dx-scheduler-all-day-table-cell:first-child,
-.dx-scheduler-date-table-cell:first-child,
-.dx-scheduler-header-panel-cell:first-child {
+.dx-scheduler-date-table-cell:first-child {
   border-left: none;
-}
-.dx-scheduler-all-day-table-cell,
-.dx-scheduler-date-table-cell {
-  border-top: 1px solid #515159;
 }
 .dx-scheduler-date-table-cell,
 .dx-scheduler-header-panel-cell {
@@ -21794,8 +21801,7 @@ input.dx-hidden {
   flex-shrink: 0;
 }
 .dx-scheduler-work-space-both-scrollbar .dx-scheduler-all-day-table-row .dx-scheduler-all-day-table-cell:first-child,
-.dx-scheduler-work-space-both-scrollbar .dx-scheduler-date-table-row .dx-scheduler-date-table-cell:first-child,
-.dx-scheduler-work-space-both-scrollbar .dx-scheduler-header-row .dx-scheduler-header-panel-cell:first-child {
+.dx-scheduler-work-space-both-scrollbar .dx-scheduler-date-table-row .dx-scheduler-date-table-cell:first-child {
   border-left: none;
 }
 .dx-scheduler-header-panel-cell {
@@ -21803,9 +21809,13 @@ input.dx-hidden {
   color: rgba(255,255,255,.54);
   padding: 0;
   font-weight: 400;
+  border-left: 1px solid #515159;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.dx-scheduler-header-panel-cell:first-child {
+  border-left: 1px solid transparent;
 }
 .dx-scheduler-all-day-panel {
   width: 100%;
@@ -24976,6 +24986,9 @@ input.dx-hidden {
 .dx-filemanager .dx-filemanager-container .dx-drawer-panel-content.dx-drawer-panel-content-adaptive {
   max-width: 100%;
 }
+.dx-filemanager .dx-filemanager-dirs-panel {
+  height: 100%;
+}
 .dx-filemanager .dx-filemanager-breadcrumbs {
   padding: 2px 11px;
   border-bottom: 1px solid;
@@ -25290,7 +25303,9 @@ input.dx-hidden {
   padding-bottom: 10px;
 }
 .dx-filemanager .dx-filemanager-progress-box-image {
-  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  font-size: 36px;
 }
 .dx-filemanager .dx-filemanager-progress-box-error {
   color: rgba(0,0,0,.87);
@@ -25345,7 +25360,6 @@ input.dx-hidden {
   border-top-color: #515159;
 }
 .dx-filemanager .dx-filemanager-dirs-panel {
-  height: 100%;
   border-right-color: #515159;
 }
 .dx-filemanager .dx-filemanager-breadcrumbs {

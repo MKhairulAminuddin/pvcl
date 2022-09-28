@@ -1,7 +1,7 @@
 /*!
 * DevExtreme (dx.messages.fr.js)
-* Version: 22.1.3
-* Build date: Mon Jun 13 2022
+* Version: 22.1.5
+* Build date: Fri Sep 02 2022
 *
 * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
 * Read about DevExtreme licensing here: https://js.devexpress.com/Licensing/
@@ -70,7 +70,7 @@
             "dxDateBox-simulatedDataPickerTitleDateTime": "Choisissez la date et l'heure",
             "dxDateBox-validation-datetime": "La valeur doit \xeatre une date ou une heure.",
             "dxFileUploader-selectFile": "Choisissez un fichier",
-            "dxFileUploader-dropFile": "Enlever fichier",
+            "dxFileUploader-dropFile": "D\xe9posez un fichier",
             "dxFileUploader-bytes": "Bytes",
             "dxFileUploader-kb": "kb",
             "dxFileUploader-Mb": "Mb",
@@ -434,6 +434,8 @@
             "dxFileManager-editingUploadSingleItemErrorMessage": "Item non t\xe9l\xe9vers\xe9",
             "dxFileManager-editingUploadMultipleItemsErrorMessage": "{0} items non t\xe9l\xe9vers\xe9s",
             "dxFileManager-editingUploadCanceledMessage": "Annul\xe9",
+            "dxFileManager-editingDownloadSingleItemErrorMessage": "TODO",
+            "dxFileManager-editingDownloadMultipleItemsErrorMessage": "TODO",
             "dxFileManager-listDetailsColumnCaptionName": "Nom",
             "dxFileManager-listDetailsColumnCaptionDateModified": "Date modifi\xe9",
             "dxFileManager-listDetailsColumnCaptionFileSize": "Taille de fichier",

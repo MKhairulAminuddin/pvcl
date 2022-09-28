@@ -1,7 +1,7 @@
 /*!
 * DevExtreme (dx.messages.en.js)
-* Version: 22.1.3
-* Build date: Mon Jun 13 2022
+* Version: 22.1.5
+* Build date: Fri Sep 02 2022
 *
 * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
 * Read about DevExtreme licensing here: https://js.devexpress.com/Licensing/
@@ -178,6 +178,9 @@
             "dxPager-infoText": "Page {0} of {1} ({2} items)",
             "dxPager-pagesCountText": "of",
             "dxPager-pageSizesAllText": "All",
+            "dxPager-page": "Page {0}",
+            "dxPager-prevPage": "Previous Page",
+            "dxPager-nextPage": "Next Page",
             "dxPivotGrid-grandTotal": "Grand Total",
             "dxPivotGrid-total": "{0} Total",
             "dxPivotGrid-fieldChooserTitle": "Field Chooser",
@@ -434,6 +437,8 @@
             "dxFileManager-editingUploadSingleItemErrorMessage": "Item was not uploaded",
             "dxFileManager-editingUploadMultipleItemsErrorMessage": "{0} items were not uploaded",
             "dxFileManager-editingUploadCanceledMessage": "Canceled",
+            "dxFileManager-editingDownloadSingleItemErrorMessage": "Item was not downloaded",
+            "dxFileManager-editingDownloadMultipleItemsErrorMessage": "{0} items were not downloaded",
             "dxFileManager-listDetailsColumnCaptionName": "Name",
             "dxFileManager-listDetailsColumnCaptionDateModified": "Date Modified",
             "dxFileManager-listDetailsColumnCaptionFileSize": "File Size",

@@ -1,7 +1,7 @@
 /*!
 * DevExtreme (dx.messages.de.js)
-* Version: 22.1.3
-* Build date: Mon Jun 13 2022
+* Version: 22.1.5
+* Build date: Fri Sep 02 2022
 *
 * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
 * Read about DevExtreme licensing here: https://js.devexpress.com/Licensing/
@@ -52,7 +52,7 @@
             "validation-email": "Die Email-Adresse ist ung\xfcltig",
             "validation-email-formatted": "{0} ist ung\xfcltig",
             "validation-mask": "Der Wert ist ung\xfcltig",
-            "dxLookup-searchPlaceholder": "Minimale Anzahl Zeichen: {0}",
+            "dxLookup-searchPlaceholder": "Mindestl\xe4nge {0} Zeichen",
             "dxList-pullingDownText": "Zum Aktualisieren nach unten ziehen",
             "dxList-pulledDownText": "Zum Aktualisieren loslassen",
             "dxList-refreshingText": "Aktualisiere...",
@@ -77,9 +77,9 @@
             "dxFileUploader-Gb": "Gb",
             "dxFileUploader-upload": "Hochladen",
             "dxFileUploader-uploaded": "Hochgeladen",
-            "dxFileUploader-readyToUpload": "Bereit zum hochladen",
+            "dxFileUploader-readyToUpload": "Bereit zum Hochladen",
             "dxFileUploader-uploadAbortedMessage": "Upload abgebrochen",
-            "dxFileUploader-uploadFailedMessage": "Fehler beim hochladen",
+            "dxFileUploader-uploadFailedMessage": "Fehler beim Hochladen",
             "dxFileUploader-invalidFileExtension": "Unzul\xe4ssiger Dateityp",
             "dxFileUploader-invalidMaxFileSize": "Datei ist zu gro\xdf",
             "dxFileUploader-invalidMinFileSize": "Datei ist zu klein",
@@ -178,6 +178,9 @@
             "dxPager-infoText": "Seite {0} von {1} ({2} Elemente)",
             "dxPager-pagesCountText": "von",
             "dxPager-pageSizesAllText": "Alle",
+            "dxPager-page": "Seite {0}",
+            "dxPager-prevPage": "Vorherige Seite",
+            "dxPager-nextPage": "N\xe4chste Seite",
             "dxPivotGrid-grandTotal": "Gesamt",
             "dxPivotGrid-total": "{0} Gesamt",
             "dxPivotGrid-fieldChooserTitle": "Feldauswahl",
@@ -233,8 +236,8 @@
             "dxScheduler-recurrenceRepeatOnDate": "am Datum",
             "dxScheduler-recurrenceRepeatCount": "Ereignisse",
             "dxScheduler-allDay": "Ganzt\xe4gig",
-            "dxScheduler-confirmRecurrenceEditMessage": "M\xf6chten Sie nur diesen Termin bearbeiten, oder die gesamte Serie?",
-            "dxScheduler-confirmRecurrenceDeleteMessage": "M\xf6chten Sie nur diesen Termin l\xf6schen, oder die gesamte Serie?",
+            "dxScheduler-confirmRecurrenceEditMessage": "M\xf6chten Sie nur diesen Termin bearbeiten oder die gesamte Serie?",
+            "dxScheduler-confirmRecurrenceDeleteMessage": "M\xf6chten Sie nur diesen Termin l\xf6schen oder die gesamte Serie?",
             "dxScheduler-confirmRecurrenceEditSeries": "Serie bearbeiten",
             "dxScheduler-confirmRecurrenceDeleteSeries": "Serie l\xf6schen",
             "dxScheduler-confirmRecurrenceEditOccurrence": "Termin bearbeiten",
@@ -434,6 +437,8 @@
             "dxFileManager-editingUploadSingleItemErrorMessage": "Element wurde nicht hochgeladen",
             "dxFileManager-editingUploadMultipleItemsErrorMessage": "{0} Elemente wurden nicht hochgeladen",
             "dxFileManager-editingUploadCanceledMessage": "Abgebrochen",
+            "dxFileManager-editingDownloadSingleItemErrorMessage": "Datei wurde nicht heruntergeladen",
+            "dxFileManager-editingDownloadMultipleItemsErrorMessage": "{0} Dateien wurden nicht heruntergeladen",
             "dxFileManager-listDetailsColumnCaptionName": "Name",
             "dxFileManager-listDetailsColumnCaptionDateModified": "Zuletzt ge\xe4ndert am",
             "dxFileManager-listDetailsColumnCaptionFileSize": "Dateigr\xf6\xdfe",

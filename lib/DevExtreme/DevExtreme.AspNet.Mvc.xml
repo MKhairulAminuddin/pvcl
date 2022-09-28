@@ -4334,6 +4334,12 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.DataGridBuilder`1.OnSelectionChanged(DevExtreme.AspNet.Mvc.RazorBlock)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.DataGridBuilder`1.OnToolbarPreparing(System.String)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.DataGridBuilder`1.OnToolbarPreparing(DevExtreme.AspNet.Mvc.RazorBlock)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.DataGridBuilder`1.Pager(System.Action{DevExtreme.AspNet.Mvc.Builders.DataGridPagerBuilder})">
             <summary></summary>
         </member>
@@ -4434,6 +4440,12 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.DataGridBuilder`1.Summary(System.Action{DevExtreme.AspNet.Mvc.Builders.DataGridSummaryBuilder{`0}})">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.DataGridBuilder`1.SyncLookupFilterValues(System.Boolean)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.DataGridBuilder`1.SyncLookupFilterValues(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.DataGridBuilder`1.TabIndex(System.Int32)">
@@ -13159,6 +13171,12 @@
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.GanttColumnBuilder`1.TrueText(DevExtreme.AspNet.Mvc.JS)">
             <summary>In a boolean column, replaces all true items with a specified text. Applies only if showEditorAlways property is false.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.GanttColumnBuilder`1.Visible(System.Boolean)">
+            <summary>Specifies whether the column is visible, that is, occupies space in the table.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.GanttColumnBuilder`1.Visible(DevExtreme.AspNet.Mvc.JS)">
+            <summary>Specifies whether the column is visible, that is, occupies space in the table.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.GanttColumnBuilder`1.VisibleIndex(System.Int32)">
             <summary>Specifies the position of the column regarding other columns in the resulting UI component.</summary>
@@ -28325,6 +28343,12 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TreeListBuilder`1.OnSelectionChanged(DevExtreme.AspNet.Mvc.RazorBlock)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.TreeListBuilder`1.OnToolbarPreparing(System.String)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.TreeListBuilder`1.OnToolbarPreparing(DevExtreme.AspNet.Mvc.RazorBlock)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TreeListBuilder`1.Pager(System.Action{DevExtreme.AspNet.Mvc.Builders.TreeListPagerBuilder})">
             <summary></summary>
         </member>
@@ -28416,6 +28440,12 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TreeListBuilder`1.StateStoring(System.Action{DevExtreme.AspNet.Mvc.Builders.TreeListStateStoringBuilder})">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.TreeListBuilder`1.SyncLookupFilterValues(System.Boolean)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.TreeListBuilder`1.SyncLookupFilterValues(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TreeListBuilder`1.TabIndex(System.Int32)">

@@ -1,7 +1,7 @@
 /*!
 * DevExtreme (dx.messages.ja.js)
-* Version: 22.1.3
-* Build date: Mon Jun 13 2022
+* Version: 22.1.5
+* Build date: Fri Sep 02 2022
 *
 * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
 * Read about DevExtreme licensing here: https://js.devexpress.com/Licensing/
@@ -178,6 +178,9 @@
             "dxPager-infoText": "\u30da\u30fc\u30b8 {0} / {1} ({2} \u30a2\u30a4\u30c6\u30e0)",
             "dxPager-pagesCountText": "/",
             "dxPager-pageSizesAllText": "\u3059\u3079\u3066",
+            "dxPager-page": "\u30da\u30fc\u30b8 {0}",
+            "dxPager-prevPage": "\u524d\u306e\u30da\u30fc\u30b8",
+            "dxPager-nextPage": "\u6b21\u306e\u30da\u30fc\u30b8",
             "dxPivotGrid-grandTotal": "\u7dcf\u8a08",
             "dxPivotGrid-total": "{0} \u5408\u8a08",
             "dxPivotGrid-fieldChooserTitle": "\u30d5\u30a3\u30fc\u30eb\u30c9\u306e\u9078\u629e",
@@ -434,6 +437,8 @@
             "dxFileManager-editingUploadSingleItemErrorMessage": "\u9805\u76ee\u304c\u30a2\u30c3\u30d7\u30ed\u30fc\u30c9\u3055\u308c\u307e\u305b\u3093\u3067\u3057\u305f",
             "dxFileManager-editingUploadMultipleItemsErrorMessage": "{0} \u9805\u76ee\u304c\u30a2\u30c3\u30d7\u30ed\u30fc\u30c9\u3055\u308c\u307e\u305b\u3093\u3067\u3057\u305f",
             "dxFileManager-editingUploadCanceledMessage": "\u30ad\u30e3\u30f3\u30bb\u30eb\u3057\u307e\u3057\u305f",
+            "dxFileManager-editingDownloadSingleItemErrorMessage": "\u30a2\u30a4\u30c6\u30e0\u306f\u30c0\u30a6\u30f3\u30ed\u30fc\u30c9\u3055\u308c\u307e\u305b\u3093\u3067\u3057\u305f",
+            "dxFileManager-editingDownloadMultipleItemsErrorMessage": "{0} \u500b\u306e\u30a2\u30a4\u30c6\u30e0\u306f\u30c0\u30a6\u30f3\u30ed\u30fc\u30c9\u3055\u308c\u307e\u305b\u3093\u3067\u3057\u305f",
             "dxFileManager-listDetailsColumnCaptionName": "\u30d5\u30a1\u30a4\u30eb\u540d",
             "dxFileManager-listDetailsColumnCaptionDateModified": "\u66f4\u65b0\u65e5",
             "dxFileManager-listDetailsColumnCaptionFileSize": "\u30d5\u30a1\u30a4\u30eb \u30b5\u30a4\u30ba",

@@ -1,7 +1,7 @@
 /*!
 * DevExtreme (dx.messages.es.js)
-* Version: 22.1.3
-* Build date: Mon Jun 13 2022
+* Version: 22.1.5
+* Build date: Fri Sep 02 2022
 *
 * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
 * Read about DevExtreme licensing here: https://js.devexpress.com/Licensing/
@@ -150,8 +150,8 @@
             "dxDataGrid-exporting": "Exportar...",
             "dxDataGrid-excelFormat": "Archivo Excel",
             "dxDataGrid-selectedRows": "Filas seleccionadas",
-            "dxDataGrid-exportSelectedRows": "Exportar filas seleccionadas",
-            "dxDataGrid-exportAll": "Exportar todo",
+            "dxDataGrid-exportSelectedRows": "Exportar filas seleccionadas a {0}",
+            "dxDataGrid-exportAll": "Exportar todo a {0}",
             "dxDataGrid-headerFilterEmptyValue": "(Vacio)",
             "dxDataGrid-headerFilterOK": "Aceptar",
             "dxDataGrid-headerFilterCancel": "Cancelar",
@@ -426,6 +426,8 @@
             "dxFileManager-editingUploadSingleItemErrorMessage": "TODO",
             "dxFileManager-editingUploadMultipleItemsErrorMessage": "TODO",
             "dxFileManager-editingUploadCanceledMessage": "TODO",
+            "dxFileManager-editingDownloadSingleItemErrorMessage": "TODO",
+            "dxFileManager-editingDownloadMultipleItemsErrorMessage": "TODO",
             "dxFileManager-listDetailsColumnCaptionName": "TODO",
             "dxFileManager-listDetailsColumnCaptionDateModified": "TODO",
             "dxFileManager-listDetailsColumnCaptionFileSize": "TODO",
