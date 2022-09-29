@@ -3,19 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using xDC.Services;
 
 namespace xDC_Web.Extension.CustomAttribute
 {
-    public class KashflowAuthorize : AuthorizeAttribute
+    public class KflowAuthorize : AuthorizeAttribute
     {
-        private string _permissionName;
-        public string PermissionName
+        private readonly string _permissionName;
+
+        public KflowAuthorize(string PermissionName)
         {
-            get { return _permissionName; }
-            set
-            {
-                Roles = value;
-            }
+            _permissionName = PermissionName;
         }
 
         public override void OnAuthorization(AuthorizationContext filterContext)
@@ -23,7 +21,12 @@ namespace xDC_Web.Extension.CustomAttribute
             // If they are authorized, handle accordingly
             if (this.AuthorizeCore(filterContext.HttpContext))
             {
-                base.OnAuthorization(filterContext);
+                bool isAuthorized = new AuthService().IsUserHaveAccess(filterContext.HttpContext.User.Identity.Name, _permissionName);
+
+                if (!isAuthorized)
+                {
+                    filterContext.Result = new RedirectResult("~/Base/NoPermission");
+                }
             }
             else
             {

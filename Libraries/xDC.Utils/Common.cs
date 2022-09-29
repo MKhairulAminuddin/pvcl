@@ -460,6 +460,7 @@ namespace xDC.Utils
             public const string Administration_ApplicationConfig = "Administration - Application Config";
             public const string Administration_TaskScheduler = "Administration - Task Scheduler";
             public const string Administration_Utility = "Administration - Utility";
+            public const string Administration_SystemInformation = "Administration - System Information";
 
             public const string AuditTrail = "Audit Trail";
             public const string AuditTrail_FormAudit = "Audit Trail - Form Audit";
@@ -471,21 +472,18 @@ namespace xDC.Utils
             public const string Settings_ApproverAssignment = "Settings - Approver Assignment";
 
             public const string TreasuryForm = "Treasury Form";
-            public const string TreasuryForm_Home = "Treasury Form - Home";
             public const string TreasuryForm_Creator = "Treasury Form - Creator";
             public const string TreasuryForm_View = "Treasury Form - View";
             public const string TreasuryForm_Download = "Treasury Form - Download";
             public const string TreasuryForm_Workflow = "Treasury Form - Workflow";
 
-            public const string TradeSettlementForm = "Treasury Form";
-            public const string TradeSettlementForm_Home = "Treasury Form - Home";
+            public const string TradeSettlementForm = "Trade Settlement";
             public const string TradeSettlementForm_Creator = "Trade Settlement Form - Creator";
             public const string TradeSettlementForm_View = "Trade Settlement Form - View";
             public const string TradeSettlementForm_Download = "Trade Settlement Form - Download";
             public const string TradeSettlementForm_Workflow = "Trade Settlement Form - Workflow";
 
             public const string InflowFundForm = "Inflow Fund Form";
-            public const string InflowFundForm_Home = "Inflow Fund Form - Home";
             public const string InflowFundForm_Creator = "Inflow Fund Form - Creator";
             public const string InflowFundForm_View = "Inflow Fund Form - View";
             public const string InflowFundForm_Download = "Inflow Fund Form - Download";
@@ -493,8 +491,7 @@ namespace xDC.Utils
 
             public const string FCATagging = "FCA Tagging";
             public const string FCATagging_Home = "FCA Tagging - View";
-            public const string FCATagging_View = "FCA Tagging - Download";
-            public const string FCATagging_Tagging = "FCA Tagging - Workflow";
+            public const string FCATagging_Tag = "FCA Tagging - Tag";
 
         }
 
@@ -653,6 +650,18 @@ namespace xDC.Utils
             return formType == FormType.ISSD_TS_A || formType == FormType.ISSD_TS_B || formType == FormType.ISSD_TS_C || 
                    formType == FormType.ISSD_TS_D || formType == FormType.ISSD_TS_E || formType == FormType.ISSD_TS_F || 
                    formType == FormType.ISSD_TS_G || formType == FormType.ISSD_TS_H;
+        }
+
+        public static string FormatBytes(long bytes, bool useUnit = false)
+        {
+            string[] Suffix = { " B", " kB", " MB", " GB", " TB" };
+            double dblSBytes = bytes;
+            int i;
+            for (i = 0; i < Suffix.Length && bytes >= 1024; i++, bytes /= 1024)
+            {
+                dblSBytes = bytes / 1024.0;
+            }
+            return $"{dblSBytes:0.##}{(useUnit ? Suffix[i] : null)}";
         }
 
         #region Audit

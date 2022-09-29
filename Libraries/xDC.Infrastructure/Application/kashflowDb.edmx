@@ -74,7 +74,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="PermissionName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PermissionName" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="PermissionLevel" Type="int" Nullable="false" />
           <Property Name="Parent" Type="int" Nullable="false" />
         </EntityType>
@@ -92,8 +92,6 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="256" Nullable="false" />
-          <Property Name="CreatedDate" Type="date" />
-          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="AspNetUserRoles">
           <Key>
@@ -428,14 +426,16 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="CouponType" Type="nvarchar" MaxLength="10" />
           <Property Name="BondType" Type="nvarchar" MaxLength="10" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'KashflowDb.dbo.Log_UserAccess' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="Log_UserAccess">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="150" />
-          <Property Name="ClientAddress" Type="nvarchar" MaxLength="30" />
-          <Property Name="ClientBrowser" Type="nvarchar" MaxLength="50" />
+          <Property Name="ClientAddress" Type="nvarchar" MaxLength="150" />
+          <Property Name="ClientBrowser" Type="nvarchar" MaxLength="150" />
           <Property Name="RecordedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="TenAmDealCutOff_ClosingBalance">
@@ -530,7 +530,6 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="Form_Workflow" EntityType="Self.Form_Workflow" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ISSD_FormHeader" EntityType="Self.ISSD_FormHeader" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ISSD_TradeSettlement" EntityType="Self.ISSD_TradeSettlement" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Log_UserAccess" EntityType="Self.Log_UserAccess" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TenAmDealCutOff_ClosingBalance" EntityType="Self.TenAmDealCutOff_ClosingBalance" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EDW_BankBalance" EntityType="Self.EDW_BankBalance" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
@@ -597,6 +596,15 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
     [EDW_TradeItem].[UpdatedDate] AS [UpdatedDate]
     FROM [dbo].[EDW_TradeItem] AS [EDW_TradeItem]</DefiningQuery>
           </EntitySet>
+          <EntitySet Name="Log_UserAccess" EntityType="Self.Log_UserAccess" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [Log_UserAccess].[Id] AS [Id], 
+    [Log_UserAccess].[UserName] AS [UserName], 
+    [Log_UserAccess].[ClientAddress] AS [ClientAddress], 
+    [Log_UserAccess].[ClientBrowser] AS [ClientBrowser], 
+    [Log_UserAccess].[RecordedDate] AS [RecordedDate]
+    FROM [dbo].[Log_UserAccess] AS [Log_UserAccess]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_dbo_AspNetRolePermissions_dbo_AspNetPermission_PermissionId" Association="Self.FK_dbo_AspNetRolePermissions_dbo_AspNetPermission_PermissionId">
             <End Role="AspNetPermission" EntitySet="AspNetPermission" />
             <End Role="AspNetRolePermissions" EntitySet="AspNetRolePermissions" />
@@ -620,12 +628,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
       <Schema Namespace="kashflowDbModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="kashflowDBEntities" annotation:LazyLoadingEnabled="true" >
           <EntitySet Name="AspNetActiveDirectoryUsers" EntityType="kashflowDbModel.AspNetActiveDirectoryUsers" />
-          <EntitySet Name="AspNetRoles" EntityType="kashflowDbModel.AspNetRoles" />
           <EntitySet Name="AspNetUsers" EntityType="kashflowDbModel.AspNetUsers" />
-          <AssociationSet Name="AspNetUserRoles" Association="kashflowDbModel.AspNetUserRoles">
-            <End Role="AspNetRoles" EntitySet="AspNetRoles" />
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-          </AssociationSet>
           <EntitySet Name="Config_Dropdown" EntityType="kashflowDbModel.Config_Dropdown" />
           <EntitySet Name="Config_Key" EntityType="kashflowDbModel.Config_Key" />
           <EntitySet Name="Config_Approver" EntityType="kashflowDbModel.Config_Approver" />
@@ -650,9 +653,14 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="Log_UserAccess" EntityType="kashflowDbModel.Log_UserAccess" />
           <EntitySet Name="Audit_10AMDCO_ClosingBalance" EntityType="kashflowDbModel.Audit_10AMDCO_ClosingBalance" />
           <EntitySet Name="AspNetPermission" EntityType="kashflowDbModel.AspNetPermission" />
+          <EntitySet Name="AspNetRoles" EntityType="kashflowDbModel.AspNetRoles" />
           <AssociationSet Name="AspNetRolePermissions" Association="kashflowDbModel.AspNetRolePermissions">
             <End Role="AspNetPermission" EntitySet="AspNetPermission" />
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
+          </AssociationSet>
+          <AssociationSet Name="AspNetUserRoles" Association="kashflowDbModel.AspNetUserRoles">
+            <End Role="AspNetRoles" EntitySet="AspNetRoles" />
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
@@ -674,17 +682,6 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="LastLogon" Type="DateTime" Precision="3" />
           <Property Name="LastPasswordSet" Type="DateTime" Precision="3" />
         </EntityType>
-        <EntityType Name="AspNetRoles">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUsers" Relationship="kashflowDbModel.AspNetUserRoles" FromRole="AspNetRoles" ToRole="AspNetUsers" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="0" />
-          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetPermission" Relationship="kashflowDbModel.AspNetRolePermissions" FromRole="AspNetRoles" ToRole="AspNetPermission" />
-        </EntityType>
         <EntityType Name="AspNetUsers">
           <Key>
             <PropertyRef Name="UserName" />
@@ -700,10 +697,6 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="AspNetRoles" Relationship="kashflowDbModel.AspNetUserRoles" FromRole="AspNetUsers" ToRole="AspNetRoles" />
         </EntityType>
-        <Association Name="AspNetUserRoles">
-          <End Type="kashflowDbModel.AspNetRoles" Role="AspNetRoles" Multiplicity="*" />
-          <End Type="kashflowDbModel.AspNetUsers" Role="AspNetUsers" Multiplicity="*" />
-        </Association>
         <EntityType Name="Config_Dropdown">
           <Key>
             <PropertyRef Name="Id" />
@@ -1056,8 +1049,8 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="UserName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="ClientAddress" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
-          <Property Name="ClientBrowser" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ClientAddress" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ClientBrowser" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="RecordedDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="Audit_10AMDCO_ClosingBalance">
@@ -1079,14 +1072,27 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PermissionName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PermissionName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="PermissionLevel" Type="Int32" Nullable="false" />
           <Property Name="Parent" Type="Int32" Nullable="false" />
           <NavigationProperty Name="AspNetRoles" Relationship="kashflowDbModel.AspNetRolePermissions" FromRole="AspNetPermission" ToRole="AspNetRoles" />
         </EntityType>
+        <EntityType Name="AspNetRoles">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AspNetPermission" Relationship="kashflowDbModel.AspNetRolePermissions" FromRole="AspNetRoles" ToRole="AspNetPermission" />
+          <NavigationProperty Name="AspNetUsers" Relationship="kashflowDbModel.AspNetUserRoles" FromRole="AspNetRoles" ToRole="AspNetUsers" />
+        </EntityType>
         <Association Name="AspNetRolePermissions">
           <End Type="kashflowDbModel.AspNetPermission" Role="AspNetPermission" Multiplicity="*" />
           <End Type="kashflowDbModel.AspNetRoles" Role="AspNetRoles" Multiplicity="*" />
+        </Association>
+        <Association Name="AspNetUserRoles">
+          <End Type="kashflowDbModel.AspNetRoles" Role="AspNetRoles" Multiplicity="*" />
+          <End Type="kashflowDbModel.AspNetUsers" Role="AspNetUsers" Multiplicity="*" />
         </Association>
         </Schema>
     </edmx:ConceptualModels>
@@ -1114,16 +1120,6 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="AspNetRoles">
-            <EntityTypeMapping TypeName="kashflowDbModel.AspNetRoles">
-              <MappingFragment StoreEntitySet="AspNetRoles">
-                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="AspNetUsers">
             <EntityTypeMapping TypeName="kashflowDbModel.AspNetUsers">
               <MappingFragment StoreEntitySet="AspNetUsers">
@@ -1139,14 +1135,6 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <AssociationSetMapping Name="AspNetUserRoles" TypeName="kashflowDbModel.AspNetUserRoles" StoreEntitySet="AspNetUserRoles">
-            <EndProperty Name="AspNetUsers">
-              <ScalarProperty Name="UserName" ColumnName="UserId" />
-            </EndProperty>
-            <EndProperty Name="AspNetRoles">
-              <ScalarProperty Name="Id" ColumnName="RoleId" />
-            </EndProperty>
-          </AssociationSetMapping>
           <EntitySetMapping Name="Config_Dropdown">
             <EntityTypeMapping TypeName="kashflowDbModel.Config_Dropdown">
               <MappingFragment StoreEntitySet="Config_Dropdown">
@@ -1539,12 +1527,28 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="AspNetRoles">
+            <EntityTypeMapping TypeName="kashflowDbModel.AspNetRoles">
+              <MappingFragment StoreEntitySet="AspNetRoles">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <AssociationSetMapping Name="AspNetRolePermissions" TypeName="kashflowDbModel.AspNetRolePermissions" StoreEntitySet="AspNetRolePermissions">
             <EndProperty Name="AspNetRoles">
               <ScalarProperty Name="Id" ColumnName="RoleId" />
             </EndProperty>
             <EndProperty Name="AspNetPermission">
               <ScalarProperty Name="Id" ColumnName="PermissionId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="AspNetUserRoles" TypeName="kashflowDbModel.AspNetUserRoles" StoreEntitySet="AspNetUserRoles">
+            <EndProperty Name="AspNetUsers">
+              <ScalarProperty Name="UserName" ColumnName="UserId" />
+            </EndProperty>
+            <EndProperty Name="AspNetRoles">
+              <ScalarProperty Name="Id" ColumnName="RoleId" />
             </EndProperty>
           </AssociationSetMapping>
           </EntityContainerMapping>

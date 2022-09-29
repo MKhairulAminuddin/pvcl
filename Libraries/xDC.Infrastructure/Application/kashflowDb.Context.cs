@@ -26,7 +26,6 @@ namespace xDC.Infrastructure.Application
         }
     
         public virtual DbSet<AspNetActiveDirectoryUsers> AspNetActiveDirectoryUsers { get; set; }
-        public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<Config_Dropdown> Config_Dropdown { get; set; }
         public virtual DbSet<Config_Key> Config_Key { get; set; }
@@ -52,5 +51,6 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<Log_UserAccess> Log_UserAccess { get; set; }
         public virtual DbSet<Audit_10AMDCO_ClosingBalance> Audit_10AMDCO_ClosingBalance { get; set; }
         public virtual DbSet<AspNetPermission> AspNetPermission { get; set; }
+        public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
     }
 }

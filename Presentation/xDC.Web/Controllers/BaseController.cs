@@ -28,6 +28,12 @@ namespace xDC_Web.Controllers
             return View();
         }
 
+        [Authorize]
+        public ActionResult NoPermission()
+        {
+            return View();
+        }
+
         public bool IsMeApprover(kashflowDBEntities db)
         {
             var getApprover = db.Config_Approver.Where(x => x.Username == User.Identity.Name);

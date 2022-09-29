@@ -1,7 +1,111 @@
-﻿@model dynamic
+﻿@model xDC_Web.ViewModels.Admin.SystemInfoVM
 
 @{
     ViewBag.Title = "System Information";
 }
 
-<h2>title</h2>
+<section class="content container-fluid">
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="box box-solid bg-dark">
+                <div class="box-header bg-dark"">
+                    <p class="box-title">Web Server Information</p>
+                </div>
+                <div class="box-body">
+                    <div>
+                        <ul class="nav nav-pills nav-stacked">
+                            <li>
+                                Server IP
+                                <span class="pull-right">
+                                    @Model.ServerIp
+                                </span>
+                            </li>
+                            <li>
+                                Server Name
+                                <span class="pull-right">
+                                    @Model.ServerName
+                                </span>
+                            </li>
+                            <li>
+                                Network Name
+                                <span class="pull-right">
+                                    @Model.NetworkName
+                                </span>
+                            </li>
+                            <li>
+                                IIS Pool Account
+                                <span class="pull-right">
+                                    @Model.ServiceAccountName
+                                </span>
+                            </li>
+                            <li>
+                                OS Name
+                                <span class="pull-right">
+                                    @Model.OsName
+                                </span>
+                            </li>
+                            <li>
+                                OS Version
+                                <span class="pull-right">
+                                    @Model.OsVersion
+                                </span>
+                            </li>
+                            <li>
+                                Server Time
+                                <span class="pull-right">
+                                    @Model.ServerTime
+                                </span>
+                            </li>
+                            <li>
+                                IIS Version
+                                <span class="pull-right">
+                                    @Model.IisVersion
+                                </span>
+                            </li>
+                            <li>
+                                HTTP Enabled
+                                <span class="pull-right">
+                                    @Model.SslEnable
+                                </span>
+                            </li>
+                            <li>
+                                Port
+                                <span class="pull-right">
+                                    @Model.ServerPort
+                                </span>
+                            </li>
+                            <li>
+                                Memory
+                                <span class="pull-right">
+                                    @Model.MemorySize
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+
+            @foreach (var item in Model.Drives)
+            {
+                <div class="info-box bg-dark">
+                    <span class="info-box-icon">
+                        <i class="fa fa-hdd-o"></i>
+                    </span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">@item.DriveName</span>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: @item.Percentage.ToString()"></div>
+                        </div>
+                        <span class="product-description">@item.DriveTotalFreeSize free of @item.DriveTotalSize</span>
+                    </div>
+                </div>
+            }
+
+
+
+        </div>
+    </div>
+</section>

@@ -386,14 +386,37 @@ namespace xDC.Services
                         // then add back new
                         if (req.data != null)
                         {
+                            var newChildPermission = new List<AspNetPermission>();
+                            var allNewPermission = new List<AspNetPermission>();
+
                             foreach (var item in req.data)
                             {
                                 var newAssignedPermission = db.AspNetPermission.FirstOrDefault(x => x.Id == item.PermissionId);
                                 if (newAssignedPermission != null)
                                 {
-                                    rolePermissions.AspNetPermission.Add(newAssignedPermission);
+                                    newChildPermission.Add(newAssignedPermission);
                                 }
                             }
+
+                            foreach (var item in newChildPermission.Select(x => x.Parent).Distinct())
+                            {
+                                var newAssignedParentPermission = db.AspNetPermission.FirstOrDefault(x => x.Id == item);
+                                if (newAssignedParentPermission != null)
+                                {
+                                    allNewPermission.Add(newAssignedParentPermission);
+                                }
+                            }
+
+                            foreach (var item in newChildPermission)
+                            {
+                                allNewPermission.Add(item);
+                            }
+
+                            foreach (var item in allNewPermission)
+                            {
+                                rolePermissions.AspNetPermission.Add(item);
+                            }
+
                             db.SaveChanges();
                         }
                     }
@@ -533,20 +556,30 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var selectedRole = db.AspNetRoles.FirstOrDefault(x => x.Id == roleId);
-                    if (selectedRole != null)
+                    var theUser = db.AspNetUsers.FirstOrDefault(x => x.UserName == userName);
+                    var permitted = false;
+                    if (theUser != null)
                     {
-                        selectedRole.Name = newRoleName;
-                        db.SaveChanges();
+                        var userRoles = theUser.AspNetRoles;
+                        if (userRoles != null)
+                        {
+                            
+                            foreach (var rolePermissions in userRoles)
+                            {
+                                if (rolePermissions.AspNetPermission.Any(x => x.PermissionName == permissionName))
+                                {
+                                    permitted = true;
+                                }
+                            }
+                        }
                     }
 
-                    return true;
+                    return permitted;
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex.Message);
-
                 return false;
             }
         }

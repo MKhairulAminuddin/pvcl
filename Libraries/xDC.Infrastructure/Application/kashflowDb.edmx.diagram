@@ -6,9 +6,7 @@
     <edmx:Diagrams>
       <Diagram DiagramId="d55096f0c6174fbcbef3ff35e09fdeda" Name="Diagram1" ZoomLevel="85" >
         <EntityTypeShape EntityType="kashflowDbModel.AspNetActiveDirectoryUsers" Width="1.5" PointX="7.625" PointY="0.75" />
-        <EntityTypeShape EntityType="kashflowDbModel.AspNetRoles" Width="1.5" PointX="16.625" PointY="4.75" />
         <EntityTypeShape EntityType="kashflowDbModel.AspNetUsers" Width="1.5" PointX="18.875" PointY="4.125" />
-        <AssociationConnector Association="kashflowDbModel.AspNetUserRoles" />
         <EntityTypeShape EntityType="kashflowDbModel.Config_Dropdown" Width="1.5" PointX="2.75" PointY="0.75" />
         <EntityTypeShape EntityType="kashflowDbModel.Config_Key" Width="1.5" PointX="4.75" PointY="0.75" />
         <EntityTypeShape EntityType="kashflowDbModel.Config_Approver" Width="1.5" PointX="4.875" PointY="3.75" />
@@ -32,8 +30,10 @@
         <EntityTypeShape EntityType="kashflowDbModel.FID_Treasury_Deposit" Width="1.5" PointX="13.75" PointY="9.75" />
         <EntityTypeShape EntityType="kashflowDbModel.Log_UserAccess" Width="1.5" PointX="18.25" PointY="0.875" />
         <EntityTypeShape EntityType="kashflowDbModel.Audit_10AMDCO_ClosingBalance" Width="1.5" PointX="7.375" PointY="10.75" />
-        <EntityTypeShape EntityType="kashflowDbModel.AspNetPermission" Width="1.5" PointX="14.375" PointY="4.875" />
+        <EntityTypeShape EntityType="kashflowDbModel.AspNetPermission" Width="1.5" PointX="14.375" PointY="4.625" />
+        <EntityTypeShape EntityType="kashflowDbModel.AspNetRoles" Width="1.5" PointX="16.625" PointY="4.75" />
         <AssociationConnector Association="kashflowDbModel.AspNetRolePermissions" />
+        <AssociationConnector Association="kashflowDbModel.AspNetUserRoles" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

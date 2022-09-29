@@ -416,3 +416,8 @@ div .validation-summary-errors.text-danger {
 .cell-bg-gray {
     background-color: #edf1fa;
 }
+
+.bg-dark {
+    background: #121212;
+    color: #FFFFFF;
+}
