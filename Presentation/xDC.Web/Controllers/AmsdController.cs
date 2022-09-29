@@ -12,10 +12,12 @@ using xDC_Web.ViewModels;
 
 namespace xDC_Web.Controllers
 {
-    [Authorize(Roles = "Administrator, Power User, AMSD")]
+    [Authorize]
+    [KflowAuthorize(Common.PermissionKey.InflowFundForm)]
     [RoutePrefix("amsd")]
     public class AmsdController : BaseController
     {
+        [KflowAuthorize(Common.PermissionKey.InflowFundForm_View)]
         public ActionResult Index()
         {
             try
@@ -41,6 +43,8 @@ namespace xDC_Web.Controllers
 
 
         #region Inflow Fund Form Page
+
+        [KflowAuthorize(Common.PermissionKey.InflowFundForm_Creator)]
         [Route("InflowFund/New")]
         public ActionResult InflowFund_New()
         {
@@ -74,6 +78,7 @@ namespace xDC_Web.Controllers
             }
         }
 
+        [KflowAuthorize(Common.PermissionKey.InflowFundForm_Creator)]
         [Route("InflowFund/Edit/{id}")]
         public ActionResult InflowFund_Edit(string id)
         {
@@ -134,6 +139,7 @@ namespace xDC_Web.Controllers
             }
         }
 
+        [KflowAuthorize(Common.PermissionKey.InflowFundForm_View)]
         [Route("InflowFund/View/{formId}")]
         public ActionResult InflowFundsFormStatus(int formId)
         {
@@ -199,10 +205,11 @@ namespace xDC_Web.Controllers
         }
 
         #endregion
-        
+
 
         #region Print Form
 
+        [KflowAuthorize(Common.PermissionKey.InflowFundForm_Download)]
         [HttpPost]
         [Route("Print")]
         public ActionResult Print(string id, bool isExportAsExcel)
@@ -229,6 +236,7 @@ namespace xDC_Web.Controllers
             }
         }
 
+        [KflowAuthorize(Common.PermissionKey.InflowFundForm_Download)]
         [HttpGet]
         [Route("Printed/{id}")]
         public ActionResult Printed(string id)

@@ -15,5 +15,6 @@ namespace xDC.Domain.WebApi.Administration
         public bool? Expanded { get; set; }
         public int ParentId { get; set; }
         public int? TotalChild { get; set; }
+        public bool Disabled { get; set; }
     }
 }

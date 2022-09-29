@@ -271,6 +271,8 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
+                    
+
                     var permissions = db.AspNetPermission.ToList();
                     var permissionTreeView = new List<PermissionsRes>();
                     foreach (var item in permissions)
@@ -310,6 +312,8 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
+                    var adminPermissions = db.AspNetRoles.FirstOrDefault(x => x.Name == "Administrator");
+
                     var permissions = db.AspNetPermission.ToList();
                     var permissionTreeView = new List<RolePermissionsRes>();
                     foreach (var item in permissions)
@@ -320,7 +324,8 @@ namespace xDC.Services
                             PermissionName = item.PermissionName,
                             Selected = false,
                             ParentId = item.Parent,
-                            RoleId = roleId
+                            RoleId = roleId,
+                            Disabled = (roleId == adminPermissions.Id && adminPermissions.AspNetPermission.Select(x => x.Id).Contains(item.Id))
                         });
                     }
                     foreach (var item in permissionTreeView)

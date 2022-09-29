@@ -12,7 +12,7 @@ using xDC_Web.ViewModels.Admin;
 
 namespace xDC_Web.Controllers
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize]
     [KflowAuthorize(xDC.Utils.Common.PermissionKey.Administration)]
     public class AdminController : Controller
     {
@@ -121,10 +121,6 @@ namespace xDC_Web.Controllers
         {
             return View();
         }
-
-        
-
-        
 
         public ActionResult UserAccessLog()
         {
