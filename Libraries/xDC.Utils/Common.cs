@@ -452,6 +452,52 @@ namespace xDC.Utils
             public const string FID_T_TreasuryApprovalCc_Enable = "FID.T.TreasuryApproval.Cc.Enable";
         }
 
+        public static class PermissionKey
+        {
+            public const string Administration = "Administration";
+            public const string Administration_UserManagement = "Administration - User Management";
+            public const string Administration_RolesManagement = "Administration - Roles Management";
+            public const string Administration_ApplicationConfig = "Administration - Application Config";
+            public const string Administration_TaskScheduler = "Administration - Task Scheduler";
+            public const string Administration_Utility = "Administration - Utility";
+
+            public const string AuditTrail = "Audit Trail";
+            public const string AuditTrail_FormAudit = "Audit Trail - Form Audit";
+            public const string AuditTrail_UserAccessAudit = "Audit Trail - User Access Audit";
+
+            public const string Settings = "Settings";
+            public const string Settings_DropdownData = "Settings - Dropdown Data";
+            public const string Settings_EmailNotification = "Settings - Email Notification";
+            public const string Settings_ApproverAssignment = "Settings - Approver Assignment";
+
+            public const string TreasuryForm = "Treasury Form";
+            public const string TreasuryForm_Home = "Treasury Form - Home";
+            public const string TreasuryForm_Creator = "Treasury Form - Creator";
+            public const string TreasuryForm_View = "Treasury Form - View";
+            public const string TreasuryForm_Download = "Treasury Form - Download";
+            public const string TreasuryForm_Workflow = "Treasury Form - Workflow";
+
+            public const string TradeSettlementForm = "Treasury Form";
+            public const string TradeSettlementForm_Home = "Treasury Form - Home";
+            public const string TradeSettlementForm_Creator = "Trade Settlement Form - Creator";
+            public const string TradeSettlementForm_View = "Trade Settlement Form - View";
+            public const string TradeSettlementForm_Download = "Trade Settlement Form - Download";
+            public const string TradeSettlementForm_Workflow = "Trade Settlement Form - Workflow";
+
+            public const string InflowFundForm = "Inflow Fund Form";
+            public const string InflowFundForm_Home = "Inflow Fund Form - Home";
+            public const string InflowFundForm_Creator = "Inflow Fund Form - Creator";
+            public const string InflowFundForm_View = "Inflow Fund Form - View";
+            public const string InflowFundForm_Download = "Inflow Fund Form - Download";
+            public const string InflowFundForm_Workflow = "Inflow Fund Form - Workflow";
+
+            public const string FCATagging = "FCA Tagging";
+            public const string FCATagging_Home = "FCA Tagging - View";
+            public const string FCATagging_View = "FCA Tagging - Download";
+            public const string FCATagging_Tagging = "FCA Tagging - Workflow";
+
+        }
+
         public static class  CutOffViolationAction
         {
             public const string Approval = "Approval";

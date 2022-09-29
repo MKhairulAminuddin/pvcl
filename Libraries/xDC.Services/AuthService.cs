@@ -525,5 +525,33 @@ namespace xDC.Services
 
         #endregion
 
+        #region Access Permission
+
+        public bool IsUserHaveAccess(string userName, string permissionName)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var selectedRole = db.AspNetRoles.FirstOrDefault(x => x.Id == roleId);
+                    if (selectedRole != null)
+                    {
+                        selectedRole.Name = newRoleName;
+                        db.SaveChanges();
+                    }
+
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+
+                return false;
+            }
+        }
+
+        #endregion
+
     }
 }

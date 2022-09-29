@@ -5,11 +5,13 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using xDC.Infrastructure.Application;
+using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.ViewModels.Admin;
 
 namespace xDC_Web.Controllers
 {
     [Authorize(Roles = "Administrator")]
+    [KashflowAuthorize(PermissionName = xDC.Utils.Common.PermissionKey.Administration)]
     public class AdminController : Controller
     {
         public ActionResult UserManagement()

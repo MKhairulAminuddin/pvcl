@@ -8,6 +8,16 @@ namespace xDC_Web.Extension.CustomAttribute
 {
     public class KashflowAuthorize : AuthorizeAttribute
     {
+        private string _permissionName;
+        public string PermissionName
+        {
+            get { return _permissionName; }
+            set
+            {
+                Roles = value;
+            }
+        }
+
         public override void OnAuthorization(AuthorizationContext filterContext)
         {
             // If they are authorized, handle accordingly

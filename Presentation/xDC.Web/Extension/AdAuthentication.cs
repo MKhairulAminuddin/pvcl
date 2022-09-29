@@ -24,13 +24,13 @@ namespace xDC_Web.Extension
 
 		public AuthenticationResult SignIn(LoginViewModel model)
 		{
-			//#if DEBUG
+			#if DEBUG
 			// authenticates against your local machine - for development time
-			// ContextType authenticationType = ContextType.Machine;
-			//#else
+			 ContextType authenticationType = ContextType.Machine;
+			#else
 			// authenticates against your Domain AD
 			ContextType authenticationType = ContextType.Domain;
-			//#endif
+			#endif
 
 			try
 			{
@@ -39,7 +39,10 @@ namespace xDC_Web.Extension
 				var isAuthenticated = false;
 				var userPrincipal = new UserPrincipal(principalContext);
 				userPrincipal.SamAccountName = model.Username;
-				var searcher = new PrincipalSearcher(userPrincipal);
+
+				#if DEBUG
+				#else
+                var searcher = new PrincipalSearcher(userPrincipal);
 				try
 				{
 					userPrincipal = searcher.FindOne() as UserPrincipal;
@@ -73,8 +76,9 @@ namespace xDC_Web.Extension
 				{
 					return new AuthenticationResult("You did not have access into the system.");
 				}
+				#endif
 
-				var identity = CreateIdentity(userPrincipal);
+                var identity = CreateIdentity(userPrincipal);
 
 				_authManager.SignOut(xDcAuth.ApplicationCookie);
 				_authManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, identity);
