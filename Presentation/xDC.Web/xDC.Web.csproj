@@ -313,6 +313,7 @@
     <Content Include="Scripts\app\fid\fcaTagging\view.js" />
     <Content Include="Scripts\app\issd\fcaTagging\edit.js" />
     <Content Include="Scripts\app\issd\fcaTagging\index.js" />
+    <Content Include="Scripts\app\issd\fcaTagging\view.js" />
     <Content Include="Scripts\app\report\dealCutOffFcy.js" />
     <Content Include="Scripts\app\report\dealCutOffMyr.js" />
     <Content Include="Scripts\app\fid\treasury\edit.js" />
@@ -536,6 +537,7 @@
     <Content Include="Views\Issd\FcaTagging\Edit.cshtml" />
     <Content Include="Views\Issd\FcaTagging\Index.cshtml" />
     <Content Include="Views\Fid\FcaTagging\View.cshtml" />
+    <Content Include="Views\Issd\FcaTagging\View.cshtml" />
     <None Include="Web.UAT.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

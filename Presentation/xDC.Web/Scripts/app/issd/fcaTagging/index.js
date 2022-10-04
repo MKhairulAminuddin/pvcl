@@ -12,8 +12,9 @@
 
         var referenceUrl = {
 
-            loadTcaTagging: window.location.origin + "/api/issd/FcaTagging",
-            editTcaTaggingPage: window.location.origin + "/issd/FcaTagging/Edit/"
+            loadFcaTagging: window.location.origin + "/api/issd/FcaTagging",
+            viewFcaTaggingPage: window.location.origin + "/issd/FcaTagging/View/",
+            editFcaTaggingPage: window.location.origin + "/issd/FcaTagging/Edit/"
 
         };
 
@@ -65,7 +66,7 @@
         $grid = $("#grid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 //key: "formId",
-                loadUrl: referenceUrl.loadTcaTagging
+                loadUrl: referenceUrl.loadFcaTagging
             }),
             columns: [
                 {
@@ -116,10 +117,18 @@
                     type: "buttons",
                     buttons: [
                         {
-                            hint: "Open Form",
-                            icon: "fa fa-external-link",
+                            hint: "Edit Tagging",
+                            icon: "fa fa-tag",
                             onClick: function (e) {
-                                window.location.href = referenceUrl.editTcaTaggingPage + moment(e.row.data.settlementDate).unix() + "/" + e.row.data.currency;
+                                window.location.href = referenceUrl.editFcaTaggingPage + moment(e.row.data.settlementDate).unix() + "/" + e.row.data.currency;
+                                e.event.preventDefault();
+                            }
+                        },
+                        {
+                            hint: "View Form",
+                            icon: "fa fa-eye",
+                            onClick: function (e) {
+                                window.location.href = referenceUrl.viewFcaTaggingPage + moment(e.row.data.settlementDate).unix() + "/" + e.row.data.currency;
                                 e.event.preventDefault();
                             }
                         }
