@@ -1,7 +1,6 @@
 ﻿(function ($, window, document) {
     $(function () {
         //#region Variable Definition
-        app.setSideMenuItemActive("/issd/FcaTagging");
         $('[data-toggle="tooltip"]').tooltip();
 
         var $tabpanel,
@@ -18,31 +17,31 @@
             $contributionCreditedGrid,
             $altidGrid,
             $othersGrid,
-            
+
             $saveChangesBtn,
             $printBtn;
 
         var referenceUrl = {
-            getAvailableTrades: window.location.origin + "/api/fid/TcaTagging/AvailableTrades/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            getAvailableTrades: window.location.origin + "/api/fid/FcaTagging/AvailableTrades/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
 
-            equityLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/equity/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1] ,
-            bondLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/bond/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            cpLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/cp/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            notesPaperLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/notesPaper/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            repoLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/repo/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            couponLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/coupon/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            feesLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/fees/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            mtmLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/mtm/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            fxLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/fxSettlement/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            contributionLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/contributionCredited/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            altidLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/altid/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
-            othersLoad: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem/others/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            equityLoad: window.location.origin + "/api/fid/FcaTaggingGrid/tradeItem/equity/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            bondLoad: window.location.origin + "/api/fid/FcaTaggingGrid/tradeItem/bond/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            cpLoad: window.location.origin + "/api/fid/FcaTaggingGrid/tradeItem/cp/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            notesPaperLoad: window.location.origin + "/api/fid/FcaTaggingGrid/tradeItem/notesPaper/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            repoLoad: window.location.origin + "/api/fid/FcaTaggingGrid/tradeItem/repo/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            couponLoad: window.location.origin + "/api/fid/FcaTaggingGrid/tradeItem/coupon/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            feesLoad: window.location.origin + "/api/fid/FcaTaggingGrid/tradeItem/fees/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            mtmLoad: window.location.origin + "/api/fid/FcaTaggingGrid/tradeItem/mtm/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            fxLoad: window.location.origin + "/api/fid/FcaTaggingGrid/tradeItem/fxSettlement/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            contributionLoad: window.location.origin + "/api/fid/FcaTaggingGrid/tradeItem/contributionCredited/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            altidLoad: window.location.origin + "/api/fid/FcaTaggingGrid/tradeItem/altid/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
+            othersLoad: window.location.origin + "/api/fid/FcaTaggingGrid/tradeItem/others/" + window.location.pathname.split("/").slice(-2)[0] + "/" + window.location.pathname.split("/").slice(-2)[1],
 
-            updateTradeItem: window.location.origin + "/api/fid/TcaTaggingGrid/tradeItem",
+            updateTradeItem: window.location.origin + "/api/fid/FcaTaggingGrid/tradeItem",
 
 
-            dsFcaAccount: window.location.origin + "/api/fid/TcaTagging/FcaAccount/",
-            
+            dsFcaAccount: window.location.origin + "/api/fid/FcaTagging/FcaAccount/",
+
         };
 
         //#endregion
@@ -59,7 +58,7 @@
                 pageSize: 20
             };
         }
-        
+
         var loadData = function () {
             return $.ajax({
                 dataType: "json",
@@ -289,7 +288,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.outflowFrom== 0) {
+                                        if (options.data.outflowFrom == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
@@ -464,7 +463,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.outflowFrom== 0) {
+                                        if (options.data.outflowFrom == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
@@ -631,7 +630,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.outflowFrom== 0) {
+                                        if (options.data.outflowFrom == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
@@ -1811,13 +1810,13 @@
                 }
                 tabPanelItems.push(newItem);
             }
-            
+
             //updateButtonsState(tabPanelItems);
 
             $tabpanel.option("dataSource", tabPanelItems);
             $tabpanel.option("selectedIndex", tabPanelItems[0]);
         }
-        
+
         //#endregion
 
         //#region Other Widgets
@@ -1837,17 +1836,17 @@
                 var tabPanelItems = [];
                 tabPanelItems = $tabpanel.option("dataSource");
                 $tabpanel.option("selectedIndex", tabPanelItems[0]);
-                
+
                 if (typeof ($equityGrid) !== "undefined") {
                     $equityGrid.saveEditData();
                 }
                 if (typeof ($bondGrid) !== "undefined") {
                     $bondGrid.saveEditData();
                 }
-                if (typeof ($cpGrid) !== "undefined" ) {
+                if (typeof ($cpGrid) !== "undefined") {
                     $cpGrid.saveEditData();
                 }
-                if (typeof ($notesPaperGrid) !== "undefined" ) {
+                if (typeof ($notesPaperGrid) !== "undefined") {
                     $notesPaperGrid.saveEditData();
                 }
                 if (typeof ($repoGrid) !== "undefined") {
@@ -1879,20 +1878,20 @@
                 app.toast("Saved", "Success");
             }
         }).dxButton("instance");
-        
+
         //#endregion
 
         //#region DataGrid
-        
+
         //#endregion DataGrid
 
         //#region Events
-        
+
 
         //#endregion
 
         //#region Immediate Invocation function
-        
+
         loadData();
 
         //#endregion

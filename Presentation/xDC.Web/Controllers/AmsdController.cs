@@ -13,11 +13,11 @@ using xDC_Web.ViewModels;
 namespace xDC_Web.Controllers
 {
     [Authorize]
-    [KflowAuthorize(Common.PermissionKey.InflowFundForm)]
+    [KflowAuthorize(Common.PermissionKey.AMSD)]
     [RoutePrefix("amsd")]
     public class AmsdController : BaseController
     {
-        [KflowAuthorize(Common.PermissionKey.InflowFundForm_View)]
+        [KflowAuthorize(Common.PermissionKey.AMSD_InflowFundForm_View)]
         public ActionResult Index()
         {
             try
@@ -44,7 +44,7 @@ namespace xDC_Web.Controllers
 
         #region Inflow Fund Form Page
 
-        [KflowAuthorize(Common.PermissionKey.InflowFundForm_Creator)]
+        [KflowAuthorize(Common.PermissionKey.AMSD_InflowFundForm_Edit)]
         [Route("InflowFund/New")]
         public ActionResult InflowFund_New()
         {
@@ -78,7 +78,7 @@ namespace xDC_Web.Controllers
             }
         }
 
-        [KflowAuthorize(Common.PermissionKey.InflowFundForm_Creator)]
+        [KflowAuthorize(Common.PermissionKey.AMSD_InflowFundForm_Edit)]
         [Route("InflowFund/Edit/{id}")]
         public ActionResult InflowFund_Edit(string id)
         {
@@ -139,7 +139,7 @@ namespace xDC_Web.Controllers
             }
         }
 
-        [KflowAuthorize(Common.PermissionKey.InflowFundForm_View)]
+        [KflowAuthorize(Common.PermissionKey.AMSD_InflowFundForm_View)]
         [Route("InflowFund/View/{formId}")]
         public ActionResult InflowFundsFormStatus(int formId)
         {
@@ -209,7 +209,7 @@ namespace xDC_Web.Controllers
 
         #region Print Form
 
-        [KflowAuthorize(Common.PermissionKey.InflowFundForm_Download)]
+        [KflowAuthorize(Common.PermissionKey.AMSD_InflowFundForm_Download)]
         [HttpPost]
         [Route("Print")]
         public ActionResult Print(string id, bool isExportAsExcel)
@@ -236,7 +236,7 @@ namespace xDC_Web.Controllers
             }
         }
 
-        [KflowAuthorize(Common.PermissionKey.InflowFundForm_Download)]
+        [KflowAuthorize(Common.PermissionKey.AMSD_InflowFundForm_Download)]
         [HttpGet]
         [Route("Printed/{id}")]
         public ActionResult Printed(string id)

@@ -150,16 +150,26 @@
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="@Url.Action("FcaTagging", "Fid")"><i class="fa fa-circle-thin"></i> <span>FCA Tagging</span></a></li>
                                 <li><a href="@Url.Action("Treasury", "Fid")"><i class="fa fa-circle-thin"></i> <span>Treasury</span></a></li>
+                                <li><a href="@Url.Action("FcaTagging", "Fid")"><i class="fa fa-circle-thin"></i> <span>FCA Tagging</span></a></li>
                             </ul>
                         </li>
                     }
                     @if (MenuSecurity.FidMenu || MenuSecurity.IssdMenu)
                     {
-                        <li><a href="@Url.Action("Index", "TenAmDealCutOff")"><i class="fa fa-circle-thin"></i> <span>10am Deal Cut Off</span></a></li>
-                        <li><a href="@Url.Action("DealCutOffMyr", "DealCutOff")"><i class="fa fa-circle-thin"></i> <span>Deal Cut Off (MYR)</span></a></li>
-                        <li><a href="@Url.Action("DealCutOffFcy", "DealCutOff")"><i class="fa fa-circle-thin"></i> <span>Deal Cut Off (FCY)</span></a></li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-bar-chart"></i> <span>Reports</span>
+                                <span class="pull-right-container">
+                                    <i class="fa fa-angle-left pull-right"></i>
+                                </span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li><a href="@Url.Action("TenAmDealCutOff", "Report")"><i class="fa fa-circle-thin"></i> <span>10am Deal Cut Off</span></a></li>
+                                <li><a href="@Url.Action("DealCutOffMyr", "Report")"><i class="fa fa-circle-thin"></i> <span>Deal Cut Off (MYR)</span></a></li>
+                                <li><a href="@Url.Action("DealCutOffFcy", "Report")"><i class="fa fa-circle-thin"></i> <span>Deal Cut Off (FCY)</span></a></li>
+                            </ul>
+                        </li>
                     }
                     @if (MenuSecurity.PowerUsersMenu)
                     {

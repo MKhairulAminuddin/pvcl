@@ -37,7 +37,7 @@
             mode: "form",
             allowUpdating: true,
             allowDeleting: true,
-            allowAdding: true
+            allowAdding: false
         },
         columns: [
             {
@@ -72,8 +72,14 @@
             {
                 caption: "Role Name",
                 dataField: "roleName"
-            }
+            },
         ],
+        onCellPrepared: function (e) {
+            if (e.rowType == "data") {
+                if (e.data.roleName == "Administrator")
+                    e.cellElement.find(".dx-link-delete").remove();
+            }
+        },
         headerFilter: {
             visible: true,
             allowSearch: true
@@ -115,14 +121,12 @@
         onClick: function (e) {
 
             var requestData = {
-                data: {
                     RoleName: $dxNewRoleNameTextBox.dxTextBox("instance").option("value"),
                     Permissions: []
-                }
             };
 
             $dxNewPermissionTreeView.dxTreeView("getSelectedNodes").forEach(function (x) {
-                requestData.data.Permissions.push({
+                requestData.Permissions.push({
                     'parentId': x.itemData.parentId,
                     'permissionId': x.itemData.permissionId,
                     'permissionName': x.itemData.permissionName
@@ -142,6 +146,11 @@
                 error: function (msg) {
                     app.toast(msg, "error", 3000);
                     $addNewRoleModal.modal('hide');
+                },
+                complete: function (jqXHR, textStatus) {
+                    $grid1.refresh();
+                    $dxNewPermissionTreeView.dxTreeView("unselectAll");
+                    $dxNewRoleNameTextBox.dxTextBox("reset");
                 }
             });
 

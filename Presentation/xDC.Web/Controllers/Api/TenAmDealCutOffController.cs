@@ -13,12 +13,13 @@ using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services.App;
 using xDC.Utils;
+using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.ViewModels.Fid;
 using xDC_Web.ViewModels.TenAmCutOff;
 
 namespace xDC_Web.Controllers.Api
 {
-    [Authorize(Roles = "Administrator, Power User, FID, ISSD")]
+    [KflowApiAuthorize(Common.PermissionKey.Report_DCO_10am)]
     [RoutePrefix("api/TenAmDealCutOff")]
     public class TenAmDealCutOffController : ApiController
     {
@@ -387,6 +388,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPut]
         [Route("Summary/ClosingBalance/{reportDate}")]
+        [KflowApiAuthorize(Common.PermissionKey.Report_DCO_10am_EditClosingBalance)]
         public HttpResponseMessage UpdateClosingBalance(long reportDate, FormDataCollection form)
         {
             try

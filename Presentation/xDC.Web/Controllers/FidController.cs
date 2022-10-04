@@ -10,6 +10,7 @@ using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services.App;
 using xDC.Utils;
+using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.Extension.DocGenerator;
 using xDC_Web.Extension.MailMerge;
 using xDC_Web.ViewModels.Fid;
@@ -18,24 +19,26 @@ using xDC_Web.ViewModels.Fid.Treasury;
 
 namespace xDC_Web.Controllers
 {
-    [Authorize(Roles = "Administrator, Power User, FID")]
+    [Authorize]
+    [KflowAuthorize(Common.PermissionKey.FID)]
     [RoutePrefix("fid")]
     public class FidController : Controller
     {
-        // GET: Fid
         public ActionResult Index()
         {
             return View();
         }
 
-        #region 10 AM Cut Off
-        
+        #region FCA Tagging Form
+
+        [KflowAuthorize(Common.PermissionKey.FID_FcaTaggingForm)]
         [Route("FcaTagging")]
         public ActionResult FcaTagging()
         {
-            return View("TenAmCutOff/FcaTagging");
+            return View("FcaTagging/Index");
         }
 
+        [KflowAuthorize(Common.PermissionKey.FID_FcaTaggingForm_Edit)]
         [Route("FcaTagging/Edit/{settlementDateEpoch}/{currency}")]
         public ActionResult FcaTaggingEdit(long settlementDateEpoch, string currency)
         {
@@ -63,7 +66,7 @@ namespace xDC_Web.Controllers
                         var totalOutflow = FcaTaggingSvc.TotalOutflow(db, settlementDate.Value, currency);
 
                         model.ClosingBalance = totalOb + totalInflow - totalOutflow;
-                        return View("TenAmCutOff/FcaTaggingEdit", model);
+                        return View("FcaTagging/Edit", model);
                     }
                     else
                     {
@@ -82,13 +85,15 @@ namespace xDC_Web.Controllers
 
         #endregion
 
-        #region Treasury
+        #region Treasury Form
 
+        [KflowAuthorize(Common.PermissionKey.FID_TreasuryForm_View)]
         public ActionResult Treasury()
         {
             return View("Treasury/Index");
         }
 
+        [KflowAuthorize(Common.PermissionKey.FID_TreasuryForm_Edit)]
         [Route("Treasury/New")]
         public ActionResult TreasuryNew()
         {
@@ -101,6 +106,7 @@ namespace xDC_Web.Controllers
             return View("Treasury/New", model);
         }
 
+        [KflowAuthorize(Common.PermissionKey.FID_TreasuryForm_Edit)]
         [Route("Treasury/Edit/{id}")]
         public ActionResult TreasuryEdit(string id)
         {
@@ -146,6 +152,7 @@ namespace xDC_Web.Controllers
             
         }
 
+        [KflowAuthorize(Common.PermissionKey.FID_TreasuryForm_View)]
         [Route("Treasury/View/{id}")]
         public ActionResult TreasuryView(string id)
         {
@@ -200,12 +207,9 @@ namespace xDC_Web.Controllers
             
         }
 
-        #endregion
-
-        #region Print Form
-
         [HttpPost]
-        [Route("Print")]
+        [Route("Treasury/Print")]
+        [KflowAuthorize(Common.PermissionKey.FID_TreasuryForm_Download)]
         public ActionResult Print(string id, bool isExportAsExcel)
         {
             try
@@ -230,7 +234,8 @@ namespace xDC_Web.Controllers
             }
         }
 
-        [Route("Printed/{id}")]
+        [Route("Treasury/Printed/{id}")]
+        [KflowAuthorize(Common.PermissionKey.FID_TreasuryForm_Download)]
         public ActionResult ViewPrinted(string id)
         {
             try
@@ -268,5 +273,6 @@ namespace xDC_Web.Controllers
         }
 
         #endregion
+
     }
 }

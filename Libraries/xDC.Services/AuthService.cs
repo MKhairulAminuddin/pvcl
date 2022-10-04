@@ -306,13 +306,15 @@ namespace xDC.Services
             }
         }
 
-        public List<RolePermissionsRes> GetRolePermissions(int roleId, out bool status)
+        public List<RolePermissionsRes> GetRolePermissions(int selectedRoleId, out bool status)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var adminPermissions = db.AspNetRoles.FirstOrDefault(x => x.Name == "Administrator");
+                    var adminRole = db.AspNetRoles.FirstOrDefault(x => x.Name == "Administrator");
+                    var adminPermissionHeader = db.AspNetPermission.FirstOrDefault(x => x.PermissionName == "Administration");
+                    var corePermissionUnderAdmin = db.AspNetPermission.Where(x => x.Parent == adminPermissionHeader.Id && x.PermissionLevel == 2).ToList();
 
                     var permissions = db.AspNetPermission.ToList();
                     var permissionTreeView = new List<RolePermissionsRes>();
@@ -324,8 +326,8 @@ namespace xDC.Services
                             PermissionName = item.PermissionName,
                             Selected = false,
                             ParentId = item.Parent,
-                            RoleId = roleId,
-                            Disabled = (roleId == adminPermissions.Id && adminPermissions.AspNetPermission.Select(x => x.Id).Contains(item.Id))
+                            RoleId = selectedRoleId,
+                            Disabled = (selectedRoleId == adminRole.Id && corePermissionUnderAdmin.Select(x => x.Id).Contains(item.Id)) || (selectedRoleId == adminRole.Id && item.Id == adminPermissionHeader.Id)
                         });
                     }
                     foreach (var item in permissionTreeView)
@@ -336,7 +338,7 @@ namespace xDC.Services
                         }
                     }
 
-                    var selectedRolePermission = db.AspNetRoles.Include(x => x.AspNetPermission).FirstOrDefault(x => x.Id == roleId);
+                    var selectedRolePermission = db.AspNetRoles.Include(x => x.AspNetPermission).FirstOrDefault(x => x.Id == selectedRoleId);
 
                     foreach (var item in selectedRolePermission.AspNetPermission)
                     {
@@ -534,7 +536,9 @@ namespace xDC.Services
                 using (var db = new kashflowDBEntities())
                 {
                     var selectedRole = db.AspNetRoles.FirstOrDefault(x => x.Id == roleId);
-                    if (selectedRole != null)
+                    var isAdminRole = IsAdminRole(roleId);
+
+                    if (selectedRole != null && !isAdminRole)
                     {
                         db.AspNetRoles.Remove(selectedRole);
                         db.SaveChanges();
@@ -589,7 +593,65 @@ namespace xDC.Services
             }
         }
 
+        public bool IsRoleHaveAccess(string roleName, string permissionName)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var theRole = db.AspNetRoles.FirstOrDefault(x => x.Name == roleName);
+                    var permitted = false;
+
+                    if (theRole != null)
+                    {
+                        foreach (var rolePermissions in theRole.AspNetPermission)
+                        {
+                            if (rolePermissions.PermissionName == permissionName)
+                            {
+                                permitted = true;
+                            }
+                        }
+                    }
+
+                    return permitted;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+                return false;
+            }
+        }
+
         #endregion
 
+
+        #region Private Functions
+
+        private bool IsAdminRole(int roleId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var selectedRole = db.AspNetRoles.FirstOrDefault(x => x.Id == roleId);
+                    if (selectedRole != null)
+                    {
+                        db.AspNetRoles.Remove(selectedRole);
+                        db.SaveChanges();
+                    }
+
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+
+                return false;
+            }
+        }
+
+        #endregion
     }
 }

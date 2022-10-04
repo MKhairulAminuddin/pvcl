@@ -11,6 +11,7 @@ using xDC.Logging;
 using xDC.Services;
 using xDC.Services.App;
 using xDC.Utils;
+using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.Extension.DocGenerator;
 using xDC_Web.Extension.MailGenerator;
 using xDC_Web.Models;
@@ -19,10 +20,13 @@ using xDC_Web.ViewModels.Fid;
 
 namespace xDC_Web.Controllers
 {
-    [Authorize(Roles = "Administrator, Power User, ISSD")]
+    [Authorize]
+    [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
     [RoutePrefix("issd")]
     public class IssdController : BaseController
     {
+        #region Trade Settlement Form
+
         [Route("TradeSettlement")]
         public ActionResult TradeSettlement()
         {
@@ -70,7 +74,7 @@ namespace xDC_Web.Controllers
                         var totalFlow = TradeSettlementSvc.GetTotalFlow(db, form.Select(x => x.Id).ToList(), settlementDateOnly, currency);
 
                         vm.ClosingBalance = totalOb + totalFlow.Inflow - totalFlow.Outflow;
-                        
+
                         return View("TradeSettlement/View", vm);
                     }
                     else
@@ -90,7 +94,7 @@ namespace xDC_Web.Controllers
 
         #region TS Part A (Equity)
 
-        [Authorize(Roles = "ISSD")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/PartA/New")]
         public ActionResult NewPartA()
         {
@@ -104,8 +108,7 @@ namespace xDC_Web.Controllers
             return TS_View(id);
         }
 
-
-        [Authorize(Roles = "Power User, ISSD")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/PartA/Edit/{formId}")]
         public ActionResult EditPartA(string formId)
         {
@@ -116,7 +119,7 @@ namespace xDC_Web.Controllers
 
         #region TS Part B (BOND, CP, Notes/Papers, Coupon)
 
-        [Authorize(Roles = "ISSD")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/PartB/New")]
         public ActionResult NewPartB()
         {
@@ -131,7 +134,7 @@ namespace xDC_Web.Controllers
         }
 
 
-        [Authorize(Roles = "Power User, ISSD")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/PartB/Edit/{formId}")]
         public ActionResult EditPartB(string formId)
         {
@@ -142,7 +145,7 @@ namespace xDC_Web.Controllers
 
         #region TS Part C (REPO)
 
-        [Authorize(Roles = "ISSD")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/PartC/New")]
         public ActionResult NewPartC()
         {
@@ -157,7 +160,7 @@ namespace xDC_Web.Controllers
         }
 
 
-        [Authorize(Roles = "Power User, ISSD")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/PartC/Edit/{formId}")]
         public ActionResult EditPartC(string formId)
         {
@@ -168,7 +171,7 @@ namespace xDC_Web.Controllers
 
         #region TS Part D (MTM, FX)
 
-        [Authorize(Roles = "ISSD")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/PartD/New")]
         public ActionResult NewPartD()
         {
@@ -183,7 +186,7 @@ namespace xDC_Web.Controllers
         }
 
 
-        [Authorize(Roles = "Power User, ISSD")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/PartD/Edit/{formId}")]
         public ActionResult EditPartD(string formId)
         {
@@ -194,7 +197,7 @@ namespace xDC_Web.Controllers
 
         #region TS Part E (ALTID)
 
-        [Authorize(Roles = "ISSD")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/PartE/New")]
         public ActionResult NewPartE()
         {
@@ -209,7 +212,7 @@ namespace xDC_Web.Controllers
         }
 
 
-        [Authorize(Roles = "Power User, ISSD")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/PartE/Edit/{formId}")]
         public ActionResult EditPartE(string formId)
         {
@@ -220,7 +223,7 @@ namespace xDC_Web.Controllers
 
         #region TS Part F (Fees)
 
-        [Authorize(Roles = "ISSD")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/PartF/New")]
         public ActionResult NewPartF()
         {
@@ -235,7 +238,7 @@ namespace xDC_Web.Controllers
         }
 
 
-        [Authorize(Roles = "Power User, ISSD")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/PartF/Edit/{formId}")]
         public ActionResult EditPartF(string formId)
         {
@@ -246,7 +249,7 @@ namespace xDC_Web.Controllers
 
         #region TS Part G (Contribution)
 
-        [Authorize(Roles = "ISSD")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/PartG/New")]
         public ActionResult TS_PartG_New()
         {
@@ -259,8 +262,8 @@ namespace xDC_Web.Controllers
         {
             return TS_View(id);
         }
-        
-        [Authorize(Roles = "Power User, ISSD")]
+
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/PartG/Edit/{formId}")]
         public ActionResult TS_PartG_Edit(string formId)
         {
@@ -271,7 +274,7 @@ namespace xDC_Web.Controllers
 
         #region TS Part H (Others)
 
-        [Authorize(Roles = "ISSD")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/PartH/New")]
         public ActionResult TS_PartH_New()
         {
@@ -286,7 +289,7 @@ namespace xDC_Web.Controllers
         }
 
 
-        [Authorize(Roles = "Power User, ISSD")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/PartH/Edit/{formId}")]
         public ActionResult TS_PartH_Edit(string formId)
         {
@@ -299,6 +302,7 @@ namespace xDC_Web.Controllers
 
         [HttpPost]
         [Route("Print")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Download)]
         public ActionResult Print(string id, bool isExportAsExcel)
         {
             try
@@ -325,6 +329,7 @@ namespace xDC_Web.Controllers
 
         [HttpPost]
         [Route("PrintConsolidated")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Download)]
         public ActionResult PrintConsolidated(long settlementDate, string currency, bool isExportAsExcel)
         {
             try
@@ -357,6 +362,7 @@ namespace xDC_Web.Controllers
         }
 
         [Route("ViewPrinted/{id}")]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Download)]
         public ActionResult ViewPrinted(string id)
         {
             try
@@ -404,7 +410,7 @@ namespace xDC_Web.Controllers
             try
             {
                 var userEmail = string.Empty;
-                
+
                 var findUser = new AuthService().GetUser(User.Identity.Name);
                 if (findUser != null)
                 {
@@ -469,11 +475,11 @@ namespace xDC_Web.Controllers
                 ApprovedBy = form.ApprovedBy,
                 ApprovedDate = form.ApprovedDate,
                 ApprovalNote = wf?.WorkflowNotes,
-                
+
                 IsAdminEdited = form.AdminEditted,
                 AdminEditedBy = form.AdminEdittedBy,
                 AdminEditedDate = form.AdminEdittedDate,
-                
+
                 EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Issd) && form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval),
                 EnableReassign = (form.FormStatus == Common.FormStatus.PendingApproval && form.ApprovedBy != User.Identity.Name)
             };
@@ -630,15 +636,20 @@ namespace xDC_Web.Controllers
             }
         }
         #endregion
-        
-        #region 10 AM Cut Off
 
+        #endregion
+
+
+        #region FCA Tagging
+
+        [KflowAuthorize(Common.PermissionKey.FID_FcaTaggingForm)]
         [Route("FcaTagging")]
         public ActionResult FcaTagging()
         {
-            return View("FcaTagging/FcaTagging");
+            return View("FcaTagging/Index");
         }
 
+        [KflowAuthorize(Common.PermissionKey.FID_FcaTaggingForm_Edit)]
         [Route("FcaTagging/Edit/{settlementDateEpoch}/{currency}")]
         public ActionResult FcaTaggingEdit(long settlementDateEpoch, string currency)
         {
@@ -647,7 +658,7 @@ namespace xDC_Web.Controllers
                 using (var db = new kashflowDBEntities())
                 {
                     var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
-                    
+
                     var model = new EditFcaAccountAssignmentVM
                     {
                         Currency = currency,
@@ -666,7 +677,7 @@ namespace xDC_Web.Controllers
                         var totalOutflow = FcaTaggingSvc.TotalOutflow(db, settlementDate.Value, currency);
 
                         model.ClosingBalance = totalOb + totalInflow - totalOutflow;
-                        return View("FcaTagging/FcaTaggingEdit", model);
+                        return View("FcaTagging/Edit", model);
                     }
                     else
                     {
@@ -684,5 +695,6 @@ namespace xDC_Web.Controllers
         }
 
         #endregion
+
     }
 }

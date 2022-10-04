@@ -116,11 +116,11 @@
 
                 $.ajax({
                     type: "POST",
-                    url: window.location.origin + "/TenAmDealCutOff/Print",
+                    url: window.location.origin + "/Report/TenAmDealCutOff/Print",
                     data: data,
                     dataType: "text",
                     success: function (data) {
-                        var url = window.location.origin + "/TenAmDealCutOff/Printed/" + data;
+                        var url = window.location.origin + "/Report/TenAmDealCutOff/Printed/" + data;
                         window.location = url;
                     },
                     fail: function (jqXHR, textStatus, errorThrown) {

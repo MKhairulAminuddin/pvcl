@@ -74,7 +74,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="PermissionName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="PermissionName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="PermissionLevel" Type="int" Nullable="false" />
           <Property Name="Parent" Type="int" Nullable="false" />
         </EntityType>
@@ -426,16 +426,14 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="CouponType" Type="nvarchar" MaxLength="10" />
           <Property Name="BondType" Type="nvarchar" MaxLength="10" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6002: The table/view 'KashflowDb.dbo.Log_UserAccess' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="Log_UserAccess">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="150" />
-          <Property Name="ClientAddress" Type="nvarchar" MaxLength="150" />
-          <Property Name="ClientBrowser" Type="nvarchar" MaxLength="150" />
+          <Property Name="ClientAddress" Type="nvarchar" MaxLength="30" />
+          <Property Name="ClientBrowser" Type="nvarchar" MaxLength="50" />
           <Property Name="RecordedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="TenAmDealCutOff_ClosingBalance">
@@ -530,6 +528,7 @@ warning 6002: The table/view 'KashflowDb.dbo.Log_UserAccess' does not have a pri
           <EntitySet Name="Form_Workflow" EntityType="Self.Form_Workflow" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ISSD_FormHeader" EntityType="Self.ISSD_FormHeader" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ISSD_TradeSettlement" EntityType="Self.ISSD_TradeSettlement" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Log_UserAccess" EntityType="Self.Log_UserAccess" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TenAmDealCutOff_ClosingBalance" EntityType="Self.TenAmDealCutOff_ClosingBalance" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EDW_BankBalance" EntityType="Self.EDW_BankBalance" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
@@ -595,15 +594,6 @@ warning 6002: The table/view 'KashflowDb.dbo.Log_UserAccess' does not have a pri
     [EDW_TradeItem].[UpdatedBy] AS [UpdatedBy], 
     [EDW_TradeItem].[UpdatedDate] AS [UpdatedDate]
     FROM [dbo].[EDW_TradeItem] AS [EDW_TradeItem]</DefiningQuery>
-          </EntitySet>
-          <EntitySet Name="Log_UserAccess" EntityType="Self.Log_UserAccess" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [Log_UserAccess].[Id] AS [Id], 
-    [Log_UserAccess].[UserName] AS [UserName], 
-    [Log_UserAccess].[ClientAddress] AS [ClientAddress], 
-    [Log_UserAccess].[ClientBrowser] AS [ClientBrowser], 
-    [Log_UserAccess].[RecordedDate] AS [RecordedDate]
-    FROM [dbo].[Log_UserAccess] AS [Log_UserAccess]</DefiningQuery>
           </EntitySet>
           <AssociationSet Name="FK_dbo_AspNetRolePermissions_dbo_AspNetPermission_PermissionId" Association="Self.FK_dbo_AspNetRolePermissions_dbo_AspNetPermission_PermissionId">
             <End Role="AspNetPermission" EntitySet="AspNetPermission" />
@@ -1049,8 +1039,8 @@ warning 6002: The table/view 'KashflowDb.dbo.Log_UserAccess' does not have a pri
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="UserName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="ClientAddress" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="ClientBrowser" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ClientAddress" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="ClientBrowser" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="RecordedDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="Audit_10AMDCO_ClosingBalance">
@@ -1072,7 +1062,7 @@ warning 6002: The table/view 'KashflowDb.dbo.Log_UserAccess' does not have a pri
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PermissionName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PermissionName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="PermissionLevel" Type="Int32" Nullable="false" />
           <Property Name="Parent" Type="Int32" Nullable="false" />
           <NavigationProperty Name="AspNetRoles" Relationship="kashflowDbModel.AspNetRolePermissions" FromRole="AspNetPermission" ToRole="AspNetRoles" />

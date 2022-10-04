@@ -3,8 +3,8 @@
     $(function () {
 
         var referenceUrl = {
-            printRequest: window.location.origin + "/fid/Print",
-            printResponse: window.location.origin + "/fid/Printed/"
+            printRequest: window.location.origin + "/fid/Treasury/Print",
+            printResponse: window.location.origin + "/fid/Treasury/Printed/"
         };
 
         var $grid1;

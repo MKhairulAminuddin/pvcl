@@ -2,17 +2,18 @@
     $(function () {
         //#region Variable Definition
 
-        app.setSideMenuItemActive("/fid/FcaTagging");
-
         var $tabpanel,
             $grid,
             $dateSelectionBtn,
-            $printBtn;
+            $printBtn,
+            $showPendingAssignmentBtn = $("#showPendingAssignmentBtn"),
+            $clearFilterBtn = $("#clearFilterBtn"),
+            $showTodayBtn = $("#showTodayBtn");
 
         var referenceUrl = {
 
-            loadTcaTagging: window.location.origin + "/api/fid/FcaTagging",
-            editTcaTaggingPage: window.location.origin + "/fid/FcaTagging/Edit/"
+            loadTcaTagging: window.location.origin + "/api/issd/FcaTagging",
+            editTcaTaggingPage: window.location.origin + "/issd/FcaTagging/Edit/"
 
         };
 
@@ -25,7 +26,36 @@
 
         //#region Other Widgets
         
+        $showPendingAssignmentBtn.dxButton({
+            onClick: function (e) {
+                $grid.filter([
+                    ["countPendingFees", ">", 0],
+                    "or",
+                    ["countPendingAltid", ">", 0],
+                    "or",
+                    ["countPendingOthers", ">", 0],
+                    "or",
+                    ["countUnclassifiedBond", ">", 0],
+                    "or",
+                    ["countUnclassifiedCoupon", ">", 0]
+                ]);
+            }
+        });
 
+        $showTodayBtn.dxButton({
+            onClick: function (e) {
+                console.log(moment().startOf("day"))
+                $grid.filter([
+                    ["settlementDate", ">", moment().startOf("day")]
+                ]);
+            }
+        });
+
+        $clearFilterBtn.dxButton({
+            onClick: function (e) {
+                $grid.clearFilter();
+            }
+        });
 
         //#endregion
 
@@ -61,36 +91,8 @@
                 {
                     caption: "Pending Assignment",
                     cellTemplate: function (container, options) {
-
-                        if (options.data.countPendingEquity > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingEquity + " x Equity").appendTo(container);
-                        }
-                        if (options.data.countPendingBond > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingBond + " x Bond").appendTo(container);
-                        }
-                        if (options.data.countPendingCp > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingCp + " x CP").appendTo(container);
-                        }
-                        if (options.data.countPendingNotesPapers > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingNotesPapers + " x Notes & Papers").appendTo(container);
-                        }
-                        if (options.data.countPendingRepo > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingRepo + " x Repo").appendTo(container);
-                        }
-                        if (options.data.countPendingCoupon > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingCoupon + " x Coupon").appendTo(container);
-                        }
                         if (options.data.countPendingFees > 0) {
                             $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingFees + " x Fees").appendTo(container);
-                        }
-                        if (options.data.countPendingMtm > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingMtm + " x MTM").appendTo(container);
-                        }
-                        if (options.data.countPendingFx > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingFx + " x FX").appendTo(container);
-                        }
-                        if (options.data.countPendingContribution > 0) {
-                            $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingContribution + " x Contribution").appendTo(container);
                         }
                         if (options.data.countPendingAltid > 0) {
                             $("<span />").addClass("label label-danger").css("margin-left", "2px").text(options.data.countPendingAltid + " x ALTID").appendTo(container);
@@ -147,11 +149,6 @@
             },
             filterPanel: {
                 visible: true
-            },
-            stateStoring: {
-                enabled: true,
-                type: "localStorage",
-                storageKey: "xDC_T10_Grid"
             }
         }).dxDataGrid("instance");
 

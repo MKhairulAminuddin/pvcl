@@ -30,198 +30,55 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("FcaTagging")]
-        public HttpResponseMessage TcaTaggingLandingPage(DataSourceLoadOptions loadOptions)
+        public HttpResponseMessage FcaTaggingSummaryList(DataSourceLoadOptions loadOptions)
         {
-            try
+            var response = new FcaTaggingFormService().GetSummaryListForFidView(out bool statusRequest);
+
+            if (statusRequest)
             {
-                using (var db = new kashflowDBEntities())
-                {
-                    var approvedTsForms = db.ISSD_FormHeader.Where(x => x.FormStatus == Common.FormStatus.Approved).Select(x => x.Id).ToList();
-
-                    var result = db.ISSD_TradeSettlement
-                        .Join(
-                            db.ISSD_FormHeader, 
-                            a => a.FormId, 
-                            b => b.Id,
-                            (a, b) => new { ts_item = a, ts_form = b }
-                            )
-                        .Where(x => x.ts_form.FormStatus == Common.FormStatus.Approved && x.ts_form.SettlementDate != null)
-                        .GroupBy(x => new
-                        {
-                            x.ts_form.SettlementDate, x.ts_form.Currency
-                        })
-                        .Select(x => new Ts10AmHomeGridVM
-                        {
-                            Currency = x.Key.Currency,
-                            SettlementDate = x.Key.SettlementDate.Value,
-
-                            CountPendingEquity = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Equity 
-                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingBond = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Bond
-                                                            && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingCp = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Cp
-                                                          && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingNotesPapers = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.NotesPapers
-                                                                   && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingRepo = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Repo
-                                                            && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingMtm = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Mtm
-                                                           && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingFx = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fx
-                                                          && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingAltid = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Altid
-                                                             && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingOthers = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others
-                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-
-                            CountPendingCoupon = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Coupon
-                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingContribution = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Cn
-                                                                    && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingFees = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fees
-                                                            && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0))
-                        })
-                        .ToList();
-
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                }
+                return Request.CreateResponse(DataSourceLoader.Load(response, loadOptions));
             }
-            catch (Exception ex)
+            else
             {
-                Logger.LogError(ex);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
             }
         }
 
         [HttpGet]
-        [Route("TcaTagging/AvailableTrades/{settlementDateEpoch}/{currency}")]
-        public HttpResponseMessage TcaTagging_AvailableTrades(long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
+        [Route("FcaTagging/AvailableTrades/{settlementDateEpoch}/{currency}")]
+        public HttpResponseMessage FcaTagging_AvailableTrades(long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
         {
-            try
+            var response = new FcaTaggingFormService().GetDetailForFidView(settlementDateEpoch, currency, out bool statusRequest);
+
+            if (statusRequest)
             {
-                using (var db = new kashflowDBEntities())
-                {
-                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
-                    
-                    var result = db.ISSD_TradeSettlement
-                        .Join(
-                            db.ISSD_FormHeader,
-                            a => a.FormId,
-                            b => b.Id,
-                            (a, b) => new { ts_item = a, ts_form = b }
-                        )
-                        .Where(x => x.ts_form.FormStatus == Common.FormStatus.Approved 
-                                    && x.ts_form.SettlementDate != null
-                                    && DbFunctions.TruncateTime(x.ts_form.SettlementDate) == DbFunctions.TruncateTime(settlementDate)
-                                    && x.ts_form.Currency == currency)
-                        .GroupBy(x => new
-                        {
-                            x.ts_form.SettlementDate,
-                            x.ts_form.Currency
-                        })
-                        .Select(x => new Ts10AmAvailableTradeVM()
-                    {
-                        SettlementDate = x.Key.SettlementDate.Value,
-                        Currency = x.Key.Currency,
-                        
-                        Equity = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Equity) > 0,
-                        Bond = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Bond) > 0,
-                        Cp = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Cp) > 0,
-                        NotesPapers = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.NotesPapers) > 0,
-                        Repo = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Repo) > 0,
-                        Coupon = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Coupon) > 0,
-                        Fees = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fees) > 0,
-                        Mtm = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Mtm) > 0,
-                        Fx = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fx) > 0,
-                        Contribution = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Cn) > 0,
-                        Altid = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Altid) > 0,
-                        Others = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others) > 0,
-
-                        CountPendingEquity = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Equity
-                                                          && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                        CountPendingBond = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Bond
-                                && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                        CountPendingCp = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Cp
-                                                      && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingNotesPapers = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.NotesPapers
-                                                                   && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingRepo = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Repo
-                                                            && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingMtm = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Mtm
-                                                           && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingFx = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fx
-                                                          && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingAltid = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Altid
-                                                             && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingOthers = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others
-                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-
-                            //xde outflow for this table
-                            CountPendingCoupon = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Coupon
-                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingContribution = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Cn
-                                                                    && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
-                            CountPendingFees = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fees
-                                                            && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0))
-
-                        }).ToList();
-                    
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                }
+                return Request.CreateResponse(DataSourceLoader.Load(response, loadOptions));
             }
-            catch (Exception ex)
+            else
             {
-                Logger.LogError(ex);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
             }
         }
 
         [HttpGet]
-        [Route("TcaTaggingGrid/TradeItem/{tradeType}/{settlementDateEpoch}/{currency}")]
+        [Route("FcaTaggingGrid/TradeItem/{tradeType}/{settlementDateEpoch}/{currency}")]
         public HttpResponseMessage TcaTaggingGrid(string tradeType, long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
         {
-            try
+            var response = new FcaTaggingFormService().GetGridData(tradeType, settlementDateEpoch, currency, out bool statusRequest);
+
+            if (statusRequest)
             {
-                using (var db = new kashflowDBEntities())
-                {
-                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
-                    var tradeItemType = Common.TsCategoryUrlParamMapping(tradeType);
-
-                    if (string.IsNullOrEmpty(tradeItemType))
-                    {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid Trade Item Type");
-                    }
-
-                    var approvedIds = db.ISSD_FormHeader
-                        .Where(x => x.FormStatus == Common.FormStatus.Approved
-                                             && x.SettlementDate != null
-                                             && DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate)
-                                             && x.Currency == currency)
-                        .Select(x => x.Id)
-                        .ToList();
-
-                    if (!approvedIds.Any())
-                    {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not found");
-                    }
-
-                    var tradeItems =
-                        db.ISSD_TradeSettlement
-                            .Where(x => x.InstrumentType == tradeItemType && approvedIds.Contains(x.FormId))
-                            .ToList();
-
-                    return Request.CreateResponse(DataSourceLoader.Load(tradeItems, loadOptions));
-                }
+                return Request.CreateResponse(DataSourceLoader.Load(response, loadOptions));
             }
-            catch (Exception ex)
+            else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
             }
         }
 
         [HttpPut]
-        [Route("TcaTaggingGrid/TradeItem")]
-        public HttpResponseMessage TcaTaggingGridUpdate(FormDataCollection form)
+        [Route("FcaTaggingGrid/TradeItem")]
+        public HttpResponseMessage FcaTaggingGridUpdate(FormDataCollection form)
         {
             using (var db = new kashflowDBEntities())
             {
@@ -251,53 +108,25 @@ namespace xDC_Web.Controllers.Api
         }
 
         [HttpGet]
-        [Route("TcaTagging/FcaAccount")]
-        public HttpResponseMessage TcaTagging_FcaAccount(DataSourceLoadOptions loadOptions)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var result = FidService.List_FcaBankAccount(db);
-                    
-                    result.Add("RENTAS");
-                    result.Add("MMA");
-
-                    return Request.CreateResponse(DataSourceLoader.Load(result.Select(x => new { Name = x}).Distinct().OrderBy(x => x.Name), loadOptions));
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-        }
-
-        [HttpGet]
         [Route("FcaTagging/FcaAccount")]
-        public HttpResponseMessage FcaTagging_FcaAccount(string currency, DataSourceLoadOptions loadOptions)
+        public HttpResponseMessage FcaTagging_FcaAccount(DataSourceLoadOptions loadOptions)
         {
-            try
+            var response = new FcaTaggingFormService().GetFcaBankAccount(out bool statusRequest);
+
+            if (statusRequest)
             {
-                using (var db = new kashflowDBEntities())
-                {
-                    var result = FidService.List_FcaBankAccount(db, currency);
-
-
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                }
+                return Request.CreateResponse(DataSourceLoader.Load(response, loadOptions));
             }
-            catch (Exception ex)
+            else
             {
-                Logger.LogError(ex);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
             }
         }
         
         #endregion
 
 
-        #region Treasury
+        #region Treasury Form
 
         [HttpGet]
         [Route("Treasury")]

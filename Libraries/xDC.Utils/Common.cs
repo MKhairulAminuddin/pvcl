@@ -471,28 +471,30 @@ namespace xDC.Utils
             public const string Settings_EmailNotification = "Settings - Email Notification";
             public const string Settings_ApproverAssignment = "Settings - Approver Assignment";
 
-            public const string TreasuryForm = "Treasury Form";
-            public const string TreasuryForm_Creator = "Treasury Form - Creator";
-            public const string TreasuryForm_View = "Treasury Form - View";
-            public const string TreasuryForm_Download = "Treasury Form - Download";
-            public const string TreasuryForm_Workflow = "Treasury Form - Workflow";
+            public const string ISSD = "ISSD";
+            public const string ISSD_TradeSettlementForm_View = "Trade Settlement Form - View";
+            public const string ISSD_TradeSettlementForm_Edit = "Trade Settlement Form - Edit";
+            public const string ISSD_TradeSettlementForm_Download = "Trade Settlement Form - Download";
+            public const string ISSD_FcaTaggingForm = "FCA Tagging Form - View";
+            public const string ISSD_FcaTaggingForm_Edit = "FCA Tagging Form - Edit";
 
-            public const string TradeSettlementForm = "Trade Settlement";
-            public const string TradeSettlementForm_Creator = "Trade Settlement Form - Creator";
-            public const string TradeSettlementForm_View = "Trade Settlement Form - View";
-            public const string TradeSettlementForm_Download = "Trade Settlement Form - Download";
-            public const string TradeSettlementForm_Workflow = "Trade Settlement Form - Workflow";
+            public const string FID = "FID";
+            public const string FID_TreasuryForm_View = "Treasury Form - View";
+            public const string FID_TreasuryForm_Edit = "Treasury Form - Edit";
+            public const string FID_TreasuryForm_Download = "Treasury Form - Download";
+            public const string FID_FcaTaggingForm = "FCA Tagging Form - View";
+            public const string FID_FcaTaggingForm_Edit = "FCA Tagging Form - Edit";
 
-            public const string InflowFundForm = "Inflow Fund Form";
-            public const string InflowFundForm_Creator = "Inflow Fund Form - Creator";
-            public const string InflowFundForm_View = "Inflow Fund Form - View";
-            public const string InflowFundForm_Download = "Inflow Fund Form - Download";
-            public const string InflowFundForm_Workflow = "Inflow Fund Form - Workflow";
+            public const string AMSD = "AMSD";
+            public const string AMSD_InflowFundForm_View = "Inflow Fund Form - View";
+            public const string AMSD_InflowFundForm_Edit = "Inflow Fund Form - Edit";
+            public const string AMSD_InflowFundForm_Download = "Inflow Fund Form - Download";
 
-            public const string FCATagging = "FCA Tagging";
-            public const string FCATagging_Home = "FCA Tagging - View";
-            public const string FCATagging_Tag = "FCA Tagging - Tag";
-
+            public const string Report = "Report";
+            public const string Report_DCO_MYR = "Report - Deal Cut Off MYR";
+            public const string Report_DCO_FCY = "Report - Deal Cut Off FCY";
+            public const string Report_DCO_10am = "Report - Deal Cut Off 10 AM";
+            public const string Report_DCO_10am_EditClosingBalance = "Report - Deal Cut Off 10 AM - Edit Closing Balance";
         }
 
         public static class  CutOffViolationAction

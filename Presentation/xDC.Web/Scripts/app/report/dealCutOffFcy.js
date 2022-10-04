@@ -11,8 +11,8 @@
         var $viewFormRemarksModal = $("#viewFormRemarksModal");
 
         var referenceUrl = {
-            printRequest: window.location.origin + "/DealCutOff/Fcy/Print",
-            printResponse: window.location.origin + "/DealCutOff/Fcy/Printed/",
+            printRequest: window.location.origin + "/Report/DealCutOffFcy/Print",
+            printResponse: window.location.origin + "/Report/DealCutOffFcy/Printed/",
 
             loadFormLists: window.location.origin + "/api/common/FormList/",
             loadFormRemarks: window.location.origin + "/api/common/FormRemarks/"

@@ -8,33 +8,29 @@
 <section class="content container-fluid">
 
     <div class="row">
-        <div class="col-md-4 col-sm-6 col-xs-12">
-            <div class="box box-info">
-                <div class="box-header with-border">
-                    <h3 class="box-title">REGISTERED USERS</h3>
-                </div>
-                <div class="box-body">
-                    @foreach (var item in Model.TotalRegisteredUsers)
-                    {
-                        <span>@item.Key (<strong>@item.Value</strong>)</span><br />
-                    }
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="col-md-6 col-sm-6 col-xs-12">
             <div class="box box-info">
                 <div class="box-header with-border">
                     <h3 class="box-title">USERS BY DEPARTMENT</h3>
                 </div>
                 <div class="box-body" style="margin-left: 0">
-                    @foreach (var item in Model.TotalDepartmentBreakdown)
-                    {
-                        <span>@item.Key (<strong>@item.Value</strong>)</span><br />
-                    }
-
+                    @(Html.DevExtreme().PieChart()
+                        .ID("pieUsersByDepartment")
+                        .Palette(VizPalette.Bright)
+                        .Series(s => s
+                            .Add()
+                            .ArgumentField("Key")
+                            .ValueField("Value")
+                            .Label(l => l
+                                .Visible(true)
+                                .Connector(c => c
+                                    .Visible(true)
+                                    .Width(1)
+                                )
+                            )
+                        )
+                        .DataSource(Model.TotalDepartmentBreakdown)
+                    )
                 </div>
 
             </div>
@@ -43,16 +39,29 @@
 
 
         <div class="clearfix visible-sm-block"></div>
-        <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="col-md-6 col-sm-6 col-xs-12">
             <div class="box box-info">
                 <div class="box-header with-border">
                     <h3 class="box-title">USERS BY GROUPS</h3>
                 </div>
                 <div class="box-body" style="margin-left: 0">
-                    @foreach (var item in Model.TotalUserGroupBreakdown)
-                    {
-                        <span>@item.Key (<strong>@item.Value</strong>)</span><br />
-                    }
+                    @(Html.DevExtreme().PieChart()
+                        .ID("pieUsersByPermission")
+                        .Palette(VizPalette.Bright)
+                        .Series(s => s
+                            .Add()
+                            .ArgumentField("Key")
+                            .ValueField("Value")
+                            .Label(l => l
+                                .Visible(true)
+                                .Connector(c => c
+                                    .Visible(true)
+                                    .Width(1)
+                                )
+                            )
+                        )
+                        .DataSource(Model.TotalUserGroupBreakdown)
+                    )
                 </div>
 
             </div>
