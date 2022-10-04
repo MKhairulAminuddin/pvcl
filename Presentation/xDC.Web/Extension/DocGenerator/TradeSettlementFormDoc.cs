@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using xDC.Domain.ISSD_TS;
+using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services.App;
@@ -101,7 +102,7 @@ namespace xDC_Web.Extension.DocGenerator
                             }
                         }
 
-                        var getOpeningBalance = new List<TS_OpeningBalance>();
+                        var getOpeningBalance = new List<TsOpeningBalance>();
                         var firstForm = getForm.FirstOrDefault();
                         if (firstForm != null)
                         {
@@ -187,7 +188,7 @@ namespace xDC_Web.Extension.DocGenerator
             return workbook;
         }
 
-        private IWorkbook GenerateDocumentConsolidated(DateTime settlementDate, string currency, List<Form_Workflow> formWorkflow, List<ISSD_TradeSettlement> trades, List<TS_OpeningBalance> ob)
+        private IWorkbook GenerateDocumentConsolidated(DateTime settlementDate, string currency, List<Form_Workflow> formWorkflow, List<ISSD_TradeSettlement> trades, List<TsOpeningBalance> ob)
         {
             IWorkbook workbook = new Workbook();
             workbook.Options.Culture = new CultureInfo("en-US");

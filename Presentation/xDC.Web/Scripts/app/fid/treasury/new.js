@@ -39,7 +39,7 @@
 
             dsApproverList: window.location.origin + "/api/common/approverList/treasury",
 
-            dsFcaAccount: window.location.origin + "/api/fid/TcaTagging/FcaAccount",
+            dsFcaAccount: window.location.origin + "/api/fid/FcaTagging/FcaAccount",
 
             postNewFormRequest: window.location.origin + "/api/fid/Treasury/New",
             postNewFormResponse: window.location.origin + "/fid/Treasury/View/"
@@ -266,7 +266,7 @@
             deferRendering: false,
             onValueChanged: function (data) {
                 if (data.value == "MYR") {
-                    console.log("ohoi");
+                    
                 }
                 $outflowDepositGrid.refresh();
             }

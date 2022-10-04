@@ -143,8 +143,19 @@
             type: "default",
             icon: "print",
             onClick: function (e) {
-                // search function here
-                loadDataToGrid();
+                const workbook = new ExcelJS.Workbook();
+                const formAuditWS = workbook.addWorksheet("Form Audit");
+
+                DevExpress.excelExporter.exportDataGrid({
+                    worksheet: formAuditWS,
+                    component: $dg_auditForm,
+                })
+                .then(() => {
+                    workbook.xlsx.writeBuffer().then((buffer) => {
+                        saveAs(new Blob([buffer], { type: 'application/octet-stream' }), moment().format("DDMMYYYY_HHmm_") + 'FormAudit.xlsx');
+                    })
+                });
+
             }
         }).dxButton("instance");
 

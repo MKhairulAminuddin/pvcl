@@ -44,9 +44,10 @@
 
         $showTodayBtn.dxButton({
             onClick: function (e) {
-                console.log(moment().startOf("day"))
                 $grid.filter([
-                    ["settlementDate", ">", moment().startOf("day")]
+                    ["settlementDate", ">=", moment().startOf("day").toDate()],
+                    "and",
+                    ["settlementDate", "<", moment().add(1, "days").toDate()]
                 ]);
             }
         });

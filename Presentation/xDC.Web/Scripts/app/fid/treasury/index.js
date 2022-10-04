@@ -1,13 +1,56 @@
 ﻿(function ($, window, document) {
 
     $(function () {
+        var $grid1,
+            $todaySubmissionBtn = $("#todaySubmissionBtn"),
+            $mySubmissionBtn = $("#mySubmissionBtn"),
+            $pendingMyApprovalBtn = $("#pendingMyApprovalBtn"),
+            $clearFilterBtn = $("#clearFilterBtn");
 
         var referenceUrl = {
             printRequest: window.location.origin + "/fid/Treasury/Print",
             printResponse: window.location.origin + "/fid/Treasury/Printed/"
         };
 
-        var $grid1;
+        $pendingMyApprovalBtn.dxButton({
+            onClick: function (e) {
+                $grid1.filter([
+                    ["approvedBy", "=", window.currentUser],
+                    "and",
+                    [
+                        ["formStatus", "=", "Pending Approval"],
+                        "or",
+                        ["formStatus", "=", "Pending Approval (Resubmission)"]
+                    ]
+                    
+                ]);
+            }
+        });
+
+        $mySubmissionBtn.dxButton({
+            onClick: function (e) {
+                $grid1.filter([
+                    ["preparedBy", "=", window.currentUser]
+                ]);
+            }
+        });
+
+        $todaySubmissionBtn.dxButton({
+            onClick: function (e) {
+                $grid1.filter([
+                    ["preparedDate", ">=", moment().startOf("day").toDate()],
+                    "and",
+                    ["preparedDate", "<", moment().add(1, "days").toDate()]
+                ]);
+            }
+        });
+
+        $clearFilterBtn.dxButton({
+            onClick: function (e) {
+                $grid1.clearFilter();
+            }
+        });
+        
         
         $grid1 = $("#grid1").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
@@ -230,7 +273,7 @@
             stateStoring: {
                 enabled: true,
                 type: "localStorage",
-                storageKey: "xDC_Treasury_Grid"
+                storageKey: "xDC_Treasury_Grid_1"
             }
         }).dxDataGrid("instance");
         

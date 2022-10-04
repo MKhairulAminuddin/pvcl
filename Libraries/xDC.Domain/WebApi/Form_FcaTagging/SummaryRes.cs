@@ -10,6 +10,20 @@ namespace xDC.Domain.WebApi.Form_FcaTagging
     {
         public string Currency { get; set; }
         public DateTime SettlementDate { get; set; }
+
+        public int CountEquity { get; set; }
+        public int CountBond { get; set; }
+        public int CountCp { get; set; }
+        public int CountNotesPapers { get; set; }
+        public int CountRepo { get; set; }
+        public int CountCoupon { get; set; }
+        public int CountFees { get; set; }
+        public int CountMtm { get; set; }
+        public int CountFx { get; set; }
+        public int CountContribution { get; set; }
+        public int CountAltid { get; set; }
+        public int CountOthers { get; set; }
+
         public int CountPendingEquity { get; set; }
         public int CountPendingBond { get; set; }
         public int CountPendingCp { get; set; }

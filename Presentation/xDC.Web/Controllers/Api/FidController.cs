@@ -32,7 +32,7 @@ namespace xDC_Web.Controllers.Api
         [Route("FcaTagging")]
         public HttpResponseMessage FcaTaggingSummaryList(DataSourceLoadOptions loadOptions)
         {
-            var response = new FcaTaggingFormService().GetSummaryListForFidView(out bool statusRequest);
+            var response = new FcaTaggingFormService().DxGrid_GetSummaryForFidView(out bool statusRequest);
 
             if (statusRequest)
             {
@@ -48,7 +48,7 @@ namespace xDC_Web.Controllers.Api
         [Route("FcaTagging/AvailableTrades/{settlementDateEpoch}/{currency}")]
         public HttpResponseMessage FcaTagging_AvailableTrades(long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
         {
-            var response = new FcaTaggingFormService().GetDetailForFidView(settlementDateEpoch, currency, out bool statusRequest);
+            var response = new FcaTaggingFormService().DxGrid_GetDetailForFidView(settlementDateEpoch, currency, out bool statusRequest);
 
             if (statusRequest)
             {
@@ -64,7 +64,7 @@ namespace xDC_Web.Controllers.Api
         [Route("FcaTaggingGrid/TradeItem/{tradeType}/{settlementDateEpoch}/{currency}")]
         public HttpResponseMessage TcaTaggingGrid(string tradeType, long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
         {
-            var response = new FcaTaggingFormService().GetGridData(tradeType, settlementDateEpoch, currency, out bool statusRequest);
+            var response = new FcaTaggingFormService().DxGrid_GetIndividualGridData(tradeType, settlementDateEpoch, currency, out bool statusRequest);
 
             if (statusRequest)
             {
@@ -111,7 +111,7 @@ namespace xDC_Web.Controllers.Api
         [Route("FcaTagging/FcaAccount")]
         public HttpResponseMessage FcaTagging_FcaAccount(DataSourceLoadOptions loadOptions)
         {
-            var response = new FcaTaggingFormService().GetFcaBankAccount(out bool statusRequest);
+            var response = new FcaTaggingFormService().List_GetFcaBankAccount(out bool statusRequest);
 
             if (statusRequest)
             {

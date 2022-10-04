@@ -12,6 +12,7 @@ namespace xDC_Web.Controllers
     [KflowAuthorize(Common.PermissionKey.AuditTrail)]
     public class AuditController : Controller
     {
+        [KflowAuthorize(Common.PermissionKey.AuditTrail)]
         public ActionResult Index()
         {
             return View();
@@ -19,6 +20,12 @@ namespace xDC_Web.Controllers
 
         [KflowAuthorize(Common.PermissionKey.AuditTrail_FormAudit)]
         public ActionResult Form()
+        {
+            return View();
+        }
+
+        [KflowAuthorize(Common.PermissionKey.AuditTrail_UserAccessAudit)]
+        public ActionResult UserAccess()
         {
             return View();
         }

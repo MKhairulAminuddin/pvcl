@@ -8,6 +8,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using xDC.Domain.ISSD_TS;
+using xDC.Domain.Web.FID.FcaTaggingForm;
+using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Domain.WebApi.Form_FcaTagging;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
@@ -18,7 +21,7 @@ namespace xDC.Services
 {
     public class FcaTaggingFormService
     {
-        public List<SummaryRes> GetSummaryListForIssdView(out bool reqStatus)
+        public List<SummaryRes> DxGrid_GetSummaryForIssdView(out bool reqStatus)
         {
             try
             {
@@ -43,6 +46,19 @@ namespace xDC.Services
                         {
                             Currency = x.Key.Currency,
                             SettlementDate = x.Key.SettlementDate.Value,
+
+                            CountEquity = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Equity),
+                            CountBond = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Bond),
+                            CountCp = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Cp),
+                            CountNotesPapers = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.NotesPapers),
+                            CountRepo = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Repo),
+                            CountCoupon = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Coupon),
+                            CountContribution = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Cn),
+                            CountAltid = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Altid),
+                            CountOthers = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others),
+                            CountFees = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fees),
+                            CountMtm = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Mtm),
+                            CountFx = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fx),
 
                             CountPendingAltid = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Altid
                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0)),
@@ -75,7 +91,7 @@ namespace xDC.Services
             }
         }
 
-        public List<SummaryRes> GetSummaryListForFidView(out bool reqStatus)
+        public List<SummaryRes> DxGrid_GetSummaryForFidView(out bool reqStatus)
         {
             try
             {
@@ -100,6 +116,19 @@ namespace xDC.Services
                         {
                             Currency = x.Key.Currency,
                             SettlementDate = x.Key.SettlementDate.Value,
+
+                            CountEquity = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Equity),
+                            CountBond = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Bond),
+                            CountCp = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Cp),
+                            CountNotesPapers = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.NotesPapers),
+                            CountRepo = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Repo),
+                            CountCoupon = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Coupon),
+                            CountContribution = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Cn),
+                            CountAltid = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Altid),
+                            CountOthers = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Others),
+                            CountFees = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fees),
+                            CountMtm = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Mtm),
+                            CountFx = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fx),
 
                             CountPendingEquity = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Equity
                                                               && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0 || y.ts_item.OutflowFrom == null && y.ts_item.OutflowAmount > 0)),
@@ -141,7 +170,7 @@ namespace xDC.Services
             }
         }
 
-        public List<DetailRes> GetDetailForIssdView(long settlementDateEpoch, string currency, out bool reqStatus)
+        public List<DetailRes> DxGrid_GetDetailForIssdView(long settlementDateEpoch, string currency, out bool reqStatus)
         {
             try
             {
@@ -208,7 +237,7 @@ namespace xDC.Services
             }
         }
 
-        public List<DetailRes> GetDetailForFidView(long settlementDateEpoch, string currency, out bool reqStatus)
+        public List<DetailRes> DxGrid_GetDetailForFidView(long settlementDateEpoch, string currency, out bool reqStatus)
         {
             try
             {
@@ -291,7 +320,7 @@ namespace xDC.Services
             }
         }
 
-        public List<ISSD_TradeSettlement> GetGridData(string tradeType, long settlementDateEpoch, string currency, out bool reqStatus)
+        public List<ISSD_TradeSettlement> DxGrid_GetIndividualGridData(string tradeType, long settlementDateEpoch, string currency, out bool reqStatus)
         {
             try
             {
@@ -335,7 +364,7 @@ namespace xDC.Services
             }
         }
 
-        public List<FcaBankAccountRes> GetFcaBankAccount(out bool reqStatus)
+        public List<FcaBankAccountRes> List_GetFcaBankAccount(out bool reqStatus)
         {
             try
             {
@@ -349,6 +378,52 @@ namespace xDC.Services
                     reqStatus = true;
                     return result.Select(x => new FcaBankAccountRes { Name = x }).Distinct().OrderBy(x => x.Name).ToList();
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                reqStatus = false;
+                return null;
+            }
+        }
+
+        public FcaAccountAssignmentFormVM Page_FcaTaggingForm(long settlementDateEpoch, string currency, out bool reqStatus)
+        {
+            reqStatus = true;
+
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+
+                    var model = new FcaAccountAssignmentFormVM
+                    {
+                        Currency = currency,
+                        OpeningBalance = new List<TsOpeningBalance>()
+                    };
+
+                    if (settlementDate != null)
+                    {
+                        model.SettlementDate = settlementDate.Value;
+
+                        var ob = FcaTaggingSvc.GetOpeningBalance(db, settlementDate.Value, currency);
+                        model.OpeningBalance.AddRange(ob);
+                        var totalOb = model.OpeningBalance.Sum(x => x.Amount);
+
+                        var totalInflow = FcaTaggingSvc.TotalInflow(db, settlementDate.Value, currency);
+                        var totalOutflow = FcaTaggingSvc.TotalOutflow(db, settlementDate.Value, currency);
+
+                        model.ClosingBalance = totalOb + totalInflow - totalOutflow;
+                        return model;
+                    }
+                    else
+                    {
+                        reqStatus = false;
+                        return null;
+                    }
+                }
+
             }
             catch (Exception ex)
             {

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using xDC.Domain.ISSD_TS;
+using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Infrastructure.Application;
 using xDC.Utils;
 
@@ -76,9 +77,9 @@ namespace xDC.Services.App
             return trades;
         }
 
-        public static List<TS_OpeningBalance> GetOpeningBalance(kashflowDBEntities db, DateTime settlementDate, string currency)
+        public static List<TsOpeningBalance> GetOpeningBalance(kashflowDBEntities db, DateTime settlementDate, string currency)
         {
-            var result = new List<TS_OpeningBalance>();
+            var result = new List<TsOpeningBalance>();
 
             var ob = db.EDW_BankBalance
                 .AsNoTracking()
@@ -94,7 +95,7 @@ namespace xDC.Services.App
 
             foreach (var item in ob)
             {
-                result.Add(new TS_OpeningBalance()
+                result.Add(new TsOpeningBalance()
                 {
                     Account = item.account,
                     Amount = item.total

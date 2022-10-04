@@ -6,6 +6,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using xDC.Domain.ISSD_TS;
+using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services;
@@ -64,7 +65,7 @@ namespace xDC_Web.Controllers
                             FormStatus = form.First().FormStatus,
                             SettlementDate = form.First().SettlementDate,
                             Currency = form.First().Currency,
-                            OpeningBalance = new List<TS_OpeningBalance>()
+                            OpeningBalance = new List<TsOpeningBalance>()
                         };
 
                         var ob = TradeSettlementSvc.GetOpeningBalance(db, settlementDateOnly, currency);
@@ -662,7 +663,7 @@ namespace xDC_Web.Controllers
                     var model = new EditFcaAccountAssignmentVM
                     {
                         Currency = currency,
-                        OpeningBalance = new List<TS_OpeningBalance>()
+                        OpeningBalance = new List<TsOpeningBalance>()
                     };
 
                     if (settlementDate != null)

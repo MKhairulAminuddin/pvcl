@@ -12,8 +12,9 @@
 
         var referenceUrl = {
 
-            loadTcaTagging: window.location.origin + "/api/fid/FcaTagging",
-            editTcaTaggingPage: window.location.origin + "/fid/FcaTagging/Edit/"
+            loadFcaTagging: window.location.origin + "/api/fid/FcaTagging",
+            viewFcaTaggingPage: window.location.origin + "/fid/FcaTagging/View/",
+            editFcaTaggingPage: window.location.origin + "/fid/FcaTagging/Edit/"
 
         };
 
@@ -29,7 +30,25 @@
         $showPendingAssignmentBtn.dxButton({
             onClick: function (e) {
                 $grid.filter([
+                    ["countPendingEquity", ">", 0],
+                    "or",
+                    ["countPendingBond", ">", 0],
+                    "or",
+                    ["countPendingCp", ">", 0],
+                    "or",
+                    ["countPendingNotesPapers", ">", 0],
+                    "or",
+                    ["countPendingRepo", ">", 0],
+                    "or",
+                    ["countPendingCoupon", ">", 0],
+                    "or",
                     ["countPendingFees", ">", 0],
+                    "or",
+                    ["countPendingMtm", ">", 0],
+                    "or",
+                    ["countPendingFx", ">", 0],
+                    "or",
+                    ["countPendingContribution", ">", 0],
                     "or",
                     ["countPendingAltid", ">", 0],
                     "or",
@@ -45,7 +64,9 @@
         $showTodayBtn.dxButton({
             onClick: function (e) {
                 $grid.filter([
-                    ["settlementDate", ">", moment().startOf("day")]
+                    ["settlementDate", ">=", moment().startOf("day").toDate()],
+                    "and",
+                    ["settlementDate", "<", moment().add(1, "days").toDate()]
                 ]);
             }
         });
@@ -63,7 +84,7 @@
         $grid = $("#grid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 //key: "formId",
-                loadUrl: referenceUrl.loadTcaTagging
+                loadUrl: referenceUrl.loadFcaTagging
             }),
             columns: [
                 {
@@ -86,6 +107,48 @@
                     dataField: "currency",
                     caption: "Currency",
                     groupIndex: 0
+                },
+                {
+                    caption: "Trades",
+                    cellTemplate: function (container, options) {
+
+                        if (options.data.countEquity > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countEquity + " x Equity").appendTo(container);
+                        }
+                        if (options.data.countBond > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countBond + " x Bond").appendTo(container);
+                        }
+                        if (options.data.countCp > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countCp + " x CP").appendTo(container);
+                        }
+                        if (options.data.countNotesPapers > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countNotesPapers + " x Notes & Papers").appendTo(container);
+                        }
+                        if (options.data.countRepo > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countRepo + " x Repo").appendTo(container);
+                        }
+                        if (options.data.countCoupon > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countCoupon + " x Coupon").appendTo(container);
+                        }
+                        if (options.data.countFees > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countFees + " x Fees").appendTo(container);
+                        }
+                        if (options.data.countMtm > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countMtm + " x MTM").appendTo(container);
+                        }
+                        if (options.data.countFx > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countFx + " x FX").appendTo(container);
+                        }
+                        if (options.data.countContribution > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countContribution + " x Contribution").appendTo(container);
+                        }
+                        if (options.data.countAltid > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countAltid + " x ALTID").appendTo(container);
+                        }
+                        if (options.data.countOthers > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countOthers + " x Others").appendTo(container);
+                        }
+                    },
                 },
                 {
                     caption: "Pending Assignment",
@@ -142,13 +205,21 @@
                     type: "buttons",
                     buttons: [
                         {
-                            hint: "Open Form",
-                            icon: "fa fa-external-link",
+                            hint: "Edit Tagging",
+                            icon: "fa fa-tag",
                             onClick: function (e) {
-                                window.location.href = referenceUrl.editTcaTaggingPage + moment(e.row.data.settlementDate).unix() + "/" + e.row.data.currency;
+                                window.location.href = referenceUrl.editFcaTaggingPage + moment(e.row.data.settlementDate).unix() + "/" + e.row.data.currency;
                                 e.event.preventDefault();
                             }
-                        }
+                        },
+                        {
+                            hint: "View Form",
+                            icon: "fa fa-eye",
+                            onClick: function (e) {
+                                window.location.href = referenceUrl.viewFcaTaggingPage + moment(e.row.data.settlementDate).unix() + "/" + e.row.data.currency;
+                                e.event.preventDefault();
+                            }
+                        },
                     ]
                 }
             ],

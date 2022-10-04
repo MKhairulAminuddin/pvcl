@@ -465,6 +465,8 @@ namespace xDC.Utils
             public const string AuditTrail = "Audit Trail";
             public const string AuditTrail_FormAudit = "Audit Trail - Form Audit";
             public const string AuditTrail_UserAccessAudit = "Audit Trail - User Access Audit";
+            public const string AuditTrail_UserManagementAudit = "Audit Trail - User Management Audit";
+            public const string AuditTrail_RoleManagementAudit = "Audit Trail - Role Management Audit";
 
             public const string Settings = "Settings";
             public const string Settings_DropdownData = "Settings - Dropdown Data";

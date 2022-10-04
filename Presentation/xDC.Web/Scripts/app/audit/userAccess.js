@@ -1,8 +1,10 @@
-﻿$(function () {
+﻿
+$(function () {
     var $grid1;
 
+
     $grid1 = $("#grid1").dxDataGrid({
-        dataSource: window.location.origin + "/api/admin/userAccessLog",
+        dataSource: window.location.origin + "/api/audit/userAccess",
         selection: { mode: "single" },
         editing: {
             enabled: false
@@ -37,8 +39,9 @@
             visible: true
         },
         export: {
-            enabled: true
-        },
+            enabled: true,
+            formats: ['xlsx']
+        }
     }).dxDataGrid('instance');
 
     $grid1.option(dxGridUtils.viewOnlyGridConfig);

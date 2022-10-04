@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using xDC.Domain.ISSD_TS;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Services;
 using xDC.Services.App;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
@@ -38,41 +39,48 @@ namespace xDC_Web.Controllers
             return View("FcaTagging/Index");
         }
 
+        [KflowAuthorize(Common.PermissionKey.FID_FcaTaggingForm)]
+        [Route("FcaTagging/View/{settlementDateEpoch}/{currency}")]
+        public ActionResult FcaTaggingView(long settlementDateEpoch, string currency)
+        {
+            try
+            {
+                var response = new FcaTaggingFormService().Page_FcaTaggingForm(settlementDateEpoch, currency, out bool reqStatus);
+
+                if (reqStatus)
+                {
+                    return View("FcaTagging/View", response);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Invalid data - settlement date";
+                    return View("Error");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Error");
+            }
+        }
+
         [KflowAuthorize(Common.PermissionKey.FID_FcaTaggingForm_Edit)]
         [Route("FcaTagging/Edit/{settlementDateEpoch}/{currency}")]
         public ActionResult FcaTaggingEdit(long settlementDateEpoch, string currency)
         {
             try
             {
-                using (var db = new kashflowDBEntities())
+                var response = new FcaTaggingFormService().Page_FcaTaggingForm(settlementDateEpoch, currency, out bool reqStatus);
+
+                if (reqStatus)
                 {
-                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
-
-                    var model = new EditFcaAccountAssignmentVM
-                    {
-                        Currency = currency,
-                        OpeningBalance = new List<TS_OpeningBalance>()
-                    };
-
-                    if (settlementDate != null)
-                    {
-                        model.SettlementDate = settlementDate.Value;
-
-                        var ob = FcaTaggingSvc.GetOpeningBalance(db, settlementDate.Value, currency);
-                        model.OpeningBalance.AddRange(ob);
-                        var totalOb = model.OpeningBalance.Sum(x => x.Amount);
-
-                        var totalInflow = FcaTaggingSvc.TotalInflow(db, settlementDate.Value, currency);
-                        var totalOutflow = FcaTaggingSvc.TotalOutflow(db, settlementDate.Value, currency);
-
-                        model.ClosingBalance = totalOb + totalInflow - totalOutflow;
-                        return View("FcaTagging/Edit", model);
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = "Invalid data - settlement date";
-                        return View("Error");
-                    }
+                    return View("FcaTagging/Edit", response);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Invalid data - settlement date";
+                    return View("Error");
                 }
 
             }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DevExpress.Office.Utils;
 using xDC.Domain.ISSD_TS;
+using xDC.Domain.Web.ISSD.TradeSettlementForm;
 
 namespace xDC_Web.ViewModels
 {
@@ -12,7 +13,7 @@ namespace xDC_Web.ViewModels
         public DateTime? SettlementDate { get; set; }
         public string Currency { get; set; }
 
-        public List<TS_OpeningBalance> OpeningBalance { get; set; }
+        public List<TsOpeningBalance> OpeningBalance { get; set; }
         public double ClosingBalance { get; set; }
 
         public string PreparedBy { get; set; }

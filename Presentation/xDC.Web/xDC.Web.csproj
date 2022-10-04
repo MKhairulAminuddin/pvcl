@@ -301,7 +301,7 @@
     <Content Include="Scripts\adminlte.min.js" />
     <Content Include="Scripts\app.js" />
     <Content Include="Scripts\app\admin\roleManagement.js" />
-    <Content Include="Scripts\app\admin\userAccessLog.js" />
+    <Content Include="Scripts\app\audit\userAccess.js" />
     <Content Include="Scripts\app\admin\userManagement.js" />
     <Content Include="Scripts\app\admin\utility.js" />
     <Content Include="Scripts\app\amsd\inflowFund\edit.js" />
@@ -310,6 +310,7 @@
     <Content Include="Scripts\app\amsd\index.js" />
     <Content Include="Scripts\app.dxGrid.utils.js" />
     <Content Include="Scripts\app\audit\form.js" />
+    <Content Include="Scripts\app\fid\fcaTagging\view.js" />
     <Content Include="Scripts\app\issd\fcaTagging\edit.js" />
     <Content Include="Scripts\app\issd\fcaTagging\index.js" />
     <Content Include="Scripts\app\report\dealCutOffFcy.js" />
@@ -450,7 +451,6 @@
     <Content Include="Scripts\localization\dx.messages.vi.js" />
     <Content Include="Scripts\localization\dx.messages.zh-tw.js" />
     <Content Include="Scripts\localization\dx.messages.zh.js" />
-    <Content Include="Scripts\mathjs\math.js" />
     <Content Include="Scripts\moment.js\moment.js" />
     <Content Include="Scripts\moment.js\moment.min.js" />
     <Content Include="Scripts\pace\pace-theme-default.css" />
@@ -526,7 +526,7 @@
     <Content Include="Views\Audit\Form.cshtml" />
     <Content Include="Views\Shared\_AuditTrailModal.cshtml" />
     <Content Include="Views\Shared\_FormsRemarksModal.cshtml" />
-    <Content Include="Views\Admin\UserAccessLog.cshtml" />
+    <Content Include="Views\Audit\UserAccess.cshtml" />
     <Content Include="Views\Admin\UserActivityLog.cshtml" />
     <Content Include="Views\Admin\AdminLog.cshtml" />
     <Content Include="Views\Admin\RoleManagement.cshtml" />
@@ -535,6 +535,7 @@
     <Content Include="Views\Base\NoPermission.cshtml" />
     <Content Include="Views\Issd\FcaTagging\Edit.cshtml" />
     <Content Include="Views\Issd\FcaTagging\Index.cshtml" />
+    <Content Include="Views\Fid\FcaTagging\View.cshtml" />
     <None Include="Web.UAT.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

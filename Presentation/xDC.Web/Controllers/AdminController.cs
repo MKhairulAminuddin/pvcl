@@ -117,25 +117,6 @@ namespace xDC_Web.Controllers
             return View();
         }
 
-        public ActionResult SystemLogs()
-        {
-            return View();
-        }
-
-        public ActionResult UserAccessLog()
-        {
-            return View();
-        }
-
-        public ActionResult UserActivityLog()
-        {
-            return View();
-        }
-
-        public ActionResult AdminLog()
-        {
-            return View();
-        }
 
     }
 }

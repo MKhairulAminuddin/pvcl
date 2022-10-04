@@ -16,6 +16,11 @@
     @* Uncomment to use the HtmlEditor control *@
     @* <script src="https://unpkg.com/devextreme-quill/dist/dx-quill.min.js"></script> *@
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.4.0/polyfill.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.1.1/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js"></script>
+
+
     @Styles.Render("~/Content/bundle")
     @Styles.Render("~/Content/DevExtremeBundle")
     @Scripts.Render("~/Scripts/bundle")
@@ -198,7 +203,9 @@
                             </a>
                             <ul class="treeview-menu">
                                 <li><a href="@Url.Action("Form","Audit")"><i class="fa fa-circle-thin"></i> <span>Forms Audit</span></a></li>
-                                <li><a href="@Url.Action("UserAccessLog","Admin")"><i class="fa fa-circle-thin"></i> <span>User Access Audit</span></a></li>
+                                <li><a href="@Url.Action("UserAccess","Audit")"><i class="fa fa-circle-thin"></i> <span>User Access Audit</span></a></li>
+                                <li><a href="@Url.Action("UserAccessLog","Admin")"><i class="fa fa-circle-thin"></i> <span>User Management Audit</span></a></li>
+                                <li><a href="@Url.Action("UserAccessLog","Admin")"><i class="fa fa-circle-thin"></i> <span>Role Management Audit</span></a></li>
                             </ul>
                         </li>
                     }

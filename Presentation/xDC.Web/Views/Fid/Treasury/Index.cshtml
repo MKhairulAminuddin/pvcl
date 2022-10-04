@@ -10,9 +10,9 @@
             <div class="left-container">
                 <div>
                     @(Html.DevExtreme().Button()
-                        .Type(ButtonType.Normal)
+                        .Type(ButtonType.Default)
                         .Icon("plus")
-                        .Text("New")
+                        .Text("New Treasury Form")
                         .StylingMode(ButtonStylingMode.Contained)
                         .OnClick(@<text> function(){ window.location = "@Url.Action("TreasuryNew", "Fid")"; } </text>)
                         )
@@ -32,7 +32,41 @@
         <div class="col-md-12">
             <div class="box box-solid">
                 <div class="box-header">
-                    <h3 class="box-title">Form Submission</h3>
+                    <h3 class="box-title">Treasury Forms</h3>
+                    <div class="box-tools">
+                        @(Html.DevExtreme().Button()
+                            .ID("todaySubmissionBtn")
+                            .Icon("fa fa-calendar-o")
+                            .Text("Todays' Submission")
+                            .UseSubmitBehavior(false)
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("mySubmissionBtn")
+                            .Icon("fa fa-user")
+                            .Text("My Submission")
+                            .UseSubmitBehavior(false)
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("pendingMyApprovalBtn")
+                            .Icon("fa fa-clock-o")
+                            .Text("Pending My Approval")
+                            .UseSubmitBehavior(false)
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("clearFilterBtn")
+                            .Icon("fa fa-undo")
+                            .Text("Clear Filter")
+                            .UseSubmitBehavior(false)
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+                    </div>
                 </div>
                 <div class="box-body">
                     <div id="grid1"></div>

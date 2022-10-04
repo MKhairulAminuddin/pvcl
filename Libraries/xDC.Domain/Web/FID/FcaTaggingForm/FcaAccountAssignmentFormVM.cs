@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Text;
+using System.Threading.Tasks;
 using xDC.Domain.ISSD_TS;
 using xDC.Domain.Web.ISSD.TradeSettlementForm;
 
-namespace xDC_Web.ViewModels.Fid
+namespace xDC.Domain.Web.FID.FcaTaggingForm
 {
-    public class EditFcaAccountAssignmentVM
+    public class FcaAccountAssignmentFormVM
     {
         public string Currency { get; set; }
         public DateTime SettlementDate { get; set; }

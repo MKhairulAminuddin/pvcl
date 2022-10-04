@@ -1,5 +1,7 @@
 ﻿(function ($, window, document) {
 
+    app.setSideMenuItemActive("/Fid/Treasury");
+
     $(function () {
         //#region Variable Definition
 
