@@ -9,14 +9,15 @@
 
     <div class="row">
         <div class="col-md-6 col-sm-6 col-xs-12">
-            <div class="box box-info">
-                <div class="box-header with-border">
+            <div class="box box-solid">
+                <div class="box-header">
                     <h3 class="box-title">USERS BY DEPARTMENT</h3>
                 </div>
                 <div class="box-body" style="margin-left: 0">
                     @(Html.DevExtreme().PieChart()
                         .ID("pieUsersByDepartment")
                         .Palette(VizPalette.Bright)
+                        .Size(s => s.Width(500))
                         .Series(s => s
                             .Add()
                             .ArgumentField("Key")
@@ -40,13 +41,14 @@
 
         <div class="clearfix visible-sm-block"></div>
         <div class="col-md-6 col-sm-6 col-xs-12">
-            <div class="box box-info">
-                <div class="box-header with-border">
+            <div class="box box-solid">
+                <div class="box-header">
                     <h3 class="box-title">USERS BY GROUPS</h3>
                 </div>
                 <div class="box-body" style="margin-left: 0">
                     @(Html.DevExtreme().PieChart()
                         .ID("pieUsersByPermission")
+                        .Size(s => s.Width(500))
                         .Palette(VizPalette.Bright)
                         .Series(s => s
                             .Add()
