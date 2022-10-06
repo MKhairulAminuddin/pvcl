@@ -91,6 +91,48 @@
                     groupIndex: 0
                 },
                 {
+                    caption: "Trades",
+                    cellTemplate: function (container, options) {
+                        if (options.data.countEquity > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countEquity + " x Equity").appendTo(container);
+                        }
+                        if (options.data.countBond > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countBond + " x Bond").appendTo(container);
+                        }
+                        if (options.data.countCp > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countCp + " x CP").appendTo(container);
+                        }
+                        if (options.data.countNotesPapers > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countNotesPapers + " x Notes & Papers").appendTo(container);
+                        }
+                        if (options.data.countRepo > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countRepo + " x Repo").appendTo(container);
+                        }
+                        if (options.data.countCoupon > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countCoupon + " x Coupon").appendTo(container);
+                        }
+                        if (options.data.countFees > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countFees + " x Fees").appendTo(container);
+                        }
+                        if (options.data.countMtm > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countMtm + " x MTM").appendTo(container);
+                        }
+                        if (options.data.countFx > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countFx + " x FX").appendTo(container);
+                        }
+                        if (options.data.countContribution > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countContribution + " x Contribution").appendTo(container);
+                        }
+                        if (options.data.countAltid > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countAltid + " x ALTID").appendTo(container);
+                        }
+                        if (options.data.countOthers > 0) {
+                            $("<span />").addClass("label label-info").css("margin-left", "2px").text(options.data.countOthers + " x Others").appendTo(container);
+                        }
+
+                    }
+                },
+                {
                     caption: "Pending Assignment",
                     cellTemplate: function (container, options) {
                         if (options.data.countPendingFees > 0) {

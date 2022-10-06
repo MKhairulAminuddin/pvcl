@@ -32,3 +32,18 @@ GO
 ALTER TABLE [dbo].[AspNetRolePermissions] CHECK CONSTRAINT [FK_dbo.AspNetRolePermissions_dbo.AspNetRoles_RoleId]
 GO
 
+
+INSERT [dbo].[AspNetRolePermissions] ([RoleId], [PermissionId]) VALUES (1, 1)
+GO
+INSERT [dbo].[AspNetRolePermissions] ([RoleId], [PermissionId]) VALUES (1, 2)
+GO
+INSERT [dbo].[AspNetRolePermissions] ([RoleId], [PermissionId]) VALUES (1, 3)
+GO
+INSERT [dbo].[AspNetRolePermissions] ([RoleId], [PermissionId]) VALUES (1, 4)
+GO
+INSERT [dbo].[AspNetRolePermissions] ([RoleId], [PermissionId]) VALUES (1, 5)
+GO
+INSERT [dbo].[AspNetRolePermissions] ([RoleId], [PermissionId]) VALUES (1, 6)
+GO
+INSERT [dbo].[AspNetRolePermissions] ([RoleId], [PermissionId]) VALUES (1, 7)
+GO

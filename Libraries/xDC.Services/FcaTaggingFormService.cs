@@ -221,7 +221,10 @@ namespace xDC.Services
                             CountPendingFx = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Fx
                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0)),
                             CountPendingMtm = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Mtm
-                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0))
+                                                              && (y.ts_item.InflowTo == null && y.ts_item.InflowAmount > 0)),
+
+                            CountUnclassifiedBond = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Bond && y.ts_item.BondType == null),
+                            CountUnclassifiedCoupon = x.Count(y => y.ts_item.InstrumentType == Common.TsItemCategory.Coupon && y.ts_item.CouponType == null)
 
                         }).ToList();
 

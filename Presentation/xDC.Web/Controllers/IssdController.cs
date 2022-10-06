@@ -22,12 +22,13 @@ using xDC_Web.ViewModels.Fid;
 namespace xDC_Web.Controllers
 {
     [Authorize]
-    [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
+    [KflowAuthorize(Common.PermissionKey.ISSD)]
     [RoutePrefix("issd")]
     public class IssdController : BaseController
     {
         #region Trade Settlement Form
 
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
         [Route("TradeSettlement")]
         public ActionResult TradeSettlement()
         {
@@ -45,6 +46,7 @@ namespace xDC_Web.Controllers
             }
         }
 
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
         [Route("TradeSettlement/View/")]
         public ActionResult TradeSettlementView(string settlementDateEpoch, string currency)
         {
@@ -103,6 +105,7 @@ namespace xDC_Web.Controllers
             return View("TradeSettlement/PartA/New", model);
         }
 
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
         [Route("TradeSettlement/PartA/View/{id}")]
         public ActionResult ViewPartA(string id)
         {
@@ -128,6 +131,7 @@ namespace xDC_Web.Controllers
             return View("TradeSettlement/PartB/New", model);
         }
 
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
         [Route("TradeSettlement/PartB/View/{id}")]
         public ActionResult ViewPartB(string id)
         {
@@ -154,6 +158,7 @@ namespace xDC_Web.Controllers
             return View("TradeSettlement/PartC/New", model);
         }
 
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
         [Route("TradeSettlement/PartC/View/{id}")]
         public ActionResult ViewPartC(string id)
         {
@@ -180,6 +185,7 @@ namespace xDC_Web.Controllers
             return View("TradeSettlement/PartD/New", model);
         }
 
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
         [Route("TradeSettlement/PartD/View/{id}")]
         public ActionResult ViewPartD(string id)
         {
@@ -206,6 +212,7 @@ namespace xDC_Web.Controllers
             return View("TradeSettlement/PartE/New", model);
         }
 
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
         [Route("TradeSettlement/PartE/View/{id}")]
         public ActionResult ViewPartE(string id)
         {
@@ -232,6 +239,7 @@ namespace xDC_Web.Controllers
             return View("TradeSettlement/PartF/New", model);
         }
 
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
         [Route("TradeSettlement/PartF/View/{id}")]
         public ActionResult ViewPartF(string id)
         {
@@ -258,6 +266,7 @@ namespace xDC_Web.Controllers
             return View("TradeSettlement/PartG/New", model);
         }
 
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
         [Route("TradeSettlement/PartG/View/{id}")]
         public ActionResult TS_PartG_View(string id)
         {
@@ -283,6 +292,7 @@ namespace xDC_Web.Controllers
             return View("TradeSettlement/PartH/New", model);
         }
 
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
         [Route("TradeSettlement/PartH/View/{id}")]
         public ActionResult TS_PartH_View(string id)
         {
@@ -404,6 +414,7 @@ namespace xDC_Web.Controllers
 
         #region Generate CN Email
 
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [HttpPost]
         [Route("TradeSettlement/GenerateCnEmail")]
         public ActionResult GenerateCnEmail(int formId)
@@ -429,6 +440,7 @@ namespace xDC_Web.Controllers
             }
         }
 
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [Route("TradeSettlement/RetrieveCnEmail")]
         public ActionResult RetrieveCnEmail(string referenceId)
         {
@@ -643,14 +655,14 @@ namespace xDC_Web.Controllers
 
         #region FCA Tagging
 
-        [KflowAuthorize(Common.PermissionKey.FID_FcaTaggingForm)]
+        [KflowAuthorize(Common.PermissionKey.ISSD_FcaTaggingForm)]
         [Route("FcaTagging")]
         public ActionResult FcaTagging()
         {
             return View("FcaTagging/Index");
         }
 
-        [KflowAuthorize(Common.PermissionKey.FID_FcaTaggingForm_Edit)]
+        [KflowAuthorize(Common.PermissionKey.ISSD_FcaTaggingForm_Edit)]
         [Route("FcaTagging/Edit/{settlementDateEpoch}/{currency}")]
         public ActionResult FcaTaggingEdit(long settlementDateEpoch, string currency)
         {
@@ -685,6 +697,32 @@ namespace xDC_Web.Controllers
                         TempData["ErrorMessage"] = "Invalid data - settlement date";
                         return View("Error");
                     }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return View("Error");
+            }
+        }
+
+        [KflowAuthorize(Common.PermissionKey.ISSD_FcaTaggingForm)]
+        [Route("FcaTagging/View/{settlementDateEpoch}/{currency}")]
+        public ActionResult FcaTaggingView(long settlementDateEpoch, string currency)
+        {
+            try
+            {
+                var response = new FcaTaggingFormService().Page_FcaTaggingForm(settlementDateEpoch, currency, out bool reqStatus);
+
+                if (reqStatus)
+                {
+                    return View("FcaTagging/View", response);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Invalid data - settlement date";
+                    return View("Error");
                 }
 
             }

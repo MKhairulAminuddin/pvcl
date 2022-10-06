@@ -373,6 +373,9 @@
                 if (response.data[0].countPendingBond > 0) {
                     newItem.badge = response.data[0].countPendingBond;
                 }
+                if (response.data[0].countUnclassifiedBond > 0) {
+                    newItem.badge = response.data[0].countUnclassifiedBond;
+                }
                 tabPanelItems.push(newItem);
             }
 

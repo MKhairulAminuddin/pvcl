@@ -342,10 +342,10 @@
         }).dxTextArea("instance");
         
         //#endregion
-        
+
         // #region Data Grid
 
-        $inflowDepositGrid = $("#inflowDepositGrid").dxDataGrid({
+        var dxDataGrid_Deposit = {
             dataSource: [],
             columns: [
                 {
@@ -354,7 +354,7 @@
                         cellElement.text(cellInfo.row.rowIndex + 1);
                     },
                     allowEditing: false,
-                    width: "30px"
+                    width: 50
                 },
                 {
                     dataField: "dealer",
@@ -366,7 +366,8 @@
                         } else {
                             return window.currentUser;
                         }
-                    }
+                    },
+                    width: 110
                 },
                 {
                     dataField: "bank",
@@ -375,7 +376,8 @@
                         dataSource: treasury.dsBankCounterParty(),
                         valueExpr: "name",
                         displayExpr: "name"
-                    }
+                    },
+                    width: 200
                 },
                 {
                     dataField: "tradeDate",
@@ -385,7 +387,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    width: 100
                 },
                 {
                     dataField: "valueDate",
@@ -395,7 +398,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    width: 100
                 },
                 {
                     dataField: "maturityDate",
@@ -405,7 +409,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    width: 100
                 },
                 {
                     dataField: "principal",
@@ -414,7 +419,8 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 125
                 },
                 {
                     dataField: "tenor",
@@ -428,13 +434,15 @@
                         rowData.tenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
                         return Number(rowData.tenor);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 60
                 },
                 {
                     dataField: "ratePercent",
                     caption: "Rate (%)",
                     dataType: "number",
-                    format: "#.000 '%'"
+                    format: "#.000 '%'",
+                    width: 80
                 },
                 {
                     dataField: "intProfitReceivable",
@@ -453,7 +461,8 @@
                         rowData.intProfitReceivable = treasury.outflow_depoInt(currency, principal, tenor, rate);
                         return Number(rowData.intProfitReceivable);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 125
                 },
                 {
                     dataField: "principalIntProfitReceivable",
@@ -472,7 +481,8 @@
                         rowData.principalIntProfitReceivable = treasury.outflow_depo_PrincipalInt(currency, principal, tenor, rate);
                         return Number(rowData.principalIntProfitReceivable);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 125
                 },
                 {
                     dataField: "assetType",
@@ -481,15 +491,18 @@
                         dataSource: treasury.dsAssetType(),
                         valueExpr: "value",
                         displayExpr: "value"
-                    }
+                    },
+                    width: 100
                 },
                 {
                     dataField: "repoTag",
                     caption: "REPO tag",
+                    width: 100
                 },
                 {
                     dataField: "contactPerson",
                     caption: "Contact Person",
+                    width: 100
                 },
                 {
                     dataField: "notes",
@@ -498,22 +511,25 @@
                         dataSource: treasury.dsNotes(),
                         valueExpr: "value",
                         displayExpr: "value"
-                    }
+                    },
+                    width: 140
                 },
                 {
                     dataField: "fcaAccount",
-                    width: "150px",
                     caption: "FCA",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "name",
                         displayExpr: "name",
                         allowClearing: true
-                    }
+                    },
+                    width: 140
                 },
                 {
                     type: "buttons",
                     width: 110,
+                    fixedPosition: "left",
+                    fixed: true,
                     buttons: [
                         "edit",
                         "delete",
@@ -618,6 +634,9 @@
             selection: {
                 mode: "single"
             },
+            columnFixing: {
+                enabled: true,
+            },
             onToolbarPreparing: function (e) {
                 var toolbarItems = e.toolbarOptions.items;
                 toolbarItems.push({
@@ -631,8 +650,18 @@
                     },
                     location: "after"
                 });
-            },
+
+                toolbarItems.forEach(function (item) {
+                    item.location = "before";
+                });
+            }
+        }
+
+        $inflowDepositGrid = $("#inflowDepositGrid").dxDataGrid({
+            dataSource: [],
         }).dxDataGrid("instance");
+
+        $inflowDepositGrid.option(dxDataGrid_Deposit);
 
         $outflowDepositGrid = $("#outflowDepositGrid").dxDataGrid({
             dataSource: [],
@@ -643,7 +672,7 @@
                         cellElement.text(cellInfo.row.rowIndex + 1);
                     },
                     allowEditing: false,
-                    width: "30px"
+                    width: 50
                 },
                 {
                     dataField: "dealer",
@@ -652,7 +681,8 @@
                         rowData.dealer = window.currentUser;
                         return window.currentUser;
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 110
                 },
                 {
                     dataField: "bank",
@@ -661,7 +691,8 @@
                         dataSource: treasury.dsBankCounterParty(),
                         valueExpr: "name",
                         displayExpr: "name"
-                    }
+                    },
+                    width: 200
                 },
                 {
                     dataField: "tradeDate",
@@ -671,7 +702,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    width: 100
                 },
                 {
                     dataField: "valueDate",
@@ -681,7 +713,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    width: 100
                 },
                 {
                     dataField: "maturityDate",
@@ -691,7 +724,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    width: 100
                 },
                 {
                     dataField: "principal",
@@ -700,7 +734,8 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 125
                 },
                 {
                     dataField: "tenor",
@@ -714,13 +749,15 @@
                         rowData.tenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
                         return Number(rowData.tenor);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 60
                 },
                 {
                     dataField: "ratePercent",
                     caption: "Rate (%)",
                     dataType: "number",
-                    format: "#.000 '%'"
+                    format: "#.000 '%'",
+                    width: 80
                 },
                 {
                     dataField: "intProfitReceivable",
@@ -739,7 +776,8 @@
                         rowData.intProfitReceivable = treasury.outflow_depoInt(currency, principal, tenor, rate);
                         return Number(rowData.intProfitReceivable);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 125
                 },
                 {
                     dataField: "principalIntProfitReceivable",
@@ -758,7 +796,8 @@
                         rowData.principalIntProfitReceivable = treasury.outflow_depo_PrincipalInt(currency, principal, tenor, rate);
                         return Number(rowData.principalIntProfitReceivable);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 125
                 },
                 {
                     dataField: "assetType",
@@ -767,15 +806,18 @@
                         dataSource: treasury.dsAssetType,
                         valueExpr: "value",
                         displayExpr: "value"
-                    }
+                    },
+                    width: 100
                 },
                 {
                     dataField: "repoTag",
                     caption: "REPO tag",
+                    width: 100
                 },
                 {
                     dataField: "contactPerson",
                     caption: "Contact Person",
+                    width: 100
                 },
                 {
                     dataField: "notes",
@@ -784,7 +826,8 @@
                         dataSource: treasury.dsNotes,
                         valueExpr: "value",
                         displayExpr: "value"
-                    }
+                    },
+                    width: 140
                 },
                 {
                     dataField: "fcaAccount",
@@ -795,11 +838,14 @@
                         valueExpr: "name",
                         displayExpr: "name",
                         allowClearing: true
-                    }
+                    },
+                    width: 140
                 },
                 {
                     type: "buttons",
                     width: 110,
+                    fixedPosition: "left",
+                    fixed: true,
                     buttons: [
                         "edit",
                         "delete",
@@ -898,6 +944,15 @@
             allowColumnReordering: true,
             allowColumnResizing: true,
             wordWrapEnabled: true,
+            paging: {
+                enabled: false
+            },
+            selection: {
+                mode: 'single',
+            },
+            columnFixing: {
+                enabled: true,
+            },
             onToolbarPreparing: function (e) {
                 var toolbarItems = e.toolbarOptions.items;
                 toolbarItems.push({
@@ -911,9 +966,10 @@
                     },
                     location: "after"
                 });
-            },
-            paging: {
-                enabled: false
+
+                toolbarItems.forEach(function (item) {
+                    item.location = "before";
+                });
             }
         }).dxDataGrid("instance");
 
@@ -1507,7 +1563,9 @@
                 enabled: false
             }
         }).dxDataGrid("instance");
+
         
+
         // #endregion Data Grid
  
         //#region Events & Invocations
