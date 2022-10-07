@@ -632,7 +632,8 @@
                 enabled: false
             },
             selection: {
-                mode: "single"
+                mode: "multiple",
+                showCheckBoxesMode: "none"
             },
             columnFixing: {
                 enabled: true,
@@ -661,22 +662,39 @@
                         icon: "fa fa-clone",
                         text: "Copy to rollover",
                         hint: "Copy selected row into rollover table",
-                        onClick: function () {
-                            console.log($inflowDepositGrid.getSelectedRowsData());
-                            console.log($inflowDepositGrid.getSelectedRowKeys());
+                        onClick: function (e) {
 
-                            $inflowDepositGrid.getSelectedRowsData().getSelectedRowKeys().done((source) => {
-                                var clone = Object.assign({}, source);
-                                clone.id = null;
+                            if ($inflowDepositGrid.getSelectedRowsData().length > 0) {
+                                $inflowDepositGrid.getSelectedRowsData().forEach(function (i) {
+                                    var dataSource = $outflowDepositGrid.getDataSource();
+                                    dataSource.store().insert({
+                                        id: Math.floor(Math.random() * 99) + 1,
+                                        dealer: i.dealer,
+                                        bank: i.bank,
+                                        tradeDate: i.tradeDate,
+                                        valueDate: i.valueDate,
+                                        maturityDate: i.maturityDate,
+                                        principal: i.principalIntProfitReceivable,
+                                        ratePercent: i.ratePercent,
+                                        assetType: i.assetType,
+                                        repoTag: i.repoTag,
+                                        contactPerson: i.contactPerson,
+                                        notes: i.notes,
+                                        fcaAccount: i.fcaAccount
+                                    }).then(function () {
+                                        dataSource.reload();
+                                    })
+                                });
 
-                                $outflowDepositGrid
-                                    .getDataSource()
-                                    .store()
-                                    .insert(clone)
-                                    .done(() => $outflowDepositGrid.refresh());
-                            }).then(() => {
-                                app.toast("Copied", "danger");
-                            });
+                                $outflowDepositGrid.refresh();
+
+                            } else {
+
+                                app.toast("Please select at least one row to copy over.", "error")
+
+                            }
+
+                            e.event.preventDefault();
                         }
                     },
                     location: "after"
