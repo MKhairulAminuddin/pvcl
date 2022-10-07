@@ -388,7 +388,7 @@
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
                     },
-                    width: 100
+                    width: 120
                 },
                 {
                     dataField: "valueDate",
@@ -399,7 +399,7 @@
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
                     },
-                    width: 100
+                    width: 120
                 },
                 {
                     dataField: "maturityDate",
@@ -410,7 +410,7 @@
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
                     },
-                    width: 100
+                    width: 120
                 },
                 {
                     dataField: "principal",
@@ -420,7 +420,7 @@
                         type: "fixedPoint",
                         precision: 2
                     },
-                    width: 125
+                    width: 130
                 },
                 {
                     dataField: "tenor",
@@ -462,7 +462,7 @@
                         return Number(rowData.intProfitReceivable);
                     },
                     allowEditing: false,
-                    width: 125
+                    width: 130
                 },
                 {
                     dataField: "principalIntProfitReceivable",
@@ -482,7 +482,7 @@
                         return Number(rowData.principalIntProfitReceivable);
                     },
                     allowEditing: false,
-                    width: 125
+                    width: 130
                 },
                 {
                     dataField: "assetType",
@@ -492,7 +492,7 @@
                         valueExpr: "value",
                         displayExpr: "value"
                     },
-                    width: 100
+                    width: 120
                 },
                 {
                     dataField: "repoTag",
@@ -659,10 +659,24 @@
                     widget: "dxButton",
                     options: {
                         icon: "fa fa-clone",
-                        text: " Copy to rollover",
-                        hint: "Remove records",
+                        text: "Copy to rollover",
+                        hint: "Copy selected row into rollover table",
                         onClick: function () {
-                            $inflowDepositGrid.option("dataSource", []);
+                            console.log($inflowDepositGrid.getSelectedRowsData());
+                            console.log($inflowDepositGrid.getSelectedRowKeys());
+
+                            $inflowDepositGrid.getSelectedRowsData().getSelectedRowKeys().done((source) => {
+                                var clone = Object.assign({}, source);
+                                clone.id = null;
+
+                                $outflowDepositGrid
+                                    .getDataSource()
+                                    .store()
+                                    .insert(clone)
+                                    .done(() => $outflowDepositGrid.refresh());
+                            }).then(() => {
+                                app.toast("Copied", "danger");
+                            });
                         }
                     },
                     location: "after"
@@ -826,7 +840,7 @@
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
                     },
-                    width: 100
+                    width: 120
                 },
                 {
                     dataField: "valueDate",
@@ -837,7 +851,7 @@
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
                     },
-                    width: 100
+                    width: 120
                 },
                 {
                     dataField: "maturityDate",
@@ -848,7 +862,7 @@
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
                     },
-                    width: 100
+                    width: 120
                 },
                 {
                     dataField: "holdingDayTenor",
@@ -873,7 +887,7 @@
                         type: "fixedPoint",
                         precision: 2
                     },
-                    width: 125
+                    width: 130
                 },
                 {
                     dataField: "sellPurchaseRateYield",
@@ -900,7 +914,7 @@
                         return Number(rowData.price);
                     },
                     allowEditing: false,
-                    width: 125
+                    width: 130
                 },
                 {
                     dataField: "purchaseProceeds",
@@ -910,7 +924,7 @@
                         type: "fixedPoint",
                         precision: 2
                     },
-                    width: 125
+                    width: 130
                 },
                 {
                     dataField: "intDividendReceivable",
@@ -931,7 +945,7 @@
                         return Number(rowData.intDividendReceivable);
                     },
                     allowEditing: false,
-                    width: 125
+                    width: 130
                 },
                 {
                     dataField: "proceeds",
@@ -951,7 +965,7 @@
                         return Number(rowData.proceeds);
                     },
                     allowEditing: false,
-                    width: 125
+                    width: 130
                 },
                 {
                     dataField: "certNoStockCode",
@@ -1032,6 +1046,24 @@
                     }
                 ]
             },
+            onToolbarPreparing: function (e) {
+                var toolbarItems = e.toolbarOptions.items;
+                toolbarItems.push({
+                    widget: "dxButton",
+                    options: {
+                        icon: "fa fa-trash",
+                        hint: "Remove all records",
+                        onClick: function () {
+                            $inflowMmiGrid.option("dataSource", []);
+                        }
+                    },
+                    location: "after"
+                });
+
+                toolbarItems.forEach(function (item) {
+                    item.location = "before";
+                });
+            }
         }).dxDataGrid("instance");
 
         $outflowMmiGrid = $("#outflowMmiGrid").dxDataGrid({
@@ -1094,7 +1126,7 @@
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
                     },
-                    width: 100
+                    width: 120
                 },
                 {
                     dataField: "valueDate",
@@ -1105,7 +1137,7 @@
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
                     },
-                    width: 100
+                    width: 120
                 },
                 {
                     dataField: "maturityDate",
@@ -1116,7 +1148,7 @@
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
                     },
-                    width: 100
+                    width: 120
                 },
                 {
                     dataField: "holdingDayTenor",
@@ -1141,7 +1173,7 @@
                         type: "fixedPoint",
                         precision: 2
                     },
-                    width: 125
+                    width: 130
                 },
                 {
                     dataField: "sellPurchaseRateYield",
@@ -1168,7 +1200,7 @@
                         return Number(rowData.price);
                     },
                     allowEditing: false,
-                    width: 125
+                    width: 130
                 },
                 {
                     dataField: "intDividendReceivable",
@@ -1188,7 +1220,7 @@
                         return Number(rowData.intDividendReceivable);
                     },
                     allowEditing: false,
-                    width: 125
+                    width: 130
                 },
                 {
                     dataField: "proceeds",
@@ -1208,12 +1240,12 @@
                         return Number(rowData.proceeds);
                     },
                     allowEditing: false,
-                    width: 125
+                    width: 130
                 },
                 {
                     dataField: "certNoStockCode",
                     caption: "Certificate No. / Stock Code",
-                    width: 100
+                    width: 130
                 },
                 {
                     dataField: "fcaAccount",
@@ -1289,6 +1321,24 @@
                     }
                 ]
             },
+            onToolbarPreparing: function (e) {
+                var toolbarItems = e.toolbarOptions.items;
+                toolbarItems.push({
+                    widget: "dxButton",
+                    options: {
+                        icon: "fa fa-trash",
+                        hint: "Remove all records",
+                        onClick: function () {
+                            $outflowMmiGrid.option("dataSource", []);
+                        }
+                    },
+                    location: "after"
+                });
+
+                toolbarItems.forEach(function (item) {
+                    item.location = "before";
+                });
+            }
         }).dxDataGrid("instance");
 
         $inflowMmiGrid.option(dxDataGridConfig_Mmi);
