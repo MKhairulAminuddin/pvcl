@@ -1,13 +1,52 @@
-﻿@model dynamic
-
-@{
+﻿@{
     ViewBag.Title = "User Access Audit";
     ViewBag.Subtitle = "Logs that showed from where and by when user accessing the system.";
 }
 
+<section class="content-header content-toolbar">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="left-container">
+                @(Html.DevExtreme().DateBox()
+                    .ID("fromDateBox")
+                    .Type(DateBoxType.Date)
+                    .DisplayFormat("dd/MM/yyyy")
+                    .Value(DateTime.Now.AddDays(-7))
+                )
+                @(Html.DevExtreme().DateBox()
+                    .ID("toDateBox")
+                    .Type(DateBoxType.Date)
+                    .DisplayFormat("dd/MM/yyyy")
+                    .Value(DateTime.Now)
+                )
+                @(Html.DevExtreme().SelectBox()
+                    .ID("userIdSelectBox")
+                    .Placeholder("Select user...")
+                )
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div id="right-toolbar-container" class="right-container">
+                @(Html.DevExtreme().Button()
+                            .ID("searchBtn")
+                            .Icon("fa fa-search")
+                            .Text("Search")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
+                @(Html.DevExtreme().Button()
+                            .ID("printBtn")
+                            .Icon("fa fa-print")
+                            .Text("Print")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Contained)
+                            )
+            </div>
+        </div>
+    </div>
+</section>
 
 <section class="content container-fluid">
-
     <div class="row">
         <div class="col-md-12">
             <div class="box box-solid">

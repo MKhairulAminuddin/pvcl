@@ -9,8 +9,10 @@ using System.Web.Http;
 using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
 using Newtonsoft.Json;
+using xDC.Domain.WebApi.Audit;
 using xDC.Infrastructure.Application;
 using xDC.Utils;
+using xDC_Web.Models;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -59,13 +61,47 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("UserAccess")]
-        public HttpResponseMessage UserAccessLog(DataSourceLoadOptions loadOptions)
+        public HttpResponseMessage GetUserAccessLog(DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
                     var result = db.Log_UserAccess.OrderByDescending(x => x.RecordedDate).ToList();
+
+                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        [HttpPost]
+        [Route("UserAccess")]
+        public HttpResponseMessage GetUserAccessAudit([FromBody] UserAccessAuditReq req, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var fromDate = xDC.Utils.Common.ConvertEpochToDateTime(req.FromDateUnix);
+                    var toDate = xDC.Utils.Common.ConvertEpochToDateTime(req.ToDateUnix);
+
+                    var result = db.Log_UserAccess
+                        .Where(x => 
+                            DbFunctions.TruncateTime(x.RecordedDate) >= DbFunctions.TruncateTime(fromDate) && 
+                            DbFunctions.TruncateTime(x.RecordedDate) <= DbFunctions.TruncateTime(toDate))
+                        .OrderByDescending(x => x.RecordedDate)
+                        .ToList();
+
+                    if (req.UserId != null)
+                    {
+                        result.Where(x => x.UserName == req.UserId);
+                    }
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }

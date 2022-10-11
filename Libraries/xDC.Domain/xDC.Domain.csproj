@@ -63,6 +63,7 @@
     <Compile Include="WebApi\Administration\RoleReq.cs" />
     <Compile Include="WebApi\Administration\UpdatePremissionReq.cs" />
     <Compile Include="WebApi\Administration\RolesRes.cs" />
+    <Compile Include="WebApi\Audit\UserAccessAuditReq.cs" />
     <Compile Include="WebApi\Form_FcaTagging\DetailRes.cs" />
     <Compile Include="WebApi\Form_FcaTagging\FcaBankAccountRes.cs" />
     <Compile Include="WebApi\Form_FcaTagging\SummaryRes.cs" />
