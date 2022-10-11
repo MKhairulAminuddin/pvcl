@@ -642,89 +642,92 @@
 
         $inflowDepositGrid = $("#inflowDepositGrid").dxDataGrid({
             dataSource: [],
-            onToolbarPreparing: function (e) {
-                var toolbarItems = e.toolbarOptions.items;
-                toolbarItems.push({
-                    widget: "dxButton",
-                    options: {
-                        icon: "fa fa-trash",
-                        hint: "Remove all records",
-                        onClick: function () {
-                            $inflowDepositGrid.option("dataSource", []);
-                        }
+            toolbar: {
+                items: [
+                    {
+                        name: "addRowButton",
+                        showText: "always",
+                        location: "before"
                     },
-                    location: "after"
-                });
-
-                toolbarItems.push({
-                    widget: "dxButton",
-                    options: {
-                        icon: "fa fa-clone",
-                        text: "Copy to rollover",
-                        hint: "Copy selected row into rollover table",
-                        onClick: function (e) {
-
-                            if ($inflowDepositGrid.getSelectedRowsData().length > 0) {
-                                $inflowDepositGrid.getSelectedRowsData().forEach(function (i) {
-                                    var dataSource = $outflowDepositGrid.getDataSource();
-                                    dataSource.store().insert({
-                                        id: Math.floor(Math.random() * 99) + 1,
-                                        dealer: i.dealer,
-                                        bank: i.bank,
-                                        tradeDate: i.tradeDate,
-                                        valueDate: i.valueDate,
-                                        maturityDate: i.maturityDate,
-                                        principal: i.principalIntProfitReceivable,
-                                        ratePercent: i.ratePercent,
-                                        assetType: i.assetType,
-                                        repoTag: i.repoTag,
-                                        contactPerson: i.contactPerson,
-                                        notes: i.notes,
-                                        fcaAccount: i.fcaAccount
-                                    }).then(function () {
-                                        dataSource.reload();
-                                    })
-                                });
-
-                                $outflowDepositGrid.refresh();
-
-                            } else {
-
-                                app.toast("Please select at least one row to copy over.", "error")
-
+                    {
+                        widget: "dxButton",
+                        options: {
+                            icon: "fa fa-trash",
+                            text: "Remove all rows",
+                            onClick: function () {
+                                $inflowDepositGrid.option("dataSource", []);
                             }
-
-                            e.event.preventDefault();
-                        }
+                        },
+                        location: "before"
                     },
-                    location: "after"
-                });
+                    {
+                        widget: "dxButton",
+                        options: {
+                            icon: "fa fa-clone",
+                            text: "Copy to rollover",
+                            hint: "Copy selected row into rollover table",
+                            onClick: function (e) {
 
-                toolbarItems.forEach(function (item) {
-                    item.location = "before";
-                });
+                                if ($inflowDepositGrid.getSelectedRowsData().length > 0) {
+                                    $inflowDepositGrid.getSelectedRowsData().forEach(function (i) {
+                                        var dataSource = $outflowDepositGrid.getDataSource();
+                                        dataSource.store().insert({
+                                            id: Math.floor(Math.random() * 99) + 1,
+                                            dealer: i.dealer,
+                                            bank: i.bank,
+                                            tradeDate: i.tradeDate,
+                                            valueDate: i.valueDate,
+                                            maturityDate: i.maturityDate,
+                                            principal: i.principalIntProfitReceivable,
+                                            ratePercent: i.ratePercent,
+                                            assetType: i.assetType,
+                                            repoTag: i.repoTag,
+                                            contactPerson: i.contactPerson,
+                                            notes: i.notes,
+                                            fcaAccount: i.fcaAccount
+                                        }).then(function () {
+                                            dataSource.reload();
+                                        })
+                                    });
+
+                                    $outflowDepositGrid.refresh();
+
+                                } else {
+
+                                    app.toast("Please select at least one row to copy over.", "error")
+
+                                }
+
+                                e.event.preventDefault();
+                            }
+                        },
+                        location: "before"
+                    }
+                ]
             }
         }).dxDataGrid("instance");
 
         $outflowDepositGrid = $("#outflowDepositGrid").dxDataGrid({
             dataSource: [],
-            onToolbarPreparing: function (e) {
-                var toolbarItems = e.toolbarOptions.items;
-                toolbarItems.push({
-                    widget: "dxButton",
-                    options: {
-                        icon: "fa fa-trash",
-                        hint: "Remove all records",
-                        onClick: function () {
-                            $outflowDepositGrid.option("dataSource", []);
-                        }
+            toolbar: {
+                items: [
+                    {
+                        name: "addRowButton",
+                        showText: "always",
+                        location: "before"
                     },
-                    location: "after"
-                });
-
-                toolbarItems.forEach(function (item) {
-                    item.location = "before";
-                });
+                    {
+                        widget: "dxButton",
+                        options: {
+                            icon: "fa fa-trash",
+                            text: "Remove all rows",
+                            onClick: function () {
+                                $outflowDepositGrid.option("dataSource", []);
+                            }
+                        },
+                        location: "before"
+                    },
+                ]
             }
         }).dxDataGrid("instance");
 
@@ -765,24 +768,6 @@
             allowColumnReordering: true,
             allowColumnResizing: true,
             wordWrapEnabled: true,
-            onToolbarPreparing: function (e) {
-                var toolbarItems = e.toolbarOptions.items;
-                toolbarItems.push({
-                    widget: "dxButton",
-                    options: {
-                        icon: "fa fa-trash",
-                        hint: "Remove records",
-                        onClick: function () {
-                            $inflowMmiGrid.option("dataSource", []);
-                        }
-                    },
-                    location: "after"
-                });
-
-                toolbarItems.forEach(function (item) {
-                    item.location = "before";
-                });
-            },
             paging: {
                 enabled: false
             },
@@ -1064,23 +1049,25 @@
                     }
                 ]
             },
-            onToolbarPreparing: function (e) {
-                var toolbarItems = e.toolbarOptions.items;
-                toolbarItems.push({
-                    widget: "dxButton",
-                    options: {
-                        icon: "fa fa-trash",
-                        hint: "Remove all records",
-                        onClick: function () {
-                            $inflowMmiGrid.option("dataSource", []);
-                        }
+            toolbar: {
+                items: [
+                    {
+                        name: "addRowButton",
+                        showText: "always",
+                        location: "before"
                     },
-                    location: "after"
-                });
-
-                toolbarItems.forEach(function (item) {
-                    item.location = "before";
-                });
+                    {
+                        widget: "dxButton",
+                        options: {
+                            icon: "fa fa-trash",
+                            text: "Remove all rows",
+                            onClick: function () {
+                                $inflowMmiGrid.option("dataSource", []);
+                            }
+                        },
+                        location: "before"
+                    },
+                ]
             }
         }).dxDataGrid("instance");
 
@@ -1339,23 +1326,25 @@
                     }
                 ]
             },
-            onToolbarPreparing: function (e) {
-                var toolbarItems = e.toolbarOptions.items;
-                toolbarItems.push({
-                    widget: "dxButton",
-                    options: {
-                        icon: "fa fa-trash",
-                        hint: "Remove all records",
-                        onClick: function () {
-                            $outflowMmiGrid.option("dataSource", []);
-                        }
+            toolbar: {
+                items: [
+                    {
+                        name: "addRowButton",
+                        showText: "always",
+                        location: "before"
                     },
-                    location: "after"
-                });
-
-                toolbarItems.forEach(function (item) {
-                    item.location = "before";
-                });
+                    {
+                        widget: "dxButton",
+                        options: {
+                            icon: "fa fa-trash",
+                            text: "Remove all rows",
+                            onClick: function () {
+                                $outflowMmiGrid.option("dataSource", []);
+                            }
+                        },
+                        location: "before"
+                    },
+                ]
             }
         }).dxDataGrid("instance");
 
