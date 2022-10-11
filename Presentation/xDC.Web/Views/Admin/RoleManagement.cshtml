@@ -7,7 +7,7 @@
 <section class="content container-fluid">
 
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-8">
             <div class="box box-solid">
                 <div class="box-header">
                     @(Html.DevExtreme().Button()
@@ -21,6 +21,31 @@
                 </div>
                 <div class="box-body">
                     <div id="grid1" class="grid-container"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="box box-solid">
+                <div class="box-header">
+                    <div class="box-title">
+                        Permission Details
+                    </div>
+
+                    <div class="box-tools pull-right">
+                        @(Html.DevExtreme().Button()
+                            .ID("refreshDetailsBtn")
+                            .Icon("fa fa-refresh")
+                            .UseSubmitBehavior(false)
+                            .Type(ButtonType.Normal)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="box-title" id="permissionName">
+
+                    </div>
+                    <div id="permissionDetailsTree"></div>
                 </div>
             </div>
         </div>

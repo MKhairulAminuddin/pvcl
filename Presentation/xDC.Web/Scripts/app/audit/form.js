@@ -211,10 +211,7 @@
             showRowLines: true,
             sorting: {
                 mode: "multiple"
-            },
-            searchPanel: {
-                visible: true
-            },
+            },  
             pager: {
                 visible: true,
                 allowedPageSizes: [10, 20, 50, "all"],

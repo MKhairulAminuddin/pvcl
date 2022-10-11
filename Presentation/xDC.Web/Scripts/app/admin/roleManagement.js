@@ -1,11 +1,14 @@
 ﻿$(function () {
+    var $dxPermissionDetailsTree = $('#permissionDetailsTree');
     var $dxPermissionTreeView = $('#permissionTreeView');
     var $dxAddNewRoleBtn = $('#addNewRole');
     var $dxNewRoleNameTextBox = $('#newRoleNameTextBox');
     var $dxNewPermissionTreeView = $('#newPermissionTreeView');
     var $addNewRoleModal = $('#addNewRoleModal');
     var $saveNewRoleBtn = $('#saveNewRoleBtn');
+    var $roleNameInDetailPermission = $("#permissionName");
 
+    $dxPermissionDetailsTree.dxTreeView().dxTreeView('instance');
 
 
     var permissionData = function (roleId) {
@@ -22,6 +25,28 @@
                 loadUrl: window.location.origin + "/api/admin/GetPermissions"
             })
         };
+    }
+
+    var instantiatePermissionDetailsTreeView = function (data) {
+        if (data) {
+            $roleNameInDetailPermission.text(data.roleName);
+            $dxPermissionDetailsTree.dxTreeView({
+                dataSource: permissionData(data.roleId),
+                dataStructure: 'plain',
+                parentIdExpr: 'parentId',
+                keyExpr: 'permissionId',
+                displayExpr: 'permissionName',
+                showCheckBoxesMode: 'normal',
+                disabled: true,
+                itemTemplate(item) {
+                    return `<div>${item.permissionName}</div>`;
+                }
+            }).dxTreeView('instance');
+        } else {
+            $roleNameInDetailPermission.text("");
+            $dxPermissionDetailsTree.dxTreeView("dispose");
+        }
+        
     }
 
     var $grid1 = $("#grid1").dxDataGrid({
@@ -67,7 +92,8 @@
             },
             {
                 caption: "Role ID",
-                dataField: "roleId"
+                dataField: "roleId",
+                visible: false
             },
             {
                 caption: "Role Name",
@@ -78,6 +104,12 @@
             if (e.rowType == "data") {
                 if (e.data.roleName == "Administrator")
                     e.cellElement.find(".dx-link-delete").remove();
+            }
+        },
+        onSelectionChanged(selectedItems) {
+            const data = selectedItems.selectedRowsData[0];
+            if (data) {
+                instantiatePermissionDetailsTreeView(data);
             }
         },
         headerFilter: {
@@ -133,8 +165,6 @@
                 })
             });
 
-            console.log(requestData)
-
             $.ajax({
                 data: requestData,
                 url: window.location.origin + "/api/admin/AddNewRole",
@@ -151,6 +181,7 @@
                     $grid1.refresh();
                     $dxNewPermissionTreeView.dxTreeView("unselectAll");
                     $dxNewRoleNameTextBox.dxTextBox("reset");
+                    instantiatePermissionDetailsTreeView();
                 }
             });
 
@@ -204,6 +235,20 @@
             e.preventDefault();
         }
     });
+
+    var $refreshDetailsBtn = $("#refreshDetailsBtn").dxButton({
+        onClick(e) {
+            var selectedItem = $grid1.getSelectedRowsData();
+            if (selectedItem.length > 0) {
+                instantiatePermissionDetailsTreeView(selectedItem[0])
+            } else {
+                app.toast("Please select at least one row", "warning" , 2000);
+            }
+
+            e.event.preventDefault;
+        }
+    })
+
 
     // #endregion
     
