@@ -12,6 +12,7 @@ using System.Net;
 using System.Xml.Linq;
 using System.Web.Security;
 using System.Runtime.Remoting.Contexts;
+using xDC.Utils;
 
 namespace xDC.Services
 {
@@ -149,7 +150,7 @@ namespace xDC.Services
             }
         }
 
-        public bool UpdateUser(string username, string roleName, bool? locked)
+        public bool UpdateUser(string username, string roleName, bool? locked, string performedBy)
         {
             try
             {
@@ -161,6 +162,8 @@ namespace xDC.Services
                     {
                         if (!string.IsNullOrEmpty(roleName))
                         {
+                            new AuditService().Capture_UMA(Common.UserManagementActionType.ChangeRole, $"From {existingUser.AspNetRoles.First().Name} to {roleName}", existingUser.UserName, performedBy);
+
                             var getAspNetRole = db.AspNetRoles.FirstOrDefault(x => x.Name == roleName);
                             existingUser.AspNetRoles = new List<AspNetRoles>()
                             {
@@ -170,6 +173,8 @@ namespace xDC.Services
 
                         if (locked != null)
                         {
+                            new AuditService().Capture_UMA(Common.UserManagementActionType.ChangeStatus, $"From {existingUser.Locked} to {locked}", existingUser.UserName, performedBy);
+
                             existingUser.Locked = (bool)locked;
                         }
 

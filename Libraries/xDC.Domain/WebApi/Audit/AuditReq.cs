@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace xDC.Domain.WebApi.Audit
 {
-    public class UserAccessAuditReq
+    public class AuditReq
     {
         public long FromDateUnix { get; set; }
         public long ToDateUnix { get; set; }

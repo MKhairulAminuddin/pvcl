@@ -86,6 +86,9 @@
     <Compile Include="Application\Audit_Form.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>
+    <Compile Include="Application\Audit_UserManagement.cs">
+      <DependentUpon>kashflowDb.tt</DependentUpon>
+    </Compile>
     <Compile Include="Application\Config_Application.cs">
       <DependentUpon>kashflowDb.tt</DependentUpon>
     </Compile>

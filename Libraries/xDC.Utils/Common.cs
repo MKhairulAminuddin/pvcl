@@ -670,7 +670,7 @@ namespace xDC.Utils
 
         #region Audit
 
-        public static class ActionType
+        public static class FormActionType
         {
             public const string Create = "CREATE";
             public const string Modify = "MODIFY";
@@ -681,6 +681,14 @@ namespace xDC.Utils
             public const string RequestApproval = "REQUEST APPROVAL";
             public const string Resubmit = "RESUBMIT";
             public const string AdminEdit = "ADMIN EDIT";
+        }
+
+        public static class UserManagementActionType
+        {
+            public const string Add = "ADD NEW USER";
+            public const string Delete = "DELETE A USER";
+            public const string ChangeRole = "CHANGE USER ROLE";
+            public const string ChangeStatus = "CHANGE USER STATUS";
         }
 
         public static string FlattenStrings(params string[] parameters)

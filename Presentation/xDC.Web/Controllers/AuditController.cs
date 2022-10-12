@@ -29,5 +29,11 @@ namespace xDC_Web.Controllers
         {
             return View();
         }
+
+        [KflowAuthorize(Common.PermissionKey.AuditTrail_UserManagementAudit)]
+        public ActionResult UserManagement()
+        {
+            return View();
+        }
     }
 }

@@ -6,11 +6,14 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http;
+using DevExpress.Data.ODataLinq.Helpers;
+using DevExpress.Office.Crypto;
 using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
 using Newtonsoft.Json;
 using xDC.Domain.WebApi.Audit;
 using xDC.Infrastructure.Application;
+using xDC.Services;
 using xDC.Utils;
 using xDC_Web.Models;
 
@@ -82,7 +85,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Route("UserAccess")]
-        public HttpResponseMessage GetUserAccessAudit([FromBody] UserAccessAuditReq req, DataSourceLoadOptions loadOptions)
+        public HttpResponseMessage GetUserAccessAudit([FromBody] AuditReq req, DataSourceLoadOptions loadOptions)
         {
             try
             {
@@ -104,6 +107,63 @@ namespace xDC_Web.Controllers.Api
                     }
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        #endregion
+
+        #region User Management
+
+        [HttpGet]
+        [Route("UserManagement")]
+        public HttpResponseMessage GetUserManagementAudit(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = new AuditService().Get_UMA(out bool requestStatus);
+                    if (requestStatus)
+                    {
+                        return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        [HttpPost]
+        [Route("UserManagement")]
+        public HttpResponseMessage GetUserManagementAuditFiltered([FromBody] AuditReq req,DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = new AuditService().Get_UMA(out bool requestStatus, req);
+                    if (requestStatus)
+                    {
+                        return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
+                    }
                 }
 
             }

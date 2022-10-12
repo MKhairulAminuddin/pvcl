@@ -52,5 +52,6 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<Audit_10AMDCO_ClosingBalance> Audit_10AMDCO_ClosingBalance { get; set; }
         public virtual DbSet<AspNetPermission> AspNetPermission { get; set; }
         public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
+        public virtual DbSet<Audit_UserManagement> Audit_UserManagement { get; set; }
     }
 }

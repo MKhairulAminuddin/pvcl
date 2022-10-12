@@ -144,7 +144,7 @@ namespace xDC_Web.Controllers.Api
                         return Request.CreateResponse(HttpStatusCode.BadRequest, "Editing username is not allowed as username treated as primary key. Kindly create new record instead.");
                     }
                     
-                    var result = new AuthService().UpdateUser(key, userVm.RoleName, !userVm.Locked);
+                    var result = new AuthService().UpdateUser(key, userVm.RoleName, !userVm.Locked, User.Identity.Name);
 
                     if (result)
                     {

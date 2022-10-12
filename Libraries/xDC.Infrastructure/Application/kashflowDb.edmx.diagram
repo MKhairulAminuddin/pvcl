@@ -34,6 +34,7 @@
         <EntityTypeShape EntityType="kashflowDbModel.AspNetRoles" Width="1.5" PointX="16.625" PointY="4.75" />
         <AssociationConnector Association="kashflowDbModel.AspNetRolePermissions" />
         <AssociationConnector Association="kashflowDbModel.AspNetUserRoles" />
+        <EntityTypeShape EntityType="kashflowDbModel.Audit_UserManagement" Width="1.5" PointX="10.375" PointY="0.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
