@@ -132,14 +132,21 @@ namespace xDC.Services
             }
         }
 
-        public AspNetUsers InsertUser(AspNetUsers user)
+        public AspNetUsers InsertUser(AspNetUsers user, string roleName,string performedBy)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
                     var newUser = db.AspNetUsers.Add(user);
+
+                    var role = db.AspNetRoles.FirstOrDefault(x => x.Name == roleName);
+                    role.AspNetUsers.Add(newUser);
+
                     db.SaveChanges();
+
+                    new AuditService().Capture_UMA(Common.UserManagementActionType.Add, null, user.UserName, performedBy);
+
                     return newUser;
                 }
             }
@@ -194,7 +201,7 @@ namespace xDC.Services
             }
         }
 
-        public bool DeleteUser(string username)
+        public bool DeleteUser(string username, EnvironmentVariableTarget performedBy)
         {
             try
             {
@@ -204,6 +211,7 @@ namespace xDC.Services
                     db.AspNetUsers.Remove(getUser);
                     db.SaveChanges();
 
+                    new AuditService().Capture_UMA(Common.UserManagementActionType.Delete, null, username, performedBy);
 
                     return true;
                 }

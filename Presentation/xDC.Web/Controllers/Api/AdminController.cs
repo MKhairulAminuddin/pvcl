@@ -95,14 +95,9 @@ namespace xDC_Web.Controllers.Api
                             TelephoneNumber = getUserInfoFromAd.TelNo,
                             FullName = getUserInfoFromAd.DisplayName,
                             CreatedDate = DateTime.Now,
-                            Locked = userVm.Locked != null ? (bool)userVm.Locked : false,
-                            /*AspNetRoles = new List<AspNetRoles>()
-                            {
-                                new AuthService().GetRole(userVm.RoleName)
-                            }*/
+                            Locked = userVm.Locked != null ? (bool)userVm.Locked : false
                         };
-                        db.AspNetUsers.Add(newUser);
-                        db.SaveChanges();
+                        newUser.AspNetRoles.Add()
 
                         var role = db.AspNetRoles.FirstOrDefault(x => x.Name == userVm.RoleName);
                         role.AspNetUsers.Add(newUser);
