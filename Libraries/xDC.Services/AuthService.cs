@@ -180,7 +180,7 @@ namespace xDC.Services
 
                         if (locked != null)
                         {
-                            new AuditService().Capture_UMA(Common.UserManagementActionType.ChangeStatus, $"From {existingUser.Locked} to {locked}", existingUser.UserName, performedBy);
+                            new AuditService().Capture_UMA(Common.UserManagementActionType.ChangeStatus, $"From {(existingUser.Locked?"Disabled":"Enabled")} to {((bool)locked ? "Disabled" : "Enabled")}", existingUser.UserName, performedBy);
 
                             existingUser.Locked = (bool)locked;
                         }
@@ -201,7 +201,7 @@ namespace xDC.Services
             }
         }
 
-        public bool DeleteUser(string username, EnvironmentVariableTarget performedBy)
+        public bool DeleteUser(string username, string performedBy)
         {
             try
             {

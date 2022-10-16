@@ -97,10 +97,8 @@ namespace xDC_Web.Controllers.Api
                             CreatedDate = DateTime.Now,
                             Locked = userVm.Locked != null ? (bool)userVm.Locked : false
                         };
-                        newUser.AspNetRoles.Add()
 
-                        var role = db.AspNetRoles.FirstOrDefault(x => x.Name == userVm.RoleName);
-                        role.AspNetUsers.Add(newUser);
+                        var result = new AuthService().InsertUser(newUser, userVm.RoleName, User.Identity.Name);
                         
                         db.SaveChanges();
 
@@ -177,7 +175,7 @@ namespace xDC_Web.Controllers.Api
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "User not exist!");
                 }
 
-                var result = new AuthService().DeleteUser(key);
+                var result = new AuthService().DeleteUser(key, User.Identity.Name);
 
                 if (result)
                 {

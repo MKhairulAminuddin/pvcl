@@ -144,6 +144,17 @@
           <Property Name="ModifiedBy" Type="nvarchar" MaxLength="50" />
           <Property Name="ModifiedOn" Type="datetime" />
         </EntityType>
+        <EntityType Name="Audit_RoleManagement">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Activity" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="Remarks" Type="nvarchar" MaxLength="150" />
+          <Property Name="Role" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="PerformedBy" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="RecordedDate" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Audit_UserManagement">
           <Key>
             <PropertyRef Name="Id" />
@@ -527,6 +538,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Audit_10AMDCO_ClosingBalance" EntityType="Self.Audit_10AMDCO_ClosingBalance" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Audit_Form" EntityType="Self.Audit_Form" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Audit_RoleManagement" EntityType="Self.Audit_RoleManagement" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Audit_UserManagement" EntityType="Self.Audit_UserManagement" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Config_Application" EntityType="Self.Config_Application" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Config_Approver" EntityType="Self.Config_Approver" Schema="dbo" store:Type="Tables" />
@@ -665,6 +677,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
           </AssociationSet>
           <EntitySet Name="Audit_UserManagement" EntityType="kashflowDbModel.Audit_UserManagement" />
+          <EntitySet Name="Audit_RoleManagement" EntityType="kashflowDbModel.Audit_RoleManagement" />
           </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -1105,6 +1118,17 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="Activity" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="Remarks" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="UserAccount" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="PerformedBy" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="RecordedDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="Audit_RoleManagement">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Activity" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Remarks" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Role" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="PerformedBy" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="RecordedDate" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
@@ -1571,6 +1595,18 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
                 <ScalarProperty Name="RecordedDate" ColumnName="RecordedDate" />
                 <ScalarProperty Name="PerformedBy" ColumnName="PerformedBy" />
                 <ScalarProperty Name="UserAccount" ColumnName="UserAccount" />
+                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+                <ScalarProperty Name="Activity" ColumnName="Activity" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Audit_RoleManagement">
+            <EntityTypeMapping TypeName="kashflowDbModel.Audit_RoleManagement">
+              <MappingFragment StoreEntitySet="Audit_RoleManagement">
+                <ScalarProperty Name="RecordedDate" ColumnName="RecordedDate" />
+                <ScalarProperty Name="PerformedBy" ColumnName="PerformedBy" />
+                <ScalarProperty Name="Role" ColumnName="Role" />
                 <ScalarProperty Name="Remarks" ColumnName="Remarks" />
                 <ScalarProperty Name="Activity" ColumnName="Activity" />
                 <ScalarProperty Name="Id" ColumnName="Id" />

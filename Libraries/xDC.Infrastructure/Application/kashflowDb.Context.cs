@@ -53,5 +53,6 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<AspNetPermission> AspNetPermission { get; set; }
         public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
         public virtual DbSet<Audit_UserManagement> Audit_UserManagement { get; set; }
+        public virtual DbSet<Audit_RoleManagement> Audit_RoleManagement { get; set; }
     }
 }

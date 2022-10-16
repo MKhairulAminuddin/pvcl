@@ -295,5 +295,73 @@ namespace xDC.Services
 
         #endregion
 
+
+        #region Role Management Audit
+
+        public List<Audit_UserManagement> Get_RMA(out bool status, AuditReq req = null)
+        {
+            status = false;
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.Audit_RoleManagement.AsQueryable();
+
+                    if (req != null)
+                    {
+                        if (req.FromDateUnix != 0 && req.FromDateUnix != 0)
+                        {
+                            var fromDate = xDC.Utils.Common.ConvertEpochToDateTime(req.FromDateUnix);
+                            var toDate = xDC.Utils.Common.ConvertEpochToDateTime(req.ToDateUnix);
+
+                            result = result.Where(x => DbFunctions.TruncateTime(x.RecordedDate) >= DbFunctions.TruncateTime(fromDate) &&
+                                                DbFunctions.TruncateTime(x.RecordedDate) <= DbFunctions.TruncateTime(toDate));
+                        }
+
+                        if (req.UserId != null)
+                        {
+                            result = result.Where(x => x.UserAccount == req.UserId);
+                        }
+                    }
+
+                    status = true;
+                    return result.ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+
+                status = false;
+                return null;
+            }
+        }
+
+        public void Capture_RMA(string activityType, string remarks, string role, string performedBy)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var recordedItem = new Audit_RoleManagement()
+                    {
+                        Activity = activityType,
+                        Remarks = remarks,
+                        Role = role,
+                        PerformedBy = performedBy,
+                        RecordedDate = DateTime.Now
+                    };
+
+                    db.Audit_RoleManagement.Add(recordedItem);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+            }
+        }
+
+        #endregion
     }
 }
