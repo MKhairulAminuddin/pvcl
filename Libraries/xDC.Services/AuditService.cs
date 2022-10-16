@@ -298,7 +298,7 @@ namespace xDC.Services
 
         #region Role Management Audit
 
-        public List<Audit_UserManagement> Get_RMA(out bool status, AuditReq req = null)
+        public List<Audit_RoleManagement> Get_RMA(out bool status, AuditReq req = null)
         {
             status = false;
             try
@@ -320,7 +320,7 @@ namespace xDC.Services
 
                         if (req.UserId != null)
                         {
-                            result = result.Where(x => x.UserAccount == req.UserId);
+                            result = result.Where(x => x.Role == req.RoleName);
                         }
                     }
 

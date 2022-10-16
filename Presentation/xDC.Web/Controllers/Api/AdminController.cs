@@ -251,7 +251,7 @@ namespace xDC_Web.Controllers.Api
             {
                 var key = int.Parse(form.Get("key"));
 
-                var result = new AuthService().DeleteRole(key);
+                var result = new AuthService().DeleteRole(key, User.Identity.Name);
 
                 if (result)
                 {
@@ -305,7 +305,7 @@ namespace xDC_Web.Controllers.Api
         [Route("UpdateRolePermission/{roleId}")]
         public HttpResponseMessage UpdateRolePermissions(int roleId,[FromBody] UpdatePremissionReq req)
         {
-            if (new AuthService().UpdateRolePermission(roleId, req))
+            if (new AuthService().UpdateRolePermission(roleId, req, User.Identity.Name))
             {
                 return Request.CreateResponse(HttpStatusCode.Created);
             }
@@ -319,7 +319,7 @@ namespace xDC_Web.Controllers.Api
         [Route("AddNewRole")]
         public HttpResponseMessage AddNewRole([FromBody] NewRoleReq req)
         {
-            if (new AuthService().AddNewRole(req.RoleName, req.Permissions))
+            if (new AuthService().AddNewRole(req.RoleName, req.Permissions, User.Identity.Name))
             {
                 return Request.CreateResponse(HttpStatusCode.Created);
             }

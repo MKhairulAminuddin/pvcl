@@ -11,5 +11,7 @@ namespace xDC.Domain.WebApi.Audit
         public long FromDateUnix { get; set; }
         public long ToDateUnix { get; set; }
         public string UserId { get; set; }
+        public string RoleName { get; set; }
+
     }
 }

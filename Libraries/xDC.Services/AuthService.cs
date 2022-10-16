@@ -380,7 +380,7 @@ namespace xDC.Services
             }
         }
 
-        public bool UpdateRolePermission(int roleId, UpdatePremissionReq req)
+        public bool UpdateRolePermission(int roleId, UpdatePremissionReq req, string performedBy)
         {
             try
             {
@@ -398,6 +398,7 @@ namespace xDC.Services
                                 foreach (var permission in permissionToDelete.ToList())
                                 {
                                     rolePermissions.AspNetPermission.Remove(permission);
+                                    new AuditService().Capture_RMA(Common.RoleManagementActionType.DeletePermission, $"Deleted {permission.PermissionName} permission from role {rolePermissions.Name}", rolePermissions.Name, performedBy);
                                 }
                                 db.SaveChanges();
                             }
@@ -435,6 +436,8 @@ namespace xDC.Services
                             foreach (var item in allNewPermission)
                             {
                                 rolePermissions.AspNetPermission.Add(item);
+                                new AuditService().Capture_RMA(Common.RoleManagementActionType.AddPermission, $"Added {item.PermissionName} permission from role {rolePermissions.Name}", rolePermissions.Name, performedBy);
+
                             }
 
                             db.SaveChanges();
@@ -452,6 +455,8 @@ namespace xDC.Services
                                 foreach (var permission in permissionToDelete.ToList())
                                 {
                                     rolePermissions.AspNetPermission.Remove(permission);
+                                    new AuditService().Capture_RMA(Common.RoleManagementActionType.DeletePermission, $"Deleted {permission.PermissionName} permission from role {rolePermissions.Name}", rolePermissions.Name, performedBy);
+
                                 }
                                 db.SaveChanges();
                             }
@@ -467,7 +472,7 @@ namespace xDC.Services
             }
         }
 
-        public bool AddNewRole(string newRoleName, List<NewPermissionReq> req)
+        public bool AddNewRole(string newRoleName, List<NewPermissionReq> req, string performedBy)
         {
             try
             {
@@ -479,6 +484,8 @@ namespace xDC.Services
                         var newRole = new AspNetRoles() { Name = newRoleName };
                         var addNewRole = db.AspNetRoles.Add(newRole);
                         db.SaveChanges();
+                        new AuditService().Capture_RMA(Common.RoleManagementActionType.Add, $"Added new role {newRole.Name}", newRole.Name, performedBy);
+
 
                         int addRoleId = newRole.Id;
 
@@ -494,6 +501,7 @@ namespace xDC.Services
                                         if (newAssignedPermission != null)
                                         {
                                             addNewRole.AspNetPermission.Add(newAssignedPermission);
+                                            new AuditService().Capture_RMA(Common.RoleManagementActionType.AddPermission, $"Added {newAssignedPermission.PermissionName} permission to role {newRole.Name}", newRole.Name, performedBy);
                                         }
                                     }
                                     db.SaveChanges();
@@ -542,7 +550,7 @@ namespace xDC.Services
             }
         }
 
-        public bool DeleteRole(int roleId)
+        public bool DeleteRole(int roleId, string performedBy)
         {
             try
             {
@@ -553,6 +561,8 @@ namespace xDC.Services
 
                     if (selectedRole != null && !isAdminRole)
                     {
+                        new AuditService().Capture_RMA(Common.RoleManagementActionType.Delete, $"Deleted role {selectedRole.Name}", selectedRole.Name, performedBy);
+
                         db.AspNetRoles.Remove(selectedRole);
                         db.SaveChanges();
                     }

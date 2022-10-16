@@ -175,5 +175,64 @@ namespace xDC_Web.Controllers.Api
         }
 
         #endregion
+
+        #region Role Management
+
+
+        [HttpGet]
+        [Route("RoleManagement")]
+        public HttpResponseMessage GetRoleManagementAudit(DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = new AuditService().Get_RMA(out bool requestStatus);
+                    if (requestStatus)
+                    {
+                        return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+        [HttpPost]
+        [Route("RoleManagement")]
+        public HttpResponseMessage GetRoleManagementAuditFiltered([FromBody] AuditReq req, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = new AuditService().Get_RMA(out bool requestStatus, req);
+                    if (requestStatus)
+                    {
+                        return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+
+        }
+
+
+        #endregion
     }
 }

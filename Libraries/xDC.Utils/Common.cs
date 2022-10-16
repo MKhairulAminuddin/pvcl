@@ -691,6 +691,16 @@ namespace xDC.Utils
             public const string ChangeStatus = "CHANGE USER STATUS";
         }
 
+        public static class RoleManagementActionType
+        {
+            public const string Add = "ADD NEW ROLE";
+            public const string Delete = "DELETE A ROLE";
+            public const string Update = "UPDATE A ROLE";
+
+            public const string AddPermission = "ADD PERMISSION TO ROLE";
+            public const string DeletePermission = "DELETE ROLE PERMISSION";
+        }
+
         public static string FlattenStrings(params string[] parameters)
         {
             var result = string.Empty;

@@ -301,6 +301,7 @@
     <Content Include="Scripts\adminlte.min.js" />
     <Content Include="Scripts\app.js" />
     <Content Include="Scripts\app\admin\roleManagement.js" />
+    <Content Include="Scripts\app\audit\roleManagement.js" />
     <Content Include="Scripts\app\audit\userManagement.js" />
     <Content Include="Scripts\app\audit\userAccess.js" />
     <Content Include="Scripts\app\admin\userManagement.js" />
@@ -540,6 +541,7 @@
     <Content Include="Views\Fid\FcaTagging\View.cshtml" />
     <Content Include="Views\Issd\FcaTagging\View.cshtml" />
     <Content Include="Views\Audit\UserManagement.cshtml" />
+    <Content Include="Views\Audit\RoleManagement.cshtml" />
     <None Include="Web.UAT.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
