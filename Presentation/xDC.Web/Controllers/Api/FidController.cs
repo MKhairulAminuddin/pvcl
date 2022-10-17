@@ -18,6 +18,7 @@ using xDC.Utils;
 using xDC_Web.Models;
 using xDC_Web.ViewModels.Fid;
 using xDC_Web.ViewModels.Fid.Treasury;
+using static xDC.Utils.Common;
 using TreasuryFormVM = xDC_Web.Models.TreasuryFormVM;
 
 namespace xDC_Web.Controllers.Api
@@ -270,7 +271,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = FidService.List_CounterParty(db);
+                    var result = TreasuryFormService.List_CounterParty(db);
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -290,7 +291,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = FidService.List_Issuer(db);
+                    var result = TreasuryFormService.List_Issuer(db);
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -599,14 +600,15 @@ namespace xDC_Web.Controllers.Api
                     db.FID_Treasury_MMI.AddRange(outflowMoneyMarket);
                     db.SaveChanges();
 
-                    new AuditService().AuditForm_Create(form.Id, form.FormType, form.ValueDate, User.Identity.Name);
+                    new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.Create, User.Identity.Name, $"Created an {form.FormType} form");
+
 
                     if (form.FormStatus == Common.FormStatus.PendingApproval)
                     {
                         new WorkflowService().SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
                         new MailService().TreasuryForm_SubmitApproval(form.Id, form.ApprovedBy, input.ApprovalNotes);
                         new NotificationService().NotifyApprovalRequest(form.ApprovedBy, form.Id, form.PreparedBy, form.FormType);
-                        new AuditService().AuditForm_RequestApproval(form.Id, form.FormType, form.ValueDate, User.Identity.Name);
+                        new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
                     }
                     
                     return Request.CreateResponse(HttpStatusCode.Created, form.Id);
@@ -1397,7 +1399,7 @@ namespace xDC_Web.Controllers.Api
 
                         db.SaveChanges();
 
-                        new AuditService().AuditForm_Delete(form.Id, form.FormType, form.ValueDate, User.Identity.Name);
+                        new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.Delete, User.Identity.Name, $"Deleted {form.FormType} form");
 
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }

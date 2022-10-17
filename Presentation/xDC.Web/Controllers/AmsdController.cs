@@ -52,14 +52,6 @@ namespace xDC_Web.Controllers
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    // only AMSD user can create new form
-                    var isApprover = db.Config_Approver.Any(x => x.Username == User.Identity.Name);
-                    if (!User.IsInRole(Config.Acl.Amsd) && !isApprover)
-                    {
-                        TempData["ErrorMessage"] = "You are not authorized to create new Inflow Fund form...";
-                        return View("Error");
-                    }
-
                     var model = new InflowFundStatusFormVM()
                     {
                         PreparedBy = User.Identity.Name,

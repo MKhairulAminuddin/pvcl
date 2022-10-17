@@ -677,6 +677,7 @@ namespace xDC.Utils
             public const string Delete = "DELETE";
             public const string Approve = "APPROVE";
             public const string Reject = "REJECT";
+            public const string RetractSubmission = "RETRACT SUBMISSION";
             public const string Reassign = "REASSIGN";
             public const string RequestApproval = "REQUEST APPROVAL";
             public const string Resubmit = "RESUBMIT";

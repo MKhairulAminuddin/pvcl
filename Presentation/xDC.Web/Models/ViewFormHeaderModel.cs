@@ -21,6 +21,7 @@ namespace xDC_Web.Models
         public bool EnableEdit { get; set; }
         public bool EnableDelete { get; set; }
         public bool EnablePrint { get; set; }
+        public bool EnableRetractSubmission { get; set; }
 
         public bool IsPendingMyApproval { get; set; }
         public bool IsRejected { get; set; }

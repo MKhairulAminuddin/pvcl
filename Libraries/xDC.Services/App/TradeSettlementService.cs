@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using xDC.Domain.ISSD_TS;
 using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Infrastructure.Application;
+using xDC.Logging;
 using xDC.Utils;
 
 namespace xDC.Services.App
 {
-    public static class TradeSettlementSvc
+    public static class TradeSettlementFormService
     {
         public static void NotifyApprover(string approverUsername, int formId, string submittedBy, string formType, string notes)
         {
@@ -253,6 +254,36 @@ namespace xDC.Services.App
 
             return result;
         }
-        
+
+        public static bool RetractFormSubmission(int formId, string performedBy)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
+
+                    if (form != null)
+                    {
+                        form.FormStatus = Common.FormStatus.Draft;
+                        db.SaveChanges();
+
+                        new AuditService().Capture_FA(form.Id, form.FormType, Common.FormActionType.RetractSubmission, performedBy, $"Retract form submission for {form.FormType} form.");
+
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+                return false;
+            }
+        }
+
     }
 }

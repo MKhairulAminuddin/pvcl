@@ -70,11 +70,11 @@ namespace xDC_Web.Controllers
                             OpeningBalance = new List<TsOpeningBalance>()
                         };
 
-                        var ob = TradeSettlementSvc.GetOpeningBalance(db, settlementDateOnly, currency);
+                        var ob = TradeSettlementFormService.GetOpeningBalance(db, settlementDateOnly, currency);
                         vm.OpeningBalance.AddRange(ob);
                         var totalOb = vm.OpeningBalance.Sum(x => x.Amount);
 
-                        var totalFlow = TradeSettlementSvc.GetTotalFlow(db, form.Select(x => x.Id).ToList(), settlementDateOnly, currency);
+                        var totalFlow = TradeSettlementFormService.GetTotalFlow(db, form.Select(x => x.Id).ToList(), settlementDateOnly, currency);
 
                         vm.ClosingBalance = totalOb + totalFlow.Inflow - totalFlow.Outflow;
 
@@ -550,7 +550,7 @@ namespace xDC_Web.Controllers
 
                     if (form != null)
                     {
-                        var wf = TradeSettlementSvc.GetLatestWorkflow(db, form.Id, form.FormType);
+                        var wf = TradeSettlementFormService.GetLatestWorkflow(db, form.Id, form.FormType);
                         var model = GenerateViewModel(form, wf);
 
                         switch (form.FormType)
@@ -602,13 +602,13 @@ namespace xDC_Web.Controllers
 
                     if (form != null)
                     {
-                        if (TradeSettlementSvc.EditFormRules(form.FormStatus, form.ApprovedBy, User.Identity.Name, out var errorMessage))
+                        if (TradeSettlementFormService.EditFormRules(form.FormStatus, form.ApprovedBy, User.Identity.Name, out var errorMessage))
                         {
                             TempData["ErrorMessage"] = errorMessage;
                             return View("Error");
                         }
 
-                        var wf = TradeSettlementSvc.GetLatestWorkflow(db, form.Id, form.FormType);
+                        var wf = TradeSettlementFormService.GetLatestWorkflow(db, form.Id, form.FormType);
                         var model = GenerateEditModel(form, wf);
 
                         switch (form.FormType)

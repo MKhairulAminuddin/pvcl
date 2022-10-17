@@ -5,10 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using xDC.Infrastructure.Application;
+using xDC.Logging;
+using xDC.Utils;
 
 namespace xDC.Services.App
 {
-    public static class FidService
+    public static class TreasuryFormService
     {
 
         public static List<EDW_FID_List> List_Issuer(kashflowDBEntities db)
@@ -52,6 +54,36 @@ namespace xDC.Services.App
                 Name = x.Name,
             }).Distinct().ToList();
             return counterPartyList;
+        }
+
+        public static bool RetractFormSubmission(int formId, string performedBy)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
+
+                    if (form != null)
+                    {
+                        form.FormStatus = Common.FormStatus.Draft;
+                        db.SaveChanges();
+
+                        new AuditService().Capture_FA(form.Id, form.FormType, Common.FormActionType.RetractSubmission, performedBy, $"Retract form submission for {form.FormType} form.");
+
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+                return false;
+            }
         }
     }
 }

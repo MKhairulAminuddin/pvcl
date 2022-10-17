@@ -33,59 +33,78 @@ namespace xDC.Services
             }
         }
 
-        public void AuditForm_Create(int formId, string formType, DateTime? formDate, string modifiedBy)
+        public void Capture_FA(int formId, string formType, string actionType, string modifiedBy, string remarks = null)
         {
-            var obj = new Audit_Form()
+            try
             {
-                FormId = formId,
-                FormType = formType,
-                FormDate = formDate,
-                ActionType = Common.FormActionType.Create,
+                using (var db = new kashflowDBEntities())
+                {
+                    if (formType == Common.FormType.AMSD_IF)
+                    {
+                        var theForm = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
 
-                ModifiedBy = modifiedBy,
-                ModifiedOn = DateTime.Now,
+                        var obj = new Audit_Form()
+                        {
+                            FormId = theForm.Id,
+                            FormType = theForm.FormType,
+                            FormDate = theForm.FormDate,
+                            ActionType = actionType,
 
-                Remarks = $"Created an {formType} form"
-            };
+                            ModifiedBy = modifiedBy,
+                            ModifiedOn = DateTime.Now,
 
-            AuditForm_Insert(obj);
+                            Remarks = remarks
+                        };
+
+                        AuditForm_Insert(obj);
+                    }
+                    else if (formType.Contains(Common.FormType.ISSD_TS))
+                    {
+                        var theForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
+
+                        var obj = new Audit_Form()
+                        {
+                            FormId = theForm.Id,
+                            FormType = theForm.FormType,
+                            FormDate = theForm.SettlementDate,
+                            ActionType = actionType,
+
+                            ModifiedBy = modifiedBy,
+                            ModifiedOn = DateTime.Now,
+
+                            Remarks = remarks
+                        };
+
+                        AuditForm_Insert(obj);
+                    }
+                    else if (formType == Common.FormType.FID_TREASURY)
+                    {
+                        var theForm = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
+
+                        var obj = new Audit_Form()
+                        {
+                            FormId = theForm.Id,
+                            FormType = theForm.FormType,
+                            FormDate = theForm.ValueDate,
+                            ActionType = actionType,
+
+                            ModifiedBy = modifiedBy,
+                            ModifiedOn = DateTime.Now,
+
+                            Remarks = remarks
+                        };
+
+                        AuditForm_Insert(obj);
+                    }
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
         }
 
-        public void AuditForm_RequestApproval(int formId, string formType, DateTime? formDate, string modifiedBy)
-        {
-            var obj = new Audit_Form()
-            {
-                FormId = formId,
-                FormType = formType,
-                FormDate = formDate,
-                ActionType = Common.FormActionType.RequestApproval,
-
-                ModifiedBy = modifiedBy,
-                ModifiedOn = DateTime.Now.AddMilliseconds(100),
-
-                Remarks = $"Request Approval for {formType} form"
-            };
-
-            AuditForm_Insert(obj);
-        }
-
-        public void AuditForm_Delete(int formId, string formType, DateTime? formDate, string modifiedBy)
-        {
-            var obj = new Audit_Form()
-            {
-                FormId = formId,
-                FormType = formType,
-                FormDate = formDate,
-                ActionType = Common.FormActionType.Delete,
-
-                ModifiedBy = modifiedBy,
-                ModifiedOn = DateTime.Now,
-
-                Remarks = $"Delete {formType} form"
-            };
-
-            AuditForm_Insert(obj);
-        }
 
         public void AuditForm_EditRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore, string valueAfter, string columnName)
         {

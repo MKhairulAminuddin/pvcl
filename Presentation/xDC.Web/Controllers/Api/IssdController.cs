@@ -18,6 +18,7 @@ using xDC.Utils;
 using xDC_Web.Models;
 using xDC_Web.ViewModels.Fid;
 using xDC_Web.ViewModels.Iisd;
+using static xDC.Utils.Common;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -71,9 +72,9 @@ namespace xDC_Web.Controllers.Api
                             ApprovedBy = item.ApprovedBy,
                             ApprovedDate = item.ApprovedDate,
 
-                            EnableEdit = TradeSettlementSvc.EnableEdit(item.FormStatus, item.ApprovedBy, User.Identity.Name),
+                            EnableEdit = TradeSettlementFormService.EnableEdit(item.FormStatus, item.ApprovedBy, User.Identity.Name),
                             EnableDelete = item.FormStatus != Common.FormStatus.PendingApproval && item.ApprovedBy != User.Identity.Name,
-                            EnablePrint = TradeSettlementSvc.EnablePrint(item.FormStatus),
+                            EnablePrint = TradeSettlementFormService.EnablePrint(item.FormStatus),
 
                             IsRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatus.Rejected),
                             IsPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
@@ -153,7 +154,7 @@ namespace xDC_Web.Controllers.Api
                 {
                     var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
                     
-                    var trades = TradeSettlementSvc.GetTradeSettlement(db, settlementDate.Value.Date, currency);
+                    var trades = TradeSettlementFormService.GetTradeSettlement(db, settlementDate.Value.Date, currency);
 
                     var result = trades
                         .GroupBy(i => 1)
@@ -380,12 +381,12 @@ namespace xDC_Web.Controllers.Api
                     db.ISSD_TradeSettlement.AddRange(newTrades);
                     db.SaveChanges();
 
-                    new AuditService().AuditForm_Create(newFormHeader.Id, newFormHeader.FormType, newFormHeader.SettlementDate, User.Identity.Name);
+                    new AuditService().Capture_FA(newFormHeader.Id, newFormHeader.FormType, FormActionType.Create, User.Identity.Name, $"Created an {newFormHeader.FormType} form");
 
                     if (inputs.Approver != null)
                     {
-                        TradeSettlementSvc.NotifyApprover(inputs.Approver, newFormHeader.Id, User.Identity.Name, newFormHeader.FormType, inputs.ApprovalNotes);
-                        new AuditService().AuditForm_RequestApproval(newFormHeader.Id, newFormHeader.FormType, newFormHeader.SettlementDate, User.Identity.Name);
+                        TradeSettlementFormService.NotifyApprover(inputs.Approver, newFormHeader.Id, User.Identity.Name, newFormHeader.FormType, inputs.ApprovalNotes);
+                        new AuditService().Capture_FA(newFormHeader.Id, newFormHeader.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {newFormHeader.FormType} form");
                     }
 
                     return Request.CreateResponse(HttpStatusCode.Created, newFormHeader.Id);
@@ -439,7 +440,7 @@ namespace xDC_Web.Controllers.Api
                         form.ApprovedDate = null; // empty the date as this is new submission
                         form.FormStatus = Common.FormStatus.PendingApproval;
 
-                        TradeSettlementSvc.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name,
+                        TradeSettlementFormService.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name,
                             form.FormType, inputs.ApprovalNotes);
                     }
                     
@@ -1454,7 +1455,7 @@ namespace xDC_Web.Controllers.Api
 
                             db.SaveChanges();
 
-                            TradeSettlementSvc.NotifyPreparer(form.Id, form.FormType, form.FormStatus, form.PreparedBy, form.ApprovedBy, input.ApprovalNote);
+                            TradeSettlementFormService.NotifyPreparer(form.Id, form.FormType, form.FormStatus, form.PreparedBy, form.ApprovedBy, input.ApprovalNote);
                             new MailService().TS_IncomingFund(form.Id, form.FormType, form.Currency);
                             new AuditService().AuditForm_Approval(form.Id, form.FormType, form.FormStatus, form.SettlementDate, User.Identity.Name);
 
@@ -1523,7 +1524,7 @@ namespace xDC_Web.Controllers.Api
                         
                         db.SaveChanges();
 
-                        new AuditService().AuditForm_Delete(form.Id, form.FormType, form.SettlementDate, User.Identity.Name);
+                        new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.Delete, User.Identity.Name, $"Deleted {form.FormType} form");
 
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
@@ -1556,7 +1557,7 @@ namespace xDC_Web.Controllers.Api
 
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = TradeSettlementSvc.GetOpeningBalance(db, settlementDateOnly, currency);
+                    var result = TradeSettlementFormService.GetOpeningBalance(db, settlementDateOnly, currency);
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
             }

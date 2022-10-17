@@ -2,7 +2,17 @@
 
     $(function () {
 
-        var $amsdGrid, $newInflowFundBtn, $gridFilterDropdown;
+        var $amsdGrid,
+            $newInflowFundBtn,
+            $gridFilterDropdown,
+            $retractSubmissionModal = $("#retractSubmissionModal"),
+            $retractFormBtn = $("#retractFormBtn"),
+            $retractFormCancelBtn = $("#retractFormCancelBtn"),
+
+            $retractFormId = $("#retractFormId"),
+            $retractFormPreparedBy = $("#retractFormPreparedBy"),
+            $retractFormSubmissionDate = $("#retractFormSubmissionDate"),
+            $retractFormAssignedApprover = $("#retractFormAssignedApprover");
 
         var statuses = [
             "All",
@@ -14,10 +24,9 @@
 
         var referenceUrl = {
             loadAmsdGrid: window.location.origin + "/api/amsd/inflowfund",
-
             deleteForm: window.location.origin + "/api/amsd/inflowfund",
+            retractForm: window.location.origin + "/api/amsd/inflowfund/retractForm",
             
-
             editPageRedirect: window.location.origin + "/amsd/inflowfund/edit/",
             viewPageRedirect: window.location.origin + "/amsd/inflowfund/view/",
 
@@ -120,6 +129,23 @@
                             cssClass: "dx-datagrid-command-btn",
                             onClick: function (e) {
                                 window.location.href = referenceUrl.viewPageRedirect + e.row.data.id;
+                                e.event.preventDefault();
+                            }
+                        },
+                        {
+                            hint: "Retract Submission",
+                            icon: "fa fa-chain-broken",
+                            cssClass: "dx-datagrid-command-btn",
+                            visible: function (e) {
+                                return e.row.data.enableRetractSubmission;
+                            },
+                            onClick: function (e) {
+                                $retractFormId.text(e.row.data.id);
+                                $retractFormPreparedBy.text(e.row.data.preparedBy);
+                                $retractFormSubmissionDate.text(moment(e.row.data.preparedDate, "YYYY-MM-DDTHH:mm:ssZ").format("DD/MM/yyyy HH:mm A"));
+                                $retractFormAssignedApprover.text(e.row.data.approvedBy);
+                                
+                                $retractSubmissionModal.modal('show');
                                 e.event.preventDefault();
                             }
                         },
@@ -230,7 +256,10 @@
                 enabled: true,
                 type: "localStorage",
                 storageKey: "xDC_IF_Grid"
-            }
+            },
+            selection: {
+                mode: 'single',
+            },
         }).dxDataGrid("instance");
         
 
@@ -242,6 +271,44 @@
                     $amsdGrid.clearFilter();
                 else
                     $amsdGrid.filter(["formStatus", "=", data.value]);
+            }
+        });
+
+        $retractFormBtn.dxButton({
+            onClick: function(e) {
+                app.toast("Retract form submission...", "warning", 3000);
+
+                $.ajax({
+                    data: {
+                        formId: parseInt($retractFormId.text()) 
+                    },
+                    dataType: 'json',
+                    url: referenceUrl.retractForm,
+                    method: 'post',
+                    success: function (data) {
+                        window.location.href = referenceUrl.viewPageRedirect + parseInt($retractFormId.text());
+                        app.alertSuccess("Form status retracted success");
+                    },
+                    fail: function (jqXHR, textStatus, errorThrown) {
+                        app.alertError(textStatus + ': ' + errorThrown);
+                    },
+                    complete: function (data) {
+                        $retractSubmissionModal.modal('hide');
+                    }
+                });
+
+                e.event.preventDefault();
+            }
+        });
+
+        $retractFormCancelBtn.dxButton({
+            onClick: function (e) {
+                $retractFormId.text();
+                $retractFormPreparedBy.text();
+                $retractFormSubmissionDate.text();
+                $retractFormAssignedApprover.text();
+
+                $retractSubmissionModal.modal('hide');
             }
         });
 

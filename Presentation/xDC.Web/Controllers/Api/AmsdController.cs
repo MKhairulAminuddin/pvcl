@@ -17,13 +17,17 @@ using xDC.Logging;
 using xDC.Services;
 using xDC.Services.App;
 using xDC_Web.ViewModels.Amsd;
+using xDC_Web.ViewModels;
+using static xDC.Utils.Common;
+using xDC_Web.Extension.CustomAttribute;
 
 namespace xDC_Web.Controllers.Api
 {
-    [Authorize(Roles="Administrator, Power User, AMSD")]
+    [KflowApiAuthorize(PermissionKey.AMSD)]
     [RoutePrefix("api/amsd")]
     public class AmsdController : ApiController
     {
+        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_View)]
         [HttpGet]
         [Route("inflowfund")]
         public HttpResponseMessage InflowFund_Form(DataSourceLoadOptions loadOptions)
@@ -50,9 +54,10 @@ namespace xDC_Web.Controllers.Api
                             ApprovedBy = item.ApprovedBy,
                             ApprovedDate = item.ApprovedDate,
 
-                            EnableEdit = AMSD_InflowFundSvc.EnableEdit(item.FormStatus, item.ApprovedBy, User.Identity.Name),
-                            EnableDelete = AMSD_InflowFundSvc.EnableDelete(item.FormStatus),
-                            EnablePrint = AMSD_InflowFundSvc.EnablePrint(item.FormStatus),
+                            EnableEdit = InflowFundFormService.EnableEdit(item.FormStatus, item.ApprovedBy, User.Identity.Name),
+                            EnableDelete = InflowFundFormService.EnableDelete(item.FormStatus),
+                            EnablePrint = InflowFundFormService.EnablePrint(item.FormStatus),
+                            EnableRetractSubmission = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatus.PendingApproval),
                             
                             IsRejected = (item.FormStatus == Common.FormStatus.Rejected),
                             IsPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
@@ -70,6 +75,32 @@ namespace xDC_Web.Controllers.Api
             
         }
 
+        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
+        [HttpPost]
+        [Route("inflowfund/retractForm")]
+        public HttpResponseMessage InflowFund_RetractFormSubmission(RetractFormVM req)
+        {
+            try
+            {
+                var retractFormStatus = InflowFundFormService.RetractFormSubmission(req.FormId, User.Identity.Name);
+
+                if (retractFormStatus)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Created);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid form ID");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+
+        }
+
+        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
         [HttpGet]
         [Route("IsTodayInflowFormExisted")]
         public HttpResponseMessage IsTodayInflowFormExisted()
@@ -99,6 +130,7 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
         [HttpGet]
         [Route("IsViolatedCutOffTime")]
         public HttpResponseMessage IsViolatedCutOffTime()
@@ -137,10 +169,10 @@ namespace xDC_Web.Controllers.Api
         }
 
         #region Inflow Fund Form
-        
+
+        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
         [HttpPost]
         [Route("InflowFund/New")]
-        [Authorize(Roles = "AMSD")]
         public HttpResponseMessage InflowFund_NewForm([FromBody] InflowFundsModel input)
         {
             try
@@ -187,7 +219,7 @@ namespace xDC_Web.Controllers.Api
                     db.AMSD_IF_Item.AddRange(newRecordInflowFunds);
                     db.SaveChanges();
 
-                    new AuditService().AuditForm_Create(form.Id, form.FormType, form.FormDate, User.Identity.Name);
+                    new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.Create, User.Identity.Name, $"Created an {form.FormType} form");
 
                     if (form.FormStatus == Common.FormStatus.PendingApproval)
                     {
@@ -195,7 +227,7 @@ namespace xDC_Web.Controllers.Api
                         new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
                         new WorkflowService().SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
 
-                        new AuditService().AuditForm_RequestApproval(form.Id, form.FormType, form.FormDate, User.Identity.Name);
+                        new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
                     }
 
                     
@@ -209,10 +241,10 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
         }
-        
+
+        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
         [HttpPost]
         [Route("InflowFund/Edit/{formId}")]
-        [Authorize(Roles = "AMSD")]
         public HttpResponseMessage InflowFund_EditForm(int formId, [FromBody] InflowFundsModel input)
         {
             try
@@ -339,9 +371,9 @@ namespace xDC_Web.Controllers.Api
 
                         if (form.FormStatus == Common.FormStatus.PendingApproval && !isAdminEdit)
                         {
-                            TradeSettlementSvc.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name,
+                            TradeSettlementFormService.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name,
                                 form.FormType, input.ApprovalNotes);
-                            new AuditService().AuditForm_RequestApproval(form.Id, form.FormType, form.FormDate, User.Identity.Name);
+                            new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
                         }
 
                         return Request.CreateResponse(HttpStatusCode.Accepted, form.Id);
@@ -359,8 +391,8 @@ namespace xDC_Web.Controllers.Api
 
         }
 
+        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
         [HttpDelete]
-        [Authorize(Roles = "Administrator, AMSD")]
         [Route("InflowFund")]
         public HttpResponseMessage InflowFund_DeleteForm(FormDataCollection input)
         {
@@ -384,7 +416,7 @@ namespace xDC_Web.Controllers.Api
                         db.AMSD_IF.Remove(form);
                         db.SaveChanges();
 
-                        new AuditService().AuditForm_Delete(form.Id, form.FormType, form.FormDate, User.Identity.Name);
+                        new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.Delete, User.Identity.Name, $"Deleted {form.FormType} form");
 
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
@@ -402,10 +434,9 @@ namespace xDC_Web.Controllers.Api
 
         }
 
-
+        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
         [HttpPost]
         [Route("InflowFund/Approval")]
-        [Authorize(Roles = "AMSD")]
         public HttpResponseMessage InflowFund_ApproveForm([FromBody] FormApprovalModel input)
         {
             try
@@ -459,6 +490,7 @@ namespace xDC_Web.Controllers.Api
 
         #region Inflow Funds Grid
 
+        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
         [HttpGet]
         [Route("GetInflowFunds/{formId}")]
         public HttpResponseMessage GetInflowFunds(int formId, DataSourceLoadOptions loadOptions)
@@ -479,8 +511,8 @@ namespace xDC_Web.Controllers.Api
 
         }
 
+        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
         [HttpPut]
-        [Authorize(Roles = "Power User, AMSD")]
         public HttpResponseMessage UpdateInflowFund(FormDataCollection form)
         {
             try
@@ -524,8 +556,8 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
         [HttpPost]
-        [Authorize(Roles = "Power User, AMSD")]
         public HttpResponseMessage InsertInflowFund([FromBody] InflowFundVM request)
         {
             using (var db = new kashflowDBEntities())
@@ -604,8 +636,8 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
         [HttpDelete]
-        [Authorize(Roles = "Power User, AMSD")]
         public HttpResponseMessage DeleteInflowFund(FormDataCollection form)
         {
             using (var db = new kashflowDBEntities())

@@ -373,7 +373,7 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = FidService.List_FcaBankAccount(db);
+                    var result = TreasuryFormService.List_FcaBankAccount(db);
 
                     result.Add("RENTAS");
                     result.Add("MMA");
