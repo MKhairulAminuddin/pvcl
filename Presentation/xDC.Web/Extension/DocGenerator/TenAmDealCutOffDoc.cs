@@ -21,7 +21,7 @@ namespace xDC_Web.Extension.DocGenerator
         private Color _tableHeaderPrimaryColor = System.Drawing.ColorTranslator.FromHtml("#5b8efb");
         private Color _inflowColor = System.Drawing.ColorTranslator.FromHtml("#3498DB");
         private Color _outFlowColor = System.Drawing.ColorTranslator.FromHtml("#E67E22");
-        private Color _highlightColor = System.Drawing.ColorTranslator.FromHtml("#FFFDE7");
+        private Color _highlightColor = System.Drawing.ColorTranslator.FromHtml("#f1c40f");
 
         public IWorkbook GenerateWorkbook(DateTime selectedDate, bool viewApproved)
         {
@@ -112,31 +112,33 @@ namespace xDC_Web.Extension.DocGenerator
                             sheet.Rows[currentIndex - 1].CopyFrom(sheet.Rows[startIndex - 1], PasteSpecial.All);
                         }
 
-                        sheet["A" + currentIndex].Value = item.Currency;
-                        sheet["B" + currentIndex].Value = item.Account;
-                        sheet["C" + currentIndex].Value = item.OpeningBalance;
-                        sheet["D" + currentIndex].Value = item.TotalInflow;
-                        sheet["E" + currentIndex].Value = item.TotalOutflow;
-                        sheet["F" + currentIndex].Value = item.Net;
-                        sheet["G" + currentIndex].Value = item.ClosingBalance;
+                        sheet["B" + currentIndex].Value = item.Currency;
+                        sheet["C" + currentIndex].Value = item.Account;
+                        sheet["D" + currentIndex].Value = item.OpeningBalance;
+                        sheet["E" + currentIndex].Value = item.TotalInflow;
+                        sheet["F" + currentIndex].Value = item.TotalOutflow;
+                        sheet["G" + currentIndex].Value = item.Net;
+                        sheet["H" + currentIndex].Value = item.ClosingBalance;
 
                         currentIndex++;
                     }
+                    sheet["B" + startGroupIndex + ":B" + (currentIndex-1)].Merge();
 
                     sheet.Rows[currentIndex - 1].Insert(InsertCellsMode.ShiftCellsDown);
                     sheet.Rows[currentIndex - 1].CopyFrom(sheet.Rows[startIndex - 1], PasteSpecial.All);
+
                     sheet["B" + currentIndex].Value = "TOTAL";
-                    sheet["C" + currentIndex].Formula = "=SUM($C$" + startGroupIndex + ":$C$" + (currentIndex - 1) + ")";
+                    sheet["B" + currentIndex + ":C" + currentIndex].Merge();
                     sheet["D" + currentIndex].Formula = "=SUM($D$" + startGroupIndex + ":$D$" + (currentIndex - 1) + ")";
                     sheet["E" + currentIndex].Formula = "=SUM($E$" + startGroupIndex + ":$E$" + (currentIndex - 1) + ")";
                     sheet["F" + currentIndex].Formula = "=SUM($F$" + startGroupIndex + ":$F$" + (currentIndex - 1) + ")";
                     sheet["G" + currentIndex].Formula = "=SUM($G$" + startGroupIndex + ":$G$" + (currentIndex - 1) + ")";
+                    sheet["H" + currentIndex].Formula = "=SUM($H$" + startGroupIndex + ":$H$" + (currentIndex - 1) + ")";
 
-                    sheet["B" + currentIndex + ":G" + currentIndex].Font.Bold = true;
-                    sheet["B" + currentIndex + ":G" + currentIndex].FillColor = _highlightColor;
+                    sheet["B" + currentIndex + ":H" + currentIndex].Font.Bold = true;
+                    sheet["B" + currentIndex + ":H" + currentIndex].FillColor = _highlightColor;
 
-                    sheet["A" + startGroupIndex + ":A" + currentIndex].Merge();
-                    sheet["A" + startGroupIndex + ":A" + currentIndex].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
+                    sheet["B" + currentIndex + ":H" + currentIndex].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
 
                     currentIndex++;
                     startGroupIndex = currentIndex;
