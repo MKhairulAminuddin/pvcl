@@ -126,11 +126,11 @@
             <section class="sidebar">
                 <ul class="sidebar-menu" data-widget="tree" data-animation-speed="100">
                     <li><a href="@Url.Action("Index", "Home")"><i class="fa fa-desktop"></i> <span>Dashboard</span></a></li>
-                    @if (MenuSecurity.AmsdMenu)
+                    @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.AMSD))
                     {
                         <li><a href="@Url.Action("Index", "Amsd")"><i class="fa fa-circle-thin"></i> <span>AMSD</span></a></li>
                     }
-                    @if (MenuSecurity.IssdMenu)
+                    @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.ISSD))
                     {
                         <li class="treeview">
                             <a href="#">
@@ -140,12 +140,18 @@
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="@Url.Action("TradeSettlement","Issd")"><i class="fa fa-circle-thin"></i> <span>Trade Settlement</span></a></li>
-                                <li><a href="@Url.Action("FcaTagging", "Issd")"><i class="fa fa-circle-thin"></i> <span>FCA Tagging</span></a></li>
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.ISSD_TradeSettlementForm_View))
+                                {
+                                    <li><a href="@Url.Action("TradeSettlement","Issd")"><i class="fa fa-circle-thin"></i> <span>Trade Settlement</span></a></li>
+                                }
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.ISSD_FcaTaggingForm))
+                                {
+                                    <li><a href="@Url.Action("FcaTagging", "Issd")"><i class="fa fa-circle-thin"></i> <span>FCA Tagging</span></a></li>
+                                }
                             </ul>
                         </li>
                     }
-                    @if (MenuSecurity.FidMenu)
+                    @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.FID))
                     {
                         <li class="treeview">
                             <a href="#">
@@ -155,12 +161,18 @@
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="@Url.Action("Treasury", "Fid")"><i class="fa fa-circle-thin"></i> <span>Treasury</span></a></li>
-                                <li><a href="@Url.Action("FcaTagging", "Fid")"><i class="fa fa-circle-thin"></i> <span>FCA Tagging</span></a></li>
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.FID_TreasuryForm_View))
+                                {
+                                    <li><a href="@Url.Action("Treasury", "Fid")"><i class="fa fa-circle-thin"></i> <span>Treasury</span></a></li>
+                                }
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.FID_FcaTaggingForm))
+                                {
+                                    <li><a href="@Url.Action("FcaTagging", "Fid")"><i class="fa fa-circle-thin"></i> <span>FCA Tagging</span></a></li>
+                                }
                             </ul>
                         </li>
                     }
-                    @if (MenuSecurity.FidMenu || MenuSecurity.IssdMenu)
+                    @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.Report))
                     {
                         <li class="treeview">
                             <a href="#">
@@ -170,13 +182,22 @@
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="@Url.Action("TenAmDealCutOff", "Report")"><i class="fa fa-circle-thin"></i> <span>10am Deal Cut Off</span></a></li>
-                                <li><a href="@Url.Action("DealCutOffMyr", "Report")"><i class="fa fa-circle-thin"></i> <span>Deal Cut Off (MYR)</span></a></li>
-                                <li><a href="@Url.Action("DealCutOffFcy", "Report")"><i class="fa fa-circle-thin"></i> <span>Deal Cut Off (FCY)</span></a></li>
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.Report_DCO_10am))
+                                {
+                                    <li><a href="@Url.Action("TenAmDealCutOff", "Report")"><i class="fa fa-circle-thin"></i> <span>10am Deal Cut Off</span></a></li>
+                                }
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.Report_DCO_MYR))
+                                {
+                                    <li><a href="@Url.Action("DealCutOffMyr", "Report")"><i class="fa fa-circle-thin"></i> <span>Deal Cut Off (MYR)</span></a></li>
+                                }
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.Report_DCO_FCY))
+                                {
+                                    <li><a href="@Url.Action("DealCutOffFcy", "Report")"><i class="fa fa-circle-thin"></i> <span>Deal Cut Off (FCY)</span></a></li>
+                                }
                             </ul>
                         </li>
                     }
-                    @if (MenuSecurity.PowerUsersMenu)
+                    @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.Settings))
                     {
                         <li class="treeview">
                             <a href="#">
@@ -186,13 +207,22 @@
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="@Url.Action("DropdownConfig","Setting")"><i class="fa fa-circle-thin"></i> <span>Dropdown</span></a></li>
-                                <li><a href="@Url.Action("NotificationConfig","Setting")"><i class="fa fa-circle-thin"></i> <span>Notification</span></a></li>
-                                <li><a href="@Url.Action("ApproverManagement","Setting")"><i class="fa fa-circle-thin"></i> <span>Approver</span></a></li>
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.Settings_DropdownData))
+                                {
+                                    <li><a href="@Url.Action("DropdownConfig","Setting")"><i class="fa fa-circle-thin"></i> <span>Dropdown</span></a></li>
+                                }
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.Settings_EmailNotification))
+                                {
+                                    <li><a href="@Url.Action("NotificationConfig","Setting")"><i class="fa fa-circle-thin"></i> <span>Email Notification</span></a></li>
+                                }
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.Settings_ApproverAssignment))
+                                {
+                                    <li><a href="@Url.Action("ApproverManagement","Setting")"><i class="fa fa-circle-thin"></i> <span>Approver</span></a></li>
+                                }
                             </ul>
                         </li>
                     }
-                    @if (MenuSecurity.PowerUsersMenu)
+                    @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.AuditTrail))
                     {
                         <li class="treeview">
                             <a href="#">
@@ -202,14 +232,26 @@
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="@Url.Action("Form","Audit")"><i class="fa fa-circle-thin"></i> <span>Forms Audit</span></a></li>
-                                <li><a href="@Url.Action("UserAccess","Audit")"><i class="fa fa-circle-thin"></i> <span>User Access</span></a></li>
-                                <li><a href="@Url.Action("UserManagement","Audit")"><i class="fa fa-circle-thin"></i> <span>User Management</span></a></li>
-                                <li><a href="@Url.Action("RoleManagement","Audit")"><i class="fa fa-circle-thin"></i> <span>Role Management</span></a></li>
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.AuditTrail_FormAudit))
+                                {
+                                    <li><a href="@Url.Action("Form","Audit")"><i class="fa fa-circle-thin"></i> <span>Forms Audit</span></a></li>
+                                }
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.AuditTrail_UserAccessAudit))
+                                {
+                                    <li><a href="@Url.Action("UserAccess","Audit")"><i class="fa fa-circle-thin"></i> <span>User Access</span></a></li>
+                                }
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.AuditTrail_UserManagementAudit))
+                                {
+                                    <li><a href="@Url.Action("UserManagement","Audit")"><i class="fa fa-circle-thin"></i> <span>User Management</span></a></li>
+                                }
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.AuditTrail_RoleManagementAudit))
+                                {
+                                    <li><a href="@Url.Action("RoleManagement","Audit")"><i class="fa fa-circle-thin"></i> <span>Role Management</span></a></li>
+                                }
                             </ul>
                         </li>
                     }
-                    @if (MenuSecurity.AdminOnlyMenu)
+                    @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.Administration))
                     {
                         <li class="treeview">
                             <a href="#">
@@ -219,12 +261,26 @@
                                 </span>
                             </a>
                             <ul class="treeview-menu">
-                                <li><a href="@Url.Action("UserManagement","Admin")"><i class="fa fa-circle-thin"></i> <span>Users Management</span></a></li>
-                                <li><a href="@Url.Action("RoleManagement","Admin")"><i class="fa fa-circle-thin"></i> <span>Roles Management</span></a></li>
-                                <li><a href="@Url.Action("ApplicationConfig","Admin")"><i class="fa fa-circle-thin"></i> <span>Application Config</span></a></li>
-                                <li><a href="@Url.Action("Utility","Admin")"><i class="fa fa-circle-thin"></i> <span>Utility</span></a></li>
-                                <li><a href="@Url.Action("SystemInformation","Admin")"><i class="fa fa-circle-thin"></i> <span>System Information</span></a></li>
-                                <li><a href="~/hangfire"><i class="fa fa-circle-thin"></i> <span>Task Scheduler</span></a></li>
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.Administration_UserManagement))
+                                {
+                                    <li><a href="@Url.Action("UserManagement","Admin")"><i class="fa fa-circle-thin"></i> <span>Users Management</span></a></li>
+                                }
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.Administration_RolesManagement))
+                                {
+                                    <li><a href="@Url.Action("RoleManagement","Admin")"><i class="fa fa-circle-thin"></i> <span>Roles Management</span></a></li>
+                                }
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.Administration_Utility))
+                                {
+                                    <li><a href="@Url.Action("Utility","Admin")"><i class="fa fa-circle-thin"></i> <span>Utility</span></a></li>
+                                }
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.Administration_SystemInformation))
+                                {
+                                    <li><a href="@Url.Action("SystemInformation","Admin")"><i class="fa fa-circle-thin"></i> <span>System Information</span></a></li>
+                                }
+                                @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.Administration_TaskScheduler))
+                                {
+                                    <li><a href="~/hangfire"><i class="fa fa-circle-thin"></i> <span>Task Scheduler</span></a></li>
+                                }
                             </ul>
                         </li>
                     }

@@ -10,93 +10,9 @@ namespace xDC_Web.Extension
             return (HttpContext.Current.User != null && HttpContext.Current.User.Identity.IsAuthenticated);
         }
 
-        public static bool AdminOnlyMenu
+        public static bool IsAuthenticatedAndAllowed(string permissionKey)
         {
-            get
-            {
-                if (IsAuthenticated() &&
-                    (HttpContext.Current.User.IsInRole(Config.Acl.Administrator))
-                )
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-
-            }
+            return IsAuthenticated() && new xDC.Services.AuthService().IsUserHaveAccess(HttpContext.Current.User.Identity.Name, permissionKey);
         }
-
-        public static bool PowerUsersMenu
-        {
-            get
-            {
-                if (IsAuthenticated() &&
-                    (HttpContext.Current.User.IsInRole(Config.Acl.Administrator) || HttpContext.Current.User.IsInRole(Config.Acl.PowerUser)))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        public static bool AmsdMenu
-        {
-            get
-            {
-                if (IsAuthenticated() &&
-                    (HttpContext.Current.User.IsInRole(Config.Acl.Administrator) || HttpContext.Current.User.IsInRole(Config.Acl.PowerUser) || HttpContext.Current.User.IsInRole(Config.Acl.Amsd)))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        public static bool FidMenu
-        {
-            get
-            {
-                if (IsAuthenticated() &&
-                    (HttpContext.Current.User.IsInRole(Config.Acl.Administrator) || HttpContext.Current.User.IsInRole(Config.Acl.PowerUser) || HttpContext.Current.User.IsInRole(Config.Acl.Fid)))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        public static bool IssdMenu
-        {
-            get
-            {
-                if (IsAuthenticated() &&
-                    (HttpContext.Current.User.IsInRole(Config.Acl.Administrator) || HttpContext.Current.User.IsInRole(Config.Acl.PowerUser) || HttpContext.Current.User.IsInRole(Config.Acl.Issd)))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-
-        /*public static bool AllowedMenu()
-        {
-            RolePrincipal r = (RolePrincipal)HttpContext.Current.User;
-            var rolesArray = r.GetRoles();
-        }*/
     }
 }

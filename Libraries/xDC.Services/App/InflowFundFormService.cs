@@ -31,11 +31,12 @@ namespace xDC.Services.App
             return !isPendingApproval;
         }
 
-        public static bool EnablePrint(string formStatus)
+        public static bool EnablePrint(string currentUser, string formStatus)
         {
-            var isDraftForm = formStatus == Common.FormStatus.Draft;
+            var isAllowedToDownload = new AuthService().IsUserHaveAccess(currentUser, Common.PermissionKey.AMSD_InflowFundForm_Download);
+            var isDraft = formStatus == Common.FormStatus.Draft;
 
-            return !isDraftForm;
+            return isAllowedToDownload && !isDraft;
         }
 
         public static bool RetractFormSubmission(int formId, string performedBy)
@@ -137,7 +138,9 @@ namespace xDC.Services.App
 
                     var model = new InflowFundFormLandingPage()
                     {
-                        CountTodaySubmission = db.AMSD_IF.Count(x => x.FormType == Common.FormType.AMSD_IF && DbFunctions.TruncateTime(x.FormDate) == DbFunctions.TruncateTime(today)),
+                        CountTodaySubmission = db.AMSD_IF.Count(x => x.FormType == Common.FormType.AMSD_IF 
+                                            && DbFunctions.TruncateTime(x.FormDate) == DbFunctions.TruncateTime(today)
+                                            && x.FormStatus != Common.FormStatus.Draft),
                         CountTodayPendingApproval = db.AMSD_IF
                                                         .Count(x => x.FormType == Common.FormType.AMSD_IF
                                                                 && DbFunctions.TruncateTime(x.FormDate) == DbFunctions.TruncateTime(today)

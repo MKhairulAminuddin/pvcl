@@ -56,7 +56,7 @@ namespace xDC_Web.Controllers.Api
 
                             EnableEdit = InflowFundFormService.EnableEdit(item.FormStatus, item.ApprovedBy, User.Identity.Name),
                             EnableDelete = InflowFundFormService.EnableDelete(item.FormStatus),
-                            EnablePrint = InflowFundFormService.EnablePrint(item.FormStatus),
+                            EnablePrint = InflowFundFormService.EnablePrint(User.Identity.Name, item.FormStatus),
                             EnableRetractSubmission = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatus.PendingApproval),
                             
                             IsRejected = (item.FormStatus == Common.FormStatus.Rejected),
