@@ -4,12 +4,14 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Security;
 using System.Web.UI.HtmlControls;
 using MailKit.Net.Smtp;
 using MimeKit;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Utils;
+using static xDC.Utils.Common;
 
 namespace xDC.Services
 {
@@ -188,7 +190,7 @@ namespace xDC.Services
 
         #region Inflow Fund Form Notification
 
-        public void NewApprovedInflowFund(int formId, List<AspNetUsers> fidAdmins)
+        public void NewlyApproved_InflowFundForm(int formId, List<AspNetUsers> fidAdmins)
         {
             try
             {
@@ -202,33 +204,21 @@ namespace xDC.Services
 
                         var message = new MimeMessage()
                         {
-                            Sender = new MailboxAddress(Config.SmtpSenderAccountName,
-                                Config.SmtpSenderAccount),
+                            Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
                             Subject = $"{SubjectAppend} New AMSD Inflow Funds Approved"
                         };
 
                         var bodyBuilder = new StringBuilder();
-                        bodyBuilder.Append($"<p>Hello there, </p>");
-                        bodyBuilder.AppendLine(
-                            $"There's new AMSD Inflow Funds approved. The details are as follows:");
 
-                        bodyBuilder.Append(
-                                    @"<table style='border-collapse: collapse;'>
-                                      <tr>
-                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Bank</th>
-                                        <th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount</th>
-                                      </tr>");
-                        var tableRows = string.Empty;
-                        foreach (var item in inflowFunds)
+                        var root = AppDomain.CurrentDomain.BaseDirectory;
+                        using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/NewlyApproved_InflowFundForm.html"))
                         {
-                            tableRows += string.Format(@"<tr>
-                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td>
-                                            <td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1:C}</td>
-                                          </tr>", item.Bank, item.Amount);
+                            string readFile = reader.ReadToEnd();
+                            string StrContent = string.Empty;
+                            StrContent = readFile;
+                            StrContent = StrContent.Replace("[DataTable]", InflowFundTable(form.Id));
+                            bodyBuilder.Append(StrContent);
                         }
-                        bodyBuilder.Append(tableRows);
-                        bodyBuilder.Append(@"</table>");
-
 
                         message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                         {
@@ -244,7 +234,7 @@ namespace xDC.Services
                     }
                     else
                     {
-                        Logger.LogError("SendApprovalStatusEmail FAILED, form data error: " + formId);
+                        Logger.LogError("NewlyApproved_InflowFundForm FAILED, form data error: " + formId);
                     }
                 }
             }
@@ -907,33 +897,51 @@ namespace xDC.Services
             var approvalPageUrl = $"{Config.EmailApplicationUrl}{Common.Email_FormUrlMap(formType)}{formId}";
 
             var bodyBuilder = new StringBuilder();
-            bodyBuilder.Append(string.Format("<p>Hi {0}, </p>", preparerName));
 
-            if (formStatus == Common.FormStatus.Approved)
+            var root = AppDomain.CurrentDomain.BaseDirectory;
+            using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/ApprovalStatus.html"))
             {
-                bodyBuilder.AppendLine($"<p>Good News! Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#2ECC71;'>{formStatus}</span>");
-            }
-            else
-            {
-                bodyBuilder.AppendLine($"<p>Bad News! Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#E74C3C;'>{formStatus}</span>");
+                string readFile = reader.ReadToEnd();
+                string StrContent = string.Empty;
+                StrContent = readFile;
+                //Assing the field values in the template
+                StrContent = StrContent.Replace("[PreparerName]", preparerName);
+                StrContent = StrContent.Replace("[ApprovalUrl]", approvalPageUrl);
+                StrContent = StrContent.Replace("[Notes]", notes);
+
+                if (formStatus == Common.FormStatus.Approved)
+                {
+                    StrContent = StrContent.Replace("[ApprovalStatusMessage]", 
+                        $"<p>Good News! Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#2ECC71;'>{formStatus}</span>");
+                }
+                else
+                {
+                    StrContent = StrContent.Replace("[ApprovalStatusMessage]", 
+                        $"<p>Bad News! Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#E74C3C;'>{formStatus}</span>");
+                }
+                
+
+                if (formType == Common.FormType.FID_TREASURY)
+                {
+                    StrContent = StrContent.Replace("[DataTable]", TreasuryTable(formId));
+                }
+                else if (Common.IsTsFormType(formType))
+                {
+                    StrContent = StrContent.Replace("[DataTable]", TsTable(formId));
+                }
+                else if (formType == Common.FormType.AMSD_IF)
+                {
+                    StrContent = StrContent.Replace("[DataTable]", InflowFundTable(formId));
+                }
+                else
+                {
+                    StrContent = StrContent.Replace("[DataTable]", "");
+                }
+
+
+                bodyBuilder.Append(StrContent);
             }
 
-            if (formType == Common.FormType.FID_TREASURY)
-            {
-                bodyBuilder.AppendLine(TreasuryTable(formId));
-            }
-            else if (Common.IsTsFormType(formType))
-            {
-                bodyBuilder.AppendLine(TsTable(formId));
-            }
-
-            if (!string.IsNullOrEmpty(notes))
-            {
-                bodyBuilder.AppendLine($"<br/><br/><p style='font-weight:bold'>Notes from approver: </p>");
-                bodyBuilder.AppendLine($"<p>{notes}</p>");
-            }
-
-            bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
             message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
                 Text = bodyBuilder.ToString()

@@ -1,19 +1,57 @@
-﻿@model xDC_Web.ViewModels.AmsdLandingPageVM
+﻿@model xDC.Domain.Web.AMSD.InflowFundForm.InflowFundFormLandingPage
 
 @{
     ViewBag.Title = "AMSD";
-    ViewBag.Subtitle = "Inflow Fund";
+    ViewBag.Subtitle = "Inflow Fund Forms";
 }
 
 <section class="content-header content-toolbar">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="kf1-info-box">
+                <span class="kf1-info-box-icon kf1-bg-dark"><i class="fa fa-list"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Today's Submission</span>
+                    <span class="info-box-number">@Model.CountTodaySubmission</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kf1-info-box">
+                <span class="kf1-info-box-icon kf1-bg-orange"><i class="fa fa-clock-o"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Pending Approval</span>
+                    <span class="info-box-number">@Model.CountTodayPendingApproval</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kf1-info-box">
+                <span class="kf1-info-box-icon kf1-bg-green"><i class="fa fa-thumbs-o-up"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Approved</span>
+                    <span class="info-box-number">@Model.CountTodayApproved</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="kf1-info-box">
+                <span class="kf1-info-box-icon kf1-bg-red"><i class="fa fa-thumbs-o-down"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Rejected</span>
+                    <span class="info-box-number">@Model.CountTodayRejected</span>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-6">
             <div class="left-container">
                 <div>
                     @(Html.DevExtreme().Button()
-                        .Type(ButtonType.Normal)
+                        .Type(ButtonType.Default)
                         .Icon("plus")
-                        .Text("New")
+                        .Text("Create Inflow Fund Form")
                         .ID("newInflowFundBtn")
                         .StylingMode(ButtonStylingMode.Contained)
                         .OnClick(@<text> function(){ window.location = "@Url.Action("InflowFund_New", "Amsd")"; } </text>)
@@ -23,7 +61,7 @@
         </div>
         <div class="col-md-6">
             <div id="right-toolbar-container" class="right-container">
-                
+
             </div>
         </div>
     </div>
@@ -36,13 +74,43 @@
             <div class="box box-solid">
                 <div class="box-header">
                     <div class="pull-right">
-                        <div style="display: inline-block">
-                            <div id="gridFilterDropdown"></div>
-                        </div>
-
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                            <i class="dx-icon-chevrondown"></i>
-                        </button>
+                        @(Html.DevExtreme().Button()
+                            .ID("todayFilterBtn")
+                            .Text("Today's Submission")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("draftFilterBtn")
+                            .Text("Draft")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("pendingApprovalFilterBtn")
+                            .Text("Pending Approval")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("approvedFilterBtn")
+                            .Text("Approved")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("rejectedFilterBtn")
+                            .Text("Rejected")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("clearFilterBtn")
+                            .Icon("fa fa-undo")
+                            .Text("Clear Filter")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
                     </div>
                 </div>
                 <div class="box-body">

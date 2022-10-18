@@ -500,6 +500,8 @@ namespace xDC_Web.Controllers.Api
                     var result = db.App_Notification.Where(x => x.UserId == currentUsername)
                         .OrderByDescending(x => x.CreatedOn).ToList();
 
+                    result.ForEach(c => c.NotificationUrl = (c.NotificationUrl??=""));
+
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
             }

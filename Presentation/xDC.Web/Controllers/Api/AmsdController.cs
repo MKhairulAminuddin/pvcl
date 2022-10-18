@@ -408,6 +408,8 @@ namespace xDC_Web.Controllers.Api
                     
                     if (form != null)
                     {
+                        new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.Delete, User.Identity.Name, $"Deleted a {form.FormType} form. (Form status at the moment of deletion is {form.FormStatus}).");
+
                         var inflowFunds = db.AMSD_IF_Item.Where(x => x.FormId == form.Id);
                         if (inflowFunds.Any())
                         {
@@ -416,8 +418,6 @@ namespace xDC_Web.Controllers.Api
                         
                         db.AMSD_IF.Remove(form);
                         db.SaveChanges();
-
-                        new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.Delete, User.Identity.Name, $"Deleted {form.FormType} form");
 
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using xDC.Domain.Web.AMSD.InflowFundForm;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Services;
 using xDC.Services.App;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
@@ -24,16 +26,16 @@ namespace xDC_Web.Controllers
         {
             try
             {
-                using (var db = new kashflowDBEntities())
+                var data = InflowFundFormService.GetLandingPageData(User.Identity.Name);
+
+                if (data != null)
                 {
-                    var isAmsdUser = User.IsInRole(Config.Acl.Amsd) || User.IsInRole(Config.Acl.Administrator);
-
-                    var model = new AmsdLandingPageVM()
-                    {
-                        EnableCreateForm = isAmsdUser
-                    };
-
-                    return View(model);
+                    return View(data);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Internal Server Error.";
+                    return View("Error");
                 }
             }
             catch (Exception ex)
@@ -139,7 +141,7 @@ namespace xDC_Web.Controllers
         {
             try
             {
-                var form = InflowFundFormService.View(formId, User.Identity.Name);
+                var form = InflowFundFormService.GetPageViewData(formId, User.Identity.Name);
 
                 if (form != null)
                 {
@@ -167,7 +169,7 @@ namespace xDC_Web.Controllers
 
         [KflowAuthorize(Common.PermissionKey.AMSD_InflowFundForm_Download)]
         [HttpPost]
-        [Route("Print")]
+        [Route("InflowFund/Print")]
         public ActionResult Print(string id, bool isExportAsExcel)
         {
             try
@@ -194,7 +196,7 @@ namespace xDC_Web.Controllers
 
         [KflowAuthorize(Common.PermissionKey.AMSD_InflowFundForm_Download)]
         [HttpGet]
-        [Route("Printed/{id}")]
+        [Route("InflowFund/Printed/{id}")]
         public ActionResult Printed(string id)
         {
             try

@@ -2,6 +2,7 @@
 using Org.BouncyCastle.Ocsp;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -67,7 +68,7 @@ namespace xDC.Services.App
             }
         }
 
-        public static InflowFundForm View(int formId, string currentUser)
+        public static InflowFundForm GetPageViewData(int formId, string currentUser)
         {
             try
             {
@@ -116,6 +117,43 @@ namespace xDC.Services.App
                     {
                         return null;
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return null;
+            }
+        }
+
+        public static InflowFundFormLandingPage GetLandingPageData(string currentUser)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var enableCreateForm = new AuthService().IsUserHaveAccess(currentUser, Common.PermissionKey.AMSD_InflowFundForm_Edit);
+                    var today = DateTime.Now;
+
+                    var model = new InflowFundFormLandingPage()
+                    {
+                        CountTodaySubmission = db.AMSD_IF.Count(x => x.FormType == Common.FormType.AMSD_IF && DbFunctions.TruncateTime(x.FormDate) == DbFunctions.TruncateTime(today)),
+                        CountTodayPendingApproval = db.AMSD_IF
+                                                        .Count(x => x.FormType == Common.FormType.AMSD_IF
+                                                                && DbFunctions.TruncateTime(x.FormDate) == DbFunctions.TruncateTime(today)
+                                                                && x.FormStatus == Common.FormStatus.PendingApproval),
+                        CountTodayApproved = db.AMSD_IF
+                                                        .Count(x => x.FormType == Common.FormType.AMSD_IF
+                                                                && DbFunctions.TruncateTime(x.FormDate) == DbFunctions.TruncateTime(today)
+                                                                && x.FormStatus == Common.FormStatus.Approved),
+                        CountTodayRejected = db.AMSD_IF
+                                                        .Count(x => x.FormType == Common.FormType.AMSD_IF
+                                                                && DbFunctions.TruncateTime(x.FormDate) == DbFunctions.TruncateTime(today)
+                                                                && x.FormStatus == Common.FormStatus.Rejected),
+                        EnableCreateForm = enableCreateForm
+                    };
+
+                    return model;
                 }
             }
             catch (Exception ex)

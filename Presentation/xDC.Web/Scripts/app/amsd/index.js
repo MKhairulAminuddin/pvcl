@@ -4,7 +4,6 @@
 
         var $amsdGrid,
             $newInflowFundBtn,
-            $gridFilterDropdown,
             $retractSubmissionModal = $("#retractSubmissionModal"),
             $retractFormBtn = $("#retractFormBtn"),
             $retractFormCancelBtn = $("#retractFormCancelBtn"),
@@ -12,15 +11,14 @@
             $retractFormId = $("#retractFormId"),
             $retractFormPreparedBy = $("#retractFormPreparedBy"),
             $retractFormSubmissionDate = $("#retractFormSubmissionDate"),
-            $retractFormAssignedApprover = $("#retractFormAssignedApprover");
+            $retractFormAssignedApprover = $("#retractFormAssignedApprover"),
 
-        var statuses = [
-            "All",
-            "Draft",
-            "Pending Approval",
-            "Approved",
-            "Rejected"
-        ];
+            $todayFilterBtn = $("#todayFilterBtn"),
+            $draftFilterBtn = $("#draftFilterBtn"),
+            $pendingApprovalFilterBtn = $("#pendingApprovalFilterBtn"),
+            $approvedFilterBtn = $("#approvedFilterBtn"),
+            $rejectedFilterBtn = $("#rejectedFilterBtn"),
+            $clearFilterBtn = $("#clearFilterBtn");
 
         var referenceUrl = {
             loadAmsdGrid: window.location.origin + "/api/amsd/inflowfund",
@@ -30,8 +28,8 @@
             editPageRedirect: window.location.origin + "/amsd/inflowfund/edit/",
             viewPageRedirect: window.location.origin + "/amsd/inflowfund/view/",
 
-            printRequest: window.location.origin + "/amsd/Print",
-            printResponse: window.location.origin + "/amsd/Printed/",
+            printRequest: window.location.origin + "/amsd/inflowfund/Print",
+            printResponse: window.location.origin + "/amsd/inflowfund/Printed/",
         };
         
         $amsdGrid = $("#amsdGrid").dxDataGrid({
@@ -251,26 +249,54 @@
                 pageSize: 10,
                 pageIndex: 0
             },
-            wordWrapEnabled: true,
-            stateStoring: {
-                enabled: true,
-                type: "localStorage",
-                storageKey: "xDC_IF_Grid"
-            },
-            selection: {
-                mode: 'single',
-            },
+            wordWrapEnabled: true
         }).dxDataGrid("instance");
         
+        $todayFilterBtn.dxButton({
+            onClick: function (e) {
+                $amsdGrid.filter([
+                    ["preparedDate", ">=", moment().startOf("day").toDate()],
+                    "and",
+                    ["preparedDate", "<", moment().add(1, "days").toDate()]
+                ]);
+            }
+        });
 
-        $gridFilterDropdown = $("#gridFilterDropdown").dxSelectBox({
-            dataSource: statuses,
-            value: statuses[0],
-            onValueChanged: function (data) {
-                if (data.value == "All")
-                    $amsdGrid.clearFilter();
-                else
-                    $amsdGrid.filter(["formStatus", "=", data.value]);
+        $draftFilterBtn.dxButton({
+            onClick: function (e) {
+                $amsdGrid.filter([
+                    ["formStatus", "=", "Draft"]
+                ]);
+            }
+        });
+
+        $pendingApprovalFilterBtn.dxButton({
+            onClick: function (e) {
+                $amsdGrid.filter([
+                    ["formStatus", "=", "Pending Approval"]
+                ]);
+            }
+        });
+
+        $approvedFilterBtn.dxButton({
+            onClick: function (e) {
+                $amsdGrid.filter([
+                    ["formStatus", "=", "Approved"]
+                ]);
+            }
+        });
+
+        $rejectedFilterBtn.dxButton({
+            onClick: function (e) {
+                $amsdGrid.filter([
+                    ["formStatus", "=", "Rejected"]
+                ]);
+            }
+        });
+
+        $clearFilterBtn.dxButton({
+            onClick: function (e) {
+                $amsdGrid.clearFilter();
             }
         });
 
@@ -286,7 +312,6 @@
                     url: referenceUrl.retractForm,
                     method: 'post',
                     success: function (data) {
-                        window.location.href = referenceUrl.viewPageRedirect + parseInt($retractFormId.text());
                         app.alertSuccess("Form status retracted success");
                     },
                     fail: function (jqXHR, textStatus, errorThrown) {
@@ -294,10 +319,9 @@
                     },
                     complete: function (data) {
                         $retractSubmissionModal.modal('hide');
+                        window.location.href = window.location.href;
                     }
                 });
-
-                e.event.preventDefault();
             }
         });
 

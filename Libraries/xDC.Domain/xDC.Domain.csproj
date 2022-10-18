@@ -68,6 +68,7 @@
     <Compile Include="WebApi\Form_FcaTagging\FcaBankAccountRes.cs" />
     <Compile Include="WebApi\Form_FcaTagging\SummaryRes.cs" />
     <Compile Include="Web\AMSD\InflowFundForm\InflowFundForm.cs" />
+    <Compile Include="Web\AMSD\InflowFundForm\InflowFundFormLandingPage.cs" />
     <Compile Include="Web\FID\FcaTaggingForm\FcaAccountAssignmentFormVM.cs" />
     <Compile Include="Web\ISSD\TradeSettlementForm\TsOpeningBalance.cs" />
   </ItemGroup>

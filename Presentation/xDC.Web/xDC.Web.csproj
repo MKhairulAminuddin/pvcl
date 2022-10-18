@@ -229,6 +229,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\EmailTemplates\NewlyApproved_InflowFundForm.html" />
+    <Content Include="App_Data\EmailTemplates\ApprovalStatus.html" />
     <Content Include="App_Data\EmailTemplates\Treasury_approved_toISSD.html" />
     <Content Include="App_Data\EmailTemplates\FcaTaggingStatus_ToISSD.html" />
     <Content Include="App_Data\EmailTemplates\Treasury_Approval.html" />

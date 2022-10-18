@@ -32,11 +32,13 @@
                                 .StylingMode(ButtonStylingMode.Contained)
                                 )
 
+                            <div style="display: inline-block"></div>
+
                             @(Html.DevExtreme().Button()
                                 .ID("rejectBtn")
                                 .Text("Reject")
                                 .Icon("remove")
-                                .Type(ButtonType.Normal)
+                                .Type(ButtonType.Danger)
                                 .StylingMode(ButtonStylingMode.Contained)
                                 )
                         }
@@ -52,6 +54,10 @@
                                 )
                         }
 
+                        
+                    </div>
+                    
+                    <div class="right-container pull-right">
                         @(Html.DevExtreme().Button()
                             .ID("viewWorkflowBtn")
                             .Text("Workflow Information")
@@ -59,9 +65,7 @@
                             .Type(ButtonType.Normal)
                             .StylingMode(ButtonStylingMode.Contained)
                             )
-                    </div>
-                    
-                    <div class="right-container pull-right">
+
                         @(Html.DevExtreme().Button()
                             .ID("viewAuditTrailBtn")
                             .Text("Audit Trail")

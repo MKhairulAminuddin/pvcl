@@ -92,7 +92,7 @@ namespace xDC.Services
 
                             PushNotification(notificationObj);
                         }
-                        new MailService().NewApprovedInflowFund(formId, adminList.AspNetUsers.ToList());
+                        new MailService().NewlyApproved_InflowFundForm(formId, adminList.AspNetUsers.ToList());
                     }
                     else
                     {

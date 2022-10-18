@@ -314,6 +314,10 @@ div .validation-summary-errors.text-danger {
     padding: 10px 0;
 }
 
+.kf1-left-container > div {
+    margin-left: 5px;
+}
+
 /*#endregion*/
 
 /*#region AdminLTE overwrite*/
@@ -421,3 +425,54 @@ div .validation-summary-errors.text-danger {
     background: #121212;
     color: #FFFFFF;
 }
+
+
+/* #region Info Box Custom */
+
+.kf1-info-box {
+    display: block;
+    min-height: 55px;
+    background: #fff;
+    width: 100%;
+    box-shadow: 0 1px 1px rgb(0 0 0 / 10%);
+    border-radius: 2px;
+    margin-bottom: 15px;
+}
+
+.kf1-info-box-icon {
+    border-top-left-radius: 2px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 2px;
+    display: block;
+    float: left;
+    height: 56px;
+    width: 90px;
+    text-align: center;
+    font-size: 25px;
+    line-height: 60px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.kf1-bg-blue {
+    background-color: #5b8efb;
+}
+
+.kf1-bg-orange {
+    background-color: #FEC606;
+}
+
+.kf1-bg-red {
+    background-color: #E74C3C;
+}
+
+.kf1-bg-green {
+    background-color: #2ECC71;
+}
+
+.kf1-bg-dark {
+    background-color: #34495E;
+    color: #fff;
+}
+
+/* #endregion */
