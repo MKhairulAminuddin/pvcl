@@ -545,6 +545,7 @@
     <Content Include="Views\Issd\FcaTagging\View.cshtml" />
     <Content Include="Views\Audit\UserManagement.cshtml" />
     <Content Include="Views\Audit\RoleManagement.cshtml" />
+    <Content Include="Views\Shared\_RetractSubmissionModal.cshtml" />
     <None Include="Web.UAT.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -773,7 +774,6 @@
     <Compile Include="Models\ViewFormHeaderModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="ViewModels\AmsdViewModel.cs" />
     <Compile Include="ViewModels\NotificationConfigViewModel.cs" />
     <Compile Include="ViewModels\User\Profile.cs" />
   </ItemGroup>

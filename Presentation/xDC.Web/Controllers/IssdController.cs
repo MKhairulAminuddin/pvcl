@@ -32,17 +32,16 @@ namespace xDC_Web.Controllers
         [Route("TradeSettlement")]
         public ActionResult TradeSettlement()
         {
-            using (var db = new kashflowDBEntities())
+            var landingPageData = TradeSettlementFormService.GetLandingPageData(User.Identity.Name);
+
+            if (landingPageData != null)
             {
-                var isApprover = db.Config_Approver.Any(x => x.Username == User.Identity.Name);
-                var isIssdUser = User.IsInRole(Config.Acl.Issd);
-
-                var model = new ISSDLandingPageViewModel()
-                {
-                    IsAllowedToCreateForm = (isIssdUser)
-                };
-
-                return View("TradeSettlement/Index", model);
+                return View("TradeSettlement/Index", landingPageData);
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Internal Server Error";
+                return View("Error");
             }
         }
 

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace xDC.Domain.Web.AMSD.InflowFundForm
+namespace xDC.Domain.Web
 {
-    public class InflowFundFormLandingPage
+    public class FormsLandingPage
     {
         public int CountTodaySubmission { get; set; }
         public int CountTodayPendingApproval { get; set; }

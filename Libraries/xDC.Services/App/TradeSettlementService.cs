@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using xDC.Domain.ISSD_TS;
+using xDC.Domain.Web;
 using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
@@ -14,6 +15,46 @@ namespace xDC.Services.App
 {
     public static class TradeSettlementFormService
     {
+        public static FormsLandingPage GetLandingPageData(string currentUser)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var enableCreateForm = new AuthService().IsUserHaveAccess(currentUser, Common.PermissionKey.ISSD_TradeSettlementForm_Edit);
+                    var today = DateTime.Now;
+
+                    var model = new FormsLandingPage()
+                    {
+                        CountTodaySubmission = db.ISSD_FormHeader
+                                                        .Count(x => x.FormType.Contains(Common.FormType.ISSD_TS)
+                                                            && DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(today)
+                                                            && x.FormStatus != Common.FormStatus.Draft),
+                        CountTodayPendingApproval = db.ISSD_FormHeader
+                                                        .Count(x => x.FormType.Contains(Common.FormType.ISSD_TS)
+                                                                && DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(today)
+                                                                && x.FormStatus == Common.FormStatus.PendingApproval),
+                        CountTodayApproved = db.ISSD_FormHeader
+                                                        .Count(x => x.FormType.Contains(Common.FormType.ISSD_TS)
+                                                                && DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(today)
+                                                                && x.FormStatus == Common.FormStatus.Approved),
+                        CountTodayRejected = db.ISSD_FormHeader
+                                                        .Count(x => x.FormType.Contains(Common.FormType.ISSD_TS)
+                                                                && DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(today)
+                                                                && x.FormStatus == Common.FormStatus.Rejected),
+                        EnableCreateForm = enableCreateForm
+                    };
+
+                    return model;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return null;
+            }
+        }
+
         public static List<ISSD_TradeSettlement> GetTradeSettlement(kashflowDBEntities db, int formId)
         {
             var result = db.ISSD_TradeSettlement
