@@ -232,6 +232,7 @@
     <Content Include="App_Data\EmailTemplates\Treasury_approved_toISSD.html" />
     <Content Include="App_Data\EmailTemplates\FcaTaggingStatus_ToISSD.html" />
     <Content Include="App_Data\EmailTemplates\Treasury_Approval.html" />
+    <Content Include="App_Data\EmailTemplates\SubmitForApproval.html" />
     <Content Include="App_Data\EmailTemplates\Treasury_SubmitForApproval.html" />
     <Content Include="Content\AdminLTE.css" />
     <Content Include="Content\AdminLTE.min.css" />
@@ -768,7 +769,6 @@
     <Compile Include="Models\TradeSettlementModel.cs" />
     <Compile Include="Models\UserVM.cs" />
     <Compile Include="Models\ViewFormHeaderModel.cs" />
-    <Compile Include="Models\ViewInflowFundStatusForm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\AmsdViewModel.cs" />

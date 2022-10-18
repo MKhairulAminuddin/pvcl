@@ -225,7 +225,7 @@ namespace xDC_Web.Controllers.Api
                     {
                         new NotificationService().NotifyApprovalRequest(form.ApprovedBy, form.Id, form.PreparedBy, form.FormType);
                         new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
-                        new WorkflowService().SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
+                        WorkflowService.SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
 
                         new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
                     }
@@ -252,11 +252,10 @@ namespace xDC_Web.Controllers.Api
                 using (var db = new kashflowDBEntities())
                 {
                     var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
-                    var isAdminEdit = User.IsInRole(Config.Acl.PowerUser) || User.IsInRole(Config.Acl.Administrator);
 
                     if (form != null)
                     {
-                        if (isAdminEdit)
+                        if (input.IsSaveAdminEdit)
                         {
                             form.AdminEditted = true;
                             form.AdminEdittedBy = User.Identity.Name;
@@ -270,7 +269,8 @@ namespace xDC_Web.Controllers.Api
                             form.PreparedDate = DateTime.Now;
                         }
 
-                        if (input.Approver != null && !isAdminEdit)
+                        // Reassign Approver and Resubmit Form
+                        if (input.Approver != null && !input.IsSaveAdminEdit)
                         {
                             //reassign
                             if (form.ApprovedBy != input.Approver)
@@ -290,6 +290,7 @@ namespace xDC_Web.Controllers.Api
                             form.FormStatus = Common.FormStatus.PendingApproval;
                         }
                         
+                        // Update table items
                         if (input.AmsdInflowFunds.Any())
                         {
                             var existingItemInDb = db.AMSD_IF_Item.Where(x => x.FormId == form.Id);
@@ -369,10 +370,10 @@ namespace xDC_Web.Controllers.Api
                         
                         db.SaveChanges();
 
-                        if (form.FormStatus == Common.FormStatus.PendingApproval && !isAdminEdit)
+                        // Submit for approval
+                        if (input.Approver != null && (form.FormStatus == FormStatus.PendingApproval || form.FormStatus == FormStatus.Draft) && !input.IsSaveAdminEdit)
                         {
-                            TradeSettlementFormService.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name,
-                                form.FormType, input.ApprovalNotes);
+                            CommonService.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name, form.FormType, input.ApprovalNotes);
                             new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
                         }
 
@@ -458,7 +459,7 @@ namespace xDC_Web.Controllers.Api
 
                             new NotificationService().NotifyApprovalResult(form.PreparedBy, form.Id, form.ApprovedBy, form.FormType, form.FormStatus);
                             new MailService().SendApprovalStatus(form.Id, form.FormType, form.FormStatus, form.PreparedBy, input.ApprovalNote);
-                            new WorkflowService().ApprovalResponse(form.Id, form.FormStatus, input.ApprovalNote, form.FormType, form.PreparedBy, form.ApprovedBy);
+                            WorkflowService.ApprovalResponse(form.Id, form.FormStatus, input.ApprovalNote, form.FormType, form.PreparedBy, form.ApprovedBy);
                             new AuditService().AuditForm_Approval(form.Id, form.FormType, form.FormStatus, form.FormDate, User.Identity.Name);
 
                             if (form.FormStatus == Common.FormStatus.Approved)

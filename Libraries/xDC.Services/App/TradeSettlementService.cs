@@ -14,37 +14,6 @@ namespace xDC.Services.App
 {
     public static class TradeSettlementFormService
     {
-        public static void NotifyApprover(string approverUsername, int formId, string submittedBy, string formType, string notes)
-        {
-            new NotificationService().NotifyApprovalRequest(approverUsername, formId, submittedBy, formType);
-            new MailService().SubmitForApproval(formId, formType, approverUsername, notes);
-            new WorkflowService().SubmitForApprovalWorkflow(formId, formType, notes);
-        }
-
-        public static void NotifyPreparer(int formId, string formType, string formStatus, string preparedBy, string approvedBy, string approvalNotes)
-        {
-            new NotificationService().NotifyApprovalResult(preparedBy, formId, approvedBy, formType, formStatus);
-            new MailService().SendApprovalStatus(formId, formType, formStatus, preparedBy, approvalNotes);
-            new WorkflowService().ApprovalResponse(formId, formStatus, approvalNotes, formType, preparedBy, approvedBy);
-        }
-
-        public static Form_Workflow GetLatestWorkflow(kashflowDBEntities db, int formId, string formType)
-        {
-            var result = db.Form_Workflow
-                            .Where(x => x.FormId == formId && x.FormType == formType)
-                            .OrderByDescending(x => x.RecordedDate)
-                            .FirstOrDefault();
-
-            if (result != null && result.WorkflowStatus == Common.FormStatus.PendingApproval)
-            {
-                return null;
-            }
-            else
-            {
-                return result;
-            }
-        }
-
         public static List<ISSD_TradeSettlement> GetTradeSettlement(kashflowDBEntities db, int formId)
         {
             var result = db.ISSD_TradeSettlement

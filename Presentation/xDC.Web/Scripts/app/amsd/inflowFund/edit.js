@@ -9,8 +9,13 @@
             $approvalNotes,
             $tbFormStatus,
             $inflowFundForm,
-            isDraft = false,
-            isAdminEdit = false;
+            $approvalNotes,
+            $approverDropdown,
+            $saveAsDraftBtn = $("#saveAsDraftBtn"),
+            $adminEditSaveChangesBtn = $("#adminEditSaveChangesBtn"),
+            $submitForApprovalBtn = $("#submitForApprovalBtn"),
+            $selectApproverModal = $("#selectApproverModal"),
+            $submitForApprovalModalBtn = $("#submitForApprovalModalBtn");
         
         var referenceUrl = {
             loadGrid: window.location.origin + "/api/amsd/GetInflowFunds/" + app.getUrlId(),
@@ -22,6 +27,31 @@
             formSubmit: window.location.origin + "/api/amsd/InflowFund/Edit/",
             redirectResponse: window.location.origin + "/amsd/InflowFund/view/",
         };
+
+        //#endregion
+
+        //#region Widgets
+
+        $approverDropdown = $("#approverDropdown").dxSelectBox({
+            dataSource: DevExpress.data.AspNet.createStore({
+                key: "id",
+                loadUrl: referenceUrl.dsApprover
+            }),
+            displayExpr: "displayName",
+            valueExpr: "username",
+            searchEnabled: true,
+            itemTemplate: function (data) {
+                return "<div class='active-directory-dropdown'>" +
+                    "<p class='active-directory-title'>" + data.displayName + "</p>" +
+                    "<p class='active-directory-subtitle'>" + data.title + ", " + data.department + "</p>" +
+                    "<p class='active-directory-subtitle'>" + data.email + "</p>" +
+                    "</div>";
+            }
+        }).dxSelectBox("instance");
+
+        $approvalNotes = $("#approvalNotes").dxTextArea({
+            height: 90
+        }).dxTextArea("instance");
 
         //#endregion 
 
@@ -35,11 +65,6 @@
         var bankStore = DevExpress.data.AspNet.createStore({
             key: "id",
             loadUrl: referenceUrl.dsBank
-        });
-
-        var approverStore = DevExpress.data.AspNet.createStore({
-            key: "id",
-            loadUrl: referenceUrl.dsApprover
         });
 
         var loadData = function() {
@@ -86,53 +111,8 @@
             });
         }
 
-        function cutOffTimeChecker() {
-            $.ajax({
-                dataType: 'json',
-                url: window.location.origin + '/api/amsd/IsViolatedCutOffTime',
-                method: 'get',
-                success: function (data) {
-                    if (data) {
-                        $("#cutOffTimeNotify").text("Cut Off Time Violated").addClass("label label-danger");
-                    } else {
-                        $("#cutOffTimeNotify").text("").removeClass("label label-danger");
-                    }
-                },
-                fail: function (jqXHR, textStatus, errorThrown) {
-
-                },
-                complete: function (data) {
-
-                }
-            });
-        }
-
         //#endregion 
 
-        //#region Widgets
-
-        $approverDropdown = $("#approverDropdown").dxSelectBox({
-            dataSource: approverStore,
-            displayExpr: "displayName",
-            valueExpr: "username",
-            searchEnabled: true,
-            itemTemplate: function (data) {
-                return "<div class='active-directory-dropdown'>" +
-                    "<p class='active-directory-title'>" + data.displayName + "</p>" +
-                    "<p class='active-directory-subtitle'>" + data.title + ", " + data.department + "</p>" +
-                    "<p class='active-directory-subtitle'>" + data.email + "</p>" +
-                    "</div>";
-            }
-        }).dxSelectBox("instance");
-
-        $approvalNotes = $("#approvalNotes").dxTextArea({
-            height: 90
-        }).dxTextArea("instance");
-
-
-
-        //#endregion 
-        
         //#region DataGrid
 
         $inflowFundsGrid = $("#inflowFundsGrid1").dxDataGrid({
@@ -197,47 +177,47 @@
 
         //#endregion
 
-        $("#saveAsDraftBtn").on({
-            "click": function (e) {
-                isDraft = true;
+        $saveAsDraftBtn.dxButton({
+            onClick: function (e) {
+                var draft = true;
+                app.toast("Saved as draft", "info", 3000);
+
+                setTimeout(function () {
+                    postData(draft, false);
+                }, 1000);
             }
         });
 
-        $("#adminEditSaveChangesBtn").on({
-            "click": function (e) {
-                isAdminEdit = true;
+        $adminEditSaveChangesBtn.dxButton({
+            onClick: function (e) {
+                var adminEdit = true;
+                app.toast("Saved", "info", 3000);
+
+                setTimeout(function () {
+                    postData(false, adminEdit);
+                }, 1000);
             }
         });
 
-        $inflowFundForm = $("#inflowFundForm").on("submit",
-            function (e) {
+        $submitForApprovalBtn.dxButton({
+            onClick: function (e) {
                 app.saveAllGrids($inflowFundsGrid);
+                $selectApproverModal.modal('show');
+            }
+        });
 
-                if (isDraft || isAdminEdit) {
-                    setTimeout(function () {
-                        postData(isDraft, isAdminEdit);
-                    }, 1000);
-
-                } else {
-                    $('#selectApproverModal').modal('show');
-                }
-
-                e.preventDefault();
-            });
-
-        $("#submitForApprovalModalBtn").on({
-            "click": function (e) {
+        $submitForApprovalModalBtn.dxButton({
+            onClick: function (e) {
                 app.saveAllGrids($inflowFundsGrid);
 
                 if ($approverDropdown.option("value") != null) {
                     app.toast("Submitting for approval....", "info", 3000);
-                    setTimeout(function () { postData(false, false); },
-                        1000);
+                    setTimeout(function () { postData(false, false); }, 1000);
                 } else {
                     alert("Please select an approver");
                 }
 
-                e.preventDefault();
+                e.event.preventDefault();
             }
         });
 

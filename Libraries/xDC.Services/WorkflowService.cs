@@ -9,9 +9,9 @@ using xDC.Utils;
 
 namespace xDC.Services
 {
-    public class WorkflowService
+    public static class WorkflowService
     {
-        public void UpdateWorkflow(Form_Workflow input)
+        public static void UpdateWorkflow(Form_Workflow input)
         {
             try
             {
@@ -27,7 +27,7 @@ namespace xDC.Services
             }
         }
 
-        public void SubmitForApprovalWorkflow(int formId, string formType, string notes)
+        public static void SubmitForApprovalWorkflow(int formId, string formType, string notes)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace xDC.Services
             }
         }
 
-        public void ApprovalResponse(int formId, string formStatus, string notes, string formType, string preparedBy, string approvedBy)
+        public static void ApprovalResponse(int formId, string formStatus, string notes, string formType, string preparedBy, string approvedBy)
         {
             try
             {
@@ -98,7 +98,7 @@ namespace xDC.Services
             }
         }
 
-        public void ReassignWorkflow(int formId, string formType)
+        public static void ReassignWorkflow(int formId, string formType)
         {
             try
             {
@@ -142,7 +142,7 @@ namespace xDC.Services
             }
         }
 
-        public List<Form_Workflow> GetWorkflow(int formId)
+        public static List<Form_Workflow> GetWorkflow(int formId)
         {
             try
             {
@@ -156,6 +156,23 @@ namespace xDC.Services
             {
                 Logger.LogError(ex);
                 return null;
+            }
+        }
+
+        public static Form_Workflow GetLatestWorkflow(kashflowDBEntities db, int formId, string formType)
+        {
+            var result = db.Form_Workflow
+                            .Where(x => x.FormId == formId && x.FormType == formType)
+                            .OrderByDescending(x => x.RecordedDate)
+                            .FirstOrDefault();
+
+            if (result != null && result.WorkflowStatus == Common.FormStatus.PendingApproval)
+            {
+                return null;
+            }
+            else
+            {
+                return result;
             }
         }
     }

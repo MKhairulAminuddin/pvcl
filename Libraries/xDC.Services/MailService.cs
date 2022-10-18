@@ -55,8 +55,6 @@ namespace xDC.Services
 
         }
 
-        
-
         public void SubmitForApproval(int formId, string formType, string approvedBy, string notes)
         {
             try
@@ -112,7 +110,6 @@ namespace xDC.Services
             }
         }
 
-
         private void SendEmailToSmtp(MimeMessage message)
         {
             try
@@ -144,31 +141,42 @@ namespace xDC.Services
                 }
             };
 
-            var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}",
-                Config.EmailApplicationUrl, formId);
+            var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}", Config.EmailApplicationUrl, formId);
 
             var bodyBuilder = new StringBuilder();
 
-            bodyBuilder.Append($"<p>Dear {approverName}, </p>");
-            bodyBuilder.AppendLine($"<p>A {formType} form is pending for your approval. </p>");
-            bodyBuilder.AppendLine($"<p>Click <a href='{approvalPageUrl}'>here</a> to view.</p>");
-
-            if (formType == Common.FormType.FID_TREASURY)
+            var root = AppDomain.CurrentDomain.BaseDirectory;
+            using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/SubmitForApproval.html"))
             {
-                bodyBuilder.AppendLine(TreasuryTable(formId));
-            }
-            else if (Common.IsTsFormType(formType))
-            {
-                bodyBuilder.AppendLine(TsTable(formId));
-            }
+                string readFile = reader.ReadToEnd();
+                string StrContent = string.Empty;
+                StrContent = readFile;
+                //Assing the field values in the template
+                StrContent = StrContent.Replace("[ApproverName]", approverName);
+                StrContent = StrContent.Replace("[ApprovalUrl]", approvalPageUrl);
+                StrContent = StrContent.Replace("[FormType]", formType);
+                StrContent = StrContent.Replace("[Notes]", notes);
 
-            if (!string.IsNullOrEmpty(notes))
-            {
-                bodyBuilder.AppendLine($"<br/><br/><p style='font-weight:bold'>Notes from preparer: </p>");
-                bodyBuilder.AppendLine($"<p>{notes}</p>");
-            }
+                if (formType == Common.FormType.FID_TREASURY)
+                {
+                    StrContent = StrContent.Replace("[DataTable]", TreasuryTable(formId));
+                }
+                else if (Common.IsTsFormType(formType))
+                {
+                    StrContent = StrContent.Replace("[DataTable]", TsTable(formId));
+                }
+                else if (formType == Common.FormType.AMSD_IF)
+                {
+                    StrContent = StrContent.Replace("[DataTable]", InflowFundTable(formId));
+                }
+                else
+                {
+                    StrContent = StrContent.Replace("[DataTable]", "");
+                }
 
-            bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
+
+                bodyBuilder.Append(StrContent);
+            }
 
             message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
@@ -882,6 +890,7 @@ namespace xDC.Services
 
         #endregion
 
+        #region Private Functions
 
         private MimeMessage ComposeApprovalFeedbackMail(int formId, string formType, string formStatus, string preparerName, string preparerMail, string notes)
         {
@@ -1871,6 +1880,55 @@ namespace xDC.Services
             }
         }
 
+        private string InflowFundTable(int formId)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var theForm = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
+
+                var bodyBuilder = new StringBuilder();
+
+                var sb = new StringBuilder();
+
+                var formItems = db.AMSD_IF_Item
+                    .Where(x => x.FormId == formId)
+                    .ToList();
+
+                if (formItems.Any())
+                {
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell("Fund Type");
+                            row.AddCell("Bank");
+                            row.AddCell("Amount");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in formItems)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(item.FundType);
+                                row.AddCell(item.Bank);
+                                row.AddCell(item.Amount.ToString("N"));
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                bodyBuilder.Append(sb);
+
+                return bodyBuilder.ToString();
+            }
+        }
+
         private string FcaTaggingTable(List<ISSD_TradeSettlement> tradeSettlementItems)
         {
             using (var db = new kashflowDBEntities())
@@ -1974,5 +2032,7 @@ namespace xDC.Services
             }
 
         }
+
+        #endregion
     }
 }

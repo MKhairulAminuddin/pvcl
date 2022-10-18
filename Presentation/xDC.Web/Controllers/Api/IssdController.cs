@@ -385,7 +385,7 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.Approver != null)
                     {
-                        TradeSettlementFormService.NotifyApprover(inputs.Approver, newFormHeader.Id, User.Identity.Name, newFormHeader.FormType, inputs.ApprovalNotes);
+                        CommonService.NotifyApprover(inputs.Approver, newFormHeader.Id, User.Identity.Name, newFormHeader.FormType, inputs.ApprovalNotes);
                         new AuditService().Capture_FA(newFormHeader.Id, newFormHeader.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {newFormHeader.FormType} form");
                     }
 
@@ -440,8 +440,7 @@ namespace xDC_Web.Controllers.Api
                         form.ApprovedDate = null; // empty the date as this is new submission
                         form.FormStatus = Common.FormStatus.PendingApproval;
 
-                        TradeSettlementFormService.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name,
-                            form.FormType, inputs.ApprovalNotes);
+                        CommonService.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name, form.FormType, inputs.ApprovalNotes);
                     }
                     
                     var getTradeItems = db.ISSD_TradeSettlement.Where(x =>
@@ -1455,7 +1454,7 @@ namespace xDC_Web.Controllers.Api
 
                             db.SaveChanges();
 
-                            TradeSettlementFormService.NotifyPreparer(form.Id, form.FormType, form.FormStatus, form.PreparedBy, form.ApprovedBy, input.ApprovalNote);
+                            CommonService.NotifyPreparer(form.Id, form.FormType, form.FormStatus, form.PreparedBy, form.ApprovedBy, input.ApprovalNote);
                             new MailService().TS_IncomingFund(form.Id, form.FormType, form.Currency);
                             new AuditService().AuditForm_Approval(form.Id, form.FormType, form.FormStatus, form.SettlementDate, User.Identity.Name);
 

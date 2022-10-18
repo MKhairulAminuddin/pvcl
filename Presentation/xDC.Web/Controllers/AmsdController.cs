@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
+using xDC.Domain.Web.AMSD.InflowFundForm;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Services.App;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.Extension.DocGenerator;
@@ -52,7 +54,7 @@ namespace xDC_Web.Controllers
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var model = new InflowFundStatusFormVM()
+                    var model = new InflowFundForm()
                     {
                         PreparedBy = User.Identity.Name,
                         PreparedDate = DateTime.Now,
@@ -88,7 +90,7 @@ namespace xDC_Web.Controllers
                                         x.FormId == getForm.Id).OrderByDescending(x => x.RecordedDate)
                             .FirstOrDefault();
 
-                        var formObj = new InflowFundStatusFormVM()
+                        var formObj = new InflowFundForm()
                         {
                             Id = getForm.Id,
                             PreparedBy = getForm.PreparedBy,
@@ -137,54 +139,16 @@ namespace xDC_Web.Controllers
         {
             try
             {
-                using (var db = new kashflowDBEntities())
+                var form = InflowFundFormService.View(formId, User.Identity.Name);
+
+                if (form != null)
                 {
-                    var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
-
-                    if (form != null)
-                    {
-                        var isApprovedOrRejected = (form.FormStatus == Common.FormStatus.Approved ||
-                                                    form.FormStatus == Common.FormStatus.Rejected);
-                        var getFormWorkflow = db.Form_Workflow
-                            .Where(x => (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected) &&
-                                        x.FormId == form.Id).OrderByDescending(x => x.RecordedDate)
-                            .FirstOrDefault();
-
-                        var formObj = new InflowFundStatusFormVM()
-                        {
-                            Id = form.Id,
-                            FormStatus = form.FormStatus,
-
-                            PreparedBy = form.PreparedBy,
-                            PreparedDate = form.PreparedDate,
-
-                            ApprovedBy = form.ApprovedBy,
-                            ApprovedDate = form.ApprovedDate,
-                            ApprovalNote = getFormWorkflow?.WorkflowNotes,
-                            
-                            IsAdminEdited = form.AdminEditted,
-                            AdminEditedBy = form.AdminEdittedBy,
-                            AdminEditedDate = form.AdminEdittedDate,
-                            
-                            EnableReassign = (form.FormStatus == Common.FormStatus.PendingApproval && form.ApprovedBy != User.Identity.Name),
-                            IsApproved = (form.FormStatus == Common.FormStatus.Approved),
-                            EnableResubmit = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected)
-                                             && (!User.IsInRole(Config.Acl.PowerUser)
-                                                 && (form.ApprovedBy != User.Identity.Name)),
-                            EnableSubmitForApproval = (form.FormStatus == Common.FormStatus.Draft || form.FormStatus == Common.FormStatus.Draft)
-                                                      && (!User.IsInRole(Config.Acl.PowerUser)),
-                            EnableDraftButton = (form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
-                            EnableSaveAdminChanges = User.IsInRole(Config.Acl.PowerUser) && (form.FormStatus == Common.FormStatus.Approved),
-                            EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Amsd) && form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval)
-                        };
-
-                        return View("InflowFund/View", formObj);
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = "Form Not found";
-                        return View("Error");
-                    }
+                    return View("InflowFund/View", form);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Form Not found";
+                    return View("Error");
                 }
             }
             catch (Exception ex)

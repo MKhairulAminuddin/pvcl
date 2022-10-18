@@ -491,6 +491,7 @@ namespace xDC.Utils
             public const string AMSD_InflowFundForm_View = "Inflow Fund Form - View";
             public const string AMSD_InflowFundForm_Edit = "Inflow Fund Form - Edit";
             public const string AMSD_InflowFundForm_Download = "Inflow Fund Form - Download";
+            public const string AMSD_InflowFundForm_PowerUser = "Inflow Fund Form - Power User";
 
             public const string Report = "Report";
             public const string Report_DCO_MYR = "Report - Deal Cut Off MYR";

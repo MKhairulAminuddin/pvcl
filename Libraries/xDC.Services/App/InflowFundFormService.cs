@@ -77,11 +77,10 @@ namespace xDC.Services.App
 
                     if (form != null)
                     {
-                        var isApprovedOrRejected = (form.FormStatus == Common.FormStatus.Approved ||
-                                                    form.FormStatus == Common.FormStatus.Rejected);
-                        var getFormWorkflow = db.Form_Workflow
-                            .Where(x => (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected) &&
-                                        x.FormId == form.Id).OrderByDescending(x => x.RecordedDate)
+                        var isApprovedOrRejected = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected);
+                        var latestWorkflow = db.Form_Workflow
+                            .Where(x => x.Id == form.Id && x.FormType == form.FormType && (x.WorkflowStatus.Contains(Common.FormStatus.Approved) || x.WorkflowStatus.Contains(Common.FormStatus.Rejected)))
+                            .OrderByDescending(x => x.RecordedDate)
                             .FirstOrDefault();
 
                         var formView = new InflowFundForm()
@@ -94,22 +93,21 @@ namespace xDC.Services.App
 
                             ApprovedBy = form.ApprovedBy,
                             ApprovedDate = form.ApprovedDate,
-                            ApprovalNote = getFormWorkflow?.WorkflowNotes,
+                            ApprovalNote = latestWorkflow?.WorkflowNotes,
 
                             IsAdminEdited = form.AdminEditted,
                             AdminEditedBy = form.AdminEdittedBy,
                             AdminEditedDate = form.AdminEdittedDate,
 
-                            EnableReassign = (form.FormStatus == Common.FormStatus.PendingApproval && form.ApprovedBy != currentUser.Identity.Name),
                             IsApproved = (form.FormStatus == Common.FormStatus.Approved),
+
+                            EnableReassign = (form.FormStatus == Common.FormStatus.PendingApproval && form.ApprovedBy != currentUser),
                             EnableResubmit = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected)
-                                             && (!User.IsInRole(Config.Acl.PowerUser)
-                                                 && (form.ApprovedBy != User.Identity.Name)),
-                            EnableSubmitForApproval = (form.FormStatus == Common.FormStatus.Draft || form.FormStatus == Common.FormStatus.Draft)
-                                                      && (!User.IsInRole(Config.Acl.PowerUser)),
-                            EnableDraftButton = (form.FormStatus == Common.FormStatus.Draft) && (!currentUser.IsInRole(Config.Acl.PowerUser)),
-                            EnableSaveAdminChanges = User.IsInRole(Config.Acl.PowerUser) && (form.FormStatus == Common.FormStatus.Approved),
-                            EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Amsd) && form.ApprovedBy == currentUser.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval)
+                                             && (form.ApprovedBy != currentUser),
+                            EnableSubmitForApproval = (form.FormStatus == Common.FormStatus.Draft || form.FormStatus == Common.FormStatus.Draft),
+                            EnableDraftButton = (form.FormStatus == Common.FormStatus.Draft),
+                            EnableSaveAdminChanges = new AuthService().IsUserHaveAccess(currentUser, Common.PermissionKey.AMSD_InflowFundForm_PowerUser) && (form.FormStatus == Common.FormStatus.Approved),
+                            EnableApproveRejectBtn = (form.ApprovedBy == currentUser && form.FormStatus == Common.FormStatus.PendingApproval)
                         };
 
                         return formView;
@@ -123,6 +121,7 @@ namespace xDC.Services.App
             catch (Exception ex)
             {
                 Logger.LogError(ex);
+                return null;
             }
         }
     }

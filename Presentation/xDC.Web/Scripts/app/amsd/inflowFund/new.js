@@ -30,12 +30,6 @@
         };
 
         var postData = function (isDraft) {
-            if (isDraft) {
-                app.toast("Saving....", "info", 3000);
-            } else {
-                app.toast("Submitting for approval....", "info", 3000);
-            }
-
             var data = {
                 amsdInflowFunds: $inflowFundsGrid.getDataSource().items(),
 
@@ -49,6 +43,12 @@
                 url: referenceUrl.postForm,
                 method: 'post',
                 success: function (data) {
+                    if (isDraft) {
+                        app.toast("Draft saved!", "success", 3000);
+                    } else {
+                        app.toast("Submitted", "success", 3000);
+                    }
+
                     window.location.href = referenceUrl.postResult + data;
                 },
                 fail: function (jqXHR, textStatus, errorThrown) {
@@ -83,6 +83,7 @@
 
         $("#saveAsDraftBtn").dxButton({
             onClick: function (e) {
+                app.toast("Saving....", "info", 2000);
                 app.saveAllGrids($inflowFundsGrid);
 
                 if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {
@@ -97,6 +98,7 @@
 
         $submitForApprovalModalBtn.on({
             "click": function (e) {
+                app.toast("Submitting for approval....", "info", 3000);
                 app.saveAllGrids($inflowFundsGrid);
 
                 if (jQuery.isEmptyObject($inflowFundsGrid.getDataSource().items())) {

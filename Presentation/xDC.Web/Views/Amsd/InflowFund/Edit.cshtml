@@ -1,4 +1,4 @@
-﻿@model xDC_Web.Models.InflowFundStatusFormVM
+﻿@model xDC.Domain.Web.AMSD.InflowFundForm.InflowFundForm
 
 @{
     ViewBag.Title = "Inflow Fund";
@@ -22,7 +22,7 @@
                             @(Html.DevExtreme().Button()
                                 .ID("submitForApprovalBtn")
                                 .Text("Submit for Approval")
-                                .UseSubmitBehavior(true)
+                                .Icon("todo")
                                 .Type(ButtonType.Default)
                                 .StylingMode(ButtonStylingMode.Contained)
                                 )
@@ -34,7 +34,6 @@
                                 .ID("submitForApprovalBtn")
                                 .Icon("fa fa-repeat")
                                 .Text("Resubmit")
-                                .UseSubmitBehavior(true)
                                 .Type(ButtonType.Default)
                                 .StylingMode(ButtonStylingMode.Contained)
                                 )
@@ -46,7 +45,6 @@
                                 .ID("saveAsDraftBtn")
                                 .Text("Save")
                                 .Icon("save")
-                                .UseSubmitBehavior(true)
                                 .Type(ButtonType.Normal)
                                 .StylingMode(ButtonStylingMode.Contained)
                                 )
@@ -58,7 +56,6 @@
                                 .ID("adminEditSaveChangesBtn")
                                 .Text("Save")
                                 .Icon("save")
-                                .UseSubmitBehavior(true)
                                 .Type(ButtonType.Danger)
                                 .StylingMode(ButtonStylingMode.Contained)
                                 )

@@ -418,7 +418,7 @@ namespace xDC_Web.Controllers.Api
                                     amsdForm.ApprovedDate = null;
                                     db.SaveChanges();
 
-                                    new WorkflowService().ReassignWorkflow(input.FormId, amsdForm.FormType);
+                                    WorkflowService.ReassignWorkflow(input.FormId, amsdForm.FormType);
                                     new MailService().SubmitForApproval(input.FormId, amsdForm.FormType, permittedApprover.Username, null);
                                     new NotificationService().NotifyApprovalRequest(permittedApprover.Username, input.FormId, User.Identity.Name, amsdForm.FormType);
                                     new AuditService().AuditForm_ReassignApprover(input.FormId, amsdForm.FormType, amsdForm.FormDate, User.Identity.Name, currentApprover, permittedApprover.Username);
@@ -438,7 +438,7 @@ namespace xDC_Web.Controllers.Api
                                     treasuryForm.ApprovedDate = null;
                                     db.SaveChanges();
 
-                                    new WorkflowService().ReassignWorkflow(input.FormId, treasuryForm.FormType);
+                                    WorkflowService.ReassignWorkflow(input.FormId, treasuryForm.FormType);
                                     new MailService().SubmitForApproval(input.FormId, treasuryForm.FormType, permittedApprover.Username, null);
                                     new NotificationService().NotifyApprovalRequest(permittedApprover.Username, input.FormId, User.Identity.Name, treasuryForm.FormType);
                                     new AuditService().AuditForm_ReassignApprover(input.FormId, treasuryForm.FormType, treasuryForm.ValueDate, User.Identity.Name, currentApprover, permittedApprover.Username);
@@ -458,7 +458,7 @@ namespace xDC_Web.Controllers.Api
                                     tsForm.ApprovedDate = null;
                                     db.SaveChanges();
 
-                                    new WorkflowService().ReassignWorkflow(input.FormId, tsForm.FormType);
+                                    WorkflowService.ReassignWorkflow(input.FormId, tsForm.FormType);
                                     new MailService().SubmitForApproval(input.FormId, tsForm.FormType, permittedApprover.Username, null);
                                     new NotificationService().NotifyApprovalRequest(permittedApprover.Username, input.FormId, User.Identity.Name, tsForm.FormType);
                                     new AuditService().AuditForm_ReassignApprover(input.FormId, tsForm.FormType, tsForm.SettlementDate, User.Identity.Name, currentApprover, permittedApprover.Username);

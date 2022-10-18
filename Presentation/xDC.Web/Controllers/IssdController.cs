@@ -550,7 +550,7 @@ namespace xDC_Web.Controllers
 
                     if (form != null)
                     {
-                        var wf = TradeSettlementFormService.GetLatestWorkflow(db, form.Id, form.FormType);
+                        var wf = WorkflowService.GetLatestWorkflow(db, form.Id, form.FormType);
                         var model = GenerateViewModel(form, wf);
 
                         switch (form.FormType)
@@ -608,7 +608,7 @@ namespace xDC_Web.Controllers
                             return View("Error");
                         }
 
-                        var wf = TradeSettlementFormService.GetLatestWorkflow(db, form.Id, form.FormType);
+                        var wf = WorkflowService.GetLatestWorkflow(db, form.Id, form.FormType);
                         var model = GenerateEditModel(form, wf);
 
                         switch (form.FormType)
