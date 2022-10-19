@@ -248,7 +248,7 @@ namespace xDC.Services
 
         #region Trade Settlement Form Notification
 
-        public void TS_AmendAfterCutOff(List<ISSD_TradeSettlement> itemBefore, List<ISSD_TradeSettlement> itemAfter, ISSD_FormHeader form)
+        public void TS_AmendAfterApproval(ISSD_FormHeader form)
         {
             try
             {
@@ -267,7 +267,7 @@ namespace xDC.Services
                             }
                         }
 
-                        var message = ComposeAmendmentAfterCutOffMail(itemBefore, itemAfter, form, listOfPowerUsers);
+                        var message = Compose_TsAmendApprovedForm(form, listOfPowerUsers);
                         SendEmailToSmtp(message);
                     }
                 }
@@ -950,8 +950,11 @@ namespace xDC.Services
             return message;
         }
 
-        private MimeMessage ComposeAmendmentAfterCutOffMail(List<ISSD_TradeSettlement> itemBefore, List<ISSD_TradeSettlement> itemAfter, ISSD_FormHeader form, InternetAddressList powerUsers)
+        private MimeMessage Compose_TsAmendApprovedForm(ISSD_FormHeader form, InternetAddressList powerUsers)
         {
+            var bodyBuilder = new StringBuilder();
+            var formUrl = $"{Config.EmailApplicationUrl}{Common.Email_FormUrlMap(form.FormType)}{form.Id}";
+
             var message = new MimeMessage()
             {
                 Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
@@ -959,17 +962,15 @@ namespace xDC.Services
             };
             message.To.AddRange(powerUsers);
 
-            var formUrl = $"{Config.EmailApplicationUrl}{Common.Email_FormUrlMap(form.FormType)}{form.Id}";
-
-            var bodyBuilder = new StringBuilder();
-            bodyBuilder.Append("<p>Hi there, </p>");
-            bodyBuilder.AppendLine($"<p>A submitted form <a href='{formUrl}'>#{form.Id}</a> has been amended.</p>");
-
-            bodyBuilder.AppendLine("<p>Data before changes: </p>");
-            bodyBuilder.Append(ConstructTable(itemBefore));
-
-            bodyBuilder.AppendLine("<p>Data after changes: </p>");
-            bodyBuilder.Append(ConstructTable(itemAfter));
+            var root = AppDomain.CurrentDomain.BaseDirectory;
+            using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/TS_AmendAfterCutOff.html"))
+            {
+                string readFile = reader.ReadToEnd();
+                string StrContent = string.Empty;
+                StrContent = readFile;
+                StrContent = StrContent.Replace("[Message]", $"<p>An approved form <a href='{formUrl}'>#{form.Id}</a> has been amended.</p>");
+                bodyBuilder.Append(StrContent);
+            }
 
             message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
@@ -1870,6 +1871,418 @@ namespace xDC.Services
                             {
                                 row.AddCell(counter.ToString());
                                 row.AddCell(theForm.SettlementDate?.ToString("dd/MM/yyyy"));
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.AmountPlus.ToString("N"));
+                                row.AddCell(item.AmountMinus.ToString("N"));
+                                row.AddCell(item.OthersType);
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                bodyBuilder.Append(sb);
+
+                return bodyBuilder.ToString();
+            }
+        }
+
+        private string TsTable(List<ISSD_TradeSettlement> tradeItems, string tradeType)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var bodyBuilder = new StringBuilder();
+
+                var sb = new StringBuilder();
+
+                if (tradeType == TsItemCategory.Equity)
+                {
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell(Common.TsItemCategory.Equity);
+                            row.AddCell("Stock Code/ ISIN");
+                            row.AddCell("Maturity (+)");
+                            row.AddCell("Sales (+)");
+                            row.AddCell("Purchase (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tradeItems)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.StockCode);
+                                row.AddCell(item.Maturity.ToString("N"));
+                                row.AddCell(item.Sales.ToString("N"));
+                                row.AddCell(item.Purchase.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tradeType == TsItemCategory.Bond)
+                {
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell(Common.TsItemCategory.Bond);
+                            row.AddCell("Stock Code/ ISIN");
+                            row.AddCell("Bond Type");
+                            row.AddCell("Maturity (+)");
+                            row.AddCell("Sales (+)");
+                            row.AddCell("Purchase (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tradeItems)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.StockCode);
+                                row.AddCell(item.BondType);
+                                row.AddCell(item.Maturity.ToString("N"));
+                                row.AddCell(item.Sales.ToString("N"));
+                                row.AddCell(item.Purchase.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tradeType == TsItemCategory.Coupon)
+                {
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell(Common.TsItemCategory.Coupon);
+                            row.AddCell("Stock Code/ ISIN");
+                            row.AddCell("Coupon Type");
+                            row.AddCell("Maturity (+)");
+                            row.AddCell("Sales (+)");
+                            row.AddCell("Purchase (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tradeItems)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.StockCode);
+                                row.AddCell(item.CouponType);
+                                row.AddCell(item.Maturity.ToString("N"));
+                                row.AddCell(item.Sales.ToString("N"));
+                                row.AddCell(item.Purchase.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tradeType == TsItemCategory.Cp)
+                {
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell(Common.TsItemCategory.Cp);
+                            row.AddCell("Stock Code/ ISIN");
+                            row.AddCell("Maturity (+)");
+                            row.AddCell("Sales (+)");
+                            row.AddCell("Purchase (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tradeItems)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.StockCode);
+                                row.AddCell(item.Maturity.ToString("N"));
+                                row.AddCell(item.Sales.ToString("N"));
+                                row.AddCell(item.Purchase.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tradeType == TsItemCategory.NotesPapers)
+                {
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell(Common.TsItemCategory.NotesPapers);
+                            row.AddCell("Stock Code/ ISIN");
+                            row.AddCell("Maturity (+)");
+                            row.AddCell("Sales (+)");
+                            row.AddCell("Purchase (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tradeItems)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.StockCode);
+                                row.AddCell(item.Maturity.ToString("N"));
+                                row.AddCell(item.Sales.ToString("N"));
+                                row.AddCell(item.Purchase.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tradeType == TsItemCategory.Repo)
+                {
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell(Common.TsItemCategory.Repo);
+                            row.AddCell("Stock Code/ ISIN");
+                            row.AddCell("First Leg (+)");
+                            row.AddCell("Second Leg (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tradeItems)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.StockCode);
+                                row.AddCell(item.FirstLeg.ToString("N"));
+                                row.AddCell(item.SecondLeg.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tradeType == TsItemCategory.Mtm)
+                {
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell(Common.TsItemCategory.Mtm);
+                            row.AddCell("Amount (+)");
+                            row.AddCell("Amount (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tradeItems)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.AmountPlus.ToString("N"));
+                                row.AddCell(item.AmountMinus.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tradeType == TsItemCategory.Fx)
+                {
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell(Common.TsItemCategory.Fx);
+                            row.AddCell("Amount (+)");
+                            row.AddCell("Amount (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tradeItems)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.AmountPlus.ToString("N"));
+                                row.AddCell(item.AmountMinus.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tradeType == TsItemCategory.Altid)
+                {
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell(Common.TsItemCategory.Altid);
+                            row.AddCell("Amount (+)");
+                            row.AddCell("Amount (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tradeItems)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.AmountPlus.ToString("N"));
+                                row.AddCell(item.AmountMinus.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tradeType == TsItemCategory.Fees)
+                {
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell(Common.TsItemCategory.Fees);
+                            row.AddCell("Amount (+)");
+                            row.AddCell("Amount (-)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tradeItems)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.AmountPlus.ToString("N"));
+                                row.AddCell(item.AmountMinus.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tradeType == TsItemCategory.Cn)
+                {
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell(Common.TsItemCategory.Cn);
+                            row.AddCell("Amount (+)");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tradeItems)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
+                                row.AddCell(item.InstrumentCode);
+                                row.AddCell(item.AmountPlus.ToString("N"));
+                                row.AddCell(item.Remarks);
+                            }
+
+                            counter++;
+                        }
+                    }
+                }
+
+                if (tradeType == TsItemCategory.Others)
+                {
+                    using (var table = new Common.Table(sb))
+                    {
+                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                        {
+                            row.AddCell("No");
+                            row.AddCell(Common.TsItemCategory.Others);
+                            row.AddCell("Amount (+)");
+                            row.AddCell("Amount (-)");
+                            row.AddCell("Type");
+                            row.AddCell("Remarks");
+                        }
+
+                        var counter = 1;
+
+                        foreach (var item in tradeItems)
+                        {
+                            using (var row = table.AddRow())
+                            {
+                                row.AddCell(counter.ToString());
                                 row.AddCell(item.InstrumentCode);
                                 row.AddCell(item.AmountPlus.ToString("N"));
                                 row.AddCell(item.AmountMinus.ToString("N"));

@@ -222,5 +222,9 @@ var app = (function() {
         return arr;
     }
 
+    _app.openInNewTab = function (url) {
+        window.open(url, '_blank').focus();
+    }
+
     return _app;
 }());

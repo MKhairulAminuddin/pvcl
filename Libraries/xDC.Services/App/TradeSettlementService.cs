@@ -55,6 +55,11 @@ namespace xDC.Services.App
             }
         }
 
+        /*public static bool IsResubmission()
+        {
+            return true;
+        }*/
+
         public static List<ISSD_TradeSettlement> GetTradeSettlement(kashflowDBEntities db, int formId)
         {
             var result = db.ISSD_TradeSettlement

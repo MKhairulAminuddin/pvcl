@@ -18,8 +18,8 @@
             $currencySelectBox,
             $edwAvailable,
 
-            $saveAsDraftBtn,
-            $submitForApprovalBtn,
+            $saveAsDraftBtn = $("#saveAsDraftBtn"),
+            $submitForApprovalBtn = $("#submitForApprovalBtn"),
 
             $selectApproverModal = $('#selectApproverModal'),
             $submitForApprovalModalBtn,
@@ -650,15 +650,14 @@
             checkDwDataAvailability($settlementDateBox.option("value"), data.value);
         });
 
-
-        $saveAsDraftBtn = $("#saveAsDraftBtn").on({
-            "click": function (e) {
+        $saveAsDraftBtn.dxButton({
+            onClick: function (e) {
                 isSaveAsDraft = true;
             }
         });
 
-        $submitForApprovalBtn = $("#submitForApprovalBtn").on({
-            "click": function (e) {
+        $submitForApprovalBtn.dxButton({
+            onClick: function (e) {
                 isSaveAsDraft = false;
             }
         });

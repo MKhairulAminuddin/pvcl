@@ -405,8 +405,6 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                var isResubmissionFromApproved = false;
-
                 using (var db = new kashflowDBEntities())
                 {
                     var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == inputs.Id);
@@ -431,8 +429,6 @@ namespace xDC_Web.Controllers.Api
 
                     if (inputs.Approver != null)
                     {
-                        isResubmissionFromApproved = true;
-
                         new AuditService().AuditForm_ReassignApprover(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
                             form.ApprovedBy, inputs.Approver);
                         
@@ -443,11 +439,8 @@ namespace xDC_Web.Controllers.Api
                         CommonService.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name, form.FormType, inputs.ApprovalNotes);
                     }
                     
-                    var getTradeItems = db.ISSD_TradeSettlement.Where(x =>
-                        x.FormId == form.Id).ToList();
-
-                    var cc_itemBefore = getTradeItems;
-                    var cc_itemBeforeList = cc_itemBefore.ToList();
+                    var formTradeItems = db.ISSD_TradeSettlement.Where(x => x.FormId == form.Id).ToList();
+                    var cc_itemBeforeList = formTradeItems.ToList();
 
                     if (inputs.Equity != null)
                     {
@@ -457,7 +450,7 @@ namespace xDC_Web.Controllers.Api
                             var itemExistInGrid =
                                 inputs.Equity.Where(x => x.Id != 0).Select(x => x.Id).ToList();
                             var removedItems =
-                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
                             if (removedItems.Any())
                             {
                                 foreach (var item in removedItems)
@@ -471,7 +464,7 @@ namespace xDC_Web.Controllers.Api
 
                         foreach (var item in inputs.Equity)
                         {
-                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
@@ -546,7 +539,7 @@ namespace xDC_Web.Controllers.Api
                             var itemExistInGrid =
                                 inputs.Bond.Where(x => x.Id != 0).Select(x => x.Id).ToList();
                             var removedItems =
-                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
                             if (removedItems.Any())
                             {
                                 foreach (var item in removedItems)
@@ -560,7 +553,7 @@ namespace xDC_Web.Controllers.Api
 
                         foreach (var item in inputs.Bond)
                         {
-                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
@@ -643,7 +636,7 @@ namespace xDC_Web.Controllers.Api
                             var itemExistInGrid =
                                 inputs.Cp.Where(x => x.Id != 0).Select(x => x.Id).ToList();
                             var removedItems =
-                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
                             if (removedItems.Any())
                             {
                                 foreach (var item in removedItems)
@@ -657,7 +650,7 @@ namespace xDC_Web.Controllers.Api
 
                         foreach (var item in inputs.Cp)
                         {
-                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
@@ -732,7 +725,7 @@ namespace xDC_Web.Controllers.Api
                             var itemExistInGrid =
                                 inputs.NotesPaper.Where(x => x.Id != 0).Select(x => x.Id).ToList();
                             var removedItems =
-                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
                             if (removedItems.Any())
                             {
                                 foreach (var item in removedItems)
@@ -746,7 +739,7 @@ namespace xDC_Web.Controllers.Api
 
                         foreach (var item in inputs.NotesPaper)
                         {
-                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
@@ -821,7 +814,7 @@ namespace xDC_Web.Controllers.Api
                             var itemExistInGrid =
                                 inputs.Repo.Where(x => x.Id != 0).Select(x => x.Id).ToList();
                             var removedItems =
-                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
                             if (removedItems.Any())
                             {
                                 foreach (var item in removedItems)
@@ -835,7 +828,7 @@ namespace xDC_Web.Controllers.Api
 
                         foreach (var item in inputs.Repo)
                         {
-                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
@@ -902,7 +895,7 @@ namespace xDC_Web.Controllers.Api
                             var itemExistInGrid =
                                 inputs.Coupon.Where(x => x.Id != 0).Select(x => x.Id).ToList();
                             var removedItems =
-                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
                             if (removedItems.Any())
                             {
                                 foreach (var item in removedItems)
@@ -916,7 +909,7 @@ namespace xDC_Web.Controllers.Api
 
                         foreach (var item in inputs.Coupon)
                         {
-                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
@@ -983,7 +976,7 @@ namespace xDC_Web.Controllers.Api
                             var itemExistInGrid =
                                 inputs.Mtm.Where(x => x.Id != 0).Select(x => x.Id).ToList();
                             var removedItems =
-                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
                             if (removedItems.Any())
                             {
                                 foreach (var item in removedItems)
@@ -997,7 +990,7 @@ namespace xDC_Web.Controllers.Api
 
                         foreach (var item in inputs.Mtm)
                         {
-                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
@@ -1056,7 +1049,7 @@ namespace xDC_Web.Controllers.Api
                             var itemExistInGrid =
                                 inputs.FxSettlement.Where(x => x.Id != 0).Select(x => x.Id).ToList();
                             var removedItems =
-                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
                             if (removedItems.Any())
                             {
                                 foreach (var item in removedItems)
@@ -1070,7 +1063,7 @@ namespace xDC_Web.Controllers.Api
 
                         foreach (var item in inputs.FxSettlement)
                         {
-                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
@@ -1129,7 +1122,7 @@ namespace xDC_Web.Controllers.Api
                             var itemExistInGrid =
                                 inputs.Altid.Where(x => x.Id != 0).Select(x => x.Id).ToList();
                             var removedItems =
-                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
                             if (removedItems.Any())
                             {
                                 foreach (var item in removedItems)
@@ -1143,7 +1136,7 @@ namespace xDC_Web.Controllers.Api
 
                         foreach (var item in inputs.Altid)
                         {
-                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
@@ -1202,7 +1195,7 @@ namespace xDC_Web.Controllers.Api
                             var itemExistInGrid =
                                 inputs.ContributionCredited.Where(x => x.Id != 0).Select(x => x.Id).ToList();
                             var removedItems =
-                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
                             if (removedItems.Any())
                             {
                                 foreach (var item in removedItems)
@@ -1216,7 +1209,7 @@ namespace xDC_Web.Controllers.Api
 
                         foreach (var item in inputs.ContributionCredited)
                         {
-                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
@@ -1268,7 +1261,7 @@ namespace xDC_Web.Controllers.Api
                             var itemExistInGrid =
                                 inputs.Fees.Where(x => x.Id != 0).Select(x => x.Id).ToList();
                             var removedItems =
-                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
                             if (removedItems.Any())
                             {
                                 foreach (var item in removedItems)
@@ -1282,7 +1275,7 @@ namespace xDC_Web.Controllers.Api
 
                         foreach (var item in inputs.Fees)
                         {
-                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
@@ -1341,7 +1334,7 @@ namespace xDC_Web.Controllers.Api
                             var itemExistInGrid =
                                 inputs.Others.Where(x => x.Id != 0).Select(x => x.Id).ToList();
                             var removedItems =
-                                getTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
+                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
                             if (removedItems.Any())
                             {
                                 foreach (var item in removedItems)
@@ -1355,7 +1348,7 @@ namespace xDC_Web.Controllers.Api
 
                         foreach (var item in inputs.Others)
                         {
-                            var foundItem = getTradeItems.FirstOrDefault(x => x.Id == item.Id);
+                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
                             if (foundItem != null)
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
@@ -1412,16 +1405,7 @@ namespace xDC_Web.Controllers.Api
                     }
                     
                     db.SaveChanges();
-                    
-                    var cc_itemAfterList = db.ISSD_TradeSettlement
-                        .Where(x =>
-                        x.FormId == form.Id).ToList();
 
-                    if (isResubmissionFromApproved)
-                    {
-                        new MailService().TS_AmendAfterCutOff(cc_itemBeforeList, cc_itemAfterList, form);
-                    }
-                    
                     return Request.CreateResponse(HttpStatusCode.Created, form.Id);
                 }
             }
@@ -1458,6 +1442,11 @@ namespace xDC_Web.Controllers.Api
                             new MailService().TS_IncomingFund(form.Id, form.FormType, form.Currency);
                             new AuditService().AuditForm_Approval(form.Id, form.FormType, form.FormStatus, form.SettlementDate, User.Identity.Name);
 
+                            if (WorkflowService.FormResubmissionFromApprovedRejected(form.Id, form.FormType))
+                            {
+
+                            }
+
                             if (form.FormType == Common.FormType.ISSD_TS_E && form.FormStatus == Common.FormStatus.Approved)
                             {
                                 new MailService().TS_PartE_NotifyPe(form.Id);
@@ -1465,13 +1454,6 @@ namespace xDC_Web.Controllers.Api
 
                             if (form.FormType == Common.FormType.ISSD_TS_H && form.FormStatus == Common.FormStatus.Approved)
                             {
-                                // 24/12/2021 - premah requested to remove
-                                /*var tsPropertyItemExist = db.ISSD_TradeSettlement.Any(x => x.FormId == form.Id && x.OthersType == Common.TsOthersTypeItem.Property);
-                                if (tsPropertyItemExist)
-                                {
-                                    new MailService().TS_PartH_Notify(form.Id, Common.TsOthersTypeItem.Property);
-                                }*/
-
                                 var tsLoanItemExist = db.ISSD_TradeSettlement.Any(x => x.FormId == form.Id && x.OthersType == Common.TsOthersTypeItem.Loan);
                                 if (tsLoanItemExist)
                                 {

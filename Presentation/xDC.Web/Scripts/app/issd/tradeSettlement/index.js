@@ -216,28 +216,28 @@
                             onClick: function (e) {
                                 switch (e.row.data.formType) {
                                     case "Trade Settlement (Part A)":
-                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartA/View/" + e.row.data.id;
+                                        app.openInNewTab(window.location.origin + "/issd/TradeSettlement/PartA/View/" + e.row.data.id);
                                         return;
                                     case "Trade Settlement (Part B)":
-                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartB/View/" + e.row.data.id;
+                                        app.openInNewTab(window.location.origin + "/issd/TradeSettlement/PartB/View/" + e.row.data.id);
                                         return;
                                     case "Trade Settlement (Part C)":
-                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartC/View/" + e.row.data.id;
+                                        app.openInNewTab(window.location.origin + "/issd/TradeSettlement/PartC/View/" + e.row.data.id);
                                         return;
                                     case "Trade Settlement (Part D)":
-                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartD/View/" + e.row.data.id;
+                                        app.openInNewTab(window.location.origin + "/issd/TradeSettlement/PartD/View/" + e.row.data.id);
                                         return;
                                     case "Trade Settlement (Part E)":
-                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartE/View/" + e.row.data.id;
+                                        app.openInNewTab(window.location.origin + "/issd/TradeSettlement/PartE/View/" + e.row.data.id);
                                         return;
                                     case "Trade Settlement (Part F)":
-                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartF/View/" + e.row.data.id;
+                                        app.openInNewTab(window.location.origin + "/issd/TradeSettlement/PartF/View/" + e.row.data.id);
                                         return;
                                     case "Trade Settlement (Part G)":
-                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartG/View/" + e.row.data.id;
+                                        app.openInNewTab(window.location.origin + "/issd/TradeSettlement/PartG/View/" + e.row.data.id);
                                         return;
                                     case "Trade Settlement (Part H)":
-                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartH/View/" + e.row.data.id;
+                                        app.openInNewTab(window.location.origin + "/issd/TradeSettlement/PartH/View/" + e.row.data.id);
                                         return;
 
                                     default:
@@ -507,12 +507,10 @@
                             icon: "fa fa-eye",
                             cssClass: "dx-datagrid-command-btn",
                             onClick: function (e) {
-                                window.location.href = window.location.origin +
-                                    "/issd/TradeSettlement/View/" +
-                                    "?settlementDateEpoch=" +
-                                    moment(e.row.data.formDate).unix() +
-                                    "&currency=" +
-                                    e.row.data.currency;
+                                app.openInNewTab(
+                                    window.location.origin +
+                                    "/issd/TradeSettlement/View/?settlementDateEpoch=" + moment(e.row.data.formDate).unix() +
+                                    "&currency=" + e.row.data.currency);
 
                                 e.event.preventDefault();
                             }
@@ -612,11 +610,6 @@
             },
             filterPanel: {
                 visible: true
-            },
-            stateStoring: {
-                enabled: true,
-                type: "localStorage",
-                storageKey: "xDC_TS_ApprovedGrid_02"
             }
         }).dxDataGrid("instance");
 
