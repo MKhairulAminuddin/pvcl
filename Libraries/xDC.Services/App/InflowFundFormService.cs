@@ -128,7 +128,7 @@ namespace xDC.Services.App
             }
         }
 
-        public static FormsLandingPage GetLandingPageData(string currentUser)
+        public static InflowFundFormsLandingPage GetLandingPageData(string currentUser)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace xDC.Services.App
                     var enableCreateForm = new AuthService().IsUserHaveAccess(currentUser, Common.PermissionKey.AMSD_InflowFundForm_Edit);
                     var today = DateTime.Now;
 
-                    var model = new FormsLandingPage()
+                    var model = new InflowFundFormsLandingPage()
                     {
                         CountTodaySubmission = db.AMSD_IF.Count(x => x.FormType == Common.FormType.AMSD_IF 
                                             && DbFunctions.TruncateTime(x.FormDate) == DbFunctions.TruncateTime(today)

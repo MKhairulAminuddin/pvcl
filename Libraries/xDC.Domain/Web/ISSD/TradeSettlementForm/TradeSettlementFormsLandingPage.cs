@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace xDC.Domain.Web
+namespace xDC.Domain.Web.ISSD.TradeSettlementForm
 {
-    public class FormsLandingPage
+    public class TradeSettlementFormsLandingPage
     {
         public int CountTodaySubmission { get; set; }
         public int CountTodayPendingApproval { get; set; }

@@ -15,50 +15,34 @@ using xDC.Logging;
 using xDC.Services;
 using xDC.Services.App;
 using xDC.Utils;
+using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.Models;
+using xDC_Web.ViewModels;
 using xDC_Web.ViewModels.Fid;
 using xDC_Web.ViewModels.Iisd;
 using static xDC.Utils.Common;
 
 namespace xDC_Web.Controllers.Api
 {
-    [Authorize(Roles = "Administrator, Power User, ISSD")]
+    [KflowApiAuthorize(PermissionKey.ISSD)]
     [RoutePrefix("api/issd")]
     public class IssdController : ApiController
     {
+        [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_View)]
         [HttpGet]
-        [Route("TradeSettlement")]
-        public HttpResponseMessage TradeSettlement(DataSourceLoadOptions loadOptions)
+        [Route("ts/home/grid1")]
+        public HttpResponseMessage TsHomeGrid1(DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var formTypes = new List<string>()
-                    {
-                        Common.FormType.ISSD_TS_A,
-                        Common.FormType.ISSD_TS_B,
-                        Common.FormType.ISSD_TS_C,
-                        Common.FormType.ISSD_TS_D,
-                        Common.FormType.ISSD_TS_E,
-                        Common.FormType.ISSD_TS_F,
-                        Common.FormType.ISSD_TS_G,
-                        Common.FormType.ISSD_TS_H,
-                    };
-
                     var todayDate = DateTime.Now.Date;
                     
-                    /*var result = db.ISSD_FormHeader
-                        .Where(x => formTypes.Contains(x.FormType) && DbFunctions.TruncateTime(x.SettlementDate) >= todayDate);*/
-                    var result = db.ISSD_FormHeader
-                        .Where(x => formTypes.Contains(x.FormType));
-
-                    var getApprover = db.Config_Approver.Where(x => x.Username == User.Identity.Name);
-                    var isMeApprover = getApprover.Any();
-
+                    var tsForms = db.ISSD_FormHeader;
                     var resultVM = new List<ISSD_LandingPageGridVM>();
 
-                    foreach (var item in result)
+                    foreach (var item in tsForms)
                     {
                         resultVM.Add(new ISSD_LandingPageGridVM
                         {
@@ -74,7 +58,8 @@ namespace xDC_Web.Controllers.Api
 
                             EnableEdit = TradeSettlementFormService.EnableEdit(item.FormStatus, item.ApprovedBy, User.Identity.Name),
                             EnableDelete = item.FormStatus != Common.FormStatus.PendingApproval && item.ApprovedBy != User.Identity.Name,
-                            EnablePrint = TradeSettlementFormService.EnablePrint(item.FormStatus),
+                            EnablePrint = TradeSettlementFormService.EnablePrint(User.Identity.Name, item.FormStatus),
+                            EnableRetractSubmission = TradeSettlementFormService.EnableRetractSubmission(User.Identity.Name, item.PreparedBy, item.FormStatus),
 
                             IsRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatus.Rejected),
                             IsPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
@@ -92,28 +77,42 @@ namespace xDC_Web.Controllers.Api
 
         }
 
+        [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_Edit)]
+        [HttpPost]
+        [Route("ts/home/retractForm")]
+        public HttpResponseMessage TsHomeRetractForm(RetractFormVM req)
+        {
+            try
+            {
+                var retractFormStatus = TradeSettlementFormService.RetractFormSubmission(req.FormId, User.Identity.Name);
+
+                if (retractFormStatus)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Created);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid form ID");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+
+        }
+
+        [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_View)]
         [HttpGet]
-        [Route("TradeSettlement/Approved")]
-        public HttpResponseMessage ApprovedTradeSettlement(DataSourceLoadOptions loadOptions)
+        [Route("ts/home/grid2")]
+        public HttpResponseMessage TsHomeGrid2(DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new xDC.Infrastructure.Application.kashflowDBEntities())
                 {
-                    var formTypes = new List<string>()
-                    {
-                        Common.FormType.ISSD_TS_A,
-                        Common.FormType.ISSD_TS_B,
-                        Common.FormType.ISSD_TS_C,
-                        Common.FormType.ISSD_TS_D,
-                        Common.FormType.ISSD_TS_E,
-                        Common.FormType.ISSD_TS_F,
-                        Common.FormType.ISSD_TS_G,
-                        Common.FormType.ISSD_TS_H
-                    };
-
                     var result = db.ISSD_FormHeader
-                        .Where(x => formTypes.Contains(x.FormType) && x.FormStatus == Common.FormStatus.Approved)
+                        .Where(x => x.FormStatus == Common.FormStatus.Approved)
                         .GroupBy(x => new { x.SettlementDate, x.Currency})
                         .Select(x => new
                         {
@@ -130,7 +129,8 @@ namespace xDC_Web.Controllers.Api
                         {
                             FormDate = item.SettlementDate,
                             Currency = item.Currency,
-                            ApprovedDate = item.ApprovedDate
+                            ApprovedDate = item.ApprovedDate,
+                            EnablePrint = TradeSettlementFormService.EnablePrint(User.Identity.Name, FormStatus.Approved)
                         });
                     }
 

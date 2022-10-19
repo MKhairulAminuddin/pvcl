@@ -15,7 +15,7 @@ namespace xDC.Services.App
 {
     public static class TradeSettlementFormService
     {
-        public static FormsLandingPage GetLandingPageData(string currentUser)
+        public static TradeSettlementFormsLandingPage GetLandingPageData(string currentUser)
         {
             try
             {
@@ -24,7 +24,7 @@ namespace xDC.Services.App
                     var enableCreateForm = new AuthService().IsUserHaveAccess(currentUser, Common.PermissionKey.ISSD_TradeSettlementForm_Edit);
                     var today = DateTime.Now;
 
-                    var model = new FormsLandingPage()
+                    var model = new TradeSettlementFormsLandingPage()
                     {
                         CountTodaySubmission = db.ISSD_FormHeader
                                                         .Count(x => x.FormType.Contains(Common.FormType.ISSD_TS)
@@ -180,11 +180,21 @@ namespace xDC.Services.App
             return !isApproved && !isPendingApproval;
         }
 
-        public static bool EnablePrint(string formStatus)
+        public static bool EnablePrint(string currentUser, string formStatus)
         {
-            var isDraftForm = formStatus == Common.FormStatus.Draft;
+            var isDownloadAllowed = new AuthService().IsUserHaveAccess(currentUser, Common.PermissionKey.ISSD_TradeSettlementForm_Download);
+            var isDraft = formStatus == Common.FormStatus.Draft;
 
-            return !isDraftForm;
+            return (isDownloadAllowed && !isDraft);
+        }
+
+        public static bool EnableRetractSubmission(string currentUser, string formPreparedBy, string formStatus)
+        {
+            var haveEditPermission = new AuthService().IsUserHaveAccess(currentUser, Common.PermissionKey.ISSD_TradeSettlementForm_Edit);
+            var isPendingApproval = formStatus == Common.FormStatus.PendingApproval;
+            var isPreparedByMe = currentUser == formPreparedBy;
+
+            return (haveEditPermission && isPendingApproval && isPreparedByMe);
         }
 
         public static bool EditFormRules(string formStatus, string approvedBy, string currentUser, out string errorMessage)

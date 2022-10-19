@@ -2,7 +2,28 @@
 
     $(function () {
 
-        var $issdGrid, $issdGridFilterBtn, $newFormBtn, $consolidatedTradeSettlementGrid, $filterStatusSb, $clearFilterBtn;
+        var $issdGrid,
+            $issdGridFilterBtn,
+            $newFormBtn,
+            $grid2,
+            $filterStatusSb,
+            $clearFilterBtn,
+
+            $todayApprovedFilterBtn = $("#todayApprovedFilterBtn"),
+            $audFilterBtn = $("#audFilterBtn"),
+            $eurFilterBtn = $("#eurFilterBtn"),
+            $gbpFilterBtn = $("#gbpFilterBtn"),
+            $myrFilterBtn = $("#myrFilterBtn"),
+            $usdFilterBtn = $("#usdFilterBtn"),
+            $clearFilterGrid2Btn = $("#clearFilterGrid2Btn"),
+
+            $retractSubmissionModal = $("#retractSubmissionModal"),
+            $retractFormBtn = $("#retractFormBtn"),
+            $retractFormCancelBtn = $("#retractFormCancelBtn"),
+            $retractFormId = $("#retractFormId"),
+            $retractFormPreparedBy = $("#retractFormPreparedBy"),
+            $retractFormSubmissionDate = $("#retractFormSubmissionDate"),
+            $retractFormAssignedApprover = $("#retractFormAssignedApprover");
 
         var statuses = [
             {
@@ -44,11 +65,17 @@
         ];
 
         var formStatus = ["All Statuses", "Approved", "Draft", "Pending Approval", "Rejected", "Pending Approval (Resubmission)", "Rejected"];
+
+        var referenceUrl = {
+            loadGrid1: window.location.origin + "/api/issd/ts/home/grid1",
+            loadGrid2: window.location.origin + "/api/issd/ts/home/grid2",
+            retractForm: window.location.origin + "/api/issd/ts/home/retractForm"
+        }
         
         $issdGrid = $("#issdGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: window.location.origin + "/api/issd/TradeSettlement"
+                loadUrl: referenceUrl.loadGrid1
             }),
             columns: [
                 {
@@ -220,6 +247,23 @@
                             }
                         },
                         {
+                            hint: "Retract Submission",
+                            icon: "fa fa-chain-broken",
+                            cssClass: "dx-datagrid-command-btn",
+                            visible: function (e) {
+                                return e.row.data.enableRetractSubmission;
+                            },
+                            onClick: function (e) {
+                                $retractFormId.text(e.row.data.id);
+                                $retractFormPreparedBy.text(e.row.data.preparedBy);
+                                $retractFormSubmissionDate.text(moment(e.row.data.preparedDate, "YYYY-MM-DDTHH:mm:ssZ").format("DD/MM/yyyy HH:mm A"));
+                                $retractFormAssignedApprover.text(e.row.data.approvedBy);
+
+                                $retractSubmissionModal.modal('show');
+                                e.event.preventDefault();
+                            }
+                        },
+                        {
                             hint: "Download as Excel",
                             icon: "fa fa-file-excel-o",
                             cssClass: "dx-datagrid-command-btn text-green",
@@ -376,24 +420,15 @@
             }
         }).dxSelectBox("instance");
 
-        $clearFilterBtn = $("#clearFilterBtn").dxButton({
-            icon: "refresh",
-            hint: "Clear filter",
+        $clearFilterBtn = $("#clearFilterGrid1Btn").dxButton({
             onClick() {
                 $issdGrid.clearFilter();
                 $issdGridFilterBtn.option("value", statuses[0].RefName);
                 $filterStatusSb.option("value", formStatus[0]);
             }
-        }).dxButton("instance");
+        });
 
         $newFormBtn = $("#newFormBtn").dxDropDownButton({
-            text: "New Trade Settlement",
-            icon: "plus",
-            type: "normal",
-            stylingMode: "contained",
-            dropDownOptions: {
-                width: 230
-            },
             items: [
                 "A - Equity",
                 "B - Bond, CP, Notes/Papers, Coupon",
@@ -434,12 +469,14 @@
                         alert("Invalid Selection");
                 }
             }
-        }).dxDropDownButton("instance");
+        });
 
-        $consolidatedTradeSettlementGrid = $("#consolidatedTradeSettlementGrid").dxDataGrid({
+        // #region Grid 2
+
+        $grid2 = $("#consolidatedTradeSettlementGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: window.location.origin + "/api/issd/TradeSettlement/Approved"
+                loadUrl: referenceUrl.loadGrid2
             }),
             columns: [
                 {
@@ -448,8 +485,7 @@
                     dataType: "datetime",
                     format: "dd/MM/yyyy",
                     sortIndex: 0,
-                    sortOrder: "desc",
-                    groupIndex: 0
+                    sortOrder: "desc"
                 },
                 {
                     dataField: "currency",
@@ -486,7 +522,7 @@
                             icon: "fa fa-file-excel-o",
                             cssClass: "dx-datagrid-command-btn text-green",
                             visible: function (e) {
-                                return (!e.row.data.isDraft);
+                                return e.row.data.enablePrint;
                             },
                             onClick: function (e) {
                                 app.toast("Generating...");
@@ -520,7 +556,7 @@
                             icon: "fa fa-file-pdf-o",
                             cssClass: "dx-datagrid-command-btn text-orange",
                             visible: function (e) {
-                                return (!e.row.data.isDraft);
+                                return e.row.data.enablePrint;
                             },
                             onClick: function (e) {
                                 app.toast("Generating...");
@@ -584,16 +620,103 @@
             }
         }).dxDataGrid("instance");
 
-        $("#submissionBox").boxWidget({
-            animationSpeed: 500,
-            collapseIcon: "dx-icon-chevrondown",
-            expandIcon: "dx-icon-chevronprev"
+        $todayApprovedFilterBtn.dxButton({
+            onClick: function (e) {
+                $grid2.filter([
+                    ["approvedDate", ">=", moment().startOf("day").toDate()],
+                    "and",
+                    ["approvedDate", "<", moment().add(1, "days").toDate()]
+                ]);
+            }
         });
 
-        $("#approvedBox").boxWidget({
-            animationSpeed: 500,
-            collapseIcon: "dx-icon-chevrondown",
-            expandIcon: "dx-icon-chevronprev"
+        $audFilterBtn.dxButton({
+            onClick: function (e) {
+                $grid2.filter([
+                    ["currency", "=", "AUD"]
+                ]);
+            }
         });
+
+        $eurFilterBtn.dxButton({
+            onClick: function (e) {
+                $grid2.filter([
+                    ["currency", "=", "EUR"]
+                ]);
+            }
+        });
+
+        $gbpFilterBtn.dxButton({
+            onClick: function (e) {
+                $grid2.filter([
+                    ["currency", "=", "GBP"]
+                ]);
+            }
+        });
+
+        $myrFilterBtn.dxButton({
+            onClick: function (e) {
+                $grid2.filter([
+                    ["currency", "=", "MYR"]
+                ]);
+            }
+        });
+
+        $usdFilterBtn.dxButton({
+            onClick: function (e) {
+                $grid2.filter([
+                    ["currency", "=", "USD"]
+                ]);
+            }
+        });
+
+        $clearFilterGrid2Btn.dxButton({
+            onClick: function (e) {
+                $grid2.clearFilter();
+            }
+        });
+
+        // #endregion
+
+        // #region Modal Retract Submission
+
+        $retractFormBtn.dxButton({
+            onClick: function (e) {
+                app.toast("Retract form submission...", "warning", 3000);
+
+                $.ajax({
+                    data: {
+                        formId: parseInt($retractFormId.text())
+                    },
+                    dataType: 'json',
+                    url: referenceUrl.retractForm,
+                    method: 'post',
+                    success: function (data) {
+                        app.alertSuccess("Form status retracted success");
+                    },
+                    fail: function (jqXHR, textStatus, errorThrown) {
+                        app.alertError(textStatus + ': ' + errorThrown);
+                    },
+                    complete: function (data) {
+                        $retractSubmissionModal.modal('hide');
+                        window.location.href = window.location.href;
+                    }
+                });
+            }
+        });
+
+        $retractFormCancelBtn.dxButton({
+            onClick: function (e) {
+                $retractFormId.text();
+                $retractFormPreparedBy.text();
+                $retractFormSubmissionDate.text();
+                $retractFormAssignedApprover.text();
+
+                $retractSubmissionModal.modal('hide');
+            }
+        });
+
+        // #endregion 
+
     });
 }(window.jQuery, window, document));

@@ -1,4 +1,4 @@
-﻿@model xDC.Domain.Web.FormsLandingPage
+﻿@model xDC.Domain.Web.ISSD.TradeSettlementForm.TradeSettlementFormsLandingPage
 
 @{
     ViewBag.Title = "ISSD - Trade Settlement";
@@ -48,7 +48,13 @@
             <div class="left-container">
                 @if (Model.EnableCreateForm)
                 {
-                    <div id="newFormBtn"></div>
+                    @(Html.DevExtreme().DropDownButton()
+                        .ID("newFormBtn")
+                        .Text("New Trade Settlement")
+                        .Icon("plus")
+                        .DropDownOptions(options => options.Width(230))
+                        .StylingMode(ButtonStylingMode.Contained)
+                    )
                 }
             </div>
         </div>
@@ -74,13 +80,13 @@
                         <div style="display: inline-block">
                             <div id="filterformBtn"></div>
                         </div>
-                        <div style="display: inline-block">
-                            <div id="clearFilterBtn"></div>
-                        </div>
-
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                            <i class="dx-icon-chevrondown"></i>
-                        </button>
+                        @(Html.DevExtreme().Button()
+                            .ID("clearFilterGrid1Btn")
+                            .Text("Clear Filter")
+                            .Icon("fa fa-undo")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
                     </div>
                 </div>
                 <div class="box-body">
@@ -95,9 +101,52 @@
             <div id="approvedBox" class="box box-solid">
                 <div class="box-header">
                     <h3 class="box-title">Approved Submission (Consolidated)</h3>
-                    <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="dx-icon-chevrondown"></i>
-                        </button>
+                    <div class="pull-right">
+
+                        @(Html.DevExtreme().Button()
+                            .ID("todayApprovedFilterBtn")
+                            .Text("Today's Approved")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("audFilterBtn")
+                            .Text("AUD")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("eurFilterBtn")
+                            .Text("EUR")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("gbpFilterBtn")
+                            .Text("GBP")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("myrFilterBtn")
+                            .Text("MYR")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("usdFilterBtn")
+                            .Text("USD")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+                        @(Html.DevExtreme().Button()
+                            .ID("clearFilterGrid2Btn")
+                            .Text("Clear Filter")
+                            .Icon("fa fa-undo")
+                            .Type(ButtonType.Default)
+                            .StylingMode(ButtonStylingMode.Outlined)
+                            )
+
                     </div>
                 </div>
                 <div class="box-body">
@@ -109,6 +158,9 @@
 </section>
 
 <div id="loadpanel"></div>
+
+
+@Html.Partial("_RetractSubmissionModal")
 
 @section scripts
 {
