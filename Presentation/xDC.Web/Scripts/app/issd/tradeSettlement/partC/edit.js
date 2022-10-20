@@ -18,7 +18,7 @@
             formTypeId = 5;
 
         var referenceUrl = {
-            submitEditRequest: window.location.origin + "/api/issd/TradeSettlement/Edit",
+            submitEditRequest: window.location.origin + "/api/issd/ts/Edit",
             submitEditResponse: window.location.origin + "/issd/TradeSettlement/PartF/View/",
 
             submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",

@@ -518,19 +518,19 @@ namespace xDC_Web.Extension.DocGenerator
 
             #region 4 - IF Equity
 
-            dataObj.IF_Equity = TradeSettlementFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Equity);
+            dataObj.IF_Equity = TsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Equity);
 
             #endregion
 
             #region 5 - IF Others
             
-            dataObj.IF_Others_NP = TradeSettlementFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.NotesPapers);
-            dataObj.IF_Others_Fees = TradeSettlementFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Fees);
-            dataObj.IF_Others_Mtm = TradeSettlementFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Mtm);
-            dataObj.IF_Others_Fx = TradeSettlementFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Fx);
-            dataObj.IF_Others_Cn = TradeSettlementFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Cn);
-            dataObj.IF_Others_Altid = TradeSettlementFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Altid);
-            dataObj.IF_Others_Others = TradeSettlementFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Others);
+            dataObj.IF_Others_NP = TsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.NotesPapers);
+            dataObj.IF_Others_Fees = TsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Fees);
+            dataObj.IF_Others_Mtm = TsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Mtm);
+            dataObj.IF_Others_Fx = TsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Fx);
+            dataObj.IF_Others_Cn = TsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Cn);
+            dataObj.IF_Others_Altid = TsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Altid);
+            dataObj.IF_Others_Others = TsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Others);
 
             dataObj.IF_Others_Total = dataObj.IF_Others_NP + dataObj.IF_Others_Fees +
                                            dataObj.IF_Others_Mtm + dataObj.IF_Others_Fx + 
@@ -609,19 +609,19 @@ namespace xDC_Web.Extension.DocGenerator
 
             #region 8 - OF Equity
 
-            dataObj.OF_Equity = TradeSettlementFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Equity);
+            dataObj.OF_Equity = TsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Equity);
 
             #endregion
 
             #region OF Others
             
-            dataObj.OF_Others_NP = TradeSettlementFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.NotesPapers);
-            dataObj.OF_Others_Fees = TradeSettlementFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Fees);
-            dataObj.OF_Others_Mtm = TradeSettlementFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Mtm);
-            dataObj.OF_Others_Fx = TradeSettlementFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Fx);
-            dataObj.OF_Others_Cn = TradeSettlementFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Cn);
-            dataObj.OF_Others_Altid = TradeSettlementFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Altid);
-            dataObj.OF_Others_Others = TradeSettlementFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Others);
+            dataObj.OF_Others_NP = TsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.NotesPapers);
+            dataObj.OF_Others_Fees = TsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Fees);
+            dataObj.OF_Others_Mtm = TsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Mtm);
+            dataObj.OF_Others_Fx = TsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Fx);
+            dataObj.OF_Others_Cn = TsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Cn);
+            dataObj.OF_Others_Altid = TsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Altid);
+            dataObj.OF_Others_Others = TsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Others);
 
             dataObj.OF_Others_Total = dataObj.OF_Others_NP + dataObj.OF_Others_Fees +
                                       dataObj.OF_Others_Mtm + dataObj.OF_Others_Fx + 

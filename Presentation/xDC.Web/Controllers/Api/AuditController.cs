@@ -129,7 +129,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = new AuditService().Get_UMA(out bool requestStatus);
+                    var result = AuditService.Get_UMA(out bool requestStatus);
                     if (requestStatus)
                     {
                         return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
@@ -155,7 +155,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = new AuditService().Get_UMA(out bool requestStatus, req);
+                    var result = AuditService.Get_UMA(out bool requestStatus, req);
                     if (requestStatus)
                     {
                         return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
@@ -187,7 +187,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = new AuditService().Get_RMA(out bool requestStatus);
+                    var result = AuditService.Get_RMA(out bool requestStatus);
                     if (requestStatus)
                     {
                         return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
@@ -213,7 +213,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = new AuditService().Get_RMA(out bool requestStatus, req);
+                    var result = AuditService.Get_RMA(out bool requestStatus, req);
                     if (requestStatus)
                     {
                         return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));

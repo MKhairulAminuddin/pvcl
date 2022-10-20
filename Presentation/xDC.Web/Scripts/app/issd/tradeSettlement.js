@@ -261,7 +261,7 @@
                         window.location = url;
                     },
                     fail: function (jqXHR, textStatus, errorThrown) {
-                        app.alertError(textStatus + ": " + errorThrown);
+                        app.toast(textStatus + ": " + errorThrown, "danger");
                     },
                     complete: function (data) {
 

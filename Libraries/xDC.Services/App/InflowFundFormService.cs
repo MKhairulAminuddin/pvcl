@@ -53,7 +53,7 @@ namespace xDC.Services.App
                         form.FormStatus = Common.FormStatus.Draft;
                         db.SaveChanges();
 
-                        new AuditService().Capture_FA(form.Id, form.FormType, Common.FormActionType.RetractSubmission, performedBy, $"Retract form submission for {form.FormType} form.");
+                        AuditService.Capture_FA(form.Id, form.FormType, Common.FormActionType.RetractSubmission, performedBy, $"Retract form submission for {form.FormType} form.");
 
                         return true;
                     }

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace xDC_Web.ViewModels.Iisd
+namespace xDC.Domain.WebApi.Forms.TradeSettlement
 {
-    public class ISSD_LandingPageGridVM
+    public class TsHomeGrid1
     {
         public int Id { get; set; }
         public string FormType { get; set; }
@@ -26,6 +27,5 @@ namespace xDC_Web.ViewModels.Iisd
         public bool IsPendingMyApproval { get; set; }
         public bool IsRejected { get; set; }
         public bool IsPendingApproval { get; set; }
-
     }
 }

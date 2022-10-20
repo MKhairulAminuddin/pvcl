@@ -84,7 +84,7 @@ namespace xDC_Web.Extension.DocGenerator
                         var getTrades = new List<ISSD_TradeSettlement>();
                         foreach (var formId in associatedFormIdParts)
                         {
-                            getTrades.AddRange(TradeSettlementFormService.GetTradeSettlement(db, formId));
+                            getTrades.AddRange(TsFormService.GetTradeSettlement(db, formId));
                         }
 
                         var worflows = new List<Form_Workflow>();
@@ -106,7 +106,7 @@ namespace xDC_Web.Extension.DocGenerator
                         var firstForm = getForm.FirstOrDefault();
                         if (firstForm != null)
                         {
-                            getOpeningBalance = TradeSettlementFormService.GetOpeningBalance(db, firstForm.SettlementDate.Value, firstForm.Currency);
+                            getOpeningBalance = TsFormService.GetOpeningBalance(db, firstForm.SettlementDate.Value, firstForm.Currency);
                         }
                         
                         IWorkbook workbook = GenerateDocumentConsolidated(settlementDate, currency, worflows, getTrades, getOpeningBalance);

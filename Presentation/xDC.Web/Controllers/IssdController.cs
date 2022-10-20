@@ -30,9 +30,9 @@ namespace xDC_Web.Controllers
 
         [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
         [Route("TradeSettlement")]
-        public ActionResult TradeSettlement()
+        public ActionResult TsLandingPage()
         {
-            var landingPageData = TradeSettlementFormService.GetLandingPageData(User.Identity.Name);
+            var landingPageData = TsFormService.GetLandingPageData(User.Identity.Name);
 
             if (landingPageData != null)
             {
@@ -69,11 +69,11 @@ namespace xDC_Web.Controllers
                             OpeningBalance = new List<TsOpeningBalance>()
                         };
 
-                        var ob = TradeSettlementFormService.GetOpeningBalance(db, settlementDateOnly, currency);
+                        var ob = TsFormService.GetOpeningBalance(db, settlementDateOnly, currency);
                         vm.OpeningBalance.AddRange(ob);
                         var totalOb = vm.OpeningBalance.Sum(x => x.Amount);
 
-                        var totalFlow = TradeSettlementFormService.GetTotalFlow(db, form.Select(x => x.Id).ToList(), settlementDateOnly, currency);
+                        var totalFlow = TsFormService.GetTotalFlow(db, form.Select(x => x.Id).ToList(), settlementDateOnly, currency);
 
                         vm.ClosingBalance = totalOb + totalFlow.Inflow - totalFlow.Outflow;
 
@@ -308,68 +308,7 @@ namespace xDC_Web.Controllers
 
         #endregion
 
-        #region Print Form
-
-        [HttpPost]
-        [Route("Print")]
-        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Download)]
-        public ActionResult Print(string id, bool isExportAsExcel)
-        {
-            try
-            {
-                var formId = Convert.ToInt32(id);
-
-                var generatedDocumentFile = new TradeSettlementFormDoc().GenerateFile(formId, isExportAsExcel);
-
-                if (!string.IsNullOrEmpty(generatedDocumentFile))
-                {
-                    return Content(generatedDocumentFile);
-                }
-                else
-                {
-                    return HttpNotFound();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return HttpNotFound();
-            }
-        }
-
-        [HttpPost]
-        [Route("PrintConsolidated")]
-        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Download)]
-        public ActionResult PrintConsolidated(long settlementDate, string currency, bool isExportAsExcel)
-        {
-            try
-            {
-                var settlementDateParsed = Common.ConvertEpochToDateTime(settlementDate);
-
-                if (settlementDateParsed == null)
-                {
-                    return HttpNotFound();
-                }
-
-                var generatedDocumentFile =
-                    new TradeSettlementFormDoc().GenerateFileConsolidated(settlementDateParsed.Value.Date,
-                        currency.ToUpper(), isExportAsExcel);
-
-                if (!string.IsNullOrEmpty(generatedDocumentFile))
-                {
-                    return Content(generatedDocumentFile);
-                }
-                else
-                {
-                    return HttpNotFound();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return HttpNotFound();
-            }
-        }
+        #region View Generated File
 
         [Route("ViewPrinted/{id}")]
         [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Download)]
@@ -377,7 +316,9 @@ namespace xDC_Web.Controllers
         {
             try
             {
-                var fileStream = new DocGeneratorBase().GetFile(id);
+                var genFileName = HttpUtility.HtmlDecode(id);
+
+                var fileStream = new DocGeneratorBase().GetFile(genFileName);
 
                 if (fileStream != null)
                 {
@@ -601,7 +542,7 @@ namespace xDC_Web.Controllers
 
                     if (form != null)
                     {
-                        if (TradeSettlementFormService.EditFormRules(form.FormStatus, form.ApprovedBy, User.Identity.Name, out var errorMessage))
+                        if (TsFormService.EditFormRules(form.FormStatus, form.ApprovedBy, User.Identity.Name, out var errorMessage))
                         {
                             TempData["ErrorMessage"] = errorMessage;
                             return View("Error");

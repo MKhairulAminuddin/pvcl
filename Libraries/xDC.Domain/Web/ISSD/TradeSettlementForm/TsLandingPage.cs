@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace xDC.Domain.Web.ISSD.TradeSettlementForm
 {
-    public class TradeSettlementFormsLandingPage
+    public class TsLandingPage
     {
         public int CountTodaySubmission { get; set; }
         public int CountTodayPendingApproval { get; set; }

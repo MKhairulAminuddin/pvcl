@@ -13,11 +13,11 @@ using xDC.Utils;
 
 namespace xDC.Services
 {
-    public class AuditService
+    public static class AuditService
     {
         #region Audit form
 
-        public void AuditForm_Insert(Audit_Form obj)
+        public static void FA_SaveRecord(Audit_Form obj)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace xDC.Services
             }
         }
 
-        public void Capture_FA(int formId, string formType, string actionType, string modifiedBy, string remarks = null)
+        public static void Capture_FA(int formId, string formType, string actionType, string modifiedBy, string remarks = null)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace xDC.Services
                             Remarks = remarks
                         };
 
-                        AuditForm_Insert(obj);
+                        FA_SaveRecord(obj);
                     }
                     else if (formType.Contains(Common.FormType.ISSD_TS))
                     {
@@ -75,7 +75,7 @@ namespace xDC.Services
                             Remarks = remarks
                         };
 
-                        AuditForm_Insert(obj);
+                        FA_SaveRecord(obj);
                     }
                     else if (formType == Common.FormType.FID_TREASURY)
                     {
@@ -94,7 +94,7 @@ namespace xDC.Services
                             Remarks = remarks
                         };
 
-                        AuditForm_Insert(obj);
+                        FA_SaveRecord(obj);
                     }
                     
                 }
@@ -105,8 +105,7 @@ namespace xDC.Services
             }
         }
 
-
-        public void AuditForm_EditRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore, string valueAfter, string columnName)
+        public static void FA_EditRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore, string valueAfter, string columnName)
         {
             var obj = new Audit_Form()
             {
@@ -124,10 +123,10 @@ namespace xDC.Services
 
             };
 
-            AuditForm_Insert(obj);
+            FA_SaveRecord(obj);
         }
 
-        public void AuditForm_AddRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueAfter)
+        public static void FA_AddRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueAfter)
         {
             var obj = new Audit_Form()
             {
@@ -143,10 +142,10 @@ namespace xDC.Services
                 ValueAfter = valueAfter
             };
 
-            AuditForm_Insert(obj);
+            FA_SaveRecord(obj);
         }
 
-        public void AuditForm_RemoveRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore)
+        public static void FA_RemoveRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore)
         {
             var obj = new Audit_Form()
             {
@@ -162,10 +161,10 @@ namespace xDC.Services
                 ValueBefore = valueBefore
             };
 
-            AuditForm_Insert(obj);
+            FA_SaveRecord(obj);
         }
 
-        public void AuditForm_Approval(int formId, string formType, string approvalStatus, DateTime? formDate, string modifiedBy)
+        public static void FA_Approval(int formId, string formType, string approvalStatus, DateTime? formDate, string modifiedBy)
         {
             var obj = new Audit_Form()
             {
@@ -180,10 +179,10 @@ namespace xDC.Services
                 Remarks = $"{formType} form {approvalStatus}"
             };
 
-            AuditForm_Insert(obj);
+            FA_SaveRecord(obj);
         }
 
-        public void AuditForm_ReassignApprover(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore, string valueAfter)
+        public static void FA_ReassignApprover(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore, string valueAfter)
         {
             var obj = new Audit_Form()
             {
@@ -200,10 +199,10 @@ namespace xDC.Services
                 ValueAfter = valueAfter
             };
 
-            AuditForm_Insert(obj);
+            FA_SaveRecord(obj);
         }
 
-        public void AuditForm_Resubmission(int formId, string formType, DateTime? formDate, string modifiedBy)
+        public static void FA_Resubmission(int formId, string formType, DateTime? formDate, string modifiedBy)
         {
             var obj = new Audit_Form()
             {
@@ -218,10 +217,10 @@ namespace xDC.Services
                 Remarks = $"Resubmit Form"
             };
 
-            AuditForm_Insert(obj);
+            FA_SaveRecord(obj);
         }
 
-        public void AuditForm_AdminEdit(int formId, string formType, DateTime? formDate, string modifiedBy)
+        public static void FA_AdminEdit(int formId, string formType, DateTime? formDate, string modifiedBy)
         {
             var obj = new Audit_Form()
             {
@@ -236,7 +235,7 @@ namespace xDC.Services
                 Remarks = $"Form editted by Power User/ Admin"
             };
 
-            AuditForm_Insert(obj);
+            FA_SaveRecord(obj);
         }
 
         #endregion
@@ -248,7 +247,7 @@ namespace xDC.Services
 
         #region User Management Audit
 
-        public List<Audit_UserManagement> Get_UMA(out bool status, AuditReq req = null)
+        public static List<Audit_UserManagement> Get_UMA(out bool status, AuditReq req = null)
         {
             status = false;
             try
@@ -287,7 +286,7 @@ namespace xDC.Services
             }
         }
 
-        public void Capture_UMA(string activityType, string remarks, string userAccount, string performedBy)
+        public static void Capture_UMA(string activityType, string remarks, string userAccount, string performedBy)
         {
             try
             {
@@ -314,10 +313,9 @@ namespace xDC.Services
 
         #endregion
 
-
         #region Role Management Audit
 
-        public List<Audit_RoleManagement> Get_RMA(out bool status, AuditReq req = null)
+        public static List<Audit_RoleManagement> Get_RMA(out bool status, AuditReq req = null)
         {
             status = false;
             try
@@ -356,7 +354,7 @@ namespace xDC.Services
             }
         }
 
-        public void Capture_RMA(string activityType, string remarks, string role, string performedBy)
+        public static void Capture_RMA(string activityType, string remarks, string role, string performedBy)
         {
             try
             {

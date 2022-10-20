@@ -219,7 +219,7 @@ namespace xDC_Web.Controllers.Api
                     db.AMSD_IF_Item.AddRange(newRecordInflowFunds);
                     db.SaveChanges();
 
-                    new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.Create, User.Identity.Name, $"Created an {form.FormType} form");
+                    AuditService.Capture_FA(form.Id, form.FormType, FormActionType.Create, User.Identity.Name, $"Created an {form.FormType} form");
 
                     if (form.FormStatus == Common.FormStatus.PendingApproval)
                     {
@@ -227,7 +227,7 @@ namespace xDC_Web.Controllers.Api
                         new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
                         WorkflowService.SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
 
-                        new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
+                        AuditService.Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
                     }
 
                     
@@ -260,7 +260,7 @@ namespace xDC_Web.Controllers.Api
                             form.AdminEditted = true;
                             form.AdminEdittedBy = User.Identity.Name;
                             form.AdminEdittedDate = DateTime.Now;
-                            new AuditService().AuditForm_AdminEdit(form.Id, form.FormType, form.FormDate, User.Identity.Name);
+                            AuditService.FA_AdminEdit(form.Id, form.FormType, form.FormDate, User.Identity.Name);
                         }
 
                         if (input.IsSaveAsDraft)
@@ -275,14 +275,14 @@ namespace xDC_Web.Controllers.Api
                             //reassign
                             if (form.ApprovedBy != input.Approver)
                             {
-                                new AuditService().AuditForm_ReassignApprover(form.Id, form.FormType, form.FormDate, User.Identity.Name,
+                                AuditService.FA_ReassignApprover(form.Id, form.FormType, form.FormDate, User.Identity.Name,
                                     form.ApprovedBy, input.Approver);
                             }
 
                             //resubmit
                             if (form.FormStatus == Common.FormStatus.PendingApproval)
                             {
-                                new AuditService().AuditForm_Resubmission(form.Id, form.FormType, form.FormDate, User.Identity.Name);
+                                AuditService.FA_Resubmission(form.Id, form.FormType, form.FormDate, User.Identity.Name);
                             }
 
                             form.ApprovedBy = input.Approver;
@@ -305,7 +305,7 @@ namespace xDC_Web.Controllers.Api
                             {
                                 foreach (var item in removedItems)
                                 {
-                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.FormDate, User.Identity.Name,
+                                    AuditService.FA_RemoveRow(form.Id, form.FormType, form.FormDate, User.Identity.Name,
                                         $"{item.FundType}, {item.Bank}, {item.Amount}");
                                 }
                                 db.AMSD_IF_Item.RemoveRange(removedItems);
@@ -321,7 +321,7 @@ namespace xDC_Web.Controllers.Api
                                     {
                                         if (itemInDb.Amount != item.Amount)
                                         {
-                                            new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            AuditService.FA_EditRow(form.Id, form.FormType,
                                                 form.FormDate, User.Identity.Name, itemInDb.Amount.ToString(),
                                                 item.Amount.ToString(), "Amount");
 
@@ -329,7 +329,7 @@ namespace xDC_Web.Controllers.Api
                                         }
                                         if (itemInDb.Bank != item.Bank)
                                         {
-                                            new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            AuditService.FA_EditRow(form.Id, form.FormType,
                                                 form.FormDate, User.Identity.Name, itemInDb.Bank,
                                                 item.Bank, "Bank");
 
@@ -337,7 +337,7 @@ namespace xDC_Web.Controllers.Api
                                         }
                                         if (itemInDb.FundType != item.FundType)
                                         {
-                                            new AuditService().AuditForm_EditRow(form.Id, form.FormType,
+                                            AuditService.FA_EditRow(form.Id, form.FormType,
                                                 form.FormDate, User.Identity.Name, itemInDb.FundType,
                                                 item.FundType, "Fund Type");
 
@@ -360,7 +360,7 @@ namespace xDC_Web.Controllers.Api
                                         ModifiedBy = User.Identity.Name,
                                         ModifiedDate = DateTime.Now
                                     });
-                                    new AuditService().AuditForm_AddRow(form.Id, form.FormType,
+                                    AuditService.FA_AddRow(form.Id, form.FormType,
                                                 form.FormDate, User.Identity.Name,
                                                 $"{item.FundType}, {item.Bank}, {item.Amount}");
                                 }
@@ -374,7 +374,7 @@ namespace xDC_Web.Controllers.Api
                         if (input.Approver != null && (form.FormStatus == FormStatus.PendingApproval || form.FormStatus == FormStatus.Draft) && !input.IsSaveAdminEdit)
                         {
                             CommonService.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name, form.FormType, input.ApprovalNotes);
-                            new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
+                            AuditService.Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
                         }
 
                         return Request.CreateResponse(HttpStatusCode.Accepted, form.Id);
@@ -408,7 +408,7 @@ namespace xDC_Web.Controllers.Api
                     
                     if (form != null)
                     {
-                        new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.Delete, User.Identity.Name, $"Deleted a {form.FormType} form. (Form status at the moment of deletion is {form.FormStatus}).");
+                        AuditService.Capture_FA(form.Id, form.FormType, FormActionType.Delete, User.Identity.Name, $"Deleted a {form.FormType} form. (Form status at the moment of deletion is {form.FormStatus}).");
 
                         var inflowFunds = db.AMSD_IF_Item.Where(x => x.FormId == form.Id);
                         if (inflowFunds.Any())
@@ -460,7 +460,7 @@ namespace xDC_Web.Controllers.Api
                             new NotificationService().NotifyApprovalResult(form.PreparedBy, form.Id, form.ApprovedBy, form.FormType, form.FormStatus);
                             new MailService().SendApprovalStatus(form.Id, form.FormType, form.FormStatus, form.PreparedBy, input.ApprovalNote);
                             WorkflowService.ApprovalResponse(form.Id, form.FormStatus, input.ApprovalNote, form.FormType, form.PreparedBy, form.ApprovedBy);
-                            new AuditService().AuditForm_Approval(form.Id, form.FormType, form.FormStatus, form.FormDate, User.Identity.Name);
+                            AuditService.FA_Approval(form.Id, form.FormType, form.FormStatus, form.FormDate, User.Identity.Name);
 
                             if (form.FormStatus == Common.FormStatus.Approved)
                             {
@@ -573,7 +573,7 @@ namespace xDC_Web.Controllers.Api
                 {
                     foreach (var item in removedItems)
                     {
-                        new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.FormDate,
+                        AuditService.FA_RemoveRow(form.Id, form.FormType, form.FormDate,
                                 User.Identity.Name,
                                 Common.FlattenStrings(item.FundType, item.Bank, item.Amount.ToString()));
                     }
@@ -592,21 +592,21 @@ namespace xDC_Web.Controllers.Api
                         if (matchingItem.FundType != item.FundType)
                         {
                             matchingItem.FundType = item.FundType;
-                            new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.FormDate,
+                            AuditService.FA_EditRow(form.Id, form.FormType, form.FormDate,
                                 User.Identity.Name, matchingItem.FundType, item.FundType, "Fund Type");
                         }
 
                         if (matchingItem.Bank != item.Bank)
                         {
                             matchingItem.Bank = item.Bank;
-                            new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.FormDate,
+                            AuditService.FA_EditRow(form.Id, form.FormType, form.FormDate,
                                 User.Identity.Name, matchingItem.Bank, item.Bank, "Bank");
                         }
 
                         if (matchingItem.Amount != item.Amount)
                         {
                             matchingItem.Amount = item.Amount;
-                            new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.FormDate,
+                            AuditService.FA_EditRow(form.Id, form.FormType, form.FormDate,
                                 User.Identity.Name, matchingItem.Amount.ToString(), item.Amount.ToString(), "Amount");
                         }
 
@@ -626,7 +626,7 @@ namespace xDC_Web.Controllers.Api
                             FormId = form.Id
                         };
                         db.AMSD_IF_Item.Add(newItem);
-                        new AuditService().AuditForm_AddRow(form.Id, form.FormType, form.FormDate,
+                        AuditService.FA_AddRow(form.Id, form.FormType, form.FormDate,
                                 User.Identity.Name, 
                                 Common.FlattenStrings(newItem.FundType, newItem.Bank, newItem.Amount.ToString()));
                     }

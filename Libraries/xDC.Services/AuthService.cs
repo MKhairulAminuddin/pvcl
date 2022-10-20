@@ -145,7 +145,7 @@ namespace xDC.Services
 
                     db.SaveChanges();
 
-                    new AuditService().Capture_UMA(Common.UserManagementActionType.Add, null, user.UserName, performedBy);
+                    AuditService.Capture_UMA(Common.UserManagementActionType.Add, null, user.UserName, performedBy);
 
                     return newUser;
                 }
@@ -169,7 +169,7 @@ namespace xDC.Services
                     {
                         if (!string.IsNullOrEmpty(roleName))
                         {
-                            new AuditService().Capture_UMA(Common.UserManagementActionType.ChangeRole, $"From {existingUser.AspNetRoles.First().Name} to {roleName}", existingUser.UserName, performedBy);
+                            AuditService.Capture_UMA(Common.UserManagementActionType.ChangeRole, $"From {existingUser.AspNetRoles.First().Name} to {roleName}", existingUser.UserName, performedBy);
 
                             var getAspNetRole = db.AspNetRoles.FirstOrDefault(x => x.Name == roleName);
                             existingUser.AspNetRoles = new List<AspNetRoles>()
@@ -180,7 +180,7 @@ namespace xDC.Services
 
                         if (locked != null)
                         {
-                            new AuditService().Capture_UMA(Common.UserManagementActionType.ChangeStatus, $"From {(existingUser.Locked?"Disabled":"Enabled")} to {((bool)locked ? "Disabled" : "Enabled")}", existingUser.UserName, performedBy);
+                            AuditService.Capture_UMA(Common.UserManagementActionType.ChangeStatus, $"From {(existingUser.Locked?"Disabled":"Enabled")} to {((bool)locked ? "Disabled" : "Enabled")}", existingUser.UserName, performedBy);
 
                             existingUser.Locked = (bool)locked;
                         }
@@ -211,7 +211,7 @@ namespace xDC.Services
                     db.AspNetUsers.Remove(getUser);
                     db.SaveChanges();
 
-                    new AuditService().Capture_UMA(Common.UserManagementActionType.Delete, null, username, performedBy);
+                    AuditService.Capture_UMA(Common.UserManagementActionType.Delete, null, username, performedBy);
 
                     return true;
                 }
@@ -398,7 +398,7 @@ namespace xDC.Services
                                 foreach (var permission in permissionToDelete.ToList())
                                 {
                                     rolePermissions.AspNetPermission.Remove(permission);
-                                    new AuditService().Capture_RMA(Common.RoleManagementActionType.DeletePermission, $"Deleted {permission.PermissionName} permission from role {rolePermissions.Name}", rolePermissions.Name, performedBy);
+                                    AuditService.Capture_RMA(Common.RoleManagementActionType.DeletePermission, $"Deleted {permission.PermissionName} permission from role {rolePermissions.Name}", rolePermissions.Name, performedBy);
                                 }
                                 db.SaveChanges();
                             }
@@ -436,7 +436,7 @@ namespace xDC.Services
                             foreach (var item in allNewPermission)
                             {
                                 rolePermissions.AspNetPermission.Add(item);
-                                new AuditService().Capture_RMA(Common.RoleManagementActionType.AddPermission, $"Added {item.PermissionName} permission from role {rolePermissions.Name}", rolePermissions.Name, performedBy);
+                                AuditService.Capture_RMA(Common.RoleManagementActionType.AddPermission, $"Added {item.PermissionName} permission from role {rolePermissions.Name}", rolePermissions.Name, performedBy);
 
                             }
 
@@ -455,7 +455,7 @@ namespace xDC.Services
                                 foreach (var permission in permissionToDelete.ToList())
                                 {
                                     rolePermissions.AspNetPermission.Remove(permission);
-                                    new AuditService().Capture_RMA(Common.RoleManagementActionType.DeletePermission, $"Deleted {permission.PermissionName} permission from role {rolePermissions.Name}", rolePermissions.Name, performedBy);
+                                    AuditService.Capture_RMA(Common.RoleManagementActionType.DeletePermission, $"Deleted {permission.PermissionName} permission from role {rolePermissions.Name}", rolePermissions.Name, performedBy);
 
                                 }
                                 db.SaveChanges();
@@ -484,7 +484,7 @@ namespace xDC.Services
                         var newRole = new AspNetRoles() { Name = newRoleName };
                         var addNewRole = db.AspNetRoles.Add(newRole);
                         db.SaveChanges();
-                        new AuditService().Capture_RMA(Common.RoleManagementActionType.Add, $"Added new role {newRole.Name}", newRole.Name, performedBy);
+                        AuditService.Capture_RMA(Common.RoleManagementActionType.Add, $"Added new role {newRole.Name}", newRole.Name, performedBy);
 
 
                         int addRoleId = newRole.Id;
@@ -501,7 +501,7 @@ namespace xDC.Services
                                         if (newAssignedPermission != null)
                                         {
                                             addNewRole.AspNetPermission.Add(newAssignedPermission);
-                                            new AuditService().Capture_RMA(Common.RoleManagementActionType.AddPermission, $"Added {newAssignedPermission.PermissionName} permission to role {newRole.Name}", newRole.Name, performedBy);
+                                            AuditService.Capture_RMA(Common.RoleManagementActionType.AddPermission, $"Added {newAssignedPermission.PermissionName} permission to role {newRole.Name}", newRole.Name, performedBy);
                                         }
                                     }
                                     db.SaveChanges();
@@ -561,7 +561,7 @@ namespace xDC.Services
 
                     if (selectedRole != null && !isAdminRole)
                     {
-                        new AuditService().Capture_RMA(Common.RoleManagementActionType.Delete, $"Deleted role {selectedRole.Name}", selectedRole.Name, performedBy);
+                        AuditService.Capture_RMA(Common.RoleManagementActionType.Delete, $"Deleted role {selectedRole.Name}", selectedRole.Name, performedBy);
 
                         db.AspNetRoles.Remove(selectedRole);
                         db.SaveChanges();

@@ -26,7 +26,7 @@
             formTypeId = 3;
 
         var referenceUrl = {
-            postNewFormRequest: window.location.origin + "/api/issd/TradeSettlement/New",
+            postNewFormRequest: window.location.origin + "/api/issd/ts/New",
             postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartA/View/",
             dsEdwAvailability: window.location.origin + "/api/issd/ts/EdwAvailability/a"
         };

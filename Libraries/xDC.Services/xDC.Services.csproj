@@ -79,7 +79,7 @@
     <Compile Include="App\CommonService.cs" />
     <Compile Include="App\FidService.cs" />
     <Compile Include="App\FcaTaggingSvc.cs" />
-    <Compile Include="App\TradeSettlementService.cs" />
+    <Compile Include="App\TsFormService.cs" />
     <Compile Include="AuditService.cs" />
     <Compile Include="AuthService.cs" />
     <Compile Include="FcaTaggingFormService.cs" />

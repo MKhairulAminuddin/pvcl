@@ -69,7 +69,11 @@
         var referenceUrl = {
             loadGrid1: window.location.origin + "/api/issd/ts/home/grid1",
             loadGrid2: window.location.origin + "/api/issd/ts/home/grid2",
-            retractForm: window.location.origin + "/api/issd/ts/home/retractForm"
+            retractForm: window.location.origin + "/api/issd/ts/home/retractForm",
+
+            printPart: window.location.origin + "/api/issd/ts/generatePart",
+            printConsolidated: window.location.origin + "/api/issd/ts/generateConsolidated",
+            viewPrinted: window.location.origin + "/issd/ViewPrinted/",
         }
         
         $issdGrid = $("#issdGrid").dxDataGrid({
@@ -273,17 +277,17 @@
                             onClick: function (e) {
                                 app.toast("Generating...");
                                 var data = {
-                                    id: e.row.data.id,
+                                    formId: e.row.data.id,
                                     isExportAsExcel: true
                                 };
 
                                 $.ajax({
                                     type: "POST",
-                                    url: "/issd/Print",
+                                    url: referenceUrl.printPart,
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
-                                        var url = "/issd/ViewPrinted/" + data;
+                                        var url = referenceUrl.viewPrinted + JSON.parse(data);
                                         window.location = url;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
@@ -306,17 +310,17 @@
                             onClick: function (e) {
                                 app.toast("Generating...");
                                 var data = {
-                                    id: e.row.data.id,
+                                    formId: e.row.data.id,
                                     isExportAsExcel: false
                                 };
 
                                 $.ajax({
                                     type: "POST",
-                                    url: "/issd/Print",
+                                    url: referenceUrl.printPart,
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
-                                        var url = "/issd/ViewPrinted/" + data;
+                                        var url = referenceUrl.viewPrinted + JSON.parse(data);
                                         window.location = url;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
@@ -475,7 +479,6 @@
 
         $grid2 = $("#consolidatedTradeSettlementGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
-                key: "id",
                 loadUrl: referenceUrl.loadGrid2
             }),
             columns: [
@@ -532,11 +535,11 @@
 
                                 $.ajax({
                                     type: "POST",
-                                    url: "/issd/PrintConsolidated",
+                                    url: referenceUrl.printConsolidated,
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
-                                        var url = "/issd/ViewPrinted/" + data;
+                                        var url = referenceUrl.viewPrinted + JSON.parse(data);
                                         window.location = url;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {
@@ -566,11 +569,11 @@
 
                                 $.ajax({
                                     type: "POST",
-                                    url: "/issd/PrintConsolidated",
+                                    url: referenceUrl.printConsolidated,
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
-                                        var url = "/issd/ViewPrinted/" + data;
+                                        var url = referenceUrl.viewPrinted + JSON.parse(data);
                                         window.location = url;
                                     },
                                     fail: function (jqXHR, textStatus, errorThrown) {

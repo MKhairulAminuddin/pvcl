@@ -1,21 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
+using System.Net.Http.Headers;
 using System.Web.Http;
 using DevExpress.XtraRichEdit.Fields;
 using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
 using Newtonsoft.Json;
+using xDC.Domain.Web.ISSD.TradeSettlementForm;
+using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services;
 using xDC.Services.App;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
+using xDC_Web.Extension.DocGenerator;
 using xDC_Web.Models;
 using xDC_Web.ViewModels;
 using xDC_Web.ViewModels.Fid;
@@ -28,6 +33,8 @@ namespace xDC_Web.Controllers.Api
     [RoutePrefix("api/issd")]
     public class IssdController : ApiController
     {
+        #region TS Landing Page
+
         [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_View)]
         [HttpGet]
         [Route("ts/home/grid1")]
@@ -35,46 +42,21 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                using (var db = new kashflowDBEntities())
+                var TsHomeGrid1Data = TsFormService.GetTsHomeGrid1(User.Identity.Name);
+
+                if (TsHomeGrid1Data != null)
                 {
-                    var todayDate = DateTime.Now.Date;
-                    
-                    var tsForms = db.ISSD_FormHeader;
-                    var resultVM = new List<ISSD_LandingPageGridVM>();
-
-                    foreach (var item in tsForms)
-                    {
-                        resultVM.Add(new ISSD_LandingPageGridVM
-                        {
-                            Id = item.Id,
-                            FormType = item.FormType,
-                            FormDate = item.SettlementDate,
-                            FormStatus = item.FormStatus,
-                            Currency = item.Currency,
-                            PreparedBy = item.PreparedBy,
-                            PreparedDate = item.PreparedDate,
-                            ApprovedBy = item.ApprovedBy,
-                            ApprovedDate = item.ApprovedDate,
-
-                            EnableEdit = TradeSettlementFormService.EnableEdit(item.FormStatus, item.ApprovedBy, User.Identity.Name),
-                            EnableDelete = item.FormStatus != Common.FormStatus.PendingApproval && item.ApprovedBy != User.Identity.Name,
-                            EnablePrint = TradeSettlementFormService.EnablePrint(User.Identity.Name, item.FormStatus),
-                            EnableRetractSubmission = TradeSettlementFormService.EnableRetractSubmission(User.Identity.Name, item.PreparedBy, item.FormStatus),
-
-                            IsRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatus.Rejected),
-                            IsPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
-                            IsPendingApproval = item.FormStatus == Common.FormStatus.PendingApproval
-                        });
-                    }
-
-                    return Request.CreateResponse(DataSourceLoader.Load(resultVM, loadOptions));
+                    return Request.CreateResponse(DataSourceLoader.Load(TsHomeGrid1Data, loadOptions));
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Error. Please check logs.");
                 }
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
-
         }
 
         [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_Edit)]
@@ -84,7 +66,7 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                var retractFormStatus = TradeSettlementFormService.RetractFormSubmission(req.FormId, User.Identity.Name);
+                var retractFormStatus = TsFormService.RetractFormSubmission(req.FormId, User.Identity.Name);
 
                 if (retractFormStatus)
                 {
@@ -109,32 +91,15 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                using (var db = new xDC.Infrastructure.Application.kashflowDBEntities())
+                var TsHomeGrid2Data = TsFormService.GetTsHomeGrid2(User.Identity.Name);
+
+                if (TsHomeGrid2Data != null)
                 {
-                    var result = db.ISSD_FormHeader
-                        .Where(x => x.FormStatus == Common.FormStatus.Approved)
-                        .GroupBy(x => new { x.SettlementDate, x.Currency})
-                        .Select(x => new
-                        {
-                            SettlementDate = x.Key.SettlementDate,
-                            Currency = x.Key.Currency,
-                            ApprovedDate = x.Max(i=>i.ApprovedDate)
-                        });
-
-                    var resultVM = new List<AmsdInflowFundGridModel>();
-
-                    foreach (var item in result)
-                    {
-                        resultVM.Add(new AmsdInflowFundGridModel
-                        {
-                            FormDate = item.SettlementDate,
-                            Currency = item.Currency,
-                            ApprovedDate = item.ApprovedDate,
-                            EnablePrint = TradeSettlementFormService.EnablePrint(User.Identity.Name, FormStatus.Approved)
-                        });
-                    }
-
-                    return Request.CreateResponse(DataSourceLoader.Load(resultVM, loadOptions));
+                    return Request.CreateResponse(DataSourceLoader.Load(TsHomeGrid2Data, loadOptions));
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Error. Please check logs.");
                 }
             }
             catch (Exception ex)
@@ -144,54 +109,22 @@ namespace xDC_Web.Controllers.Api
 
         }
 
+        [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_View)]
         [HttpGet]
         [Route("ts/approvedTrades/{settlementDateEpoch}/{currency}")]
-        public HttpResponseMessage TS_ApprovedTrades(long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
+        public HttpResponseMessage TsConsolidatedPage(long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
         {
             try
             {
-                using (var db = new kashflowDBEntities())
+                var consolidatedPageData = TsFormService.GetConsolidatedPage(settlementDateEpoch, currency);
+
+                if (consolidatedPageData != null)
                 {
-                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
-                    
-                    var trades = TradeSettlementFormService.GetTradeSettlement(db, settlementDate.Value.Date, currency);
-
-                    var result = trades
-                        .GroupBy(i => 1)
-                        .Select(x => new TS_ApprovedTradeVM()
-                        {
-                            SettlementDate = settlementDate.Value,
-                            Currency = currency,
-
-                            TotalEquity = x.Count(y => y.InstrumentType == Common.TsItemCategory.Equity),
-                            TotalBond = x.Count(y => y.InstrumentType == Common.TsItemCategory.Bond),
-                            TotalCp = x.Count(y => y.InstrumentType == Common.TsItemCategory.Cp),
-                            TotalNotesPapers = x.Count(y => y.InstrumentType == Common.TsItemCategory.NotesPapers),
-                            TotalRepo = x.Count(y => y.InstrumentType == Common.TsItemCategory.Repo),
-                            TotalCoupon = x.Count(y => y.InstrumentType == Common.TsItemCategory.Coupon),
-                            TotalFees = x.Count(y => y.InstrumentType == Common.TsItemCategory.Fees),
-                            TotalMtm = x.Count(y => y.InstrumentType == Common.TsItemCategory.Mtm),
-                            TotalFx = x.Count(y => y.InstrumentType == Common.TsItemCategory.Fx),
-                            TotalCn = x.Count(y => y.InstrumentType == Common.TsItemCategory.Cn),
-                            TotalAltid = x.Count(y => y.InstrumentType == Common.TsItemCategory.Altid),
-                            TotalOthers = x.Count(y => y.InstrumentType == Common.TsItemCategory.Others),
-
-                            FormIdEquity = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Equity)?.FormId,
-                            FormIdBond = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Bond)?.FormId,
-                            FormIdCp = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Cp)?.FormId,
-                            FormIdNotesPapers = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.NotesPapers)?.FormId,
-                            FormIdRepo = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Repo)?.FormId,
-                            FormIdCoupon = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Coupon)?.FormId,
-                            FormIdFees = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Fees)?.FormId,
-                            FormIdMtm = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Mtm)?.FormId,
-                            FormIdFx = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Fx)?.FormId,
-                            FormIdCn = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Cn)?.FormId,
-                            FormIdAltid = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Altid)?.FormId,
-                            FormIdOthers = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Others)?.FormId,
-
-                        }).ToList();
-
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    return Request.CreateResponse(DataSourceLoader.Load(consolidatedPageData, loadOptions));
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Error. Please check logs.");
                 }
             }
             catch (Exception ex)
@@ -201,9 +134,10 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_View)]
         [HttpGet]
         [Route("ts/approvedTradeItems/{formId}/{instrumentType}")]
-        public HttpResponseMessage TS_ApprovedTradeItems(int formId, string instrumentType, DataSourceLoadOptions loadOptions)
+        public HttpResponseMessage TsApprovedItemsGrid(int formId, string instrumentType, DataSourceLoadOptions loadOptions)
         {
             try
             {
@@ -213,14 +147,13 @@ namespace xDC_Web.Controllers.Api
 
                     if (tradeCategory != null)
                     {
-                        var result = db.ISSD_TradeSettlement.AsNoTracking()
-                            .Where(x => x.InstrumentType == tradeCategory && x.FormId == formId).ToList();
+                        var result = TsFormService.GetTsItemsGrid(formId, instrumentType);
 
                         return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                     }
                     else
                     {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Failed convert to actual date");
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Instrument Type not exist!");
                     }
                 }
             }
@@ -231,1248 +164,139 @@ namespace xDC_Web.Controllers.Api
 
         }
 
-        [HttpGet]
-        [Route("GetIssdForm/{formType}")]
-        public HttpResponseMessage GetTradeSettlementForm(int formType, DataSourceLoadOptions loadOptions)
+        #endregion
+
+        #region TS View Page
+
+        #endregion
+
+        #region TS Generate File for download
+
+        [Route("ts/generateConsolidated")]
+        [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_Download)]
+        [HttpPost]
+        public HttpResponseMessage GenerateConsolidated([FromBody] TsGenerateFileRequest req)
         {
             try
             {
-                using (var db = new xDC.Infrastructure.Application.kashflowDBEntities())
+                var settlementDateParsed = ConvertEpochToDateTime(req.settlementDate);
+
+                var generatedDocumentFile =
+                    new TradeSettlementFormDoc().GenerateFileConsolidated(settlementDateParsed.Value.Date,
+                        req.currency.ToUpper(), req.isExportAsExcel);
+
+                if (!string.IsNullOrEmpty(generatedDocumentFile))
                 {
-                    var selectedFormType = Common.FormTypeMapping(formType);
-
-                    var result = db.ISSD_FormHeader
-                        .Where(x => x.FormType == selectedFormType);
-
-                    var getApprover = db.Config_Approver.Where(x => x.Username == User.Identity.Name);
-                    var isMeApprover = getApprover.Any();
-
-                    var resultVM = new List<ViewTradeSettlementFormHeaderModel>();
-
-                    foreach (var item in result)
-                    {
-                        resultVM.Add(new ViewTradeSettlementFormHeaderModel()
-                        {
-                            Id = item.Id,
-                            FormType = item.FormType,
-                            SettlementDate = item.SettlementDate,
-                            FormStatus = item.FormStatus,
-                            Currency = item.Currency,
-                            PreparedBy = item.PreparedBy,
-                            PreparedDate = item.PreparedDate,
-                            ApprovedBy = item.ApprovedBy,
-                            ApprovedDate = item.ApprovedDate,
-                            AdminEditted = item.AdminEditted,
-                            AdminEdittedBy = item.AdminEdittedBy,
-                            AdminEdittedDate = item.AdminEdittedDate,
-
-                            IsDraft = (item.FormStatus == Common.FormStatus.Draft),
-
-                            IsMeCanEditDraft = (User.IsInRole(Config.Acl.Issd) && !isMeApprover),
-
-
-                            IsMyFormRejected = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatus.Rejected),
-                            IsFormPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
-                            IsFormOwner = (User.Identity.Name == item.PreparedBy),
-                            IsCanAdminEdit = (User.IsInRole(Config.Acl.PowerUser)),
-                            IsResubmitEnabled = (item.FormStatus == "Rejected" && User.IsInRole(Config.Acl.Amsd) && User.Identity.Name != item.ApprovedBy)
-                        });
-                    }
-
-                    return Request.CreateResponse(DataSourceLoader.Load(resultVM, loadOptions));
+                    return Request.CreateResponse(HttpStatusCode.Created, generatedDocumentFile);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
                 }
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+                Logger.LogError(ex.Message);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
             }
 
+
         }
-        
+
+        [Route("ts/generatePart")]
+        [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_Download)]
+        [HttpPost]
+        public HttpResponseMessage GeneratePart([FromBody] TsGenerateFileRequest req)
+        {
+            try
+            {
+                var generatedDocumentFile = new TradeSettlementFormDoc().GenerateFile(req.formId, req.isExportAsExcel);
+
+                if (!string.IsNullOrEmpty(generatedDocumentFile))
+                {
+                    return Request.CreateResponse(HttpStatusCode.Created, generatedDocumentFile);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
+            }
+
+
+        }
+
+        #endregion
+
         #region Trade Settlement Form
 
         [HttpPost]
-        [Route("TradeSettlement/New")]
-        public HttpResponseMessage TS_NewForm([FromBody] TradeSettlementModel inputs)
+        [Route("ts/New")]
+        public HttpResponseMessage TS_NewForm([FromBody] TsCreateNewFormRequest req)
         {
             try
             {
-                var settlementDateConverted = Common.ConvertEpochToDateTime(inputs.SettlementDateEpoch);
-                inputs.Currency = inputs.Currency.ToUpper();
-
-                using (var db = new kashflowDBEntities())
+                var createdFormId = TsFormService.CreateNewForm(req, User.Identity.Name);
+                if (createdFormId > 0)
                 {
-                    var newFormHeader = new ISSD_FormHeader()
-                    {
-                        FormType = Common.FormTypeMapping(inputs.FormType),
-                        PreparedBy = User.Identity.Name,
-                        PreparedDate = DateTime.Now,
-                        FormStatus = (inputs.IsSaveAsDraft) ? Common.FormStatus.Draft : Common.FormStatus.PendingApproval,
-                        SettlementDate = Common.ConvertEpochToDateTime(inputs.SettlementDateEpoch)?.Date,
-                        Currency = inputs.Currency,
-                        ApprovedBy = (inputs.IsSaveAsDraft) ? null : inputs.Approver
-                    };
-                    
-                    db.ISSD_FormHeader.Add(newFormHeader);
-                    db.SaveChanges();
-                    
-                    var newTrades = new List<ISSD_TradeSettlement>();
+                    return Request.CreateResponse(HttpStatusCode.Created, createdFormId);
 
-                    if (inputs.Equity.Any())
-                    {
-                        NewTsObjMapping(inputs.Equity, newFormHeader.Id, Common.TsItemCategory.Equity, inputs.Currency, ref newTrades);
-                    }
-
-                    if (inputs.Bond.Any())
-                    {
-                        NewTsObjMapping(inputs.Bond, newFormHeader.Id, Common.TsItemCategory.Bond, inputs.Currency, ref newTrades);
-                    }
-
-                    if (inputs.Cp.Any())
-                    {
-                        NewTsObjMapping(inputs.Cp, newFormHeader.Id, Common.TsItemCategory.Cp, inputs.Currency, ref newTrades);
-                    }
-
-                    if (inputs.NotesPaper.Any())
-                    {
-                        NewTsObjMapping(inputs.NotesPaper, newFormHeader.Id, Common.TsItemCategory.NotesPapers, inputs.Currency, ref newTrades);
-                    }
-
-                    if (inputs.Repo.Any())
-                    {
-                        NewTsObjMapping(inputs.Repo, newFormHeader.Id, Common.TsItemCategory.Repo, inputs.Currency, ref newTrades);
-                    }
-
-                    if (inputs.Coupon.Any())
-                    {
-                        NewTsObjMapping(inputs.Coupon, newFormHeader.Id, Common.TsItemCategory.Coupon, inputs.Currency, ref newTrades);
-                    }
-
-                    if (inputs.Fees.Any())
-                    {
-                        NewTsObjMapping(inputs.Fees, newFormHeader.Id, Common.TsItemCategory.Fees, inputs.Currency, ref newTrades);
-                    }
-
-                    if (inputs.Mtm.Any())
-                    {
-                        NewTsObjMapping(inputs.Mtm, newFormHeader.Id, Common.TsItemCategory.Mtm, inputs.Currency, ref newTrades);
-                    }
-
-                    if (inputs.FxSettlement.Any())
-                    {
-                        NewTsObjMapping(inputs.FxSettlement, newFormHeader.Id, Common.TsItemCategory.Fx, inputs.Currency, ref newTrades);
-                    }
-
-                    if (inputs.ContributionCredited.Any())
-                    {
-                        NewTsObjMapping(inputs.ContributionCredited, newFormHeader.Id, Common.TsItemCategory.Cn, inputs.Currency, ref newTrades);
-                    }
-
-                    if (inputs.Altid.Any())
-                    {
-                        NewTsObjMapping(inputs.Altid, newFormHeader.Id, Common.TsItemCategory.Altid, inputs.Currency, ref newTrades);
-                    }
-
-                    if (inputs.Others.Any())
-                    {
-                        NewTsObjMapping(inputs.Others, newFormHeader.Id, Common.TsItemCategory.Others, inputs.Currency, ref newTrades);
-                    }
-                    
-                    db.ISSD_TradeSettlement.AddRange(newTrades);
-                    db.SaveChanges();
-
-                    new AuditService().Capture_FA(newFormHeader.Id, newFormHeader.FormType, FormActionType.Create, User.Identity.Name, $"Created an {newFormHeader.FormType} form");
-
-                    if (inputs.Approver != null)
-                    {
-                        CommonService.NotifyApprover(inputs.Approver, newFormHeader.Id, User.Identity.Name, newFormHeader.FormType, inputs.ApprovalNotes);
-                        new AuditService().Capture_FA(newFormHeader.Id, newFormHeader.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {newFormHeader.FormType} form");
-                    }
-
-                    return Request.CreateResponse(HttpStatusCode.Created, newFormHeader.Id);
                 }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Error in saving form data. Please refer system logs.");
+                }
+
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
-
         }
 
         [HttpPost]
-        [Route("TradeSettlement/Edit")]
-        public HttpResponseMessage TS_EditForm([FromBody] TradeSettlementModel inputs)
+        [Route("ts/Edit")]
+        public HttpResponseMessage TS_EditForm([FromBody] TsCreateNewFormRequest req)
         {
             try
             {
-                using (var db = new kashflowDBEntities())
+                var editedFormId = TsFormService.EditForm(req, User.Identity.Name);
+                if (editedFormId > 0)
                 {
-                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == inputs.Id);
-                    
-                    if (form == null)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not found!");
-                    }
-                    
-                    if (inputs.IsSaveAdminEdit)
-                    {
-                        form.AdminEditted = true;
-                        form.AdminEdittedBy = User.Identity.Name;
-                        form.AdminEdittedDate = DateTime.Now;
-                    }
+                    return Request.CreateResponse(HttpStatusCode.Created, editedFormId);
 
-                    if (inputs.IsSaveAsDraft)
-                    {
-                        form.PreparedBy = User.Identity.Name;
-                        form.PreparedDate = DateTime.Now;
-                    }
-
-                    if (inputs.Approver != null)
-                    {
-                        new AuditService().AuditForm_ReassignApprover(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                            form.ApprovedBy, inputs.Approver);
-                        
-                        form.ApprovedBy = inputs.Approver;
-                        form.ApprovedDate = null; // empty the date as this is new submission
-                        form.FormStatus = Common.FormStatus.PendingApproval;
-
-                        CommonService.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name, form.FormType, inputs.ApprovalNotes);
-                    }
-                    
-                    var formTradeItems = db.ISSD_TradeSettlement.Where(x => x.FormId == form.Id).ToList();
-                    var cc_itemBeforeList = formTradeItems.ToList();
-
-                    if (inputs.Equity != null)
-                    {
-                        // delete from existing
-                        if (inputs.Equity.Any())
-                        {
-                            var itemExistInGrid =
-                                inputs.Equity.Where(x => x.Id != 0).Select(x => x.Id).ToList();
-                            var removedItems =
-                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
-                            if (removedItems.Any())
-                            {
-                                foreach (var item in removedItems)
-                                {
-                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        item.InstrumentCode);
-                                }
-                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
-                            }
-                        }
-
-                        foreach (var item in inputs.Equity)
-                        {
-                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
-                            if (foundItem != null)
-                            {
-                                if (foundItem.InstrumentCode != item.InstrumentCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.InstrumentCode, item.InstrumentCode, "Equity - Instrument Code");
-
-                                    foundItem.InstrumentCode = item.InstrumentCode;
-                                }
-
-                                if (foundItem.StockCode != item.StockCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.StockCode, item.StockCode, "Equity - Stock Code");
-
-                                    foundItem.StockCode = item.StockCode;
-                                }
-
-                                if (foundItem.Maturity != item.Maturity)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.Maturity.ToString(), item.Maturity.ToString(), "Equity - Maturity (+)");
-
-                                    foundItem.Maturity = item.Maturity;
-                                }
-
-                                if (foundItem.AmountPlus != item.AmountPlus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Equity - Amount (+)");
-
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                }
-
-                                if (foundItem.AmountMinus != item.AmountMinus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "Equity - Amount (-)");
-
-                                    foundItem.AmountMinus = item.AmountMinus;
-                                }
-
-                                if (foundItem.Remarks != item.Remarks)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.Remarks, item.Remarks, "Equity - Remarks");
-
-                                    foundItem.Remarks = item.Remarks;
-                                }
-
-                                foundItem.InflowAmount = SumInflowAmount(item);
-                                foundItem.OutflowAmount = SumOutflowAmount(item);
-                                foundItem.ModifiedBy = User.Identity.Name;
-                                foundItem.ModifiedDate = DateTime.Now;
-                            }
-                            else
-                            {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Equity, inputs.Currency));
-
-                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
-                                    form.SettlementDate, User.Identity.Name,
-                                    $" Equity: {item.InstrumentCode}, {item.StockCode}, {item.Maturity}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
-                            }
-                        }
-                    }
-
-                    if (inputs.Bond != null)
-                    {
-                        // delete from existing
-                        if (inputs.Bond.Any())
-                        {
-                            var itemExistInGrid =
-                                inputs.Bond.Where(x => x.Id != 0).Select(x => x.Id).ToList();
-                            var removedItems =
-                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
-                            if (removedItems.Any())
-                            {
-                                foreach (var item in removedItems)
-                                {
-                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        item.InstrumentCode);
-                                }
-                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
-                            }
-                        }
-
-                        foreach (var item in inputs.Bond)
-                        {
-                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
-                            if (foundItem != null)
-                            {
-                                if (foundItem.InstrumentCode != item.InstrumentCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.InstrumentCode, item.InstrumentCode, "BOND - Instrument Code");
-
-                                    foundItem.InstrumentCode = item.InstrumentCode;
-                                }
-
-                                if (foundItem.StockCode != item.StockCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.StockCode, item.StockCode, "BOND - Stock Code");
-
-                                    foundItem.StockCode = item.StockCode;
-                                }
-
-                                if (foundItem.Maturity != item.Maturity)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.Maturity.ToString(), item.Maturity.ToString(), "BOND - Maturity (+)");
-
-                                    foundItem.Maturity = item.Maturity;
-                                }
-
-                                if (foundItem.AmountPlus != item.AmountPlus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "BOND - Amount (+)");
-
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                }
-
-                                if (foundItem.AmountMinus != item.AmountMinus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "BOND - Amount (-)");
-
-                                    foundItem.AmountMinus = item.AmountMinus;
-                                }
-
-                                if (foundItem.BondType != item.BondType)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.BondType, item.BondType, "BOND - Bond Type");
-
-                                    foundItem.BondType = item.BondType;
-                                }
-
-                                if (foundItem.Remarks != item.Remarks)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.Remarks, item.Remarks, "BOND - Remarks");
-
-                                    foundItem.Remarks = item.Remarks;
-                                }
-
-                                foundItem.InflowAmount = SumInflowAmount(item);
-                                foundItem.OutflowAmount = SumOutflowAmount(item);
-                                foundItem.ModifiedBy = User.Identity.Name;
-                                foundItem.ModifiedDate = DateTime.Now;
-                            }
-                            else
-                            {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Bond, inputs.Currency));
-
-                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
-                                    form.SettlementDate, User.Identity.Name,
-                                    $" BOND: {item.InstrumentCode}, {item.StockCode}, {item.Maturity}, {item.AmountPlus}, {item.AmountMinus}, {item.BondType}, {item.Remarks}");
-                            }
-                        }
-                    }
-
-                    if (inputs.Cp != null)
-                    {
-                        // delete from existing
-                        if (inputs.Cp.Any())
-                        {
-                            var itemExistInGrid =
-                                inputs.Cp.Where(x => x.Id != 0).Select(x => x.Id).ToList();
-                            var removedItems =
-                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
-                            if (removedItems.Any())
-                            {
-                                foreach (var item in removedItems)
-                                {
-                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        item.InstrumentCode);
-                                }
-                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
-                            }
-                        }
-
-                        foreach (var item in inputs.Cp)
-                        {
-                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
-                            if (foundItem != null)
-                            {
-                                if (foundItem.InstrumentCode != item.InstrumentCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.InstrumentCode, item.InstrumentCode, "CP - Instrument Code");
-
-                                    foundItem.InstrumentCode = item.InstrumentCode;
-                                }
-
-                                if (foundItem.StockCode != item.StockCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.StockCode, item.StockCode, "CP - Stock Code");
-
-                                    foundItem.StockCode = item.StockCode;
-                                }
-
-                                if (foundItem.Maturity != item.Maturity)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.Maturity.ToString(), item.Maturity.ToString(), "CP - Maturity (+)");
-
-                                    foundItem.Maturity = item.Maturity;
-                                }
-
-                                if (foundItem.AmountPlus != item.AmountPlus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "CP - Amount (+)");
-
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                }
-
-                                if (foundItem.AmountMinus != item.AmountMinus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "CP - Amount (-)");
-
-                                    foundItem.AmountMinus = item.AmountMinus;
-                                }
-
-                                if (foundItem.Remarks != item.Remarks)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.Remarks, item.Remarks, "CP - Remarks");
-
-                                    foundItem.Remarks = item.Remarks;
-                                }
-
-                                foundItem.InflowAmount = SumInflowAmount(item);
-                                foundItem.OutflowAmount = SumOutflowAmount(item);
-                                foundItem.ModifiedBy = User.Identity.Name;
-                                foundItem.ModifiedDate = DateTime.Now;
-                            }
-                            else
-                            {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Cp, inputs.Currency));
-
-                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
-                                    form.SettlementDate, User.Identity.Name,
-                                    $" CP: {item.InstrumentCode}, {item.StockCode}, {item.Maturity}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
-                            }
-                        }
-                    }
-
-                    if (inputs.NotesPaper != null)
-                    {
-                        // delete from existing
-                        if (inputs.NotesPaper.Any())
-                        {
-                            var itemExistInGrid =
-                                inputs.NotesPaper.Where(x => x.Id != 0).Select(x => x.Id).ToList();
-                            var removedItems =
-                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
-                            if (removedItems.Any())
-                            {
-                                foreach (var item in removedItems)
-                                {
-                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        item.InstrumentCode);
-                                }
-                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
-                            }
-                        }
-
-                        foreach (var item in inputs.NotesPaper)
-                        {
-                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
-                            if (foundItem != null)
-                            {
-                                if (foundItem.InstrumentCode != item.InstrumentCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.InstrumentCode, item.InstrumentCode, "Notes & Paper - Instrument Code");
-
-                                    foundItem.InstrumentCode = item.InstrumentCode;
-                                }
-
-                                if (foundItem.StockCode != item.StockCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.StockCode, item.StockCode, "Notes & Paper - Stock Code");
-
-                                    foundItem.StockCode = item.StockCode;
-                                }
-
-                                if (foundItem.Maturity != item.Maturity)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.Maturity.ToString(), item.Maturity.ToString(), "Notes & Paper - Maturity (+)");
-
-                                    foundItem.Maturity = item.Maturity;
-                                }
-
-                                if (foundItem.AmountPlus != item.AmountPlus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Notes & Paper - Amount (+)");
-
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                }
-
-                                if (foundItem.AmountMinus != item.AmountMinus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "Notes & Paper - Amount (-)");
-
-                                    foundItem.AmountMinus = item.AmountMinus;
-                                }
-
-                                if (foundItem.Remarks != item.Remarks)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.Remarks, item.Remarks, "Notes & Paper - Remarks");
-
-                                    foundItem.Remarks = item.Remarks;
-                                }
-
-                                foundItem.InflowAmount = SumInflowAmount(item);
-                                foundItem.OutflowAmount = SumOutflowAmount(item);
-                                foundItem.ModifiedBy = User.Identity.Name;
-                                foundItem.ModifiedDate = DateTime.Now;
-                            }
-                            else
-                            {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.NotesPapers, inputs.Currency));
-
-                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
-                                    form.SettlementDate, User.Identity.Name,
-                                    $" Notes & Paper: {item.InstrumentCode}, {item.StockCode}, {item.Maturity}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
-                            }
-                        }
-                    }
-
-                    if (inputs.Repo != null)
-                    {
-                        // delete from existing
-                        if (inputs.Repo.Any())
-                        {
-                            var itemExistInGrid =
-                                inputs.Repo.Where(x => x.Id != 0).Select(x => x.Id).ToList();
-                            var removedItems =
-                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
-                            if (removedItems.Any())
-                            {
-                                foreach (var item in removedItems)
-                                {
-                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        item.InstrumentCode);
-                                }
-                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
-                            }
-                        }
-
-                        foreach (var item in inputs.Repo)
-                        {
-                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
-                            if (foundItem != null)
-                            {
-                                if (foundItem.InstrumentCode != item.InstrumentCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.InstrumentCode, item.InstrumentCode, "REPO - Instrument Code");
-
-                                    foundItem.InstrumentCode = item.InstrumentCode;
-                                }
-
-                                if (foundItem.StockCode != item.StockCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.StockCode, item.StockCode, "REPO - Stock Code");
-
-                                    foundItem.StockCode = item.StockCode;
-                                }
-
-                                if (foundItem.FirstLeg != item.FirstLeg)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.FirstLeg.ToString(), item.FirstLeg.ToString(), "REPO - First Leg");
-
-                                    foundItem.FirstLeg = item.FirstLeg;
-                                }
-
-                                if (foundItem.SecondLeg != item.SecondLeg)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.SecondLeg.ToString(), item.SecondLeg.ToString(), "REPO - Second Leg");
-
-                                    foundItem.SecondLeg = item.SecondLeg;
-                                }
-
-                                if (foundItem.Remarks != item.Remarks)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.Remarks, item.Remarks, "REPO - Remarks");
-
-                                    foundItem.Remarks = item.Remarks;
-                                }
-
-                                foundItem.InflowAmount = SumInflowAmount(item);
-                                foundItem.OutflowAmount = SumOutflowAmount(item);
-                                foundItem.ModifiedBy = User.Identity.Name;
-                                foundItem.ModifiedDate = DateTime.Now;
-                            }
-                            else
-                            {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Repo, inputs.Currency));
-
-                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
-                                    form.SettlementDate, User.Identity.Name,
-                                    $" REPO: {item.InstrumentCode}, {item.StockCode}, {item.FirstLeg}, {item.SecondLeg}, {item.Remarks}");
-                            }
-                        }
-                    }
-
-                    if (inputs.Coupon != null)
-                    {
-                        // delete from existing
-                        if (inputs.Coupon.Any())
-                        {
-                            var itemExistInGrid =
-                                inputs.Coupon.Where(x => x.Id != 0).Select(x => x.Id).ToList();
-                            var removedItems =
-                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
-                            if (removedItems.Any())
-                            {
-                                foreach (var item in removedItems)
-                                {
-                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        item.InstrumentCode);
-                                }
-                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
-                            }
-                        }
-
-                        foreach (var item in inputs.Coupon)
-                        {
-                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
-                            if (foundItem != null)
-                            {
-                                if (foundItem.InstrumentCode != item.InstrumentCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.InstrumentCode, item.InstrumentCode, "Coupon - Instrument Code");
-
-                                    foundItem.InstrumentCode = item.InstrumentCode;
-                                }
-
-                                if (foundItem.StockCode != item.StockCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.StockCode, item.StockCode, "Coupon - Stock Code");
-
-                                    foundItem.StockCode = item.StockCode;
-                                }
-
-                                if (foundItem.AmountPlus != item.AmountPlus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Coupon - Amount (+)");
-
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                }
-
-                                if (foundItem.Remarks != item.Remarks)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.Remarks, item.Remarks, "Coupon - Remarks");
-
-                                    foundItem.Remarks = item.Remarks;
-                                }
-
-                                if (foundItem.CouponType != item.CouponType)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.CouponType, item.CouponType, "Coupon - Coupon Type");
-
-                                    foundItem.CouponType = item.CouponType;
-                                }
-
-                                foundItem.InflowAmount = SumInflowAmount(item);
-                                foundItem.OutflowAmount = SumOutflowAmount(item);
-                                foundItem.ModifiedBy = User.Identity.Name;
-                                foundItem.ModifiedDate = DateTime.Now;
-                            }
-                            else
-                            {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Coupon, inputs.Currency));
-
-                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
-                                    form.SettlementDate, User.Identity.Name,
-                                    $" Coupon: {item.InstrumentCode}, {item.StockCode}, {item.AmountPlus}, {item.Remarks}, {item.CouponType}");
-                            }
-                        }
-                    }
-
-                    if (inputs.Mtm != null)
-                    {
-                        // delete from existing
-                        if (inputs.Mtm.Any())
-                        {
-                            var itemExistInGrid =
-                                inputs.Mtm.Where(x => x.Id != 0).Select(x => x.Id).ToList();
-                            var removedItems =
-                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
-                            if (removedItems.Any())
-                            {
-                                foreach (var item in removedItems)
-                                {
-                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        item.InstrumentCode);
-                                }
-                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
-                            }
-                        }
-
-                        foreach (var item in inputs.Mtm)
-                        {
-                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
-                            if (foundItem != null)
-                            {
-                                if (foundItem.InstrumentCode != item.InstrumentCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.InstrumentCode, item.InstrumentCode, "MTM - Payment/Receipt");
-
-                                    foundItem.InstrumentCode = item.InstrumentCode;
-                                }
-
-                                if (foundItem.AmountPlus != item.AmountPlus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "MTM - Amount (+)");
-
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                }
-
-                                if (foundItem.AmountMinus != item.AmountMinus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "MTM - Amount (-)");
-
-                                    foundItem.AmountMinus = item.AmountMinus;
-                                }
-
-                                if (foundItem.Remarks != item.Remarks)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.Remarks, item.Remarks, "MTM - Remarks");
-
-                                    foundItem.Remarks = item.Remarks;
-                                }
-
-                                foundItem.InflowAmount = SumInflowAmount(item);
-                                foundItem.OutflowAmount = SumOutflowAmount(item);
-                                foundItem.ModifiedBy = User.Identity.Name;
-                                foundItem.ModifiedDate = DateTime.Now;
-                            }
-                            else
-                            {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Mtm, inputs.Currency));
-
-                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
-                                    form.SettlementDate, User.Identity.Name,
-                                    $" MTM: {item.InstrumentCode}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
-                            }
-                        }
-                    }
-
-                    if (inputs.FxSettlement != null)
-                    {
-                        // delete from existing
-                        if (inputs.FxSettlement.Any())
-                        {
-                            var itemExistInGrid =
-                                inputs.FxSettlement.Where(x => x.Id != 0).Select(x => x.Id).ToList();
-                            var removedItems =
-                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
-                            if (removedItems.Any())
-                            {
-                                foreach (var item in removedItems)
-                                {
-                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        item.InstrumentCode);
-                                }
-                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
-                            }
-                        }
-
-                        foreach (var item in inputs.FxSettlement)
-                        {
-                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
-                            if (foundItem != null)
-                            {
-                                if (foundItem.InstrumentCode != item.InstrumentCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.InstrumentCode, item.InstrumentCode, "FX - Instrument Code");
-
-                                    foundItem.InstrumentCode = item.InstrumentCode;
-                                }
-
-                                if (foundItem.AmountPlus != item.AmountPlus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "FX - Amount (+)");
-
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                }
-
-                                if (foundItem.AmountMinus != item.AmountMinus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "FX - Amount (-)");
-
-                                    foundItem.AmountMinus = item.AmountMinus;
-                                }
-
-                                if (foundItem.Remarks != item.Remarks)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.Remarks, item.Remarks, "FX - Remarks");
-
-                                    foundItem.Remarks = item.Remarks;
-                                }
-
-                                foundItem.InflowAmount = SumInflowAmount(item);
-                                foundItem.OutflowAmount = SumOutflowAmount(item);
-                                foundItem.ModifiedBy = User.Identity.Name;
-                                foundItem.ModifiedDate = DateTime.Now;
-                            }
-                            else
-                            {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Fx, inputs.Currency));
-
-                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
-                                    form.SettlementDate, User.Identity.Name,
-                                    $" FX: {item.InstrumentCode}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
-                            }
-                        }
-                    }
-
-                    if (inputs.Altid != null)
-                    {
-                        // delete from existing
-                        if (inputs.Altid.Any())
-                        {
-                            var itemExistInGrid =
-                                inputs.Altid.Where(x => x.Id != 0).Select(x => x.Id).ToList();
-                            var removedItems =
-                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
-                            if (removedItems.Any())
-                            {
-                                foreach (var item in removedItems)
-                                {
-                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        item.InstrumentCode);
-                                }
-                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
-                            }
-                        }
-
-                        foreach (var item in inputs.Altid)
-                        {
-                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
-                            if (foundItem != null)
-                            {
-                                if (foundItem.InstrumentCode != item.InstrumentCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.InstrumentCode, item.InstrumentCode, "ALTID - Instrument Code");
-
-                                    foundItem.InstrumentCode = item.InstrumentCode;
-                                }
-
-                                if (foundItem.AmountPlus != item.AmountPlus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "ALTID - Amount (+)");
-
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                }
-
-                                if (foundItem.AmountMinus != item.AmountMinus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "ALTID - Amount (-)");
-
-                                    foundItem.AmountMinus = item.AmountMinus;
-                                }
-
-                                if (foundItem.Remarks != item.Remarks)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.Remarks, item.Remarks, "ALTID - Remarks");
-
-                                    foundItem.Remarks = item.Remarks;
-                                }
-
-                                foundItem.InflowAmount = SumInflowAmount(item);
-                                foundItem.OutflowAmount = SumOutflowAmount(item);
-                                foundItem.ModifiedBy = User.Identity.Name;
-                                foundItem.ModifiedDate = DateTime.Now;
-                            }
-                            else
-                            {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Altid, inputs.Currency));
-
-                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
-                                    form.SettlementDate, User.Identity.Name,
-                                    $" ALTID: {item.InstrumentCode}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
-                            }
-                        }
-                    }
-
-                    if (inputs.ContributionCredited != null)
-                    {
-                        // delete from existing
-                        if (inputs.ContributionCredited.Any())
-                        {
-                            var itemExistInGrid =
-                                inputs.ContributionCredited.Where(x => x.Id != 0).Select(x => x.Id).ToList();
-                            var removedItems =
-                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
-                            if (removedItems.Any())
-                            {
-                                foreach (var item in removedItems)
-                                {
-                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        item.InstrumentCode);
-                                }
-                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
-                            }
-                        }
-
-                        foreach (var item in inputs.ContributionCredited)
-                        {
-                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
-                            if (foundItem != null)
-                            {
-                                if (foundItem.InstrumentCode != item.InstrumentCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.InstrumentCode, item.InstrumentCode, "Contribution - Instrument Code");
-
-                                    foundItem.InstrumentCode = item.InstrumentCode;
-                                }
-
-                                if (foundItem.AmountPlus != item.AmountPlus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Contribution - Amount (+)");
-
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                }
-
-                                if (foundItem.Remarks != item.Remarks)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.Remarks, item.Remarks, "Contribution - Remarks");
-
-                                    foundItem.Remarks = item.Remarks;
-                                }
-
-                                foundItem.InflowAmount = SumInflowAmount(item);
-                                foundItem.OutflowAmount = SumOutflowAmount(item);
-                                foundItem.ModifiedBy = User.Identity.Name;
-                                foundItem.ModifiedDate = DateTime.Now;
-                            }
-                                    
-                            else
-                            {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Cn, inputs.Currency));
-
-                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
-                                    form.SettlementDate, User.Identity.Name,
-                                    $" Contribution: {item.InstrumentCode}, {item.AmountPlus}, {item.Remarks}");
-                            }
-                        }
-                    }
-
-                    if (inputs.Fees != null)
-                    {
-                        // delete from existing
-                        if (inputs.Fees.Any())
-                        {
-                            var itemExistInGrid =
-                                inputs.Fees.Where(x => x.Id != 0).Select(x => x.Id).ToList();
-                            var removedItems =
-                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
-                            if (removedItems.Any())
-                            {
-                                foreach (var item in removedItems)
-                                {
-                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        item.InstrumentCode);
-                                }
-                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
-                            }
-                        }
-
-                        foreach (var item in inputs.Fees)
-                        {
-                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
-                            if (foundItem != null)
-                            {
-                                if (foundItem.InstrumentCode != item.InstrumentCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.InstrumentCode, item.InstrumentCode, "Fees - Instrument Code");
-
-                                    foundItem.InstrumentCode = item.InstrumentCode;
-                                }
-
-                                if (foundItem.AmountPlus != item.AmountPlus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Fees - Amount (+)");
-
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                }
-
-                                if (foundItem.AmountMinus != item.AmountMinus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "Fees - Amount (-)");
-
-                                    foundItem.AmountMinus = item.AmountMinus;
-                                }
-
-                                if (foundItem.Remarks != item.Remarks)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.Remarks, item.Remarks, "Fees - Remarks");
-
-                                    foundItem.Remarks = item.Remarks;
-                                }
-
-                                foundItem.InflowAmount = SumInflowAmount(item);
-                                foundItem.OutflowAmount = SumOutflowAmount(item);
-                                foundItem.ModifiedBy = User.Identity.Name;
-                                foundItem.ModifiedDate = DateTime.Now;
-                            }
-                            else
-                            {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Fees, inputs.Currency));
-
-                                new AuditService().AuditForm_AddRow(form.Id, form.FormType,
-                                    form.SettlementDate, User.Identity.Name,
-                                    $" Fees: {item.InstrumentCode}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
-                            }
-                        }
-                    }
-
-                    if (inputs.Others != null)
-                    {
-                        // delete from existing
-                        if (inputs.Others.Any())
-                        {
-                            var itemExistInGrid =
-                                inputs.Others.Where(x => x.Id != 0).Select(x => x.Id).ToList();
-                            var removedItems =
-                                formTradeItems.Where(x => !itemExistInGrid.Contains(x.Id)).ToList();
-                            if (removedItems.Any())
-                            {
-                                foreach (var item in removedItems)
-                                {
-                                    new AuditService().AuditForm_RemoveRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        item.InstrumentCode);
-                                }
-                                db.ISSD_TradeSettlement.RemoveRange(removedItems);
-                            }
-                        }
-
-                        foreach (var item in inputs.Others)
-                        {
-                            var foundItem = formTradeItems.FirstOrDefault(x => x.Id == item.Id);
-                            if (foundItem != null)
-                            {
-                                if (foundItem.InstrumentCode != item.InstrumentCode)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.InstrumentCode, item.InstrumentCode, "Others - Instrument Code");
-
-                                    foundItem.InstrumentCode = item.InstrumentCode;
-                                }
-
-                                if (foundItem.AmountPlus != item.AmountPlus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Others - Amount (+)");
-
-                                    foundItem.AmountPlus = item.AmountPlus;
-                                }
-
-                                if (foundItem.AmountMinus != item.AmountMinus)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "Others - Amount (-)");
-
-                                    foundItem.AmountMinus = item.AmountMinus;
-                                }
-
-                                if (foundItem.Remarks != item.Remarks)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.Remarks, item.Remarks, "Others - Remarks");
-
-                                    foundItem.Remarks = item.Remarks;
-                                }
-
-                                if (foundItem.OthersType != item.OthersType)
-                                {
-                                    new AuditService().AuditForm_EditRow(form.Id, form.FormType, form.SettlementDate, User.Identity.Name,
-                                        foundItem.OthersType, item.OthersType, "Others - Others Type");
-
-                                    foundItem.OthersType = item.OthersType;
-                                }
-
-                                foundItem.InflowAmount = SumInflowAmount(item);
-                                foundItem.OutflowAmount = SumOutflowAmount(item);
-                                foundItem.ModifiedBy = User.Identity.Name;
-                                foundItem.ModifiedDate = DateTime.Now;
-
-                            }
-                            else
-                            {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, inputs.Id, Common.TsItemCategory.Others, inputs.Currency));
-                            }
-                        }
-                    }
-                    
-                    db.SaveChanges();
-
-                    return Request.CreateResponse(HttpStatusCode.Created, form.Id);
                 }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Error in saving editted form data. Please refer system logs.");
+                }
+
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
-
         }
 
         [HttpPost]
         [Route("TradeSettlement/Approval")]
-        public HttpResponseMessage TS_Approval([FromBody] FormApprovalModel input)
+        public HttpResponseMessage TS_Approval([FromBody] TsFormApprovalRequest req)
         {
             try
             {
-                using (var db = new kashflowDBEntities())
+                var formApprovalResult = TsFormService.FormApproval(req, User.Identity.Name);
+
+                if (formApprovalResult > 0)
                 {
-                    var formId = Convert.ToInt32(input.FormId);
-                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
-
-                    if (form != null)
-                    {
-                        if (form.ApprovedBy == User.Identity.Name)
-                        {
-                            form.ApprovedDate = DateTime.Now;
-                            form.FormStatus = (input.ApprovalStatus)
-                                ? Common.FormStatus.Approved
-                                : Common.FormStatus.Rejected;
-
-                            db.SaveChanges();
-
-                            CommonService.NotifyPreparer(form.Id, form.FormType, form.FormStatus, form.PreparedBy, form.ApprovedBy, input.ApprovalNote);
-                            new MailService().TS_IncomingFund(form.Id, form.FormType, form.Currency);
-                            new AuditService().AuditForm_Approval(form.Id, form.FormType, form.FormStatus, form.SettlementDate, User.Identity.Name);
-
-                            if (WorkflowService.FormResubmissionFromApprovedRejected(form.Id, form.FormType))
-                            {
-
-                            }
-
-                            if (form.FormType == Common.FormType.ISSD_TS_E && form.FormStatus == Common.FormStatus.Approved)
-                            {
-                                new MailService().TS_PartE_NotifyPe(form.Id);
-                            }
-
-                            if (form.FormType == Common.FormType.ISSD_TS_H && form.FormStatus == Common.FormStatus.Approved)
-                            {
-                                var tsLoanItemExist = db.ISSD_TradeSettlement.Any(x => x.FormId == form.Id && x.OthersType == Common.TsOthersTypeItem.Loan);
-                                if (tsLoanItemExist)
-                                {
-                                    new MailService().TS_PartH_Notify(form.Id, Common.TsOthersTypeItem.Loan);
-                                }
-
-                            }
-
-                            return Request.CreateResponse(HttpStatusCode.Accepted, formId);
-                        }
-                        else
-                        {
-                            return Request.CreateResponse(HttpStatusCode.BadRequest, "Unauthorized Approver!");
-                        }
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not Found!");
-                    }
+                    return Request.CreateResponse(HttpStatusCode.Accepted, formApprovalResult);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Failed to accept form approval. Please refer system logs.");
                 }
             }
             catch (Exception ex)
@@ -1488,31 +312,16 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                using (var db = new kashflowDBEntities())
+                var key = Convert.ToInt32(input.Get("id"));
+                var deleteFormResult = TsFormService.DeleteForm(key, User.Identity.Name);
+
+                if (deleteFormResult)
                 {
-                    var key = Convert.ToInt32(input.Get("id"));
-                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == key);
-
-                    if (form != null)
-                    {
-                        db.ISSD_FormHeader.Remove(form);
-
-                        var tradeItems = db.ISSD_TradeSettlement.Where(x => x.FormId == key);
-                        if (tradeItems.Any())
-                        {
-                            db.ISSD_TradeSettlement.RemoveRange(tradeItems);
-                        }
-                        
-                        db.SaveChanges();
-
-                        new AuditService().Capture_FA(form.Id, form.FormType, FormActionType.Delete, User.Identity.Name, $"Deleted {form.FormType} form");
-
-                        return Request.CreateResponse(HttpStatusCode.OK);
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not found!");
-                    }
+                    return Request.CreateResponse(HttpStatusCode.OK);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Failed to delete the form. Please check system logs for details.");
                 }
             }
             catch (Exception ex)
@@ -1538,7 +347,7 @@ namespace xDC_Web.Controllers.Api
 
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = TradeSettlementFormService.GetOpeningBalance(db, settlementDateOnly, currency);
+                    var result = TsFormService.GetOpeningBalance(db, settlementDateOnly, currency);
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
             }
@@ -1980,6 +789,8 @@ namespace xDC_Web.Controllers.Api
         }
 
         #endregion
+
+        
 
         #region Private Methods
 

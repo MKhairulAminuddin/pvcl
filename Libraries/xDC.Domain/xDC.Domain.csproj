@@ -64,13 +64,20 @@
     <Compile Include="WebApi\Administration\UpdatePremissionReq.cs" />
     <Compile Include="WebApi\Administration\RolesRes.cs" />
     <Compile Include="WebApi\Audit\AuditReq.cs" />
+    <Compile Include="WebApi\Forms\TradeSettlement\TsCreateNewFormRequest.cs" />
+    <Compile Include="WebApi\Forms\TradeSettlement\TsFormApprovalRequest.cs" />
+    <Compile Include="WebApi\Forms\TradeSettlement\TsGenerateFileRequest.cs" />
+    <Compile Include="WebApi\Forms\TradeSettlement\TsHomeGrid1.cs" />
+    <Compile Include="WebApi\Forms\TradeSettlement\TsHomeGrid2.cs" />
+    <Compile Include="WebApi\Forms\TradeSettlement\TsTradeItem.cs" />
     <Compile Include="WebApi\Form_FcaTagging\DetailRes.cs" />
     <Compile Include="WebApi\Form_FcaTagging\FcaBankAccountRes.cs" />
     <Compile Include="WebApi\Form_FcaTagging\SummaryRes.cs" />
     <Compile Include="Web\AMSD\InflowFundForm\InflowFundFormsLandingPage.cs" />
     <Compile Include="Web\AMSD\InflowFundForm\InflowFundForm.cs" />
     <Compile Include="Web\FID\FcaTaggingForm\FcaAccountAssignmentFormVM.cs" />
-    <Compile Include="Web\ISSD\TradeSettlementForm\TradeSettlementFormsLandingPage.cs" />
+    <Compile Include="Web\ISSD\TradeSettlementForm\TsConsolidatedPage.cs" />
+    <Compile Include="Web\ISSD\TradeSettlementForm\TsLandingPage.cs" />
     <Compile Include="Web\ISSD\TradeSettlementForm\TsOpeningBalance.cs" />
   </ItemGroup>
   <ItemGroup>
