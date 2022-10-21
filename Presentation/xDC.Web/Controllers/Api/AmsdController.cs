@@ -20,6 +20,7 @@ using xDC_Web.ViewModels.Amsd;
 using xDC_Web.ViewModels;
 using static xDC.Utils.Common;
 using xDC_Web.Extension.CustomAttribute;
+using xDC.Domain.WebApi.Forms.TradeSettlement;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -438,7 +439,7 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
         [HttpPost]
         [Route("InflowFund/Approval")]
-        public HttpResponseMessage InflowFund_ApproveForm([FromBody] FormApprovalModel input)
+        public HttpResponseMessage InflowFund_ApproveForm([FromBody] InflowFundFormApprovalRequest input)
         {
             try
             {

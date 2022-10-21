@@ -20,7 +20,7 @@
             submitEditRequest: window.location.origin + "/api/issd/ts/Edit",
             submitEditResponse: window.location.origin + "/issd/TradeSettlement/PartA/View/",
 
-            submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
+            submitApprovalRequest: window.location.origin + "/api/issd/ts/Approval",
             submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartA/View/"
         };
 

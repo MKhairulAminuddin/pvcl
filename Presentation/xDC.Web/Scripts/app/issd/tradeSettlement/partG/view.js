@@ -21,7 +21,7 @@
         var referenceUrl = {
             adminEdit: window.location.origin + "/issd/TradeSettlement/PartG/Edit/",
 
-            submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
+            submitApprovalRequest: window.location.origin + "/api/issd/ts/Approval",
             submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartG/View/",
 
             generateCnEmail: window.location.origin + "/issd/TradeSettlement/GenerateCnEmail",

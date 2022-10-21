@@ -23,7 +23,7 @@
         var referenceUrl = {
             adminEdit: window.location.origin + "/issd/TradeSettlement/PartB/Edit/",
 
-            submitApprovalRequest: window.location.origin + "/api/issd/TradeSettlement/Approval",
+            submitApprovalRequest: window.location.origin + "/api/issd/ts/Approval",
             submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartB/View/"
         };
 

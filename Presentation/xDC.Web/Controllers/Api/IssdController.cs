@@ -234,6 +234,7 @@ namespace xDC_Web.Controllers.Api
 
         #region Trade Settlement Form
 
+        [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [HttpPost]
         [Route("ts/New")]
         public HttpResponseMessage TS_NewForm([FromBody] TsCreateNewFormRequest req)
@@ -258,6 +259,7 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [HttpPost]
         [Route("ts/Edit")]
         public HttpResponseMessage TS_EditForm([FromBody] TsCreateNewFormRequest req)
@@ -282,8 +284,9 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [HttpPost]
-        [Route("TradeSettlement/Approval")]
+        [Route("ts/Approval")]
         public HttpResponseMessage TS_Approval([FromBody] TsFormApprovalRequest req)
         {
             try
@@ -304,9 +307,9 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
         }
-        
+
+        [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_Edit)]
         [HttpDelete]
-        [Authorize(Roles = "Administrator, ISSD")]
         [Route("TradeSettlement")]
         public HttpResponseMessage TS_DeleteForm(FormDataCollection input)
         {
@@ -786,100 +789,6 @@ namespace xDC_Web.Controllers.Api
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
             }
-        }
-
-        #endregion
-
-        
-
-        #region Private Methods
-
-        private void NewTsObjMapping(List<Trades> trades, int formId, string category, string currency, ref List<ISSD_TradeSettlement> tsItemObj)
-        {
-            foreach (var item in trades)
-            {
-                tsItemObj.Add(new ISSD_TradeSettlement
-                {
-                    FormId = formId,
-                    InstrumentType = category,
-                    InstrumentCode = item.InstrumentCode,
-                    StockCode = item.StockCode,
-                    Maturity = item.Maturity,
-                    Sales = item.Sales,
-                    Purchase = item.Purchase,
-                    FirstLeg = item.FirstLeg,
-                    SecondLeg = item.SecondLeg,
-                    AmountPlus = item.AmountPlus,
-                    AmountMinus = item.AmountMinus,
-                    Remarks = item.Remarks,
-                    ModifiedBy = User.Identity.Name,
-                    ModifiedDate = DateTime.Now,
-
-                    InflowAmount = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg),
-                    OutflowAmount = (item.AmountMinus + item.Purchase + item.SecondLeg),
-
-                    InflowTo = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg) > 0 && currency == "MYR"
-                        ? "RENTAS"
-                        : null,
-                    OutflowFrom = (item.AmountMinus + item.Purchase + item.SecondLeg) > 0 && currency == "MYR"
-                        ? "RENTAS"
-                        : null,
-                    AssignedBy = null,
-                    AssignedDate = null,
-
-                    OthersType = item.OthersType,
-                    CouponType = item.CouponType,
-                    BondType = item.BondType
-                });
-            }
-        }
-
-        private ISSD_TradeSettlement NewTsObjMapping(Trades item, int formId, string category, string currency)
-        {
-            return new ISSD_TradeSettlement
-            {
-                FormId = formId,
-                InstrumentType = category,
-                InstrumentCode = item.InstrumentCode,
-                StockCode = item.StockCode,
-                Maturity = item.Maturity,
-                Sales = item.Sales,
-                Purchase = item.Purchase,
-                FirstLeg = item.FirstLeg,
-                SecondLeg = item.SecondLeg,
-                AmountPlus = item.AmountPlus,
-                AmountMinus = item.AmountMinus,
-                Remarks = item.Remarks,
-                ModifiedBy = User.Identity.Name,
-                ModifiedDate = DateTime.Now,
-
-                InflowAmount = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg),
-                OutflowAmount = (item.AmountMinus + item.Purchase + item.SecondLeg),
-
-                InflowTo = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg) > 0 && currency == "MYR"
-                        ? "RENTAS"
-                        : null,
-                OutflowFrom = (item.AmountMinus + item.Purchase + item.SecondLeg) > 0 && currency == "MYR"
-                        ? "RENTAS"
-                        : null,
-                AssignedBy = null,
-                AssignedDate = null,
-
-                OthersType = item.OthersType,
-                CouponType = item.CouponType,
-                BondType = item.BondType
-            };
-
-        }
-
-        private double SumInflowAmount(Trades item)
-        {
-            return (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg);
-        }
-
-        private double SumOutflowAmount(Trades item)
-        {
-            return (item.AmountMinus + item.Purchase + item.SecondLeg);
         }
 
         #endregion

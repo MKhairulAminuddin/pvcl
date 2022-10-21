@@ -10,6 +10,7 @@ using DevExpress.Web.Data;
 using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
 using Newtonsoft.Json;
+using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services;
@@ -1319,7 +1320,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Route("Treasury/Approval")]
-        public HttpResponseMessage Treasury_FormApproval([FromBody] FormApprovalModel input)
+        public HttpResponseMessage Treasury_FormApproval([FromBody] InflowFundFormApprovalRequest input)
         {
             try
             {
