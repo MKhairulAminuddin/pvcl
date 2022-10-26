@@ -19,9 +19,6 @@
             $submitForApprovalBtn = $("#submitForApprovalBtn"),
 
             $selectApproverModal = $('#selectApproverModal'),
-            $submitForApprovalModalBtn,
-
-            $tradeSettlementForm,
             isSaveAsDraft,
             formTypeId = 3;
 

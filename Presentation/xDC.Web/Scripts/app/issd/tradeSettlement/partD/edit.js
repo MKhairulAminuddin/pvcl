@@ -5,12 +5,12 @@
 
         ts.setSideMenuItemActive("/issd/TradeSettlement");
 
-        var $tabpanel,
+        var $saveAsDraftBtn = $("#saveAsDraftBtn"),
+            $adminEditSaveChangesBtn = $("#adminEditSaveChangesBtn"),
+
             $mtmGrid,
             $fxSettlementGrid,
 
-            $tradeSettlementForm,
-            
             $approverDropdown,
             $approvalNotes,
             
@@ -293,14 +293,14 @@
 
         //#region Events
 
-        $("#saveAsDraftBtn").on({
-            "click": function (e) {
+        $saveAsDraftBtn.dxButton({
+            onClick: function (e) {
                 isDraft = true;
             }
         });
 
-        $("#adminEditSaveChangesBtn").on({
-            "click": function (e) {
+        $adminEditSaveChangesBtn.dxButton({
+            onClick: function (e) {
                 isAdminEdit = true;
             }
         });
