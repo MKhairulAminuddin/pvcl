@@ -26,7 +26,7 @@ namespace xDC_Web.Controllers
         {
             try
             {
-                var data = InflowFundFormService.GetLandingPageData(User.Identity.Name);
+                var data = IfFormService.GetLandingPageData(User.Identity.Name);
 
                 if (data != null)
                 {
@@ -141,7 +141,7 @@ namespace xDC_Web.Controllers
         {
             try
             {
-                var form = InflowFundFormService.GetPageViewData(formId, User.Identity.Name);
+                var form = IfFormService.GetPageViewData(formId, User.Identity.Name);
 
                 if (form != null)
                 {

@@ -22,6 +22,17 @@
                             .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
                             )
 
+                        @if (Model.EnableEditDraftBtn)
+                        {
+                            @(Html.DevExtreme().Button()
+                                .ID("editDraftForm")
+                                .Text("Edit")
+                                .Icon("fa fa-pencil-square-o")
+                                .Type(ButtonType.Normal)
+                                .StylingMode(ButtonStylingMode.Contained)
+                                )
+                        }
+
                         @if (Model.EnableApproveRejectBtn)
                         {
                             @(Html.DevExtreme().Button()
@@ -54,7 +65,7 @@
                                 )
                         }
 
-                        
+
                     </div>
                     
                     <div class="right-container pull-right">

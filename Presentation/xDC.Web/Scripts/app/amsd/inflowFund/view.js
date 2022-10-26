@@ -11,6 +11,7 @@
             $rejectionNoteModal,
             $viewWorkflowModal,
             $viewAuditTrailModal,
+            $editDraftForm = $("#editDraftForm"),
             $approvalReassignModal = $("#approvalReassignModal");
 
         $approvalNoteModal = $("#approvalNoteModal");
@@ -30,7 +31,9 @@
             approvalResponse: window.location.origin + "/amsd/inflowfund/view/",
 
             printRequest: window.location.origin + "/amsd/inflowfund/Print",
-            printResponse: window.location.origin + "/amsd/inflowfund/Printed/"
+            printResponse: window.location.origin + "/amsd/inflowfund/Printed/",
+
+            editDraftUrl: window.location.origin + "/amsd/inflowfund/Edit/",
         };
 
         //#endregion
@@ -118,6 +121,14 @@
                     "</div>";
             }
         }).dxSelectBox("instance");
+
+        $editDraftForm.dxButton({
+            onClick: function (e) {
+                window.location.href = referenceUrl.editDraftUrl + app.getUrlId();
+
+                e.event.preventDefault();
+            }
+        }) 
 
         $("#approvalReassignModalBtn").dxButton({
             onClick: function (e) {

@@ -35,45 +35,22 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                using (var db = new kashflowDBEntities())
+                var IfHomeGrid1Data = IfFormService.GetTsHomeGrid1(User.Identity.Name);
+
+                if (IfHomeGrid1Data != null)
                 {
-                    var result = db.AMSD_IF
-                        .Where(x => x.FormType == Common.FormType.AMSD_IF).ToList();
-
-                    var model = new List<AmsdInflowFundGridModel>();
-
-                    foreach (var item in result)
-                    {
-                        model.Add(new AmsdInflowFundGridModel
-                        {
-                            Id = item.Id,
-                            FormType = item.FormType,
-                            FormStatus = item.FormStatus,
-                            Currency = item.Currency,
-                            PreparedBy = item.PreparedBy,
-                            PreparedDate = item.PreparedDate,
-                            ApprovedBy = item.ApprovedBy,
-                            ApprovedDate = item.ApprovedDate,
-
-                            EnableEdit = InflowFundFormService.EnableEdit(item.FormStatus, item.ApprovedBy, User.Identity.Name),
-                            EnableDelete = InflowFundFormService.EnableDelete(item.FormStatus),
-                            EnablePrint = InflowFundFormService.EnablePrint(User.Identity.Name, item.FormStatus),
-                            EnableRetractSubmission = (User.Identity.Name == item.PreparedBy && item.FormStatus == Common.FormStatus.PendingApproval),
-                            
-                            IsRejected = (item.FormStatus == Common.FormStatus.Rejected),
-                            IsPendingMyApproval = (User.Identity.Name == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
-                            
-                        });
-                    }
-
-                    return Request.CreateResponse(DataSourceLoader.Load(model, loadOptions));
+                    return Request.CreateResponse(DataSourceLoader.Load(IfHomeGrid1Data, loadOptions));
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Error. Please check logs.");
                 }
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
-            
+
         }
 
         [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
@@ -83,7 +60,7 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                var retractFormStatus = InflowFundFormService.RetractFormSubmission(req.FormId, User.Identity.Name);
+                var retractFormStatus = IfFormService.RetractFormSubmission(req.FormId, User.Identity.Name);
 
                 if (retractFormStatus)
                 {
@@ -374,7 +351,7 @@ namespace xDC_Web.Controllers.Api
                         // Submit for approval
                         if (input.Approver != null && (form.FormStatus == FormStatus.PendingApproval || form.FormStatus == FormStatus.Draft) && !input.IsSaveAdminEdit)
                         {
-                            CommonService.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name, form.FormType, input.ApprovalNotes);
+                            FormService.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name, form.FormType, input.ApprovalNotes);
                             AuditService.Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
                         }
 

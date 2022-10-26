@@ -373,11 +373,6 @@
             },
             filterPanel: {
                 visible: true
-            },
-            stateStoring: {
-                enabled: true,
-                type: "localStorage",
-                storageKey: "xDC_TS_Grid_02"
             }
         }).dxDataGrid("instance");
 

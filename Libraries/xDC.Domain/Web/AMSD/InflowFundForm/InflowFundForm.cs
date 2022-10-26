@@ -26,7 +26,7 @@ namespace xDC.Domain.Web.AMSD.InflowFundForm
         public bool EnableSubmitForApproval { get; set; }
         public bool EnableApproveRejectBtn { get; set; }
         public bool EnableReassign { get; set; }
-
+        public bool EnableEditDraftBtn { get; set; }
 
         public bool IsAdminEdited { get; set; }
     }

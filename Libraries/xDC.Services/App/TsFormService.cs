@@ -149,14 +149,14 @@ namespace xDC.Services.App
                             ApprovedBy = item.ApprovedBy,
                             ApprovedDate = item.ApprovedDate,
 
-                            EnableEdit = TsFormService.EnableEdit(item.FormStatus, item.ApprovedBy, currentUser),
-                            EnableDelete = item.FormStatus != Common.FormStatus.PendingApproval && item.ApprovedBy != currentUser,
-                            EnablePrint = TsFormService.EnablePrint(currentUser, item.FormStatus),
-                            EnableRetractSubmission = TsFormService.EnableRetractSubmission(currentUser, item.PreparedBy, item.FormStatus),
+                            EnableEdit = FormService.EnableEdit(item.FormStatus, item.PreparedBy, item.ApprovedBy, currentUser),
+                            EnableDelete = FormService.EnableDelete(item.FormStatus, item.PreparedBy, item.ApprovedBy, currentUser),
+                            EnablePrint = FormService.EnablePrint(currentUser, item.FormStatus, PermissionKey.ISSD_TradeSettlementForm_Download),
+                            EnableRetractSubmission = FormService.EnableRetractSubmission(currentUser, item.PreparedBy, item.FormStatus, PermissionKey.ISSD_TradeSettlementForm_Edit),
 
                             IsRejected = (currentUser == item.PreparedBy && item.FormStatus == Common.FormStatus.Rejected),
                             IsPendingMyApproval = (currentUser == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
-                            IsPendingApproval = item.FormStatus == Common.FormStatus.PendingApproval
+                            IsPendingApproval = item.FormStatus == FormStatus.PendingApproval
                         });
                     }
 
@@ -195,7 +195,7 @@ namespace xDC.Services.App
                             FormDate = item.SettlementDate,
                             Currency = item.Currency,
                             ApprovedDate = item.ApprovedDate,
-                            EnablePrint = TsFormService.EnablePrint(currentUser, FormStatus.Approved)
+                            EnablePrint = FormService.EnablePrint(currentUser, FormStatus.Approved, PermissionKey.ISSD_TradeSettlementForm_Download)
                         });
                     }
 
@@ -330,7 +330,7 @@ namespace xDC.Services.App
 
                     if (req.Approver != null)
                     {
-                        CommonService.NotifyApprover(req.Approver, newFormHeader.Id, currentUser, newFormHeader.FormType, req.ApprovalNotes);
+                        FormService.NotifyApprover(req.Approver, newFormHeader.Id, currentUser, newFormHeader.FormType, req.ApprovalNotes);
                         AuditService.Capture_FA(newFormHeader.Id, newFormHeader.FormType, FormActionType.RequestApproval, currentUser, $"Request Approval for {newFormHeader.FormType} form");
                     }
 
@@ -373,8 +373,6 @@ namespace xDC.Services.App
                         form.ApprovedBy = req.Approver;
                         form.ApprovedDate = null; // empty the date as this is new submission
                         form.FormStatus = Common.FormStatus.PendingApproval;
-
-                        CommonService.NotifyApprover(form.ApprovedBy, form.Id, currentUser, form.FormType, req.ApprovalNotes);
                     }
 
                     var formTradeItems = db.ISSD_TradeSettlement.Where(x => x.FormId == form.Id).ToList();
@@ -1344,6 +1342,11 @@ namespace xDC.Services.App
 
                     db.SaveChanges();
 
+                    if (req.Approver != null && !req.IsSaveAsDraft && !req.IsSaveAdminEdit)
+                    {
+                        FormService.NotifyApprover(form.ApprovedBy, form.Id, currentUser, form.FormType, req.ApprovalNotes);
+                    }
+                    
                     return form.Id;
                 }
             }
@@ -1371,7 +1374,7 @@ namespace xDC.Services.App
                             form.FormStatus = (req.ApprovalStatus) ? Common.FormStatus.Approved : Common.FormStatus.Rejected;
                             db.SaveChanges();
 
-                            CommonService.NotifyPreparer(form.Id, form.FormType, form.FormStatus, form.PreparedBy, form.ApprovedBy, req.ApprovalNote);
+                            FormService.NotifyPreparer(form.Id, form.FormType, form.FormStatus, form.PreparedBy, form.ApprovedBy, req.ApprovalNote);
                             new MailService().TS_IncomingFund(form.Id, form.FormType, form.Currency);
                             AuditService.FA_Approval(form.Id, form.FormType, form.FormStatus, form.SettlementDate, currentUser);
 
@@ -1451,8 +1454,6 @@ namespace xDC.Services.App
                 return false;
             }
         }
-
-
 
         #endregion
 
@@ -1566,39 +1567,6 @@ namespace xDC.Services.App
             return result;
         }
 
-        public static bool EnableEdit(string formStatus, string formApprover, string currentUser)
-        {
-            var isPendingApproval = formStatus == Common.FormStatus.PendingApproval;
-            var isFormApprover = formApprover == currentUser;
-
-            return !isPendingApproval && !isFormApprover;
-        }
-
-        public static bool EnableDelete(string formStatus)
-        {
-            var isApproved = (formStatus == Common.FormStatus.Approved);
-            var isPendingApproval = formStatus == Common.FormStatus.PendingApproval;
-
-            return !isApproved && !isPendingApproval;
-        }
-
-        public static bool EnablePrint(string currentUser, string formStatus)
-        {
-            var isDownloadAllowed = new AuthService().IsUserHaveAccess(currentUser, Common.PermissionKey.ISSD_TradeSettlementForm_Download);
-            var isDraft = formStatus == Common.FormStatus.Draft;
-
-            return (isDownloadAllowed && !isDraft);
-        }
-
-        public static bool EnableRetractSubmission(string currentUser, string formPreparedBy, string formStatus)
-        {
-            var haveEditPermission = new AuthService().IsUserHaveAccess(currentUser, Common.PermissionKey.ISSD_TradeSettlementForm_Edit);
-            var isPendingApproval = formStatus == Common.FormStatus.PendingApproval;
-            var isPreparedByMe = currentUser == formPreparedBy;
-
-            return (haveEditPermission && isPendingApproval && isPreparedByMe);
-        }
-
         public static bool EditFormRules(string formStatus, string approvedBy, string currentUser, out string errorMessage)
         {
             var isPendingApproval = formStatus == Common.FormStatus.PendingApproval;
@@ -1612,25 +1580,6 @@ namespace xDC.Services.App
             else if (isYouAreTheApprover)
             {
                 errorMessage = "You are this form Approver. Then you cannot edit it";
-                return true;
-            }
-            else
-            {
-                errorMessage = null;
-                return false;
-            }
-        }
-
-        public static bool NewFormRules(kashflowDBEntities db, DateTime settlementDate, string currency, string formType, out string errorMessage)
-        {
-            var isSameDateFormExist = db.ISSD_FormHeader.Any(x =>
-                DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate.Date) 
-                && x.Currency == currency 
-                && x.FormType == formType);
-            
-            if (isSameDateFormExist)
-            {
-                errorMessage = "Similar form with same Form Part, Currency and Settlement has been already created. Use that instead";
                 return true;
             }
             else
