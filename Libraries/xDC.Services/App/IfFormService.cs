@@ -171,38 +171,5 @@ namespace xDC.Services.App
 
         #endregion
 
-        public static bool RetractFormSubmission(int formId, string performedBy)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
-
-                    if (form != null)
-                    {
-                        form.FormStatus = Common.FormStatus.Draft;
-                        db.SaveChanges();
-
-                        AuditService.Capture_FA(form.Id, form.FormType, Common.FormActionType.RetractSubmission, performedBy, $"Retract form submission for {form.FormType} form.");
-
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex.Message); 
-                return false;
-            }
-        }
-
-        
-
-        
     }
 }

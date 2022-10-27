@@ -72,6 +72,7 @@
     <Compile Include="WebApi\Forms\TradeSettlement\TsHomeGrid1.cs" />
     <Compile Include="WebApi\Forms\TradeSettlement\TsHomeGrid2.cs" />
     <Compile Include="WebApi\Forms\TradeSettlement\TsTradeItem.cs" />
+    <Compile Include="WebApi\Forms\TreasuryHomeGrid1.cs" />
     <Compile Include="WebApi\Form_FcaTagging\DetailRes.cs" />
     <Compile Include="WebApi\Form_FcaTagging\FcaBankAccountRes.cs" />
     <Compile Include="WebApi\Form_FcaTagging\SummaryRes.cs" />

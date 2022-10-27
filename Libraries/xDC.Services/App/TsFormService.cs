@@ -365,9 +365,9 @@ namespace xDC.Services.App
                         form.PreparedDate = DateTime.Now;
                     }
 
-                    if (req.Approver != null)
+                    if (req.Approver != null && form.FormStatus == FormStatus.Draft)
                     {
-                        AuditService.FA_ReassignApprover(form.Id, form.FormType, form.SettlementDate, currentUser,
+                        AuditService.FA_AssignApprover(form.Id, form.FormType, form.SettlementDate, currentUser,
                             form.ApprovedBy, req.Approver);
 
                         form.ApprovedBy = req.Approver;
@@ -1624,36 +1624,6 @@ namespace xDC.Services.App
                 .FirstOrDefault();
 
             return result;
-        }
-
-        public static bool RetractFormSubmission(int formId, string performedBy)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
-
-                    if (form != null)
-                    {
-                        form.FormStatus = Common.FormStatus.Draft;
-                        db.SaveChanges();
-
-                        AuditService.Capture_FA(form.Id, form.FormType, Common.FormActionType.RetractSubmission, performedBy, $"Retract form submission for {form.FormType} form.");
-
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex.Message);
-                return false;
-            }
         }
 
         #region Private Functions

@@ -251,7 +251,9 @@
             },
             wordWrapEnabled: true
         }).dxDataGrid("instance");
-        
+
+        //#region Filter Btn
+
         $todayFilterBtn.dxButton({
             onClick: function (e) {
                 $amsdGrid.filter([
@@ -300,13 +302,17 @@
             }
         });
 
+        //#endregion
+
+        //#region Retract Form Submission
+
         $retractFormBtn.dxButton({
-            onClick: function(e) {
+            onClick: function (e) {
                 app.toast("Retract form submission...", "warning", 3000);
 
                 $.ajax({
                     data: {
-                        formId: parseInt($retractFormId.text()) 
+                        formId: parseInt($retractFormId.text())
                     },
                     dataType: 'json',
                     url: referenceUrl.retractForm,
@@ -335,6 +341,8 @@
                 $retractSubmissionModal.modal('hide');
             }
         });
+
+        //#endregion
 
     });
 }(window.jQuery, window, document));

@@ -60,7 +60,7 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                var retractFormStatus = IfFormService.RetractFormSubmission(req.FormId, User.Identity.Name);
+                var retractFormStatus = FormService.RetractFormSubmission(req.FormId, User.Identity.Name, FormType.AMSD_IF);
 
                 if (retractFormStatus)
                 {

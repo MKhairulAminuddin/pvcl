@@ -66,7 +66,7 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                var retractFormStatus = TsFormService.RetractFormSubmission(req.FormId, User.Identity.Name);
+                var retractFormStatus = FormService.RetractFormSubmission(req.FormId, User.Identity.Name, FormType.ISSD_TS);
 
                 if (retractFormStatus)
                 {

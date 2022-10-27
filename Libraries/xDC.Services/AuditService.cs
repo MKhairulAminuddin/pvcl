@@ -182,6 +182,26 @@ namespace xDC.Services
             FA_SaveRecord(obj);
         }
 
+        public static void FA_AssignApprover(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore, string valueAfter)
+        {
+            var obj = new Audit_Form()
+            {
+                FormId = formId,
+                FormType = formType,
+                FormDate = formDate,
+                ActionType = Common.FormActionType.RequestApproval,
+
+                ModifiedBy = modifiedBy,
+                ModifiedOn = DateTime.Now,
+
+                Remarks = $"Assign form's approver",
+                ValueBefore = valueBefore,
+                ValueAfter = valueAfter
+            };
+
+            FA_SaveRecord(obj);
+        }
+
         public static void FA_ReassignApprover(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore, string valueAfter)
         {
             var obj = new Audit_Form()

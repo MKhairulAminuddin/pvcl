@@ -41,8 +41,9 @@
 
             approvalRequest: window.location.origin + "/api/fid/Treasury/Approval",
             approvalResponse: window.location.origin + "/fid/Treasury/view/",
-            
 
+            reassignApprover: window.location.origin + "/api/common/reassignApprover",
+            
             postNewFormRequest: window.location.origin + "/api/fid/Treasury/New",
             postNewFormResponse: window.location.origin + "/fid/Treasury",
 
@@ -191,7 +192,7 @@
 
                     $.ajax({
                         type: "POST",
-                        url: window.location.origin + "/api/common/reassignApprover",
+                        url: referenceUrl.reassignApprover,
                         data: data,
                         dataType: "text",
                         success: function (data) {
@@ -288,8 +289,6 @@
             showNavButtons: true
         });
 
-
-
         //#endregion
 
         // #region Data Grid
@@ -298,30 +297,43 @@
             dataSource: [],
             columns: [
                 {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: 50
+                },
+                {
                     dataField: "dealer",
-                    caption: "Dealer"
+                    caption: "Dealer",
+                    width: 110
                 },
                 {
                     dataField: "bank",
-                    caption: "Bank"
+                    caption: "Bank",
+                    width: 200
                 },
                 {
                     dataField: "tradeDate",
                     caption: "Trade Date",
                     dataType: "date",
-                    format: "dd/MM/yyyy"
+                    format: "dd/MM/yyyy",
+                    width: 120
                 },
                 {
                     dataField: "valueDate",
                     caption: "Value Date",
                     dataType: "date",
-                    format: "dd/MM/yyyy"
+                    format: "dd/MM/yyyy",
+                    width: 120
                 },
                 {
                     dataField: "maturityDate",
                     caption: "Maturity Date (T)",
                     dataType: "date",
-                    format: "dd/MM/yyyy"
+                    format: "dd/MM/yyyy",
+                    width: 120
                 },
                 {
                     dataField: "principal",
@@ -330,7 +342,8 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 130
                 },
                 {
                     dataField: "tenor",
@@ -339,13 +352,15 @@
                     format: {
                         type: "fixedPoint",
                         precision: 0
-                    }
+                    },
+                    width: 60
                 },
                 {
                     dataField: "ratePercent",
                     caption: "Rate (%)",
                     dataType: "number",
-                    format: "#.000 '%'"
+                    format: "#.000 '%'",
+                    width: 80
                 },
                 {
                     dataField: "intProfitReceivable",
@@ -354,7 +369,8 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 130
                 },
                 {
                     dataField: "principalIntProfitReceivable",
@@ -363,27 +379,33 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 130
                 },
                 {
                     dataField: "assetType",
                     caption: "Asset Type",
+                    width: 120
                 },
                 {
                     dataField: "repoTag",
-                    caption: "REPO tag"
+                    caption: "REPO tag",
+                    width: 100
                 },
                 {
                     dataField: "contactPerson",
-                    caption: "Contact Person"
+                    caption: "Contact Person",
+                    width: 100
                 },
                 {
                     dataField: "notes",
-                    caption: "Notes"
+                    caption: "Notes",
+                    width: 140
                 },
                 {
                     dataField: "fcaAccount",
-                    caption: "FCA"
+                    caption: "FCA",
+                    width: 140
                 }
             ],
             summary: {
@@ -429,6 +451,8 @@
             showBorders: true,
             showRowLines: true,
             showColumnLines: true,
+            allowColumnReordering: true,
+            allowColumnResizing: true,
             wordWrapEnabled: true
         }).dxDataGrid("instance");
 
@@ -436,30 +460,43 @@
             dataSource: [],
             columns: [
                 {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    allowEditing: false,
+                    width: 50
+                },
+                {
                     dataField: "dealer",
-                    caption: "Dealer"
+                    caption: "Dealer",
+                    width: 110
                 },
                 {
                     dataField: "bank",
-                    caption: "Bank"
+                    caption: "Bank",
+                    width: 200
                 },
                 {
                     dataField: "tradeDate",
                     caption: "Trade Date",
                     dataType: "date",
-                    format: "dd/MM/yyyy"
+                    format: "dd/MM/yyyy",
+                    width: 120
                 },
                 {
                     dataField: "valueDate",
                     caption: "Value Date",
                     dataType: "date",
-                    format: "dd/MM/yyyy"
+                    format: "dd/MM/yyyy",
+                    width: 120
                 },
                 {
                     dataField: "maturityDate",
                     caption: "Maturity Date (T)",
                     dataType: "date",
-                    format: "dd/MM/yyyy"
+                    format: "dd/MM/yyyy",
+                    width: 120
                 },
                 {
                     dataField: "principal",
@@ -468,7 +505,8 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 130
                 },
                 {
                     dataField: "tenor",
@@ -477,13 +515,15 @@
                     format: {
                         type: "fixedPoint",
                         precision: 0
-                    }
+                    },
+                    width: 60
                 },
                 {
                     dataField: "ratePercent",
                     caption: "Rate (%)",
                     dataType: "number",
-                    format: "#.000 '%'"
+                    format: "#.000 '%'",
+                    width: 80
                 },
                 {
                     dataField: "intProfitReceivable",
@@ -492,7 +532,8 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 130
                 },
                 {
                     dataField: "principalIntProfitReceivable",
@@ -501,27 +542,33 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 130
                 },
                 {
                     dataField: "assetType",
-                    caption: "Asset Type"
+                    caption: "Asset Type",
+                    width: 120
                 },
                 {
                     dataField: "repoTag",
-                    caption: "REPO tag"
+                    caption: "REPO tag",
+                    width: 100
                 },
                 {
                     dataField: "contactPerson",
-                    caption: "Contact Person"
+                    caption: "Contact Person",
+                    width: 100
                 },
                 {
                     dataField: "notes",
-                    caption: "Notes"
+                    caption: "Notes",
+                    width: 140
                 },
                 {
                     dataField: "fcaAccount",
-                    caption: "FCA"
+                    caption: "FCA",
+                    width: 140
                 }
             ],
             summary: {
@@ -567,6 +614,8 @@
             showBorders: true,
             showRowLines: true,
             showColumnLines: true,
+            allowColumnReordering: true,
+            allowColumnResizing: true,
             wordWrapEnabled: true
         }).dxDataGrid("instance");
 
@@ -574,38 +623,52 @@
             dataSource: [],
             columns: [
                 {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    width: 50
+                },
+                {
                     dataField: "dealer",
-                    caption: "Dealer"
+                    caption: "Dealer",
+                    width: 110
                 },
                 {
                     dataField: "issuer",
-                    caption: "Issuer"
+                    caption: "Issuer",
+                    width: 200
                 },
                 {
                     dataField: "productType",
-                    caption: "Product Type"
+                    caption: "Product Type",
+                    width: 60
                 },
                 {
                     dataField: "counterParty",
-                    caption: "Counterparty"
+                    caption: "Counterparty",
+                    width: 100
                 },
                 {
                     dataField: "tradeDate",
                     caption: "Trade Date",
                     dataType: "date",
-                    format: "dd/MM/yyyy"
+                    format: "dd/MM/yyyy",
+                    width: 120
                 },
                 {
                     dataField: "valueDate",
                     caption: "Value Date",
                     dataType: "date",
-                    format: "dd/MM/yyyy"
+                    format: "dd/MM/yyyy",
+                    width: 120
                 },
                 {
                     dataField: "maturityDate",
                     caption: "Maturity Date (T)",
                     dataType: "date",
-                    format: "dd/MM/yyyy"
+                    format: "dd/MM/yyyy",
+                    width: 120
                 },
                 {
                     dataField: "holdingDayTenor",
@@ -614,7 +677,8 @@
                     format: {
                         type: "fixedPoint",
                         precision: 0
-                    }
+                    },
+                    width: 60
                 },
                 {
                     dataField: "nominal",
@@ -623,19 +687,25 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 130
                 },
                 {
                     dataField: "sellPurchaseRateYield",
                     caption: "Sell Rate / Yield (%)",
                     dataType: "number",
-                    format: "#.000 '%'"
+                    format: "#.000 '%'",
+                    width: 80
                 },
                 {
                     dataField: "price",
                     caption: "Price",
                     dataType: "number",
-                    allowEditing: false
+                    format: {
+                        type: "fixedPoint",
+                        precision: 4
+                    },
+                    width: 130
                 },
                 {
                     dataField: "purchaseProceeds",
@@ -644,7 +714,8 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 130
                 },
                 {
                     dataField: "intDividendReceivable",
@@ -654,7 +725,7 @@
                         type: "fixedPoint",
                         precision: 2
                     },
-                    allowEditing: false
+                    width: 130
                 },
                 {
                     dataField: "proceeds",
@@ -663,15 +734,19 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 130
                 },
                 {
                     dataField: "certNoStockCode",
-                    caption: "Certificate No. / Stock Code"
+                    caption: "Certificate No. / Stock Code",
+                    width: 100
                 },
                 {
                     dataField: "fcaAccount",
-                    caption: "FCA"
+                    width: "150px",
+                    caption: "FCA",
+                    width: 125
                 }
             ],
             summary: {
@@ -705,15 +780,11 @@
                     }
                 ]
             },
-            editing: {
-                mode: "batch",
-                allowUpdating: false,
-                allowDeleting: false,
-                allowAdding: false
-            },
             showBorders: true,
             showRowLines: true,
             showColumnLines: true,
+            allowColumnReordering: true,
+            allowColumnResizing: true,
             wordWrapEnabled: true
         }).dxDataGrid("instance");
 
@@ -721,38 +792,52 @@
             dataSource: [],
             columns: [
                 {
+                    caption: "#",
+                    cellTemplate: function (cellElement, cellInfo) {
+                        cellElement.text(cellInfo.row.rowIndex + 1);
+                    },
+                    width: 50
+                },
+                {
                     dataField: "dealer",
-                    caption: "Dealer"
+                    caption: "Dealer",
+                    width: 110
                 },
                 {
                     dataField: "issuer",
-                    caption: "Issuer"
+                    caption: "Issuer",
+                    width: 200
                 },
                 {
                     dataField: "productType",
-                    caption: "Product Type"
+                    caption: "Product Type",
+                    width: 60
                 },
                 {
                     dataField: "counterParty",
-                    caption: "Counterparty"
+                    caption: "Counterparty",
+                    width: 100
                 },
                 {
                     dataField: "tradeDate",
                     caption: "Trade Date",
                     dataType: "date",
-                    format: "dd/MM/yyyy"
+                    format: "dd/MM/yyyy",
+                    width: 120
                 },
                 {
                     dataField: "valueDate",
                     caption: "Value Date",
                     dataType: "date",
-                    format: "dd/MM/yyyy"
+                    format: "dd/MM/yyyy",
+                    width: 120
                 },
                 {
                     dataField: "maturityDate",
                     caption: "Maturity Date (T)",
                     dataType: "date",
-                    format: "dd/MM/yyyy"
+                    format: "dd/MM/yyyy",
+                    width: 120
                 },
                 {
                     dataField: "holdingDayTenor",
@@ -761,7 +846,8 @@
                     format: {
                         type: "fixedPoint",
                         precision: 0
-                    }
+                    },
+                    width: 60
                 },
                 {
                     dataField: "nominal",
@@ -770,27 +856,25 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 130
                 },
                 {
                     dataField: "sellPurchaseRateYield",
                     caption: "Purchase Rate / Yield (%)",
                     dataType: "number",
-                    format: "#.000 '%'"
+                    format: "#.000 '%'",
+                    width: 80
                 },
                 {
                     dataField: "price",
                     caption: "Price",
-                    dataType: "number"
-                },
-                {
-                    dataField: "purchaseProceeds",
-                    caption: "Purchase Proceeds",
                     dataType: "number",
                     format: {
                         type: "fixedPoint",
-                        precision: 2
-                    }
+                        precision: 4
+                    },
+                    width: 130
                 },
                 {
                     dataField: "intDividendReceivable",
@@ -800,6 +884,7 @@
                         type: "fixedPoint",
                         precision: 2
                     },
+                    width: 130
                 },
                 {
                     dataField: "proceeds",
@@ -808,15 +893,19 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 130
                 },
                 {
                     dataField: "certNoStockCode",
-                    caption: "Certificate No. / Stock Code"
+                    caption: "Certificate No. / Stock Code",
+                    width: 130
                 },
                 {
                     dataField: "fcaAccount",
-                    caption: "FCA"
+                    width: "150px",
+                    caption: "FCA",
+                    width: 125
                 }
             ],
             summary: {
@@ -850,15 +939,11 @@
                     }
                 ]
             },
-            editing: {
-                mode: "batch",
-                allowUpdating: false,
-                allowDeleting: false,
-                allowAdding: false
-            },
             showBorders: true,
             showRowLines: true,
             showColumnLines: true,
+            allowColumnReordering: true,
+            allowColumnResizing: true,
             wordWrapEnabled: true
         }).dxDataGrid("instance");
 

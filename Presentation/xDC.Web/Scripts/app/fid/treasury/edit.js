@@ -39,7 +39,7 @@
 
             dsApproverList: window.location.origin + "/api/common/approverList/treasury",
 
-            dsFcaAccount: window.location.origin + "/api/fid/TcaTagging/FcaAccount",
+            dsFcaAccount: window.location.origin + "/api/fid/FcaTagging/FcaAccount",
 
             postNewFormRequest: window.location.origin + "/api/fid/Treasury/Edit",
             postNewFormResponse: window.location.origin + "/fid/Treasury/View/"
@@ -282,7 +282,7 @@
 
         // #region Data Grid
 
-        $inflowDepositGrid = $("#inflowDepositGrid").dxDataGrid({
+        var dxDataGridConfig_Deposit = {
             dataSource: [],
             columns: [
                 {
@@ -291,7 +291,7 @@
                         cellElement.text(cellInfo.row.rowIndex + 1);
                     },
                     allowEditing: false,
-                    width: "30px"
+                    width: 50
                 },
                 {
                     dataField: "dealer",
@@ -303,7 +303,8 @@
                         } else {
                             return window.currentUser;
                         }
-                    }
+                    },
+                    width: 110
                 },
                 {
                     dataField: "bank",
@@ -312,7 +313,8 @@
                         dataSource: treasury.dsBankCounterParty(),
                         valueExpr: "name",
                         displayExpr: "name"
-                    }
+                    },
+                    width: 200
                 },
                 {
                     dataField: "tradeDate",
@@ -322,7 +324,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    width: 120
                 },
                 {
                     dataField: "valueDate",
@@ -332,7 +335,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    width: 120
                 },
                 {
                     dataField: "maturityDate",
@@ -342,7 +346,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    width: 120
                 },
                 {
                     dataField: "principal",
@@ -351,7 +356,8 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 130
                 },
                 {
                     dataField: "tenor",
@@ -363,15 +369,17 @@
                     },
                     calculateCellValue: function (rowData) {
                         rowData.tenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
-                        return rowData.tenor;
+                        return Number(rowData.tenor);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 60
                 },
                 {
                     dataField: "ratePercent",
                     caption: "Rate (%)",
                     dataType: "number",
-                    format: "#.000 '%'"
+                    format: "#.000 '%'",
+                    width: 80
                 },
                 {
                     dataField: "intProfitReceivable",
@@ -388,10 +396,10 @@
                         var rate = rowData.ratePercent;
 
                         rowData.intProfitReceivable = treasury.outflow_depoInt(currency, principal, tenor, rate);
-
                         return Number(rowData.intProfitReceivable);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 130
                 },
                 {
                     dataField: "principalIntProfitReceivable",
@@ -410,7 +418,8 @@
                         rowData.principalIntProfitReceivable = treasury.outflow_depo_PrincipalInt(currency, principal, tenor, rate);
                         return Number(rowData.principalIntProfitReceivable);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 130
                 },
                 {
                     dataField: "assetType",
@@ -419,302 +428,18 @@
                         dataSource: treasury.dsAssetType(),
                         valueExpr: "value",
                         displayExpr: "value"
-                    }
-                },
-                {
-                    dataField: "repoTag",
-                    caption: "REPO tag"
-                },
-                {
-                    dataField: "contactPerson",
-                    caption: "Contact Person"
-                },
-                {
-                    dataField: "notes",
-                    caption: "Notes",
-                    lookup: {
-                        dataSource: treasury.dsNotes(),
-                        valueExpr: "value",
-                        displayExpr: "value"
-                    }
-                },
-                {
-                    dataField: "fcaAccount",
-                    width: "150px",
-                    caption: "FCA",
-                    lookup: {
-                        dataSource: dsAccountLookup,
-                        valueExpr: "name",
-                        displayExpr: "name",
-                        allowClearing: true
-                    }
-                },
-                {
-                    type: "buttons",
-                    width: 110,
-                    buttons: [
-                        "edit",
-                        "delete",
-                        {
-                            text: "Copy",
-                            onClick: function (e) {
-                                e.component.byKey(e.row.key).done((source) => {
-                                    var clone = Object.assign({}, source);
-                                    clone.id = null;
-
-                                    e.component
-                                        .getDataSource()
-                                        .store()
-                                        .insert(clone)
-                                        .done(() => e.component.refresh());
-                                }).then(() => {
-                                    app.toast("Copied", "info");
-                                });
-
-                                e.event.preventDefault();
-                            }
-                        }
-                    ]
-                }
-            ],
-            summary: {
-                recalculateWhileEditing: true,
-                totalItems: [
-                    {
-                        column: "tenor",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 0
-                        }
                     },
-                    {
-                        column: "principal",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    },
-                    {
-                        column: "intProfitReceivable",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    },
-                    {
-                        column: "principalIntProfitReceivable",
-                        summaryType: "sum",
-                        displayFormat: "{0}",
-                        valueFormat: {
-                            type: "fixedPoint",
-                            precision: 2
-                        }
-                    }
-                ]
-            },
-            editing: {
-                mode: "row",
-                allowUpdating: true,
-                allowDeleting: true,
-                allowAdding: true
-            },
-            onEditorPreparing: function (e) {
-                if (e.parentType == "dataRow" && e.editorName == 'dxSelectBox') {
-                    e.editorOptions.itemTemplate = function (data, index, element) {
-                        var column = e.component.columnOption(e.dataField);
-                        var fieldName = column.lookup.displayExpr;
-
-                        if (data) {
-                            $("<div>").css({ "white-space": "normal" }).text(data[fieldName]).appendTo(element);
-                            return element;
-                        } else {
-                            return "item";
-                        }
-
-                    };
-                    e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
-                }
-            },
-            onInitNewRow: function (e) {
-                e.data.tradeDate = new Date();
-            },
-            showBorders: true,
-            showRowLines: true,
-            showColumnLines: true,
-            allowColumnReordering: true,
-            allowColumnResizing: true,
-            wordWrapEnabled: true,
-            paging: {
-                enabled: false
-            },
-            onToolbarPreparing: function (e) {
-                var toolbarItems = e.toolbarOptions.items;
-                toolbarItems.push({
-                    widget: "dxButton",
-                    options: {
-                        icon: "fa fa-trash",
-                        hint: "Remove records",
-                        onClick: function () {
-                            $inflowDepositGrid.option("dataSource", []);
-                        }
-                    },
-                    location: "after"
-                });
-            },
-        }).dxDataGrid("instance");
-
-        $outflowDepositGrid = $("#outflowDepositGrid").dxDataGrid({
-            dataSource: [],
-            columns: [
-                {
-                    caption: "#",
-                    cellTemplate: function (cellElement, cellInfo) {
-                        cellElement.text(cellInfo.row.rowIndex + 1);
-                    },
-                    allowEditing: false,
-                    width: "30px"
-                },
-                {
-                    dataField: "dealer",
-                    caption: "Dealer",
-                    calculateCellValue: function (rowData) {
-                        if (rowData.dealer) {
-                            return rowData.dealer;
-                        } else {
-                            return window.currentUser;
-                        }
-                    },
-                    allowEditing: false
-                },
-                {
-                    dataField: "bank",
-                    caption: "Bank",
-                    lookup: {
-                        dataSource: treasury.dsBankCounterParty(),
-                        valueExpr: "name",
-                        displayExpr: "name"
-                    }
-                },
-                {
-                    dataField: "tradeDate",
-                    caption: "Trade Date",
-                    dataType: "date",
-                    format: "dd/MM/yyyy",
-                    editorOptions: {
-                        placeholder: "dd/MM/yyyy",
-                        showClearButton: true
-                    }
-                },
-                {
-                    dataField: "valueDate",
-                    caption: "Value Date",
-                    dataType: "date",
-                    format: "dd/MM/yyyy",
-                    editorOptions: {
-                        placeholder: "dd/MM/yyyy",
-                        showClearButton: true
-                    }
-                },
-                {
-                    dataField: "maturityDate",
-                    caption: "Maturity Date (T)",
-                    dataType: "date",
-                    format: "dd/MM/yyyy",
-                    editorOptions: {
-                        placeholder: "dd/MM/yyyy",
-                        showClearButton: true
-                    }
-                },
-                {
-                    dataField: "principal",
-                    caption: "Principal",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    }
-                },
-                {
-                    dataField: "tenor",
-                    caption: "Tenor (day)",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 0
-                    },
-                    calculateCellValue: function (rowData) {
-                        rowData.tenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
-                        return rowData.tenor;
-                    },
-                    allowEditing: false
-                },
-                {
-                    dataField: "ratePercent",
-                    caption: "Rate (%)",
-                    dataType: "number",
-                    format: "#.000 '%'"
-                },
-                {
-                    dataField: "intProfitReceivable",
-                    caption: "Interest/Profit Receivable",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    },
-                    calculateCellValue: function (rowData) {
-                        var currency = $currencySelectBox.option("value");
-                        var principal = rowData.principal;
-                        var tenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
-                        var rate = rowData.ratePercent;
-
-                        rowData.intProfitReceivable = treasury.outflow_depoInt(currency, principal, tenor, rate);
-
-                        return Number(rowData.intProfitReceivable);
-                    },
-                    allowEditing: false
-                },
-                {
-                    dataField: "principalIntProfitReceivable",
-                    caption: "Principal + Interest/Profit Receivable",
-                    dataType: "number",
-                    format: {
-                        type: "fixedPoint",
-                        precision: 2
-                    },
-                    calculateCellValue: function (rowData) {
-                        var currency = $currencySelectBox.option("value");
-                        var principal = rowData.principal;
-                        var tenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
-                        var rate = rowData.ratePercent;
-
-                        rowData.principalIntProfitReceivable = treasury.outflow_depo_PrincipalInt(currency, principal, tenor, rate);
-                        return Number(rowData.principalIntProfitReceivable);
-                    },
-                    allowEditing: false
-                },
-                {
-                    dataField: "assetType",
-                    caption: "Asset Type",
-                    lookup: {
-                        dataSource: treasury.dsAssetType,
-                        valueExpr: "value",
-                        displayExpr: "value"
-                    }
+                    width: 120
                 },
                 {
                     dataField: "repoTag",
                     caption: "REPO tag",
+                    width: 100
                 },
                 {
                     dataField: "contactPerson",
                     caption: "Contact Person",
+                    width: 100
                 },
                 {
                     dataField: "notes",
@@ -723,22 +448,25 @@
                         dataSource: treasury.dsNotes(),
                         valueExpr: "value",
                         displayExpr: "value"
-                    }
+                    },
+                    width: 140
                 },
                 {
                     dataField: "fcaAccount",
-                    width: "150px",
                     caption: "FCA",
                     lookup: {
                         dataSource: dsAccountLookup,
                         valueExpr: "name",
                         displayExpr: "name",
                         allowClearing: true
-                    }
+                    },
+                    width: 140
                 },
                 {
                     type: "buttons",
                     width: 110,
+                    fixedPosition: "left",
+                    fixed: true,
                     buttons: [
                         "edit",
                         "delete",
@@ -754,7 +482,6 @@
                                         .store()
                                         .insert(clone)
                                         .done(() => e.component.refresh());
-
                                 }).then(() => {
                                     app.toast("Copied", "info");
                                 });
@@ -841,21 +568,153 @@
             paging: {
                 enabled: false
             },
-            onToolbarPreparing: function (e) {
-                var toolbarItems = e.toolbarOptions.items;
-                toolbarItems.push({
-                    widget: "dxButton",
-                    options: {
-                        icon: "fa fa-trash",
-                        hint: "Remove records",
-                        onClick: function () {
-                            $outflowDepositGrid.option("dataSource", []);
-                        }
+            selection: {
+                mode: "multiple",
+                showCheckBoxesMode: "none"
+            },
+            columnFixing: {
+                enabled: true,
+            },
+        };
+
+        $inflowDepositGrid = $("#inflowDepositGrid").dxDataGrid({
+            dataSource: [],
+            toolbar: {
+                items: [
+                    {
+                        name: "addRowButton",
+                        showText: "always",
+                        location: "before"
                     },
-                    location: "after"
-                });
+                    {
+                        widget: "dxButton",
+                        options: {
+                            icon: "fa fa-trash",
+                            text: "Remove all rows",
+                            onClick: function () {
+                                $inflowDepositGrid.option("dataSource", []);
+                            }
+                        },
+                        location: "before"
+                    },
+                    {
+                        widget: "dxButton",
+                        options: {
+                            icon: "fa fa-clone",
+                            text: "Copy to rollover",
+                            hint: "Copy selected row into rollover table",
+                            onClick: function (e) {
+
+                                if ($inflowDepositGrid.getSelectedRowsData().length > 0) {
+                                    $inflowDepositGrid.getSelectedRowsData().forEach(function (i) {
+                                        var dataSource = $outflowDepositGrid.getDataSource();
+                                        dataSource.store().insert({
+                                            id: Math.floor(Math.random() * 99) + 1,
+                                            dealer: i.dealer,
+                                            bank: i.bank,
+                                            tradeDate: i.tradeDate,
+                                            valueDate: i.valueDate,
+                                            maturityDate: i.maturityDate,
+                                            principal: i.principalIntProfitReceivable,
+                                            ratePercent: i.ratePercent,
+                                            assetType: i.assetType,
+                                            repoTag: i.repoTag,
+                                            contactPerson: i.contactPerson,
+                                            notes: i.notes,
+                                            fcaAccount: i.fcaAccount
+                                        }).then(function () {
+                                            dataSource.reload();
+                                        })
+                                    });
+
+                                    $outflowDepositGrid.refresh();
+
+                                } else {
+
+                                    app.toast("Please select at least one row to copy over.", "error")
+
+                                }
+
+                                e.event.preventDefault();
+                            }
+                        },
+                        location: "before"
+                    }
+                ]
             }
         }).dxDataGrid("instance");
+
+        $outflowDepositGrid = $("#outflowDepositGrid").dxDataGrid({
+            dataSource: [],
+            toolbar: {
+                items: [
+                    {
+                        name: "addRowButton",
+                        showText: "always",
+                        location: "before"
+                    },
+                    {
+                        widget: "dxButton",
+                        options: {
+                            icon: "fa fa-trash",
+                            text: "Remove all rows",
+                            onClick: function () {
+                                $outflowDepositGrid.option("dataSource", []);
+                            }
+                        },
+                        location: "before"
+                    },
+                ]
+            }
+        }).dxDataGrid("instance");
+
+        $inflowDepositGrid.option(dxDataGridConfig_Deposit);
+        $outflowDepositGrid.option(dxDataGridConfig_Deposit);
+
+
+        var dxDataGridConfig_Mmi = {
+            editing: {
+                mode: "row",
+                allowUpdating: true,
+                allowDeleting: true,
+                allowAdding: true
+            },
+            onEditorPreparing: function (e) {
+                if (e.parentType == "dataRow" && e.editorName == 'dxSelectBox') {
+                    e.editorOptions.itemTemplate = function (data, index, element) {
+                        var column = e.component.columnOption(e.dataField);
+                        var fieldName = column.lookup.displayExpr;
+
+                        if (data) {
+                            $("<div>").css({ "white-space": "normal" }).text(data[fieldName]).appendTo(element);
+                            return element;
+                        } else {
+                            return "item";
+                        }
+
+                    };
+                    e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
+                }
+            },
+            onInitNewRow: function (e) {
+                e.data.tradeDate = new Date();
+            },
+            showBorders: true,
+            showRowLines: true,
+            showColumnLines: true,
+            allowColumnReordering: true,
+            allowColumnResizing: true,
+            wordWrapEnabled: true,
+            paging: {
+                enabled: false
+            },
+            selection: {
+                mode: "single"
+            },
+            columnFixing: {
+                enabled: true,
+            }
+        };
 
         $inflowMmiGrid = $("#inflowMmiGrid").dxDataGrid({
             dataSource: [],
@@ -866,7 +725,7 @@
                         cellElement.text(cellInfo.row.rowIndex + 1);
                     },
                     allowEditing: false,
-                    width: "30px"
+                    width: 50
                 },
                 {
                     dataField: "dealer",
@@ -878,7 +737,8 @@
                         } else {
                             return window.currentUser;
                         }
-                    }
+                    },
+                    width: 110
                 },
                 {
                     dataField: "issuer",
@@ -887,7 +747,8 @@
                         dataSource: treasury.dsIssuer(),
                         valueExpr: "name",
                         displayExpr: "name"
-                    }
+                    },
+                    width: 200
                 },
                 {
                     dataField: "productType",
@@ -896,7 +757,8 @@
                         dataSource: treasury.dsProductType,
                         valueExpr: "value",
                         displayExpr: "value"
-                    }
+                    },
+                    width: 60
                 },
                 {
                     dataField: "counterParty",
@@ -905,7 +767,8 @@
                         dataSource: treasury.dsBankCounterParty(),
                         valueExpr: "name",
                         displayExpr: "name"
-                    }
+                    },
+                    width: 100
                 },
                 {
                     dataField: "tradeDate",
@@ -915,7 +778,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    width: 120
                 },
                 {
                     dataField: "valueDate",
@@ -925,7 +789,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    width: 120
                 },
                 {
                     dataField: "maturityDate",
@@ -935,7 +800,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    width: 120
                 },
                 {
                     dataField: "holdingDayTenor",
@@ -947,9 +813,10 @@
                     },
                     calculateCellValue: function (rowData) {
                         rowData.holdingDayTenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
-                        return rowData.holdingDayTenor;
+                        return Number(rowData.holdingDayTenor);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 60
                 },
                 {
                     dataField: "nominal",
@@ -958,13 +825,15 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 130
                 },
                 {
                     dataField: "sellPurchaseRateYield",
                     caption: "Sell Rate / Yield (%)",
                     dataType: "number",
-                    format: "#.000 '%'"
+                    format: "#.000 '%'",
+                    width: 80
                 },
                 {
                     dataField: "price",
@@ -983,7 +852,8 @@
                         );
                         return Number(rowData.price);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 130
                 },
                 {
                     dataField: "purchaseProceeds",
@@ -992,7 +862,8 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 130
                 },
                 {
                     dataField: "intDividendReceivable",
@@ -1012,7 +883,8 @@
                         );
                         return Number(rowData.intDividendReceivable);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 130
                 },
                 {
                     dataField: "proceeds",
@@ -1031,11 +903,13 @@
                         );
                         return Number(rowData.proceeds);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 130
                 },
                 {
                     dataField: "certNoStockCode",
-                    caption: "Certificate No. / Stock Code"
+                    caption: "Certificate No. / Stock Code",
+                    width: 100
                 },
                 {
                     dataField: "fcaAccount",
@@ -1046,11 +920,14 @@
                         valueExpr: "name",
                         displayExpr: "name",
                         allowClearing: true
-                    }
+                    },
+                    width: 125
                 },
                 {
                     type: "buttons",
                     width: 110,
+                    fixedPosition: "left",
+                    fixed: true,
                     buttons: [
                         "edit",
                         "delete",
@@ -1108,54 +985,25 @@
                     }
                 ]
             },
-            editing: {
-                mode: "row",
-                allowUpdating: true,
-                allowDeleting: true,
-                allowAdding: true
-            },
-            onEditorPreparing: function (e) {
-                if (e.parentType == "dataRow" && e.editorName == 'dxSelectBox') {
-                    e.editorOptions.itemTemplate = function (data, index, element) {
-                        var column = e.component.columnOption(e.dataField);
-                        var fieldName = column.lookup.displayExpr;
-
-                        if (data) {
-                            $("<div>").css({ "white-space": "normal" }).text(data[fieldName]).appendTo(element);
-                            return element;
-                        } else {
-                            return "item";
-                        }
-
-                    };
-                    e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
-                }
-            },
-            onInitNewRow: function (e) {
-                e.data.tradeDate = new Date();
-            },
-            showBorders: true,
-            showRowLines: true,
-            showColumnLines: true,
-            allowColumnReordering: true,
-            allowColumnResizing: true,
-            wordWrapEnabled: true,
-            onToolbarPreparing: function (e) {
-                var toolbarItems = e.toolbarOptions.items;
-                toolbarItems.push({
-                    widget: "dxButton",
-                    options: {
-                        icon: "fa fa-trash",
-                        hint: "Remove records",
-                        onClick: function () {
-                            $inflowMmiGrid.option("dataSource", []);
-                        }
+            toolbar: {
+                items: [
+                    {
+                        name: "addRowButton",
+                        showText: "always",
+                        location: "before"
                     },
-                    location: "after"
-                });
-            },
-            paging: {
-                enabled: false
+                    {
+                        widget: "dxButton",
+                        options: {
+                            icon: "fa fa-trash",
+                            text: "Remove all rows",
+                            onClick: function () {
+                                $inflowMmiGrid.option("dataSource", []);
+                            }
+                        },
+                        location: "before"
+                    },
+                ]
             }
         }).dxDataGrid("instance");
 
@@ -1168,19 +1016,17 @@
                         cellElement.text(cellInfo.row.rowIndex + 1);
                     },
                     allowEditing: false,
-                    width: "30px"
+                    width: 50
                 },
                 {
                     dataField: "dealer",
                     caption: "Dealer",
                     allowEditing: false,
                     calculateCellValue: function (rowData) {
-                        if (rowData.dealer) {
-                            return rowData.dealer;
-                        } else {
-                            return window.currentUser;
-                        }
-                    }
+                        rowData.dealer = window.currentUser;
+                        return window.currentUser;
+                    },
+                    width: 110
                 },
                 {
                     dataField: "issuer",
@@ -1189,7 +1035,8 @@
                         dataSource: treasury.dsIssuer(),
                         valueExpr: "name",
                         displayExpr: "name"
-                    }
+                    },
+                    width: 200
                 },
                 {
                     dataField: "productType",
@@ -1198,7 +1045,8 @@
                         dataSource: treasury.dsProductType,
                         valueExpr: "value",
                         displayExpr: "value"
-                    }
+                    },
+                    width: 60
                 },
                 {
                     dataField: "counterParty",
@@ -1207,7 +1055,8 @@
                         dataSource: treasury.dsBankCounterParty(),
                         valueExpr: "name",
                         displayExpr: "name"
-                    }
+                    },
+                    width: 100
                 },
                 {
                     dataField: "tradeDate",
@@ -1217,7 +1066,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    width: 120
                 },
                 {
                     dataField: "valueDate",
@@ -1227,7 +1077,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    width: 120
                 },
                 {
                     dataField: "maturityDate",
@@ -1237,7 +1088,8 @@
                     editorOptions: {
                         placeholder: "dd/MM/yyyy",
                         showClearButton: true
-                    }
+                    },
+                    width: 120
                 },
                 {
                     dataField: "holdingDayTenor",
@@ -1249,9 +1101,10 @@
                     },
                     calculateCellValue: function (rowData) {
                         rowData.holdingDayTenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
-                        return rowData.holdingDayTenor;
+                        return Number(rowData.holdingDayTenor);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 60
                 },
                 {
                     dataField: "nominal",
@@ -1260,13 +1113,15 @@
                     format: {
                         type: "fixedPoint",
                         precision: 2
-                    }
+                    },
+                    width: 130
                 },
                 {
                     dataField: "sellPurchaseRateYield",
                     caption: "Purchase Rate / Yield (%)",
                     dataType: "number",
-                    format: "#.000 '%'"
+                    format: "#.000 '%'",
+                    width: 80
                 },
                 {
                     dataField: "price",
@@ -1285,7 +1140,8 @@
                         );
                         return Number(rowData.price);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 130
                 },
                 {
                     dataField: "intDividendReceivable",
@@ -1304,7 +1160,8 @@
                         );
                         return Number(rowData.intDividendReceivable);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 130
                 },
                 {
                     dataField: "proceeds",
@@ -1323,11 +1180,13 @@
                         );
                         return Number(rowData.proceeds);
                     },
-                    allowEditing: false
+                    allowEditing: false,
+                    width: 130
                 },
                 {
                     dataField: "certNoStockCode",
-                    caption: "Certificate No. / Stock Code"
+                    caption: "Certificate No. / Stock Code",
+                    width: 130
                 },
                 {
                     dataField: "fcaAccount",
@@ -1338,11 +1197,14 @@
                         valueExpr: "name",
                         displayExpr: "name",
                         allowClearing: true
-                    }
+                    },
+                    width: 125
                 },
                 {
                     type: "buttons",
                     width: 110,
+                    fixedPosition: "left",
+                    fixed: true,
                     buttons: [
                         "edit",
                         "delete",
@@ -1400,56 +1262,31 @@
                     }
                 ]
             },
-            editing: {
-                mode: "row",
-                allowUpdating: true,
-                allowDeleting: true,
-                allowAdding: true
-            },
-            onEditorPreparing: function (e) {
-                if (e.parentType == "dataRow" && e.editorName == 'dxSelectBox') {
-                    e.editorOptions.itemTemplate = function (data, index, element) {
-                        var column = e.component.columnOption(e.dataField);
-                        var fieldName = column.lookup.displayExpr;
-
-                        if (data) {
-                            $("<div>").css({ "white-space": "normal" }).text(data[fieldName]).appendTo(element);
-                            return element;
-                        } else {
-                            return "item";
-                        }
-
-                    };
-                    e.editorOptions.onOpened = function (e) { e.component._popup.option("width", 300); };
-                }
-            },
-            onInitNewRow: function (e) {
-                e.data.tradeDate = new Date();
-            },
-            showBorders: true,
-            showRowLines: true,
-            showColumnLines: true,
-            allowColumnReordering: true,
-            allowColumnResizing: true,
-            wordWrapEnabled: true,
-            onToolbarPreparing: function (e) {
-                var toolbarItems = e.toolbarOptions.items;
-                toolbarItems.push({
-                    widget: "dxButton",
-                    options: {
-                        icon: "fa fa-trash",
-                        hint: "Remove records",
-                        onClick: function () {
-                            $outflowMmiGrid.option("dataSource", []);
-                        }
+            toolbar: {
+                items: [
+                    {
+                        name: "addRowButton",
+                        showText: "always",
+                        location: "before"
                     },
-                    location: "after"
-                });
-            },
-            paging: {
-                enabled: false
+                    {
+                        widget: "dxButton",
+                        options: {
+                            icon: "fa fa-trash",
+                            text: "Remove all rows",
+                            onClick: function () {
+                                $outflowMmiGrid.option("dataSource", []);
+                            }
+                        },
+                        location: "before"
+                    },
+                ]
             }
         }).dxDataGrid("instance");
+
+        $inflowMmiGrid.option(dxDataGridConfig_Mmi);
+        $outflowMmiGrid.option(dxDataGridConfig_Mmi);
+
         // #endregion Data Grid
 
         //#region Events & Invocations

@@ -76,8 +76,8 @@
   <ItemGroup>
     <Compile Include="ApplicationLogService.cs" />
     <Compile Include="App\IfFormService.cs" />
-    <Compile Include="App\CommonService.cs" />
-    <Compile Include="App\FidService.cs" />
+    <Compile Include="App\FormService.cs" />
+    <Compile Include="App\TreasuryFormService.cs" />
     <Compile Include="App\FcaTaggingSvc.cs" />
     <Compile Include="App\TsFormService.cs" />
     <Compile Include="AuditService.cs" />

@@ -16,11 +16,14 @@ using xDC.Logging;
 using xDC.Services;
 using xDC.Services.App;
 using xDC.Utils;
+using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.Models;
+using xDC_Web.ViewModels;
 using xDC_Web.ViewModels.Fid;
 using xDC_Web.ViewModels.Fid.Treasury;
 using static xDC.Utils.Common;
 using TreasuryFormVM = xDC_Web.Models.TreasuryFormVM;
+
 
 namespace xDC_Web.Controllers.Api
 {
@@ -132,38 +135,23 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("Treasury")]
-        public HttpResponseMessage TreasuryIndex(DataSourceLoadOptions loadOptions)
+        public HttpResponseMessage TreasuryHomeGrid1(DataSourceLoadOptions loadOptions)
         {
             try
             {
-                using (var db = new kashflowDBEntities())
+                var TreasuryHomeGrid1Data = TreasuryFormService.GetTsHomeGrid1(User.Identity.Name);
+
+                if (TreasuryHomeGrid1Data != null)
                 {
-                    var result = db.FID_Treasury.Select(x => new TreasuryGridVm
-                    {
-                        Id = x.Id,
-                        ValueDate = x.ValueDate,
-                        Currency = x.Currency,
-                        FormStatus = x.FormStatus,
-                        PreparedBy = x.PreparedBy,
-                        PreparedDate = x.PreparedDate,
-                        ApprovedBy = x.ApprovedBy,
-                        ApprovedDate = x.ApprovedDate,
-
-                        IsEditAllowed = x.FormStatus != Common.FormStatus.PendingApproval && x.ApprovedBy != User.Identity.Name,
-                        IsDeleteAllowed = x.FormStatus != Common.FormStatus.PendingApproval && x.ApprovedBy != User.Identity.Name,
-                        IsViewAllowed = false,
-
-                        IsPendingMyApproval = x.FormStatus == Common.FormStatus.PendingApproval && x.ApprovedBy == User.Identity.Name,
-                        IsMyFormRejected = x.FormStatus == Common.FormStatus.Rejected && x.PreparedBy == User.Identity.Name,
-                        IsPendingApproval = x.FormStatus == Common.FormStatus.PendingApproval
-                    }).ToList();
-                    
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+                    return Request.CreateResponse(DataSourceLoader.Load(TreasuryHomeGrid1Data, loadOptions));
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Error. Please check logs.");
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
         }
@@ -355,6 +343,7 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        #region Grid
 
         [HttpGet]
         [Route("Treasury/inflow/deposit/{formId}")]
@@ -445,7 +434,8 @@ namespace xDC_Web.Controllers.Api
         }
 
 
-        // form area
+        #endregion
+
         [HttpPost]
         [Route("Treasury/New")]
         public HttpResponseMessage Treasury_FormNew([FromBody] TreasuryFormVM input)
@@ -1369,7 +1359,6 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
-
         [HttpDelete]
         [Route("Treasury")]
         public HttpResponseMessage Treasury_FormDelete(FormDataCollection request)
@@ -1414,6 +1403,31 @@ namespace xDC_Web.Controllers.Api
             {
                 Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+            }
+
+        }
+
+        [KflowApiAuthorize(PermissionKey.FID_TreasuryForm_Edit)]
+        [HttpPost]
+        [Route("Treasury/retractForm")]
+        public HttpResponseMessage Treasury_RetractForm(RetractFormVM req)
+        {
+            try
+            {
+                var retractFormStatus = FormService.RetractFormSubmission(req.FormId, User.Identity.Name, Common.FormType.FID_TREASURY);
+
+                if (retractFormStatus)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Created);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid form ID");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
 
         }
