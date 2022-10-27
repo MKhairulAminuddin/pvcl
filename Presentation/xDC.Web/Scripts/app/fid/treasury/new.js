@@ -822,7 +822,7 @@
                         valueExpr: "value",
                         displayExpr: "value"
                     },
-                    width: 60
+                    width: 100
                 },
                 {
                     dataField: "counterParty",
@@ -1110,7 +1110,7 @@
                         valueExpr: "value",
                         displayExpr: "value"
                     },
-                    width: 60
+                    width: 100
                 },
                 {
                     dataField: "counterParty",
@@ -1344,6 +1344,17 @@
                         },
                         location: "before"
                     },
+                    {
+                        widget: "dxButton",
+                        options: {
+                            icon: "fa fa-floppy-o",
+                            text: "Save Changes",
+                            onClick: function () {
+                                $outflowMmiGrid.saveEditData();
+                            }
+                        },
+                        location: "before"
+                    }
                 ]
             }
         }).dxDataGrid("instance");
