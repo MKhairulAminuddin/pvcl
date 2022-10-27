@@ -702,6 +702,17 @@
                             }
                         },
                         location: "before"
+                    },
+                    {
+                        widget: "dxButton",
+                        options: {
+                            icon: "fa fa-floppy-o",
+                            text: "Save Changes",
+                            onClick: function () {
+                                $inflowDepositGrid.saveEditData();
+                            }
+                        },
+                        location: "before"
                     }
                 ]
             }
@@ -727,6 +738,17 @@
                         },
                         location: "before"
                     },
+                    {
+                        widget: "dxButton",
+                        options: {
+                            icon: "fa fa-floppy-o",
+                            text: "Save Changes",
+                            onClick: function () {
+                                $outflowDepositGrid.saveEditData();
+                            }
+                        },
+                        location: "before"
+                    }
                 ]
             }
         }).dxDataGrid("instance");
@@ -1067,6 +1089,17 @@
                         },
                         location: "before"
                     },
+                    {
+                        widget: "dxButton",
+                        options: {
+                            icon: "fa fa-floppy-o",
+                            text: "Save Changes",
+                            onClick: function () {
+                                $inflowMmiGrid.saveEditData();
+                            }
+                        },
+                        location: "before"
+                    }
                 ]
             }
         }).dxDataGrid("instance");

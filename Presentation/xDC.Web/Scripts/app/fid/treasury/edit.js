@@ -19,6 +19,7 @@
             $selectApproverModal = $("#selectApproverModal"),
             $submitForApprovalModalBtn,
 
+            $valueDateBox = $("#valueDateBox"),
             $currencySelectBox,
             $tradeDate,
             $approverDropdown,
@@ -28,8 +29,11 @@
 
         var referenceUrl = {
             dsMaturity: window.location.origin + "/api/fid/Treasury/EdwMaturity/",
+            dsMm: window.location.origin + "/api/fid/Treasury/EdwMmi/",
             dsBankCounterParty: window.location.origin + "/api/fid/Treasury/EdwBankCounterParty/",
             dsIssuer: window.location.origin + "/api/fid/Treasury/EdwIssuer/",
+
+            dsEdwAvailability: window.location.origin + "/api/fid/Treasury/EdwDataAvailability",
 
             dsInflowDeposit: window.location.origin + "/api/fid/Treasury/inflow/deposit/",
             dsOutflowDeposit: window.location.origin + "/api/fid/Treasury/outflow/deposit/",
@@ -110,6 +114,20 @@
             }
         }
 
+        var dsMaturity = function (valueDateEpoch, currency) {
+            return $.ajax({
+                url: referenceUrl.dsMaturity + "/" + moment(valueDateEpoch).unix() + "/" + currency,
+                type: "get"
+            });
+        };
+
+        var dsMm = function (valueDateEpoch, currency) {
+            return $.ajax({
+                url: referenceUrl.dsMm + "/" + moment(valueDateEpoch).unix() + "/" + currency,
+                type: "get"
+            });
+        };
+
         var dsBankCounterParty = DevExpress.data.AspNet.createStore({
             key: "reference",
             loadUrl: referenceUrl.dsBankCounterParty
@@ -158,6 +176,76 @@
                 type: "get"
             });
         };
+
+        var dsEdwAvailability = function (valueDateEpoch, currency) {
+            return $.ajax({
+                url: referenceUrl.dsEdwAvailability + "/" + moment(valueDateEpoch).unix() + "/" + currency,
+                type: "get"
+            });
+        };
+
+        var checkDwDataAvailibility = function (valueDate, currency) {
+
+            if (valueDate && currency) {
+                $.when(
+                    dsEdwAvailability(valueDate, currency)
+                )
+                    .done(function (data1) {
+                        $edwAvailable.option("dataSource", data1);
+                    })
+                    .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+
+                    })
+                    .then(function () {
+
+                    });
+            } else {
+
+            }
+        }
+
+        var populateDwData = function (categoryType, valueDate, currency) {
+            if (valueDate && currency) {
+                if (categoryType == 1) {
+                    $.when(
+                        dsMaturity(valueDate, currency)
+                    )
+                        .done(function (data1) {
+                            $inflowDepositGrid.option("dataSource", []);
+                            $inflowDepositGrid.option("dataSource", data1.data);
+                            $inflowDepositGrid.repaint();
+
+                            app.toastEdwCount(data1.data, "Inflow Deposit Maturity");
+                        })
+                        .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+
+                        })
+                        .then(function () {
+
+                        });
+                } else {
+                    $.when(
+                        dsMm(valueDate, currency)
+                    )
+                        .done(function (data1) {
+                            $inflowMmiGrid.option("dataSource", []);
+                            $inflowMmiGrid.option("dataSource", data1.data);
+                            $inflowMmiGrid.repaint();
+
+                            app.toastEdwCount(data1.data, "Inflow Money Market");
+                        })
+                        .always(function (dataOrjqXHR, textStatus, jqXHRorErrorThrown) {
+
+                        })
+                        .then(function () {
+
+                        });
+
+                }
+            } else {
+                dxGridUtils.clearGrid($inflowDepositGrid);
+            }
+        }
 
         var populateData = function (valueDate, currency) {
             $.when(
@@ -227,7 +315,27 @@
 
         //#region Other Widgets
 
+        ;
+
         $currencySelectBox = $("#currencySelectBox").dxTextBox("instance");
+
+        $edwAvailable = $("#edwAvailable").dxList({
+            activeStateEnabled: false,
+            focusStateEnabled: false,
+            itemTemplate: function (data, index) {
+                var result = $("<div>");
+
+                $("<div>").text(data.name + " × " + data.numbers).appendTo(result);
+                $("<a>").append("<i class='fa fa-download'></i> Populate").on("dxclick", function (e) {
+
+                    populateDwData(data.categoryType, $valueDate.option("value"), $currencySelectBox.option("value"));
+
+                    e.stopPropagation();
+                }).appendTo(result);
+
+                return result;
+            }
+        }).dxList("instance");
         
         $inflowTabpanel = $("#inflowTabpanel").dxTabPanel({
             dataSource: [
@@ -1322,6 +1430,8 @@
         });
 
         populateData();
+
+        checkDwDataAvailibility($valueDateBox.dxDateBox("instance").option("value"), $currencySelectBox.option("value"));
 
         //#endregion
     });
