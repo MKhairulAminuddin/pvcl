@@ -19,7 +19,8 @@
             $selectApproverModal = $("#selectApproverModal"),
             $submitForApprovalModalBtn,
 
-            $valueDateBox = $("#valueDateBox"),
+            $valueDateBox = $("#valueDateBox").dxDateBox("instance"),
+            $currencySelectBox = $("#currencySelectBox").dxTextBox("instance"),
             $currencySelectBox,
             $tradeDate,
             $approverDropdown,
@@ -58,6 +59,7 @@
                 var x = dataGridData.map(function (x) {
                     for (key in x) {
                         return {
+                            id: x.id,
                             dealer: x.dealer,
                             bank: x.bank,
                             tradeDate: (x.tradeDate instanceof Date) ? x.tradeDate.toISOString() : x.tradeDate,
@@ -88,13 +90,13 @@
                 var x = dataGridData.map(function (x) {
                     for (key in x) {
                         return {
+                            id: x.id,
                             certNoStockCode: x.certNoStockCode,
                             counterParty: x.counterParty,
                             dealer: x.dealer,
                             holdingDayTenor: x.holdingDayTenor,
                             intDividendReceivable: x.intDividendReceivable,
                             issuer: x.issuer,
-                            maturityDate: (x.maturityDate instanceof Date) ? x.maturityDate.toISOString() : x.maturityDate,
                             nominal: x.nominal,
                             price: x.price,
                             proceeds: x.proceeds,
@@ -102,6 +104,7 @@
                             purchaseProceeds: x.purchaseProceeds,
                             sellPurchaseRateYield: x.sellPurchaseRateYield,
                             tradeDate: (x.tradeDate instanceof Date) ? x.tradeDate.toISOString() : x.tradeDate,
+                            maturityDate: (x.maturityDate instanceof Date) ? x.maturityDate.toISOString() : x.maturityDate,
                             valueDate: (x.valueDate instanceof Date) ? x.valueDate.toISOString() : x.valueDate,
                             fcaAccount: x.fcaAccount
                         };
@@ -211,8 +214,11 @@
                         dsMaturity(valueDate, currency)
                     )
                         .done(function (data1) {
-                            $inflowDepositGrid.option("dataSource", []);
-                            $inflowDepositGrid.option("dataSource", data1.data);
+                            var dataSource = $inflowDepositGrid.getDataSource();
+                            data1.data.forEach(function (i) {
+                                dataSource.store().insert(i);
+                            })
+                            dataSource.reload();
                             $inflowDepositGrid.repaint();
 
                             app.toastEdwCount(data1.data, "Inflow Deposit Maturity");
@@ -228,8 +234,11 @@
                         dsMm(valueDate, currency)
                     )
                         .done(function (data1) {
-                            $inflowMmiGrid.option("dataSource", []);
-                            $inflowMmiGrid.option("dataSource", data1.data);
+                            var dataSource = $inflowMmiGrid.getDataSource();
+                            data1.data.forEach(function (i) {
+                                dataSource.store().insert(i);
+                            })
+                            dataSource.reload();
                             $inflowMmiGrid.repaint();
 
                             app.toastEdwCount(data1.data, "Inflow Money Market");
@@ -315,10 +324,6 @@
 
         //#region Other Widgets
 
-        ;
-
-        $currencySelectBox = $("#currencySelectBox").dxTextBox("instance");
-
         $edwAvailable = $("#edwAvailable").dxList({
             activeStateEnabled: false,
             focusStateEnabled: false,
@@ -328,7 +333,7 @@
                 $("<div>").text(data.name + " × " + data.numbers).appendTo(result);
                 $("<a>").append("<i class='fa fa-download'></i> Populate").on("dxclick", function (e) {
 
-                    populateDwData(data.categoryType, $valueDate.option("value"), $currencySelectBox.option("value"));
+                    populateDwData(data.categoryType, $valueDateBox.option("value"), $currencySelectBox.option("value"));
 
                     e.stopPropagation();
                 }).appendTo(result);
@@ -409,7 +414,8 @@
                         if (rowData.dealer) {
                             return rowData.dealer;
                         } else {
-                            return window.currentUser;
+                            rowData.dealer = window.currentUser;
+                            return rowData.dealer;
                         }
                     },
                     width: 110
@@ -699,8 +705,9 @@
                         options: {
                             icon: "fa fa-trash",
                             text: "Remove all rows",
-                            onClick: function () {
+                            onClick: function (e) {
                                 $inflowDepositGrid.option("dataSource", []);
+                                e.event.preventDefault();
                             }
                         },
                         location: "before"
@@ -766,8 +773,9 @@
                         options: {
                             icon: "fa fa-trash",
                             text: "Remove all rows",
-                            onClick: function () {
+                            onClick: function (e) {
                                 $outflowDepositGrid.option("dataSource", []);
+                                e.event.preventDefault();
                             }
                         },
                         location: "before"
@@ -866,7 +874,7 @@
                         valueExpr: "value",
                         displayExpr: "value"
                     },
-                    width: 60
+                    width: 80
                 },
                 {
                     dataField: "counterParty",
@@ -876,7 +884,7 @@
                         valueExpr: "name",
                         displayExpr: "name"
                     },
-                    width: 100
+                    width: 200
                 },
                 {
                     dataField: "tradeDate",
@@ -1105,8 +1113,9 @@
                         options: {
                             icon: "fa fa-trash",
                             text: "Remove all rows",
-                            onClick: function () {
+                            onClick: function (e) {
                                 $inflowMmiGrid.option("dataSource", []);
+                                e.event.preventDefault();
                             }
                         },
                         location: "before"
@@ -1154,7 +1163,7 @@
                         valueExpr: "value",
                         displayExpr: "value"
                     },
-                    width: 60
+                    width: 80
                 },
                 {
                     dataField: "counterParty",
@@ -1164,7 +1173,7 @@
                         valueExpr: "name",
                         displayExpr: "name"
                     },
-                    width: 100
+                    width: 200
                 },
                 {
                     dataField: "tradeDate",
@@ -1382,8 +1391,9 @@
                         options: {
                             icon: "fa fa-trash",
                             text: "Remove all rows",
-                            onClick: function () {
+                            onClick: function (e) {
                                 $outflowMmiGrid.option("dataSource", []);
+                                e.event.preventDefault();
                             }
                         },
                         location: "before"
@@ -1431,7 +1441,7 @@
 
         populateData();
 
-        checkDwDataAvailibility($valueDateBox.dxDateBox("instance").option("value"), $currencySelectBox.option("value"));
+        checkDwDataAvailibility($valueDateBox.option("value"), $currencySelectBox.option("value"));
 
         //#endregion
     });

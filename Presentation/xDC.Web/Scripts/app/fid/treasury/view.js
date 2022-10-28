@@ -647,7 +647,7 @@
                 {
                     dataField: "counterParty",
                     caption: "Counterparty",
-                    width: 100
+                    width: 200
                 },
                 {
                     dataField: "tradeDate",
@@ -816,7 +816,7 @@
                 {
                     dataField: "counterParty",
                     caption: "Counterparty",
-                    width: 100
+                    width: 200
                 },
                 {
                     dataField: "tradeDate",

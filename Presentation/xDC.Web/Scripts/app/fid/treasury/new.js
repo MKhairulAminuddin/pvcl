@@ -27,6 +27,9 @@
 
             $edwAvailable,
 
+            $saveAsDraftBtn = $("#saveAsDraftBtn"),
+            $submitForApprovalModalBtn = $("#submitForApprovalModalBtn"),
+
             isSaveAsDraft = false;
 
         var referenceUrl = {
@@ -89,7 +92,6 @@
                             holdingDayTenor: x.holdingDayTenor,
                             intDividendReceivable: x.intDividendReceivable,
                             issuer: x.issuer,
-                            maturityDate: (x.maturityDate instanceof Date) ? x.maturityDate.toISOString() : x.maturityDate,
                             nominal: x.nominal,
                             price: x.price,
                             proceeds: x.proceeds,
@@ -98,6 +100,7 @@
                             sellPurchaseRateYield: x.sellPurchaseRateYield,
                             tradeDate: (x.tradeDate instanceof Date) ? x.tradeDate.toISOString() : x.tradeDate,
                             valueDate: (x.valueDate instanceof Date) ? x.valueDate.toISOString() : x.valueDate,
+                            maturityDate: (x.maturityDate instanceof Date) ? x.maturityDate.toISOString() : x.maturityDate,
                             fcaAccount: x.fcaAccount
                         };
                     }
@@ -169,8 +172,11 @@
                         dsMaturity(valueDate, currency)
                     )
                         .done(function (data1) {
-                            $inflowDepositGrid.option("dataSource", []);
-                            $inflowDepositGrid.option("dataSource", data1.data);
+                            var dataSource = $inflowDepositGrid.getDataSource();
+                            data1.data.forEach(function (i) {
+                                dataSource.store().insert(i);
+                            })
+                            dataSource.reload();
                             $inflowDepositGrid.repaint();
 
                             app.toastEdwCount(data1.data, "Inflow Deposit Maturity");
@@ -186,8 +192,11 @@
                         dsMm(valueDate, currency)
                     )
                         .done(function (data1) {
-                            $inflowMmiGrid.option("dataSource", []);
-                            $inflowMmiGrid.option("dataSource", data1.data);
+                            var dataSource = $inflowMmiGrid.getDataSource();
+                            data1.data.forEach(function (i) {
+                                dataSource.store().insert(i);
+                            })
+                            dataSource.reload();
                             $inflowMmiGrid.repaint();
 
                             app.toastEdwCount(data1.data, "Inflow Money Market");
@@ -364,7 +373,8 @@
                         if (rowData.dealer) {
                             return rowData.dealer;
                         } else {
-                            return window.currentUser;
+                            rowData.dealer = window.currentUser;
+                            return rowData.dealer;
                         }
                     },
                     width: 110
@@ -654,8 +664,9 @@
                         options: {
                             icon: "fa fa-trash",
                             text: "Remove all rows",
-                            onClick: function () {
+                            onClick: function (e) {
                                 $inflowDepositGrid.option("dataSource", []);
+                                e.event.preventDefault();
                             }
                         },
                         location: "before"
@@ -702,17 +713,6 @@
                             }
                         },
                         location: "before"
-                    },
-                    {
-                        widget: "dxButton",
-                        options: {
-                            icon: "fa fa-floppy-o",
-                            text: "Save Changes",
-                            onClick: function () {
-                                $inflowDepositGrid.saveEditData();
-                            }
-                        },
-                        location: "before"
                     }
                 ]
             }
@@ -732,19 +732,9 @@
                         options: {
                             icon: "fa fa-trash",
                             text: "Remove all rows",
-                            onClick: function () {
+                            onClick: function (e) {
                                 $outflowDepositGrid.option("dataSource", []);
-                            }
-                        },
-                        location: "before"
-                    },
-                    {
-                        widget: "dxButton",
-                        options: {
-                            icon: "fa fa-floppy-o",
-                            text: "Save Changes",
-                            onClick: function () {
-                                $outflowDepositGrid.saveEditData();
+                                e.event.preventDefault();
                             }
                         },
                         location: "before"
@@ -821,7 +811,8 @@
                         if (rowData.dealer) {
                             return rowData.dealer;
                         } else {
-                            return window.currentUser;
+                            rowData.dealer = window.currentUser;
+                            return rowData.dealer;
                         }
                     },
                     width: 110
@@ -854,7 +845,7 @@
                         valueExpr: "name",
                         displayExpr: "name"
                     },
-                    width: 100
+                    width: 200
                 },
                 {
                     dataField: "tradeDate",
@@ -1083,19 +1074,9 @@
                         options: {
                             icon: "fa fa-trash",
                             text: "Remove all rows",
-                            onClick: function () {
+                            onClick: function (e) {
                                 $inflowMmiGrid.option("dataSource", []);
-                            }
-                        },
-                        location: "before"
-                    },
-                    {
-                        widget: "dxButton",
-                        options: {
-                            icon: "fa fa-floppy-o",
-                            text: "Save Changes",
-                            onClick: function () {
-                                $inflowMmiGrid.saveEditData();
+                                e.event.preventDefault();
                             }
                         },
                         location: "before"
@@ -1153,7 +1134,7 @@
                         valueExpr: "name",
                         displayExpr: "name"
                     },
-                    width: 100
+                    width: 200
                 },
                 {
                     dataField: "tradeDate",
@@ -1371,19 +1352,9 @@
                         options: {
                             icon: "fa fa-trash",
                             text: "Remove all rows",
-                            onClick: function () {
+                            onClick: function (e) {
                                 $outflowMmiGrid.option("dataSource", []);
-                            }
-                        },
-                        location: "before"
-                    },
-                    {
-                        widget: "dxButton",
-                        options: {
-                            icon: "fa fa-floppy-o",
-                            text: "Save Changes",
-                            onClick: function () {
-                                $outflowMmiGrid.saveEditData();
+                                e.event.preventDefault();
                             }
                         },
                         location: "before"
@@ -1410,11 +1381,10 @@
         });
 
         $currencySelectBox.on("contentReady", function (e) {
-            
             $currencySelectBox.option("value", e.component.getDataSource().items()[0].value);
         });
 
-        $("#saveAsDraftBtn").dxButton({
+        $saveAsDraftBtn.dxButton({
             onClick: function (e) {
                 app.saveAllGrids($inflowDepositGrid, $outflowDepositGrid, $inflowMmiGrid, $outflowMmiGrid);
 
@@ -1426,20 +1396,20 @@
 
         $treasuryForm = $("#treasuryForm").on("submit",
             function (e) {
-                e.preventDefault();
-
                 app.saveAllGrids($inflowDepositGrid, $outflowDepositGrid, $inflowMmiGrid, $outflowMmiGrid);
                 $selectApproverModal.modal("show");
+                e.preventDefault();
             });
 
-        $submitForApprovalModalBtn = $("#submitForApprovalModalBtn").on({
-            "click": function (e) {
+        $submitForApprovalModalBtn.dxButton({
+            onClick: function (e) {
                 app.saveAllGrids($inflowDepositGrid, $outflowDepositGrid, $inflowMmiGrid, $outflowMmiGrid);
 
                 setTimeout(function () {
                     postData(false);
                 }, 1000);
-                e.preventDefault();
+
+                e.event.preventDefault();
             }
         });
 

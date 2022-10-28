@@ -1442,7 +1442,7 @@ namespace xDC_Web.Controllers.Api
             {
                 FormId = formId,
                 CashflowType = cashFlow,
-                Dealer = item.Dealer,
+                Dealer = item.Dealer != null ? item.Dealer : User.Identity.Name,
                 Bank = item.Bank,
                 TradeDate = item.TradeDate,
                 ValueDate = item.ValueDate,
@@ -1468,10 +1468,11 @@ namespace xDC_Web.Controllers.Api
             {
                 FormId = formId,
                 CashflowType = cashFlow,
-                Dealer = item.Dealer,
+                Dealer = item.Dealer != null ? item.Dealer:User.Identity.Name,
                 Issuer = item.Issuer,
                 ProductType = item.ProductType,
                 CounterParty = item.CounterParty,
+                TradeDate = item.TradeDate,
                 ValueDate = item.ValueDate,
                 MaturityDate = item.MaturityDate,
                 HoldingDayTenor = item.HoldingDayTenor,
