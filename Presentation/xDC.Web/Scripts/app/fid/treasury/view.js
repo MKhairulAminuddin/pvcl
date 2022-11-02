@@ -9,19 +9,11 @@
             $inflowDepositGrid,
             $inflowMmiGrid,
 
-            $printBtn,
-
-
-            $outflowTabpanel,
             $outflowDepositGrid,
             $outflowMmiGrid,
 
-            $currencySelectBox,
-            $tradeDate,
-
-            $viewWorkflowBtn,
-            $workflowGrid,
-            $auditTrailGrid,
+            $editDraftBtn = $("#editDraftBtn"),
+            
             $approverDropdown,
             $viewWorkflowModal = $("#viewWorkflowModal"),
             $approvalNoteModal = $("#approvalNoteModal"),
@@ -48,7 +40,9 @@
             postNewFormResponse: window.location.origin + "/fid/Treasury",
 
             printRequest: window.location.origin + "/fid/Treasury/Print",
-            printResponse: window.location.origin + "/fid/Treasury/Printed/"
+            printResponse: window.location.origin + "/fid/Treasury/Printed/",
+
+            editForm: window.location.origin + "/fid/Treasury/Edit/"
         };
         
         //#endregion
@@ -287,6 +281,14 @@
             deferRendering: false,
             itemTitleTemplate: $("#dxPanelTitle"),
             showNavButtons: true
+        });
+
+        $editDraftBtn.dxButton({
+            onClick: function (e) {
+                console.log("clicked me!");
+                window.location = referenceUrl.editForm + app.getUrlId();
+                e.event.preventDefault();
+            }
         });
 
         //#endregion

@@ -523,17 +523,15 @@
                         type: "fixedPoint",
                         precision: 2
                     },
-                    calculateCellValue: function (rowData) {
-                        var currency = $currencySelectBox.option("value");
-                        var principal = rowData.principal;
-                        var tenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
-                        var rate = rowData.ratePercent;
-
-                        rowData.principalIntProfitReceivable = treasury.outflow_depo_PrincipalInt(currency, principal, tenor, rate);
-                        return Number(rowData.principalIntProfitReceivable);
-                    },
                     allowEditing: false,
                     width: 130
+                },
+                {
+                    dataField: "manualCalc_P_plus_I",
+                    caption: "Manual Calc P+I",
+                    dataType: "boolean",
+                    value: false,
+                    width: 80
                 },
                 {
                     dataField: "assetType",
@@ -754,6 +752,33 @@
                             }
                         },
                         location: "before"
+                    },
+                    {
+                        widget: "dxButton",
+                        options: {
+                            icon: "fa fa-calculator",
+                            text: "Calculate P+I",
+                            onClick: function (e) {
+                                if ($inflowDepositGrid.getDataSource().items().length > 0) {
+
+                                    var dataSource = $inflowDepositGrid.getDataSource();
+                                    var dataStore = dataSource.store();
+                                    dataStore._array.forEach(function (i) {
+                                        if (!i.manualCalc_P_plus_I) {
+                                            i.principalIntProfitReceivable = treasury.Calc_P_Plus_I(i.principal, $currencySelectBox.option("value"), i.maturityDate, i.valueDate, i.ratePercent);
+                                        }
+                                    });
+                                    dataSource.reload();
+                                    $inflowDepositGrid.refresh();
+
+                                } else {
+                                    app.toast("No data in the grid", "error")
+
+                                }
+                                e.event.preventDefault();
+                            }
+                        },
+                        location: "before"
                     }
                 ]
             }
@@ -780,6 +805,33 @@
                         },
                         location: "before"
                     },
+                    {
+                        widget: "dxButton",
+                        options: {
+                            icon: "fa fa-calculator",
+                            text: "Calculate P+I",
+                            onClick: function (e) {
+                                if ($outflowDepositGrid.getDataSource().items().length > 0) {
+
+                                    var dataSource = $outflowDepositGrid.getDataSource();
+                                    var dataStore = dataSource.store();
+                                    dataStore._array.forEach(function (i) {
+                                        if (!i.manualCalc_P_plus_I) {
+                                            i.principalIntProfitReceivable = treasury.Calc_P_Plus_I(i.principal, $currencySelectBox.option("value"), i.maturityDate, i.valueDate, i.ratePercent);
+                                        }
+                                    });
+                                    dataSource.reload();
+                                    $outflowDepositGrid.refresh();
+
+                                } else {
+                                    app.toast("No data in the grid", "error")
+
+                                }
+                                e.event.preventDefault();
+                            }
+                        },
+                        location: "before"
+                    }
                 ]
             }
         }).dxDataGrid("instance");

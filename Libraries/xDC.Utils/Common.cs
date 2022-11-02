@@ -669,6 +669,15 @@ namespace xDC.Utils
             return $"{dblSBytes:0.##}{(useUnit ? Suffix[i] : null)}";
         }
 
+        private static readonly Random getrandom = new Random();
+        public static int GetRandomId(int min, int max)
+        {
+            lock (getrandom) // synchronize
+            {
+                return getrandom.Next(min, max);
+            }
+        }
+
         #region Audit
 
         public static class FormActionType

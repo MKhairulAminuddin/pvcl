@@ -195,6 +195,8 @@ namespace xDC_Web.Controllers.Api
 
                         item.IntProfitReceivable = item.Principal * tenor * rate;
                         item.PrincipalIntProfitReceivable = item.Principal + item.IntProfitReceivable;
+
+                        item.Id = xDC.Utils.Common.GetRandomId(30, 99);
                     }
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
@@ -241,6 +243,11 @@ namespace xDC_Web.Controllers.Api
                             ProductType = x.AssetType
                         })
                         .ToList();
+
+                    foreach (var item in result)
+                    {
+                        item.Id = xDC.Utils.Common.GetRandomId(30, 99);
+                    }
                     
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }

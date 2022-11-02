@@ -11,19 +11,33 @@ namespace xDC.Services
 {
     public static class WorkflowService
     {
-        public static void UpdateWorkflow(Form_Workflow input)
+        public static string GetApprovalNotes(int formId, string formType)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    db.Form_Workflow.Add(input);
-                    db.SaveChanges();
+                    var formWf = db.Form_Workflow
+                            .OrderByDescending(x => x.RecordedDate)
+                            .FirstOrDefault(x =>
+                                x.FormId == formId && x.FormType == formType &&
+                                (x.WorkflowStatus == Common.FormStatus.Approved ||
+                                 x.WorkflowStatus == Common.FormStatus.Rejected));
+
+                    if (formWf != null)
+                    {
+                        return formWf.WorkflowNotes;
+                    }
+                    else
+                    {
+                        return string.Empty;
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex);
+                return string.Empty;
             }
         }
 

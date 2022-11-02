@@ -1,4 +1,4 @@
-﻿@model xDC_Web.ViewModels.Fid.Treasury.TreasuryFormVM
+﻿@model xDC.Domain.Web.FID.TreasuryForm.TreasuryFormPage
 @{
     ViewBag.Title = "Treasury";
     ViewBag.Subtitle = "View";
@@ -21,8 +21,17 @@
                                 .StylingMode(ButtonStylingMode.Contained)
                                 .OnClick(@<text> function(){ window.location = "@Url.Action("Treasury", "Fid")"; } </text>)
                                 )
-
-                            @if (Model.EnableApproveBtn)
+                            @if (Model.EnableEditDraftBtn)
+                            {
+                                @(Html.DevExtreme().Button()
+                                    .ID("editDraftBtn")
+                                    .Text("Edit Form")
+                                    .Icon("edit")
+                                    .Type(ButtonType.Normal)
+                                    .StylingMode(ButtonStylingMode.Contained)
+                                    )
+                            }
+                            @if (Model.EnableApproveRejectBtn)
                             {
                                 @(Html.DevExtreme().Button()
                                     .ID("approveBtn")
@@ -31,9 +40,6 @@
                                     .Type(ButtonType.Success)
                                     .StylingMode(ButtonStylingMode.Contained)
                                     )
-                            }
-                            @if (Model.EnableRejectBtn)
-                            {
                                 @(Html.DevExtreme().Button()
                                     .ID("rejectBtn")
                                     .Text("Reject")
@@ -52,7 +58,7 @@
                                     .StylingMode(ButtonStylingMode.Contained)
                                     )
                             }
-                            
+
                         </div>
                         <div class="right-container pull-right">
                             <div id="viewWorkflowBtn"></div>

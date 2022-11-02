@@ -116,33 +116,16 @@ namespace xDC_Web.Controllers
 
         [KflowAuthorize(Common.PermissionKey.FID_TreasuryForm_Edit)]
         [Route("Treasury/Edit/{id}")]
-        public ActionResult TreasuryEdit(string id)
+        public ActionResult TreasuryEdit(int id)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var formId = Convert.ToInt32(id);
-                    var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
-
-                    if (form != null)
+                    var formModel = TreasuryFormService.GetEditPageData(id, User.Identity.Name);
+                    if (formModel != null)
                     {
-                        var model = new TreasuryFormVM
-                        {
-                            Currency = form.Currency,
-                            ValueDate = form.ValueDate,
-                            FormStatus = form.FormStatus,
-                            PreparedBy = form.PreparedBy,
-                            PreparedDate = form.PreparedDate,
-                            ApprovedBy = form.ApprovedBy,
-                            ApprovedDate = form.ApprovedDate,
-
-                            EnableSubmitForApproval = (form.FormStatus != Common.FormStatus.PendingApproval && form.ApprovedBy == null),
-                            EnableResubmitBtn = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected),
-                            EnableSaveAsDraftBtn = (form.FormStatus == Common.FormStatus.Draft && form.ApprovedBy == null),
-                            EnableReassign = (form.FormStatus == Common.FormStatus.PendingApproval && form.ApprovedBy != User.Identity.Name)
-                        };
-                        return View("Treasury/Edit", model);
+                        return View("Treasury/Edit", formModel);
                     }
                     else
                     {
@@ -162,41 +145,17 @@ namespace xDC_Web.Controllers
 
         [KflowAuthorize(Common.PermissionKey.FID_TreasuryForm_View)]
         [Route("Treasury/View/{id}")]
-        public ActionResult TreasuryView(string id)
+        public ActionResult TreasuryView(int id)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var formId = Convert.ToInt32(id);
-                    var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
+                    var formModel = TreasuryFormService.GetViewPageData(id, User.Identity.Name);
 
-                    if (form != null)
+                    if (formModel != null)
                     {
-                        var wf = db.Form_Workflow
-                            .OrderByDescending(x => x.RecordedDate)
-                            .FirstOrDefault(x =>
-                                x.FormId == form.Id && x.FormType == Common.FormType.FID_TREASURY &&
-                                (x.WorkflowStatus == Common.FormStatus.Approved ||
-                                 x.WorkflowStatus == Common.FormStatus.Rejected));
-
-                        var formVm = new TreasuryFormVM()
-                        {
-                            Id = form.Id,
-                            FormStatus = form.FormStatus,
-                            ValueDate = form.ValueDate,
-                            Currency = form.Currency,
-                            PreparedBy = form.PreparedBy,
-                            PreparedDate = form.PreparedDate,
-                            ApprovedBy = form.ApprovedBy,
-                            ApprovedDate = form.ApprovedDate,
-                            ApprovalNotes = wf?.WorkflowNotes,
-
-                            EnableApproveBtn = form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval,
-                            EnableRejectBtn = form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval,
-                            EnableReassign = (form.FormStatus == Common.FormStatus.PendingApproval && form.ApprovedBy != User.Identity.Name)
-                        };
-                        return View("Treasury/View", formVm);
+                        return View("Treasury/View", formModel);
                     }
                     else
                     {

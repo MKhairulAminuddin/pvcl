@@ -4,6 +4,8 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using xDC.Domain.Web.AMSD.InflowFundForm;
+using xDC.Domain.Web.FID.TreasuryForm;
 using xDC.Domain.WebApi.Forms;
 using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
@@ -59,6 +61,92 @@ namespace xDC.Services.App
             catch (Exception ex)
             {
                 Logger.LogError(ex.Message);
+                return null;
+            }
+        }
+
+        #endregion
+
+        #region Form Page
+
+        public static TreasuryFormPage GetViewPageData(int formId, string currentUser)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
+
+                    if (form != null)
+                    {
+                        var formModel = new TreasuryFormPage()
+                        {
+                            Id = form.Id,
+                            FormStatus = form.FormStatus,
+                            ValueDate = form.ValueDate,
+                            Currency = form.Currency,
+                            PreparedBy = form.PreparedBy,
+                            PreparedDate = form.PreparedDate,
+                            ApprovedBy = form.ApprovedBy,
+                            ApprovedDate = form.ApprovedDate,
+                            ApprovalNotes = WorkflowService.GetApprovalNotes(form.Id, form.FormType),
+
+                            EnableApproveRejectBtn = FormService.EnableApprovalAction(currentUser, form.ApprovedBy, form.FormStatus, db),
+                            EnableReassign = FormService.EnableReassignApprover(currentUser, form.ApprovedBy, form.PreparedBy, form.FormStatus),
+                            EnableEditDraftBtn = FormService.EnableEdit(form.FormStatus, form.PreparedBy, form.ApprovedBy, currentUser)
+                        };
+
+                        return formModel;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return null;
+            }
+        }
+
+        public static TreasuryFormPage GetEditPageData(int formId, string currentUser)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
+
+                    if (form != null)
+                    {
+                        var model = new TreasuryFormPage
+                        {
+                            Currency = form.Currency,
+                            ValueDate = form.ValueDate,
+                            FormStatus = form.FormStatus,
+                            PreparedBy = form.PreparedBy,
+                            PreparedDate = form.PreparedDate,
+                            ApprovedBy = form.ApprovedBy,
+                            ApprovedDate = form.ApprovedDate,
+
+                            EnableSubmitForApproval = FormService.EnableSubmitForApproval(form.ApprovedBy, form.FormStatus),
+                            EnableResubmitBtn = FormService.EnableFormResubmission(currentUser, form.FormStatus, form.PreparedBy),
+                            EnableSaveAsDraftBtn = FormService.EnableSaveAsDraftBtn(currentUser, form.FormStatus, form.PreparedBy, form.ApprovedBy),
+                            EnableReassign = FormService.EnableReassignApprover(currentUser, form.ApprovedBy, form.PreparedBy, form.FormStatus)
+                        };
+                        return model;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
                 return null;
             }
         }

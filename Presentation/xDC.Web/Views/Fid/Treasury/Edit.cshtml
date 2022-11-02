@@ -1,4 +1,4 @@
-﻿@model xDC_Web.ViewModels.Fid.Treasury.TreasuryFormVM
+﻿@model xDC.Domain.Web.FID.TreasuryForm.TreasuryFormPage
 @{
     ViewBag.Title = "Treasury";
     ViewBag.Subtitle = "Edit";
@@ -30,7 +30,7 @@
                                         .UseSubmitBehavior(true)
                                         )
                                 }
-                                
+
                                 @if (Model.EnableResubmitBtn)
                                 {
                                     @(Html.DevExtreme().Button()
@@ -45,15 +45,15 @@
 
                                 @if (Model.EnableSaveAsDraftBtn)
                                 {
-                                <div style="display: inline-block; margin-right: 3px">
-                                    @(Html.DevExtreme().Button()
+                                    <div style="display: inline-block; margin-right: 3px">
+                                        @(Html.DevExtreme().Button()
                                         .ID("saveAsDraftBtn")
                                         .Text("Save as Draft")
                                         .Icon("save")
                                         .Type(ButtonType.Normal)
                                         .StylingMode(ButtonStylingMode.Contained)
                                         )
-                                </div>
+                                    </div>
                                 }
                             </div>
                             <div class="box-body">

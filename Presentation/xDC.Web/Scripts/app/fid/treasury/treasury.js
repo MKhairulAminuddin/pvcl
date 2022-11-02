@@ -360,5 +360,11 @@ var treasury = (function () {
         return num.toString().match(re)[0];
     }
 
+    _treasury.Calc_P_Plus_I = function (principal, currency, maturityDate, valueDate, ratePercent) {
+        var tenor = _treasury.tenor(maturityDate, valueDate);
+        return Number(_treasury.outflow_depo_PrincipalInt(currency, principal, tenor, ratePercent));
+    }
+
+
     return _treasury;
 }());

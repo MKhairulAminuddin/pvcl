@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Utils;
+using static xDC.Utils.Common;
 
 namespace xDC.Services.App
 {
@@ -52,6 +53,7 @@ namespace xDC.Services.App
 
             return (isDownloadAllowed && !isDraft);
         }
+
 
         public static bool EnableRetractSubmission(string currentUser, string formPreparedBy, string formStatus, string permissionKey)
         {
@@ -150,6 +152,55 @@ namespace xDC.Services.App
 
         #endregion
 
+
+        #region Form Page
+
+        public static bool EnableSaveAsDraftBtn(string currentUser, string formStatus, string preparedBy, string approvedBy)
+        {
+            var isDraft = formStatus == FormStatus.Draft;
+            var isMyForm = preparedBy == currentUser;
+            var isApproverAssigned = !string.IsNullOrEmpty(approvedBy);
+
+            return isDraft && isMyForm & !isApproverAssigned;
+        }
+
+        public static bool EnableApprovalAction(string currentUser, string assignedApprover, string formStatus, kashflowDBEntities db)
+        {
+            var isApprover = assignedApprover == currentUser;
+            var isPendingApproval = formStatus == Common.FormStatus.PendingApproval;
+            var isUserAllowedForApproval = db.Config_Approver.Any(x => x.Username == currentUser);
+
+            return isApprover && isPendingApproval && isUserAllowedForApproval;
+        }
+
+        public static bool EnableFormResubmission(string currentUser, string formStatus, string preparedBy)
+        {
+            var isFormApprovedOrRejected = formStatus == FormStatus.Approved || formStatus == FormStatus.Rejected;
+            var isMyForm = preparedBy == currentUser;
+
+            return isFormApprovedOrRejected && isMyForm;
+        }
+
+        public static bool EnableReassignApprover(string currentUser, string assignedApprover, string preparedBy, string formStatus)
+        {
+            var isApprover = assignedApprover == currentUser;
+            var isPendingApproval = formStatus == Common.FormStatus.PendingApproval;
+            var isMyForm = preparedBy == currentUser;
+
+            return !isApprover && isPendingApproval;
+        }
+
+        public static bool EnableSubmitForApproval(string assignedApprover, string formStatus)
+        {
+            var isApproverAssigned = !string.IsNullOrEmpty(assignedApprover);
+            var isPendingApproval = formStatus == Common.FormStatus.PendingApproval;
+
+            return !isApproverAssigned && isPendingApproval;
+        }
+
+
+
+        #endregion
 
     }
 }
