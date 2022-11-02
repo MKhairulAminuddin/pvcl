@@ -385,6 +385,12 @@
                     width: 130
                 },
                 {
+                    dataField: "manualCalc_P_Plus_I",
+                    caption: "Manual Calc P+I",
+                    dataType: "boolean",
+                    width: 80
+                },
+                {
                     dataField: "assetType",
                     caption: "Asset Type",
                     width: 120

@@ -47,12 +47,12 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<ISSD_TradeSettlement> ISSD_TradeSettlement { get; set; }
         public virtual DbSet<FID_Treasury> FID_Treasury { get; set; }
         public virtual DbSet<FID_Treasury_MMI> FID_Treasury_MMI { get; set; }
-        public virtual DbSet<FID_Treasury_Deposit> FID_Treasury_Deposit { get; set; }
         public virtual DbSet<Log_UserAccess> Log_UserAccess { get; set; }
         public virtual DbSet<Audit_10AMDCO_ClosingBalance> Audit_10AMDCO_ClosingBalance { get; set; }
         public virtual DbSet<AspNetPermission> AspNetPermission { get; set; }
         public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
         public virtual DbSet<Audit_UserManagement> Audit_UserManagement { get; set; }
         public virtual DbSet<Audit_RoleManagement> Audit_RoleManagement { get; set; }
+        public virtual DbSet<FID_Treasury_Deposit> FID_Treasury_Deposit { get; set; }
     }
 }

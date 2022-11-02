@@ -51,84 +51,84 @@
                 message: 'Invalid input',
                 validationCallback(params) { return validateEmails(params.value);}
             }],
-        }).dxTextBox("instance");
-        var cnEmailCc = $("#cnEmailCc").dxValidator({
+        });
+        var cnEmailCc = $("#cnEmailCc").dxTextBox({}).dxValidator({
             validationRules: [{
                 type: 'custom',
                 message: 'Invalid input',
                 validationCallback(params) { return validateEmails(params.value); }
             }],
-        }).dxTextBox("instance");
-        var peEmail = $("#peEmail").dxValidator({
+        });
+        var peEmail = $("#peEmail").dxTextBox({}).dxValidator({
             validationRules: [{
                 type: 'custom',
                 message: 'Invalid input',
                 validationCallback(params) { return validateEmails(params.value); }
             }],
-        }).dxTextBox("instance");
-        var peEmailCc = $("#peEmailCc").dxValidator({
+        });
+        var peEmailCc = $("#peEmailCc").dxTextBox({}).dxValidator({
             validationRules: [{
                 type: 'custom',
                 message: 'Invalid input',
                 validationCallback(params) { return validateEmails(params.value); }
             }],
-        }).dxTextBox("instance");
-        var propertyEmail = $("#propertyEmail").dxValidator({
+        });
+        var propertyEmail = $("#propertyEmail").dxTextBox({}).dxValidator({
             validationRules: [{
                 type: 'custom',
                 message: 'Invalid input',
                 validationCallback(params) { return validateEmails(params.value); }
             }],
-        }).dxTextBox("instance");
-        var propertyEmailCc = $("#propertyEmailCc").dxValidator({
+        });
+        var propertyEmailCc = $("#propertyEmailCc").dxTextBox({}).dxValidator({
             validationRules: [{
                 type: 'custom',
                 message: 'Invalid input',
                 validationCallback(params) { return validateEmails(params.value); }
             }],
-        }).dxTextBox("instance");
-        var loanEmail = $("#loanEmail").dxValidator({
+        });
+        var loanEmail = $("#loanEmail").dxTextBox({}).dxValidator({
             validationRules: [{
                 type: 'custom',
                 message: 'Invalid input',
                 validationCallback(params) { return validateEmails(params.value); }
             }],
-        }).dxTextBox("instance");
-        var loanEmailCc = $("#loanEmailCc").dxValidator({
+        });
+        var loanEmailCc = $("#loanEmailCc").dxTextBox({}).dxValidator({
             validationRules: [{
                 type: 'custom',
                 message: 'Invalid input',
                 validationCallback(params) { return validateEmails(params.value); }
             }],
-        }).dxTextBox("instance");
-        var fcaTaggingEmail = $("#fcaTaggingEmail").dxValidator({
+        });
+        var fcaTaggingEmail = $("#fcaTaggingEmail").dxTextBox({}).dxValidator({
             validationRules: [{
                 type: 'custom',
                 message: 'Invalid input',
                 validationCallback(params) { return validateEmails(params.value); }
             }],
-        }).dxTextBox("instance");
-        var approvedTreasury = $("#approvedTreasury").dxValidator({
+        });
+        var approvedTreasury = $("#approvedTreasury").dxTextBox({}).dxValidator({
             validationRules: [{
                 type: 'custom',
                 message: 'Invalid input',
                 validationCallback(params) { return validateEmails(params.value); }
             }],
-        }).dxTextBox("instance");
-        var tSubmissionEmailCc = $("#tSubmissionEmailCc").dxValidator({
+        });
+        var tSubmissionEmailCc = $("#tSubmissionEmailCc").dxTextBox({}).dxValidator({
             validationRules: [{
                 type: 'custom',
                 message: 'Invalid input',
                 validationCallback(params) { return validateEmails(params.value); }
             }],
-        }).dxTextBox("instance");
-        var tApprovedEmailCc = $("#tApprovedEmailCc").dxValidator({
+        });
+        var tApprovedEmailCc = $("#tApprovedEmailCc").dxTextBox({}).dxValidator({
             validationRules: [{
                 type: 'custom',
                 message: 'Invalid input',
                 validationCallback(params) { return validateEmails(params.value); }
             }],
-        }).dxTextBox("instance");
+        });
 
         $("#tradeSettlementSaveButton").dxButton("instance").option("onClick", function (e) {
             
@@ -173,6 +173,50 @@
                 app.alertError(textStatus + ': ' + errorThrown);
             });
 
+        });
+
+
+        var treasurySubmissionEmailCcEnable = $("#treasurySubmissionEmailCcEnable").dxSwitch('instance');
+        var treasuryApprovalEmailCcEnable = $("#treasuryApprovalEmailCcEnable").dxSwitch('instance');
+
+        var treasurySubmissionEmailCc = $("#treasurySubmissionEmailCc").dxTextBox().dxValidator({
+            validationRules: [{
+                type: 'custom',
+                message: 'Invalid input',
+                validationCallback(params) { return validateEmails(params.value); }
+            }],
+        }).dxTextBox("instance");
+        var treasuryApprovedEmailCc = $("#treasuryApprovedEmailCc").dxTextBox().dxValidator({
+            validationRules: [{
+                type: 'custom',
+                message: 'Invalid input',
+                validationCallback(params) { return validateEmails(params.value); }
+            }],
+        }).dxTextBox("instance");
+
+        $("#treasurySaveButton").dxButton({
+            onClick: function (e) {
+                var data = {
+                    "tSubmissionEmailCcEnable": treasurySubmissionEmailCcEnable.option('value'),
+                    "tApprovedEmailCcEnable": treasuryApprovalEmailCcEnable.option('value'),
+
+                    "tSubmissionEmailCc": treasurySubmissionEmailCc.option('value'),
+                    "tApprovedEmailCc": treasuryApprovedEmailCc.option('value')
+                }
+                console.log(data);
+
+                $.ajax({
+                    data: data,
+                    dataType: 'json',
+                    url: '../api/setting/UpdTreasuryFormNotificationSetting',
+                    method: 'post'
+                }).done(function (data) {
+                    $("#error_container").bs_success("Treasury setting updated");
+
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    app.alertError(textStatus + ': ' + errorThrown);
+                });
+            }
         });
 
         function validateEmails(string) {

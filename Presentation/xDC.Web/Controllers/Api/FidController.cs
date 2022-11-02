@@ -170,7 +170,7 @@ namespace xDC_Web.Controllers.Api
                         .Where(x => DbFunctions.TruncateTime(x.MaturityDate) == DbFunctions.TruncateTime(tradeDate)
                                     && x.Currency == currency)
                         .Select(
-                        x => new TreasuryDepositGridVm
+                        x => new TreasuryDepositVM
                         {
                             Dealer = x.Operator,
                             Bank = x.Bank,
@@ -182,6 +182,7 @@ namespace xDC_Web.Controllers.Api
                             RatePercent = x.Rate,
                             IntProfitReceivable = 0,
                             PrincipalIntProfitReceivable = 0,
+                            ManualCalc_P_Plus_I = false,
                             AssetType = x.AssetType,
                             RepoTag = null,
                             ContactPerson = null,
@@ -487,6 +488,7 @@ namespace xDC_Web.Controllers.Api
                                 RatePercent = item.RatePercent,
                                 IntProfitReceivable = item.IntProfitReceivable,
                                 PrincipalIntProfitReceivable = item.PrincipalIntProfitReceivable,
+                                ManualCalc_P_Plus_I = item.ManualCalc_P_Plus_I,
                                 AssetType = item.AssetType,
                                 RepoTag = item.RepoTag,
                                 ContactPerson = item.ContactPerson,
@@ -519,6 +521,7 @@ namespace xDC_Web.Controllers.Api
                                 RatePercent = item.RatePercent,
                                 IntProfitReceivable = item.IntProfitReceivable,
                                 PrincipalIntProfitReceivable = item.PrincipalIntProfitReceivable,
+                                ManualCalc_P_Plus_I = item.ManualCalc_P_Plus_I,
                                 AssetType = item.AssetType,
                                 RepoTag = item.RepoTag,
                                 ContactPerson = item.ContactPerson,
@@ -746,6 +749,13 @@ namespace xDC_Web.Controllers.Api
                                                 form.ValueDate, User.Identity.Name, foundItem.PrincipalIntProfitReceivable.ToString(),
                                                 item.PrincipalIntProfitReceivable.ToString(), "Principal + Interest Profit Receivable");
                                     }
+                                    if (foundItem.ManualCalc_P_Plus_I != item.ManualCalc_P_Plus_I)
+                                    {
+                                        foundItem.ManualCalc_P_Plus_I = item.ManualCalc_P_Plus_I;
+                                        AuditService.FA_EditRow(form.Id, form.FormType,
+                                                form.ValueDate, User.Identity.Name, foundItem.ManualCalc_P_Plus_I.ToString(),
+                                                item.ManualCalc_P_Plus_I.ToString(), "Manual Calculation P + I");
+                                    }
                                     if (foundItem.RepoTag != item.RepoTag)
                                     {
                                         foundItem.RepoTag = item.RepoTag;
@@ -913,6 +923,13 @@ namespace xDC_Web.Controllers.Api
                                         AuditService.FA_EditRow(form.Id, form.FormType,
                                             form.ValueDate, User.Identity.Name, foundItem.PrincipalIntProfitReceivable.ToString(),
                                             item.PrincipalIntProfitReceivable.ToString(), "Principal + Interest Profit Receivable");
+                                    }
+                                    if (foundItem.ManualCalc_P_Plus_I != item.ManualCalc_P_Plus_I)
+                                    {
+                                        foundItem.ManualCalc_P_Plus_I = item.ManualCalc_P_Plus_I;
+                                        AuditService.FA_EditRow(form.Id, form.FormType,
+                                                form.ValueDate, User.Identity.Name, foundItem.ManualCalc_P_Plus_I.ToString(),
+                                                item.ManualCalc_P_Plus_I.ToString(), "Manual Calculation P + I");
                                     }
                                     if (foundItem.RepoTag != item.RepoTag)
                                     {

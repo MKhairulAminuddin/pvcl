@@ -355,6 +355,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="RatePercent" Type="float" Nullable="false" />
           <Property Name="IntProfitReceivable" Type="float" Nullable="false" />
           <Property Name="PrincipalIntProfitReceivable" Type="float" Nullable="false" />
+          <Property Name="ManualCalc_P_Plus_I" Type="bit" Nullable="false" />
           <Property Name="AssetType" Type="nvarchar" MaxLength="50" />
           <Property Name="RepoTag" Type="nvarchar" MaxLength="50" />
           <Property Name="ContactPerson" Type="nvarchar" MaxLength="100" />
@@ -663,7 +664,6 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="ISSD_TradeSettlement" EntityType="kashflowDbModel.ISSD_TradeSettlement" />
           <EntitySet Name="FID_Treasury" EntityType="kashflowDbModel.FID_Treasury" />
           <EntitySet Name="FID_Treasury_MMI" EntityType="kashflowDbModel.FID_Treasury_MMI" />
-          <EntitySet Name="FID_Treasury_Deposit" EntityType="kashflowDbModel.FID_Treasury_Deposit" />
           <EntitySet Name="Log_UserAccess" EntityType="kashflowDbModel.Log_UserAccess" />
           <EntitySet Name="Audit_10AMDCO_ClosingBalance" EntityType="kashflowDbModel.Audit_10AMDCO_ClosingBalance" />
           <EntitySet Name="AspNetPermission" EntityType="kashflowDbModel.AspNetPermission" />
@@ -678,6 +678,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           </AssociationSet>
           <EntitySet Name="Audit_UserManagement" EntityType="kashflowDbModel.Audit_UserManagement" />
           <EntitySet Name="Audit_RoleManagement" EntityType="kashflowDbModel.Audit_RoleManagement" />
+          <EntitySet Name="FID_Treasury_Deposit" EntityType="kashflowDbModel.FID_Treasury_Deposit" />
           </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -1034,31 +1035,6 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
         </EntityType>
-        <EntityType Name="FID_Treasury_Deposit">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FormId" Type="Int32" Nullable="false" />
-          <Property Name="CashflowType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Dealer" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Bank" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="TradeDate" Type="DateTime" Precision="0" />
-          <Property Name="ValueDate" Type="DateTime" Precision="0" />
-          <Property Name="MaturityDate" Type="DateTime" Precision="0" />
-          <Property Name="Tenor" Type="Int32" />
-          <Property Name="Principal" Type="Double" Nullable="false" />
-          <Property Name="RatePercent" Type="Double" Nullable="false" />
-          <Property Name="IntProfitReceivable" Type="Double" Nullable="false" />
-          <Property Name="PrincipalIntProfitReceivable" Type="Double" Nullable="false" />
-          <Property Name="AssetType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="RepoTag" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ContactPerson" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Notes" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="FcaAccount" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-        </EntityType>
         <EntityType Name="Log_UserAccess">
           <Key>
             <PropertyRef Name="Id" />
@@ -1131,6 +1107,32 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="Role" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="PerformedBy" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="RecordedDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="FID_Treasury_Deposit">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FormId" Type="Int32" Nullable="false" />
+          <Property Name="CashflowType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Dealer" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Bank" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="TradeDate" Type="DateTime" Precision="0" />
+          <Property Name="ValueDate" Type="DateTime" Precision="0" />
+          <Property Name="MaturityDate" Type="DateTime" Precision="0" />
+          <Property Name="Tenor" Type="Int32" />
+          <Property Name="Principal" Type="Double" Nullable="false" />
+          <Property Name="RatePercent" Type="Double" Nullable="false" />
+          <Property Name="IntProfitReceivable" Type="Double" Nullable="false" />
+          <Property Name="PrincipalIntProfitReceivable" Type="Double" Nullable="false" />
+          <Property Name="ManualCalc_P_Plus_I" Type="Boolean" Nullable="false" />
+          <Property Name="AssetType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RepoTag" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ContactPerson" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Notes" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="FcaAccount" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -1503,32 +1505,6 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="FID_Treasury_Deposit">
-            <EntityTypeMapping TypeName="kashflowDbModel.FID_Treasury_Deposit">
-              <MappingFragment StoreEntitySet="FID_Treasury_Deposit">
-                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
-                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
-                <ScalarProperty Name="FcaAccount" ColumnName="FcaAccount" />
-                <ScalarProperty Name="Notes" ColumnName="Notes" />
-                <ScalarProperty Name="ContactPerson" ColumnName="ContactPerson" />
-                <ScalarProperty Name="RepoTag" ColumnName="RepoTag" />
-                <ScalarProperty Name="AssetType" ColumnName="AssetType" />
-                <ScalarProperty Name="PrincipalIntProfitReceivable" ColumnName="PrincipalIntProfitReceivable" />
-                <ScalarProperty Name="IntProfitReceivable" ColumnName="IntProfitReceivable" />
-                <ScalarProperty Name="RatePercent" ColumnName="RatePercent" />
-                <ScalarProperty Name="Principal" ColumnName="Principal" />
-                <ScalarProperty Name="Tenor" ColumnName="Tenor" />
-                <ScalarProperty Name="MaturityDate" ColumnName="MaturityDate" />
-                <ScalarProperty Name="ValueDate" ColumnName="ValueDate" />
-                <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
-                <ScalarProperty Name="Bank" ColumnName="Bank" />
-                <ScalarProperty Name="Dealer" ColumnName="Dealer" />
-                <ScalarProperty Name="CashflowType" ColumnName="CashflowType" />
-                <ScalarProperty Name="FormId" ColumnName="FormId" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Log_UserAccess">
             <EntityTypeMapping TypeName="kashflowDbModel.Log_UserAccess">
               <MappingFragment StoreEntitySet="Log_UserAccess">
@@ -1609,6 +1585,33 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
                 <ScalarProperty Name="Role" ColumnName="Role" />
                 <ScalarProperty Name="Remarks" ColumnName="Remarks" />
                 <ScalarProperty Name="Activity" ColumnName="Activity" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FID_Treasury_Deposit">
+            <EntityTypeMapping TypeName="kashflowDbModel.FID_Treasury_Deposit">
+              <MappingFragment StoreEntitySet="FID_Treasury_Deposit">
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="FcaAccount" ColumnName="FcaAccount" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="ContactPerson" ColumnName="ContactPerson" />
+                <ScalarProperty Name="RepoTag" ColumnName="RepoTag" />
+                <ScalarProperty Name="AssetType" ColumnName="AssetType" />
+                <ScalarProperty Name="ManualCalc_P_Plus_I" ColumnName="ManualCalc_P_Plus_I" />
+                <ScalarProperty Name="PrincipalIntProfitReceivable" ColumnName="PrincipalIntProfitReceivable" />
+                <ScalarProperty Name="IntProfitReceivable" ColumnName="IntProfitReceivable" />
+                <ScalarProperty Name="RatePercent" ColumnName="RatePercent" />
+                <ScalarProperty Name="Principal" ColumnName="Principal" />
+                <ScalarProperty Name="Tenor" ColumnName="Tenor" />
+                <ScalarProperty Name="MaturityDate" ColumnName="MaturityDate" />
+                <ScalarProperty Name="ValueDate" ColumnName="ValueDate" />
+                <ScalarProperty Name="TradeDate" ColumnName="TradeDate" />
+                <ScalarProperty Name="Bank" ColumnName="Bank" />
+                <ScalarProperty Name="Dealer" ColumnName="Dealer" />
+                <ScalarProperty Name="CashflowType" ColumnName="CashflowType" />
+                <ScalarProperty Name="FormId" ColumnName="FormId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -59,6 +59,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Trigger", "Trigger", "{D8DE
 		Database\Trigger\Audit_10AMDCO_ClosingBalance.sql = Database\Trigger\Audit_10AMDCO_ClosingBalance.sql
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Seeds", "Seeds", "{9FF4F840-53F0-4A15-98A1-ED183CDC427D}"
+	ProjectSection(SolutionItems) = preProject
+		Database\Seeds\Seed_Enhancement_202211.sql = Database\Seeds\Seed_Enhancement_202211.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,6 +119,7 @@ Global
 		{6522DC6D-0BA9-4D84-944E-0127E120E3B1} = {288D30C0-C4F9-4D78-BD96-15D52D9FEB14}
 		{2743CD31-64AE-483D-8B52-02AE6F2550DC} = {288D30C0-C4F9-4D78-BD96-15D52D9FEB14}
 		{D8DE35BD-BEF9-489C-9D91-6119E78743D6} = {7122A0F2-D963-4FF2-A899-44463EA526B5}
+		{9FF4F840-53F0-4A15-98A1-ED183CDC427D} = {7122A0F2-D963-4FF2-A899-44463EA526B5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {34EB544F-2415-4B65-AE15-70E167AB330D}

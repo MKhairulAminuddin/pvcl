@@ -684,6 +684,66 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
+        [HttpPost]
+
+        public HttpResponseMessage UpdTreasuryFormNotificationSetting(NotificationConfigViewModel req)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    if (req != null)
+                    {
+                        var config = db.Config_Application.ToList();
+
+                        var tSubmissionEmailCcConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasurySubmissionCc);
+                        if (tSubmissionEmailCcConfig != null)
+                        {
+                            var tSubmissionEmailCc = String.Join(",", req.tSubmissionEmailCc != null ? req.tSubmissionEmailCc : new List<string>());
+                            if (tSubmissionEmailCcConfig.Value != tSubmissionEmailCc)
+                            {
+                                tSubmissionEmailCcConfig.Value = tSubmissionEmailCc;
+                                tSubmissionEmailCcConfig.UpdatedBy = User.Identity.Name;
+                                tSubmissionEmailCcConfig.UpdatedDate = DateTime.Now;
+                            }
+                        }
+
+                        var tApprovedEmailCcConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasurySubmissionCc);
+                        if (tApprovedEmailCcConfig != null)
+                        {
+                            var tApprovedEmailCc = String.Join(",", req.tApprovedEmailCc != null ? req.tApprovedEmailCc : new List<string>());
+                            if (tApprovedEmailCcConfig.Value != tApprovedEmailCc)
+                            {
+                                tApprovedEmailCcConfig.Value = tApprovedEmailCc;
+                                tApprovedEmailCcConfig.UpdatedBy = User.Identity.Name;
+                                tApprovedEmailCcConfig.UpdatedDate = DateTime.Now;
+                            }
+                        }
+
+                        var tSubmissionEmailCcEnable = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasurySubmissionCc_Enable);
+                        if (tSubmissionEmailCcEnable != null) tSubmissionEmailCcEnable.Value = req.tSubmissionEmailCcEnable.ToString().ToLower();
+
+                        var tApprovedEmailCcEnable = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasuryApprovalCc_Enable);
+                        if (tApprovedEmailCcEnable != null) tApprovedEmailCcEnable.Value = req.tApprovedEmailCcEnable.ToString().ToLower();
+
+                        db.SaveChanges();
+
+                        return Request.CreateResponse(HttpStatusCode.Accepted, req);
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, req);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+
         #endregion
     }
 }

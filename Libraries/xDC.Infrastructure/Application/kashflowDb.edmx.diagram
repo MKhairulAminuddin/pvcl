@@ -27,7 +27,6 @@
         <EntityTypeShape EntityType="kashflowDbModel.ISSD_TradeSettlement" Width="1.5" PointX="2.625" PointY="9.75" />
         <EntityTypeShape EntityType="kashflowDbModel.FID_Treasury" Width="1.5" PointX="10.375" PointY="9.75" />
         <EntityTypeShape EntityType="kashflowDbModel.FID_Treasury_MMI" Width="1.5" PointX="12.125" PointY="9.75" />
-        <EntityTypeShape EntityType="kashflowDbModel.FID_Treasury_Deposit" Width="1.5" PointX="13.75" PointY="9.75" />
         <EntityTypeShape EntityType="kashflowDbModel.Log_UserAccess" Width="1.5" PointX="18.25" PointY="0.875" />
         <EntityTypeShape EntityType="kashflowDbModel.Audit_10AMDCO_ClosingBalance" Width="1.5" PointX="7.375" PointY="10.75" />
         <EntityTypeShape EntityType="kashflowDbModel.AspNetPermission" Width="1.5" PointX="14.375" PointY="4.625" />
@@ -36,6 +35,7 @@
         <AssociationConnector Association="kashflowDbModel.AspNetUserRoles" />
         <EntityTypeShape EntityType="kashflowDbModel.Audit_UserManagement" Width="1.5" PointX="10.375" PointY="0.75" />
         <EntityTypeShape EntityType="kashflowDbModel.Audit_RoleManagement" Width="1.5" PointX="12.375" PointY="0.75" />
+        <EntityTypeShape EntityType="kashflowDbModel.FID_Treasury_Deposit" Width="1.5" PointX="14.25" PointY="9.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

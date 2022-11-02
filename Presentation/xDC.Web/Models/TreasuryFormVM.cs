@@ -41,6 +41,7 @@ namespace xDC_Web.Models
         public double RatePercent { get; set; }
         public double IntProfitReceivable { get; set; }
         public double PrincipalIntProfitReceivable { get; set; }
+        public bool ManualCalc_P_Plus_I { get; set; }
         public string AssetType { get; set; }
         public string RepoTag { get; set; }
         public string ContactPerson { get; set; }

@@ -295,12 +295,12 @@
                         </div>
                         <div class="col-md-2">
                             @(Html.DevExtreme().SwitchFor(m => m.tSubmissionEmailCcEnable)
-                                .ID("tSubmissionEmailCcEnable")
+                                .ID("treasurySubmissionEmailCcEnable")
                                 )
                         </div>
                         <div class="col-md-6">
                             @(Html.DevExtreme().TextBoxFor(m => m.tSubmissionEmailCc)
-                                .ID("tSubmissionEmailCc")
+                                .ID("treasurySubmissionEmailCc")
                                 )
                         </div>
                     </div>
@@ -310,12 +310,12 @@
                         </div>
                         <div class="col-md-2">
                             @(Html.DevExtreme().SwitchFor(m => m.tApprovedEmailCcEnable)
-                                .ID("tApprovalEmailCcEnable")
+                                .ID("treasuryApprovalEmailCcEnable")
                                 )
                         </div>
                         <div class="col-md-6">
                             @(Html.DevExtreme().TextBoxFor(m => m.tApprovedEmailCc)
-                                .ID("tApprovedEmailCc")
+                                .ID("treasuryApprovedEmailCc")
                                 )
                         </div>
                     </div>
@@ -323,7 +323,7 @@
                 <div class="box-footer">
                     <div class="pull-right">
                         @(Html.DevExtreme().Button()
-                            .ID("inflowFundSaveButton")
+                            .ID("treasurySaveButton")
                             .StylingMode(ButtonStylingMode.Contained)
                             .Text("Save Changes")
                             .Type(ButtonType.Default))

@@ -70,6 +70,7 @@
                             ratePercent: x.ratePercent,
                             intProfitReceivable: x.intProfitReceivable,
                             principalIntProfitReceivable: x.principalIntProfitReceivable,
+                            manualCalc_P_Plus_I: x.manualCalc_P_Plus_I,
                             assetType: x.assetType,
                             repoTag: x.repoTag,
                             contactPerson: x.contactPerson,
@@ -527,10 +528,9 @@
                     width: 130
                 },
                 {
-                    dataField: "manualCalc_P_plus_I",
+                    dataField: "manualCalc_P_Plus_I",
                     caption: "Manual Calc P+I",
                     dataType: "boolean",
-                    value: false,
                     width: 80
                 },
                 {
@@ -764,7 +764,7 @@
                                     var dataSource = $inflowDepositGrid.getDataSource();
                                     var dataStore = dataSource.store();
                                     dataStore._array.forEach(function (i) {
-                                        if (!i.manualCalc_P_plus_I) {
+                                        if (!i.manualCalc_P_Plus_I) {
                                             i.principalIntProfitReceivable = treasury.Calc_P_Plus_I(i.principal, $currencySelectBox.option("value"), i.maturityDate, i.valueDate, i.ratePercent);
                                         }
                                     });
@@ -816,7 +816,7 @@
                                     var dataSource = $outflowDepositGrid.getDataSource();
                                     var dataStore = dataSource.store();
                                     dataStore._array.forEach(function (i) {
-                                        if (!i.manualCalc_P_plus_I) {
+                                        if (!i.manualCalc_P_Plus_I) {
                                             i.principalIntProfitReceivable = treasury.Calc_P_Plus_I(i.principal, $currencySelectBox.option("value"), i.maturityDate, i.valueDate, i.ratePercent);
                                         }
                                     });
