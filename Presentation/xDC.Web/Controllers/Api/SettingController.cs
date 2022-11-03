@@ -515,7 +515,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
 
-        public HttpResponseMessage UpdateTsNotificationSetting(NotificationConfigViewModel req)
+        public HttpResponseMessage UpdIssdNotification(NotificationConfigViewModel req)
         {
             try
             {
@@ -528,7 +528,7 @@ namespace xDC_Web.Controllers.Api
                         var cnEmailConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmail);
                         if (cnEmailConfig != null)
                         {
-                            var cnEmail = String.Join(",", req.tsCnEmail != null ? req.tsCnEmail : new List<string> ());
+                            var cnEmail = String.Join(",", req.tsCnEmail ?? null);
                             if (cnEmailConfig.Value != cnEmail)
                             {
                                 cnEmailConfig.Value = cnEmail;
@@ -540,7 +540,7 @@ namespace xDC_Web.Controllers.Api
                         var cnEmailCcConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmailCc);
                         if (cnEmailCcConfig != null)
                         {
-                            var cnEmailCc = String.Join(",", req.tsCnEmailCc != null ? req.tsCnEmailCc : new List<string>());
+                            var cnEmailCc = String.Join(",", req.tsCnEmailCc ?? null);
                             if (cnEmailCcConfig.Value != cnEmailCc)
                             {
                                 cnEmailCcConfig.Value = cnEmailCc;
@@ -552,7 +552,7 @@ namespace xDC_Web.Controllers.Api
                         var peEmailConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PeEmail);
                         if (peEmailConfig != null)
                         {
-                            var peEmail = String.Join(",", req.tsPeEmail != null ? req.tsPeEmail : new List<string>());
+                            var peEmail = String.Join(",", req.tsPeEmail ?? null);
                             if (peEmailConfig.Value != peEmail)
                             {
                                 peEmailConfig.Value = peEmail;
@@ -564,7 +564,7 @@ namespace xDC_Web.Controllers.Api
                         var peEmailCcConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PeEmailCc);
                         if (peEmailCcConfig != null)
                         {
-                            var peEmailCc = String.Join(",", req.tsPeEmailCc != null ? req.tsPeEmailCc : new List<string>());
+                            var peEmailCc = String.Join(",", req.tsPeEmailCc ?? null);
                             if (peEmailCcConfig.Value != peEmailCc)
                             {
                                 peEmailCcConfig.Value = peEmailCc;
@@ -576,7 +576,7 @@ namespace xDC_Web.Controllers.Api
                         var propertyEmailConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PropertyEmail);
                         if (propertyEmailConfig != null)
                         {
-                            var propertyEmail = String.Join(",", req.tsPropertyEmail != null ? req.tsPropertyEmail : new List<string>());
+                            var propertyEmail = String.Join(",", req.tsPropertyEmail ?? null);
                             if (propertyEmailConfig.Value != propertyEmail)
                             {
                                 propertyEmailConfig.Value = propertyEmail;
@@ -588,7 +588,7 @@ namespace xDC_Web.Controllers.Api
                         var propertyEmailCcConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PropertyEmailCc);
                         if (propertyEmailCcConfig != null)
                         {
-                            var propertyEmailCc = String.Join(",", req.tsPropertyEmailCc != null ? req.tsPropertyEmailCc : new List<string>());
+                            var propertyEmailCc = String.Join(",", req.tsPropertyEmailCc ?? null);
                             if (propertyEmailCcConfig.Value != propertyEmailCc)
                             {
                                 propertyEmailCcConfig.Value = propertyEmailCc;
@@ -600,7 +600,7 @@ namespace xDC_Web.Controllers.Api
                         var loanEmailConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_LoanEmail);
                         if (loanEmailConfig != null)
                         {
-                            var loanEmail = String.Join(",", req.tsLoanEmail != null ? req.tsLoanEmail : new List<string>());
+                            var loanEmail = String.Join(",", req.tsLoanEmail ?? null);
                             if (loanEmailConfig.Value != loanEmail)
                             {
                                 loanEmailConfig.Value = loanEmail;
@@ -612,7 +612,7 @@ namespace xDC_Web.Controllers.Api
                         var loanEmailCcConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_LoanEmailCc);
                         if (loanEmailCcConfig != null)
                         {
-                            var loanEmailCc = String.Join(",", req.tsLoanEmailCc != null ? req.tsLoanEmailCc : new List<string>());
+                            var loanEmailCc = String.Join(",", req.tsLoanEmailCc ?? null);
                             if (loanEmailCcConfig.Value != loanEmailCc)
                             {
                                 loanEmailCcConfig.Value = loanEmailCc;
@@ -624,7 +624,7 @@ namespace xDC_Web.Controllers.Api
                         var fcaTaggingEmailConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_FcaTagging);
                         if (fcaTaggingEmailConfig != null)
                         {
-                            var fcaTaggingEmail = String.Join(",", req.tsFcaTaggingEmail != null ? req.tsFcaTaggingEmail : new List<string>());
+                            var fcaTaggingEmail = String.Join(",", req.tsFcaTaggingEmail ?? null);
                             if (fcaTaggingEmailConfig.Value != fcaTaggingEmail)
                             {
                                 fcaTaggingEmailConfig.Value = fcaTaggingEmail;
@@ -636,7 +636,7 @@ namespace xDC_Web.Controllers.Api
                         var approvedTreasuryEmailConfig = config.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_TreasuryApproval);
                         if(approvedTreasuryEmailConfig != null)
                         {
-                            var approvedTreasuryEmail = String.Join(",", req.tsApprovedTreasury != null ? req.tsApprovedTreasury : new List<string>());
+                            var approvedTreasuryEmail = String.Join(",", req.tsApprovedTreasury ?? null);
                             if (approvedTreasuryEmailConfig.Value != approvedTreasuryEmail)
                             {
                                 approvedTreasuryEmailConfig.Value = approvedTreasuryEmail;

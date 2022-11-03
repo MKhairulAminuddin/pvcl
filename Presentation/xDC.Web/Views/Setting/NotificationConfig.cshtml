@@ -91,180 +91,185 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <h5><strong>Notification Type</strong></h5>
+                    <form name="IssdNotificationForm" id="IssdNotificationForm">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <h5><strong>Notification Type</strong></h5>
+                            </div>
+                            <div class="col-md-2">
+                                <h5><strong>Enable</strong></h5>
+                            </div>
+                            <div class="col-md-6">
+                                <h5><strong>Receipient</strong></h5>
+                            </div>
                         </div>
-                        <div class="col-md-2">
-                            <h5><strong>Enable</strong></h5>
-                        </div>
-                        <div class="col-md-6">
-                            <h5><strong>Receipient</strong></h5>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <p>Contribution Email</p>
-                            <p><small><i>*Turn off this will disable this email notification even the CC is on.</i></small></p>
-                        </div>
-                        <div class="col-md-2">
-                            @(Html.DevExtreme().SwitchFor(m => m.tsCnEmailEnable)
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p>Contribution Email</p>
+                                <p><small><i>*Turn off this will disable this email notification even the CC is on.</i></small></p>
+                            </div>
+                            <div class="col-md-2">
+                                @(Html.DevExtreme().SwitchFor(m => m.tsCnEmailEnable)
                                 .ID("cnEmailEnable")
                                 )
-                        </div>
-                        <div class="col-md-6">
-                            @(Html.DevExtreme().TextBoxFor(m => m.tsCnEmail)
+                            </div>
+                            <div class="col-md-6">
+                                @(Html.DevExtreme().TextBoxFor(m => m.tsCnEmail)
                                 .ID("cnEmail")
                                 )
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <p>Contribution Email <strong>CC</strong></p>
-                        </div>
-                        <div class="col-md-2">
-                            @(Html.DevExtreme().SwitchFor(m => m.tsCnEmailCcEnable)
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p>Contribution Email <strong>CC</strong></p>
+                            </div>
+                            <div class="col-md-2">
+                                @(Html.DevExtreme().SwitchFor(m => m.tsCnEmailCcEnable)
                                 .ID("cnEmailCcEnable")
                                 )
-                        </div>
-                        <div class="col-md-6">
-                            @(Html.DevExtreme().TextBoxFor(m => m.tsCnEmailCc)
+                            </div>
+                            <div class="col-md-6">
+                                @(Html.DevExtreme().TextBoxFor(m => m.tsCnEmailCc)
                                 .ID("cnEmailCc")
                                 )
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <p>PE Email</p>
-                            <p><small><i>*Turn off this will disable this email notification even the CC is on.</i></small></p>
-                        </div>
-                        <div class="col-md-2">
-                            @(Html.DevExtreme().SwitchFor(m => m.tsPeEmailEnable)
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p>PE Email</p>
+                                <p><small><i>*Turn off this will disable this email notification even the CC is on.</i></small></p>
+                            </div>
+                            <div class="col-md-2">
+                                @(Html.DevExtreme().SwitchFor(m => m.tsPeEmailEnable)
                                 .ID("peEmailEnable")
                                 )
-                        </div>
-                        <div class="col-md-6">
-                            @(Html.DevExtreme().TextBoxFor(m => m.tsPeEmail)
+                            </div>
+                            <div class="col-md-6">
+                                @(Html.DevExtreme().TextBoxFor(m => m.tsPeEmail)
                                 .ID("peEmail")
                                 )
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <p>PE Email <strong>CC</strong></p>
-                        </div>
-                        <div class="col-md-2">
-                            @(Html.DevExtreme().SwitchFor(m => m.tsPeEmailCcEnable)
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p>PE Email <strong>CC</strong></p>
+                            </div>
+                            <div class="col-md-2">
+                                @(Html.DevExtreme().SwitchFor(m => m.tsPeEmailCcEnable)
                                 .ID("peEmailCcEnable")
                                 )
-                        </div>
-                        <div class="col-md-6">
-                            @(Html.DevExtreme().TextBoxFor(m => m.tsPeEmailCc)
+                            </div>
+                            <div class="col-md-6">
+                                @(Html.DevExtreme().TextBoxFor(m => m.tsPeEmailCc)
                                 .ID("peEmailCc")
                                 )
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <p>Property Email</p>
-                            <p><small><i>*Turn off this will disable this email notification even the CC is on.</i></small></p>
-                        </div>
-                        <div class="col-md-2">
-                            @(Html.DevExtreme().SwitchFor(m => m.tsPropertyEmailEnable)
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p>Property Email</p>
+                                <p><small><i>*Turn off this will disable this email notification even the CC is on.</i></small></p>
+                            </div>
+                            <div class="col-md-2">
+                                @(Html.DevExtreme().SwitchFor(m => m.tsPropertyEmailEnable)
                                 .ID("propertyEmailEnable")
                                 )
-                        </div>
-                        <div class="col-md-6">
-                            @(Html.DevExtreme().TextBoxFor(m => m.tsPropertyEmail)
+                            </div>
+                            <div class="col-md-6">
+                                @(Html.DevExtreme().TextBoxFor(m => m.tsPropertyEmail)
                                 .ID("propertyEmail")
                                 )
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <p>Property Email <strong>CC</strong></p>
-                        </div>
-                        <div class="col-md-2">
-                            @(Html.DevExtreme().SwitchFor(m => m.tsPropertyEmailCcEnable)
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p>Property Email <strong>CC</strong></p>
+                            </div>
+                            <div class="col-md-2">
+                                @(Html.DevExtreme().SwitchFor(m => m.tsPropertyEmailCcEnable)
                                 .ID("propertyEmailCcEnable")
                                 )
-                        </div>
-                        <div class="col-md-6">
-                            @(Html.DevExtreme().TextBoxFor(m => m.tsPropertyEmailCc)
+                            </div>
+                            <div class="col-md-6">
+                                @(Html.DevExtreme().TextBoxFor(m => m.tsPropertyEmailCc)
                                 .ID("propertyEmailCc")
                                 )
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <p>Loan Email</p>
-                            <p><small><i>*Turn off this will disable this email notification even the CC is on.</i></small></p>
-                        </div>
-                        <div class="col-md-2">
-                            @(Html.DevExtreme().SwitchFor(m => m.tsLoanEmailEnable)
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p>Loan Email</p>
+                                <p><small><i>*Turn off this will disable this email notification even the CC is on.</i></small></p>
+                            </div>
+                            <div class="col-md-2">
+                                @(Html.DevExtreme().SwitchFor(m => m.tsLoanEmailEnable)
                                 .ID("loanEmailEnable")
                                 )
-                        </div>
-                        <div class="col-md-6">
-                            @(Html.DevExtreme().TextBoxFor(m => m.tsLoanEmail)
+                            </div>
+                            <div class="col-md-6">
+                                @(Html.DevExtreme().TextBoxFor(m => m.tsLoanEmail)
                                 .ID("loanEmail")
                                 )
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <p>Loan Email <strong>CC</strong></p>
-                        </div>
-                        <div class="col-md-2">
-                            @(Html.DevExtreme().SwitchFor(m => m.tsLoanEmailCcEnable)
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p>Loan Email <strong>CC</strong></p>
+                            </div>
+                            <div class="col-md-2">
+                                @(Html.DevExtreme().SwitchFor(m => m.tsLoanEmailCcEnable)
                                 .ID("loanEmailCcEnable")
                                 )
-                        </div>
-                        <div class="col-md-6">
-                            @(Html.DevExtreme().TextBoxFor(m => m.tsLoanEmailCc)
+                            </div>
+                            <div class="col-md-6">
+                                @(Html.DevExtreme().TextBoxFor(m => m.tsLoanEmailCc)
                                 .ID("loanEmailCc")
                                 )
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <p>FCA Tagging Email</p>
-                        </div>
-                        <div class="col-md-2">
-                            @(Html.DevExtreme().SwitchFor(m => m.tsFcaTaggingEmailEnable)
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p>FCA Tagging Email</p>
+                            </div>
+                            <div class="col-md-2">
+                                @(Html.DevExtreme().SwitchFor(m => m.tsFcaTaggingEmailEnable)
                                 .ID("fcaTaggingEmailEnable")
                                 )
-                        </div>
-                        <div class="col-md-6">
-                            @(Html.DevExtreme().TextBoxFor(m => m.tsFcaTaggingEmail)
+                            </div>
+                            <div class="col-md-6">
+                                @(Html.DevExtreme().TextBoxFor(m => m.tsFcaTaggingEmail)
                                 .ID("fcaTaggingEmail")
                                 )
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <p>Treasury Approval Notification</p>
-                        </div>
-                        <div class="col-md-2">
-                            @(Html.DevExtreme().SwitchFor(m => m.tsApprovedTreasuryEnable)
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p>Treasury Approval Notification</p>
+                            </div>
+                            <div class="col-md-2">
+                                @(Html.DevExtreme().SwitchFor(m => m.tsApprovedTreasuryEnable)
                                 .ID("approvedTreasuryEnable")
                                 )
-                        </div>
-                        <div class="col-md-6">
-                            @(Html.DevExtreme().TextBoxFor(m => m.tsApprovedTreasury)
+                            </div>
+                            <div class="col-md-6">
+                                @(Html.DevExtreme().TextBoxFor(m => m.tsApprovedTreasury)
                                 .ID("approvedTreasury")
                                 )
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="box-footer">
-                    <div class="pull-right">
-                        @(Html.DevExtreme().Button()
-                            .ID("tradeSettlementSaveButton")
-                            .StylingMode(ButtonStylingMode.Contained)
-                            .Text("Save Changes")
-                            .Type(ButtonType.Default))
-                    </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="pull-right">
+                                    @(Html.DevExtreme().Button()
+                                    .ID("tsSaveButton")
+                                    .StylingMode(ButtonStylingMode.Contained)
+                                    .UseSubmitBehavior(true)
+                                    .Text("Save Changes")
+                                    .Type(ButtonType.Default))
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
 
