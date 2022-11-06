@@ -1,7 +1,7 @@
 /*!
 * DevExtreme (dx.messages.nl.js)
-* Version: 22.1.5
-* Build date: Fri Sep 02 2022
+* Version: 22.1.6
+* Build date: Tue Oct 18 2022
 *
 * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
 * Read about DevExtreme licensing here: https://js.devexpress.com/Licensing/
@@ -24,6 +24,7 @@
             Yes: "Ja",
             No: "Nee",
             Cancel: "Annuleren",
+            Close: "Sluiten",
             Clear: "Wissen",
             Done: "Klaar",
             Loading: "Laden...",

@@ -1,7 +1,7 @@
 /*!
  * DevExpress Gantt (dx-gantt)
- * Version: 4.1.32
- * Build date: Fri Jul 08 2022
+ * Version: 4.1.33
+ * Build date: Wed Sep 07 2022
  * 
  * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
  * Read about DevExpress licensing here: https://www.devexpress.com/Support/EULAs
@@ -10250,7 +10250,7 @@ var UpdateTaskCommand = (function (_super) {
         var needRecalculateParents = (0, common_1.isDefined)(newValues.progress) || (0, common_1.isDefined)(newValues.start) || (0, common_1.isDefined)(newValues.end);
         var startDelta = (0, common_1.isDefined)(newValues.start) ? newValues.start.getTime() - oldStart.getTime() : null;
         var endDelta = (0, common_1.isDefined)(newValues.end) ? newValues.end.getTime() - oldEnd.getTime() : null;
-        var isMove = startDelta === endDelta && startDelta > 0;
+        var isMove = startDelta === endDelta && startDelta !== 0;
         if (needRecalculateParents)
             if (isMove)
                 this.validationController.correctParentsOnChildMoving(id, startDelta);

@@ -1,7 +1,7 @@
 /*!
 * DevExtreme (dx.messages.de.js)
-* Version: 22.1.5
-* Build date: Fri Sep 02 2022
+* Version: 22.1.6
+* Build date: Tue Oct 18 2022
 *
 * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
 * Read about DevExtreme licensing here: https://js.devexpress.com/Licensing/
@@ -24,6 +24,7 @@
             Yes: "Ja",
             No: "Nein",
             Cancel: "Abbrechen",
+            Close: "Schlie\xdfen",
             Clear: "L\xf6schen",
             Done: "Fertig",
             Loading: "Laden...",
@@ -152,6 +153,8 @@
             "dxDataGrid-selectedRows": "Ausgew\xe4hlte Zeilen",
             "dxDataGrid-exportAll": "Alle Daten exportieren nach {0}",
             "dxDataGrid-exportSelectedRows": "Ausgew\xe4hlte Zeilen exportieren nach {0}",
+            "dxDataGrid-headerFilterLabel": "Filteroptionen",
+            "dxDataGrid-headerFilterIndicatorLabel": "Filteroptionen f\xfcr Spalte '{0}' anzeigen",
             "dxDataGrid-headerFilterEmptyValue": "(Leerwerte)",
             "dxDataGrid-headerFilterOK": "OK",
             "dxDataGrid-headerFilterCancel": "Abbrechen",
@@ -181,6 +184,7 @@
             "dxPager-page": "Seite {0}",
             "dxPager-prevPage": "Vorherige Seite",
             "dxPager-nextPage": "N\xe4chste Seite",
+            "dxPager-ariaLabel": "Seitennavigation",
             "dxPivotGrid-grandTotal": "Gesamt",
             "dxPivotGrid-total": "{0} Gesamt",
             "dxPivotGrid-fieldChooserTitle": "Feldauswahl",

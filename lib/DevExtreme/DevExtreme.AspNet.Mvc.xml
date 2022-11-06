@@ -5843,6 +5843,12 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.DataGridPagerBuilder.InfoText(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.DataGridPagerBuilder.Label(System.String)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.DataGridPagerBuilder.Label(DevExtreme.AspNet.Mvc.JS)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.DataGridPagerBuilder.ShowInfo(System.Boolean)">
             <summary></summary>
         </member>
@@ -29613,6 +29619,12 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TreeListPagerBuilder.InfoText(DevExtreme.AspNet.Mvc.JS)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.TreeListPagerBuilder.Label(System.String)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.TreeListPagerBuilder.Label(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TreeListPagerBuilder.ShowInfo(System.Boolean)">

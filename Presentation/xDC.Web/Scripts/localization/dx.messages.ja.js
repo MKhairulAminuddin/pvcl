@@ -1,7 +1,7 @@
 /*!
 * DevExtreme (dx.messages.ja.js)
-* Version: 22.1.5
-* Build date: Fri Sep 02 2022
+* Version: 22.1.6
+* Build date: Tue Oct 18 2022
 *
 * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
 * Read about DevExtreme licensing here: https://js.devexpress.com/Licensing/
@@ -24,6 +24,7 @@
             Yes: "\u306f\u3044",
             No: "\u3044\u3044\u3048",
             Cancel: "\u30ad\u30e3\u30f3\u30bb\u30eb",
+            Close: "\u9589\u3058\u308b",
             Clear: "\u30af\u30ea\u30a2",
             Done: "\u5b8c\u4e86",
             Loading: "\u8aad\u307f\u8fbc\u307f\u4e2d\u2026",
@@ -152,6 +153,8 @@
             "dxDataGrid-selectedRows": "\u9078\u629e\u3055\u308c\u305f\u884c",
             "dxDataGrid-exportAll": "\u3059\u3079\u3066\u306e\u30c7\u30fc\u30bf\u306e\u30a8\u30af\u30b9\u30dd\u30fc\u30c8\u5148\uff1a{0}",
             "dxDataGrid-exportSelectedRows": "\u884c\u306e\u30a8\u30af\u30b9\u30dd\u30fc\u30c8\u5148\uff1a{0}",
+            "dxDataGrid-headerFilterLabel": "\u30d5\u30a3\u30eb\u30bf\u30aa\u30d7\u30b7\u30e7\u30f3",
+            "dxDataGrid-headerFilterIndicatorLabel": "\u5217'{0}'\u306e\u30d5\u30a3\u30eb\u30bf\u30fc\u30aa\u30d7\u30b7\u30e7\u30f3\u3092\u8868\u793a\u3059\u308b",
             "dxDataGrid-headerFilterEmptyValue": "(\u7a7a\u767d)",
             "dxDataGrid-headerFilterOK": "OK",
             "dxDataGrid-headerFilterCancel": "\u30ad\u30e3\u30f3\u30bb\u30eb",
@@ -181,6 +184,7 @@
             "dxPager-page": "\u30da\u30fc\u30b8 {0}",
             "dxPager-prevPage": "\u524d\u306e\u30da\u30fc\u30b8",
             "dxPager-nextPage": "\u6b21\u306e\u30da\u30fc\u30b8",
+            "dxPager-ariaLabel": "\u30da\u30fc\u30b8 \u30ca\u30d3\u30b2\u30fc\u30b7\u30e7\u30f3",
             "dxPivotGrid-grandTotal": "\u7dcf\u8a08",
             "dxPivotGrid-total": "{0} \u5408\u8a08",
             "dxPivotGrid-fieldChooserTitle": "\u30d5\u30a3\u30fc\u30eb\u30c9\u306e\u9078\u629e",

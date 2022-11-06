@@ -1,8 +1,8 @@
 @charset "UTF-8";
 /**
 * DevExtreme (dx.contrast.compact.css)
-* Version: 22.1.5
-* Build date: Fri Sep 02 2022
+* Version: 22.1.6
+* Build date: Tue Oct 18 2022
 *
 * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
 * Read about DevExtreme licensing here: https://js.devexpress.com/Licensing/
@@ -1585,6 +1585,12 @@
 }
 .dx-icon-imgarunlock::before {
   content: "\f157";
+}
+.dx-icon-bell {
+  font: 14px/1 DXIcons;
+}
+.dx-icon-bell::before {
+  content: "\f158";
 }
 .dx-tab .dx-icon,
 .dx-tab.dx-tab-selected .dx-icon {
@@ -6274,6 +6280,10 @@
 .dx-dropdowneditor.dx-dropdowneditor-field-clickable .dx-texteditor-input {
   cursor: pointer;
 }
+.dx-dropdowneditor.dx-dropdowneditor-field-clickable .dx-texteditor-buttons-container .dx-state-disabled .dx-button,
+.dx-dropdowneditor.dx-dropdowneditor-field-clickable .dx-texteditor-buttons-container .dx-state-disabled.dx-button {
+  pointer-events: auto;
+}
 .dx-dropdowneditor-input-wrapper {
   -webkit-tap-highlight-color: transparent;
   overflow: hidden;
@@ -9238,7 +9248,9 @@
   padding: 5px;
 }
 .dx-toolbar-menu-section .dx-list-item-content > .dx-button .dx-button-content,
-.dx-toolbar-menu-section .dx-toolbar-item-auto-hide > .dx-button .dx-button-content {
+.dx-toolbar-menu-section .dx-list-item-content > .dx-toolbar-item-content > .dx-button .dx-button-content,
+.dx-toolbar-menu-section .dx-toolbar-item-auto-hide > .dx-button .dx-button-content,
+.dx-toolbar-menu-section .dx-toolbar-item-auto-hide > .dx-toolbar-item-content > .dx-button .dx-button-content {
   padding: 0;
 }
 .dx-toolbar-menu-section .dx-toolbar-hidden-button .dx-button {
@@ -11313,7 +11325,7 @@
   border: none;
   background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAQAAACRZI9xAAAAb0lEQVQoU4XOAQrAIAgFUE+2Qd1pt9rJdghnOee3jBQR5KESb4OkHj6kZ1n5VnIuUJV5UUIpUkBGZmQASEQOAnGEYCCKrgAmQgJYCicDaSfalnNF7Id2zhGQAj8g+gmCiD4yAkSdZMBRJzkw1MkmXtMsiBZyxb08AAAAAElFTkSuQmCC") no-repeat;
 }
-.dx-colorbox-input-container .dx-placeholder::before {
+.dx-colorbox-input-container .dx-placeholder {
   max-width: calc(100% - 25px);
 }
 .dx-colorbox .dx-texteditor-input-container::before {
@@ -13430,6 +13442,9 @@
   border-top: 1px solid #fff;
   border-bottom: 1px solid #fff;
 }
+.dx-datagrid-rowsview .dx-master-detail-row .dx-texteditor-input {
+  padding-right: 0;
+}
 .dx-datagrid-rowsview .dx-master-detail-row:not(.dx-datagrid-edit-form) .dx-master-detail-cell,
 .dx-datagrid-rowsview .dx-master-detail-row:not(.dx-datagrid-edit-form) > .dx-datagrid-group-space {
   background-color: #000;
@@ -15538,6 +15553,9 @@ input.dx-hidden {
 .dx-treelist-rowsview .dx-master-detail-row > .dx-treelist-group-space {
   border-top: 1px solid #fff;
   border-bottom: 1px solid #fff;
+}
+.dx-treelist-rowsview .dx-master-detail-row .dx-texteditor-input {
+  padding-right: 0;
 }
 .dx-treelist-rowsview .dx-master-detail-row:not(.dx-treelist-edit-form) .dx-master-detail-cell,
 .dx-treelist-rowsview .dx-master-detail-row:not(.dx-treelist-edit-form) > .dx-treelist-group-space {

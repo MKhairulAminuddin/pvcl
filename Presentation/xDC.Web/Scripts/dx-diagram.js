@@ -1,7 +1,7 @@
 /*!
  * DevExpress Diagram (dx-diagram)
- * Version: 2.1.63
- * Build date: Tue Jul 12 2022
+ * Version: 2.1.65
+ * Build date: Tue Oct 11 2022
  * 
  * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
  * Read about DevExpress licensing here: https://www.devexpress.com/Support/EULAs
@@ -30091,10 +30091,6 @@ var DiagramControl = (function () {
         this.onImportData();
     };
     DiagramControl.prototype.importItemsData = function () {
-        this.model.iterateItems(function (item) {
-            if (item instanceof Connector_1.Connector)
-                item.invalidateRenderPoints();
-        });
         this.onImportData();
     };
     DiagramControl.prototype.onImportData = function () {
@@ -30430,10 +30426,21 @@ var ModelManipulator = (function () {
         this.updateModelSize();
     };
     ModelManipulator.prototype.initializeCore = function (model, routingModel) {
+        var _this = this;
         this.model = model;
         this.routingModel = routingModel;
-        if (this.routingModel)
+        if (this.routingModel) {
             this.routingModel.initialize(model);
+            model.iterateItems(function (item) {
+                if (item instanceof Connector_1.Connector) {
+                    var routingStrategy = _this.routingModel.createStrategy(item.properties.lineOption);
+                    if (routingStrategy)
+                        item.changeRoutingStrategy(routingStrategy);
+                    else
+                        item.invalidateRenderPoints();
+                }
+            });
+        }
     };
     ModelManipulator.prototype.commitPageChanges = function () {
         this.raisePageSizeChanged(this.model.pageSize.clone(), this.model.pageLandscape);
@@ -37381,7 +37388,7 @@ var DataSource = (function () {
                 var toShape = model.findShapeByDataKey(edge.to);
                 var connector = model.findConnectorByDataKey(dataKey);
                 if (connector) {
-                    _this.changeConnectorPointsByDataItem(history, connector, _this.getConnectorPointsByEdge(model, edge, fromShape, toShape));
+                    _this.changeConnectorPointsByDataItem(history, connector, _this.getConnectorPointsByEdge(model, edge, fromShape, toShape, false));
                     _this.changeConnectorByDataItem(history, model, connector, fromShape, toShape, edge);
                     _this.changeItemByDataItem(history, connector, edge);
                 }
@@ -37523,26 +37530,27 @@ var DataSource = (function () {
             else
                 ModelUtils_1.ModelUtils.removeFromContainer(history, model, shape);
     };
-    DataSource.prototype.getConnectorPointsByEdge = function (model, edge, fromShape, toShape) {
+    DataSource.prototype.getConnectorPointsByEdge = function (model, edge, fromShape, toShape, forceCreate) {
         var result = [];
         var modelPoints = this.createModelPointFromDataSourceEdgeItemPoints(model.units, edge);
-        if (!modelPoints || modelPoints.length <= 1) {
-            if (!fromShape || !toShape)
-                return undefined;
-            result.push(fromShape.position.clone());
-            result.push(toShape.position.clone());
-            return result;
+        if (modelPoints && modelPoints.length > 1) {
+            var lastIndex = modelPoints.length - 1;
+            for (var i = 0; i <= lastIndex; i++) {
+                var modelPoint = modelPoints[i];
+                if (modelPoint !== null)
+                    result.push(modelPoint);
+                else if (!fromShape && !toShape)
+                    return undefined;
+                else if (i === 0 && fromShape)
+                    result.push(fromShape.position.clone());
+                else if (i === lastIndex && toShape)
+                    result.push(toShape.position.clone());
+            }
         }
-        var lastIndex = modelPoints.length - 1;
-        for (var i = 0; i <= lastIndex; i++) {
-            var modelPoint = modelPoints[i];
-            if (modelPoint !== null)
-                result.push(modelPoint);
-            else if (!fromShape && !toShape)
-                return undefined;
-            else if (i === 0 && fromShape)
+        else if (forceCreate) {
+            if (fromShape)
                 result.push(fromShape.position.clone());
-            else if (i === lastIndex && toShape)
+            if (toShape)
                 result.push(toShape.position.clone());
         }
         return result;
@@ -37566,7 +37574,7 @@ var DataSource = (function () {
     DataSource.prototype.createConnectorByEdge = function (history, model, selection, edge, fromShape, toShape) {
         var connector;
         var dataKey = edge.key;
-        var points = this.getConnectorPointsByEdge(model, edge, fromShape, toShape);
+        var points = this.getConnectorPointsByEdge(model, edge, fromShape, toShape, true);
         if (points && points.length > 1) {
             var insert = new AddConnectorHistoryItem_1.AddConnectorHistoryItem(points, dataKey);
             history.addAndRedo(insert);

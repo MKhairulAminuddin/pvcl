@@ -1,7 +1,7 @@
 /*!
 * DevExtreme (dx.messages.ru.js)
-* Version: 22.1.5
-* Build date: Fri Sep 02 2022
+* Version: 22.1.6
+* Build date: Tue Oct 18 2022
 *
 * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
 * Read about DevExtreme licensing here: https://js.devexpress.com/Licensing/
@@ -24,6 +24,7 @@
             Yes: "\u0414\u0430",
             No: "\u041d\u0435\u0442",
             Cancel: "\u041e\u0442\u043c\u0435\u043d\u0430",
+            Close: "\u0417\u0430\u043a\u0440\u044b\u0442\u044c",
             Clear: "\u041e\u0447\u0438\u0441\u0442\u0438\u0442\u044c",
             Done: "\u0413\u043e\u0442\u043e\u0432\u043e",
             Loading: "\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430...",
@@ -152,6 +153,8 @@
             "dxDataGrid-selectedRows": "\u0412\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0435 \u0441\u0442\u0440\u043e\u043a\u0438",
             "dxDataGrid-exportAll": "\u042d\u043a\u0441\u043f\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0432\u0441\u0451 \u0432 {0}",
             "dxDataGrid-exportSelectedRows": "\u042d\u043a\u0441\u043f\u043e\u0440\u0442\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0435 \u0441\u0442\u0440\u043e\u043a\u0438 \u0432 {0}",
+            "dxDataGrid-headerFilterLabel": "\u0424\u0438\u043b\u044c\u0442\u0440\u0430\u0446\u0438\u044f",
+            "dxDataGrid-headerFilterIndicatorLabel": "\u041e\u0442\u043a\u0440\u044b\u0442\u044c \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u0444\u0438\u043b\u044c\u0442\u0440\u0430\u0446\u0438\u0438 \u0434\u043b\u044f \u0441\u0442\u043e\u043b\u0431\u0446\u0430 '{0}'",
             "dxDataGrid-headerFilterEmptyValue": "(\u041f\u0443\u0441\u0442\u043e\u0435)",
             "dxDataGrid-headerFilterOK": "\u041e\u041a",
             "dxDataGrid-headerFilterCancel": "\u041e\u0442\u043c\u0435\u043d\u0438\u0442\u044c",
@@ -181,6 +184,7 @@
             "dxPager-page": "\u0421\u0442\u0440\u0430\u043d\u0438\u0446\u0430 {0}",
             "dxPager-prevPage": "\u041f\u0440\u0435\u0434\u044b\u0434\u0443\u0449\u0430\u044f \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0430",
             "dxPager-nextPage": "\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0430\u044f \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0430",
+            "dxPager-ariaLabel": "\u041d\u0430\u0432\u0438\u0433\u0430\u0446\u0438\u044f \u043f\u043e \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0430\u043c",
             "dxPivotGrid-grandTotal": "\u0418\u0442\u043e\u0433\u043e",
             "dxPivotGrid-total": "{0} \u0412\u0441\u0435\u0433\u043e",
             "dxPivotGrid-fieldChooserTitle": "\u0412\u044b\u0431\u043e\u0440 \u043f\u043e\u043b\u0435\u0439",
