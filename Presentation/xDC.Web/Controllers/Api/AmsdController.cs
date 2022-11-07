@@ -202,7 +202,7 @@ namespace xDC_Web.Controllers.Api
                     if (form.FormStatus == Common.FormStatus.PendingApproval)
                     {
                         new NotificationService().NotifyApprovalRequest(form.ApprovedBy, form.Id, form.PreparedBy, form.FormType);
-                        new MailService().SubmitForApproval(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
+                        EmailNotificationService.WF_ApprovalSubmission(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
                         WorkflowService.SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
 
                         AuditService.Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
@@ -436,7 +436,7 @@ namespace xDC_Web.Controllers.Api
                             db.SaveChanges();
 
                             new NotificationService().NotifyApprovalResult(form.PreparedBy, form.Id, form.ApprovedBy, form.FormType, form.FormStatus);
-                            new MailService().SendApprovalStatus(form.Id, form.FormType, form.FormStatus, form.PreparedBy, input.ApprovalNote);
+                            EmailNotificationService.WF_ApprovalResult(form.Id, form.FormType, form.FormStatus, form.PreparedBy, input.ApprovalNote);
                             WorkflowService.ApprovalResponse(form.Id, form.FormStatus, input.ApprovalNote, form.FormType, form.PreparedBy, form.ApprovedBy);
                             AuditService.FA_Approval(form.Id, form.FormType, form.FormStatus, form.FormDate, User.Identity.Name);
 

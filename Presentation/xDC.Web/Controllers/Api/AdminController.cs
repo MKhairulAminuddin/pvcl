@@ -343,7 +343,7 @@ namespace xDC_Web.Controllers.Api
 
                 if (!string.IsNullOrEmpty(recipient))
                 {
-                    new MailService().TestSendEmailToSmtp(recipient);
+                    EmailNotificationService.TestSendEmail(recipient);
                     return Request.CreateResponse(HttpStatusCode.OK, true);
                 }
                 else

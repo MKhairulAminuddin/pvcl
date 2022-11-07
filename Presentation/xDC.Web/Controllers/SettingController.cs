@@ -6,20 +6,22 @@ using System.Web.Mvc;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Utils;
+using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.ViewModels;
 
 namespace xDC_Web.Controllers
 {
-    [Authorize(Roles = "Administrator, Power User")]
+    [Authorize]
+    [KflowAuthorize(xDC.Utils.Common.PermissionKey.Settings)]
     public class SettingController : Controller
     {
         public ActionResult Index()
         {
             return View();
         }
-        
 
-        public ActionResult NotificationConfig()
+        [KflowAuthorize(xDC.Utils.Common.PermissionKey.Settings_EmailNotification)]
+        public ActionResult EmailNotiConfig()
         {
             try
             {
@@ -33,63 +35,67 @@ namespace xDC_Web.Controllers
                         System.Globalization.CultureInfo.InvariantCulture,
                         System.Globalization.DateTimeStyles.None, out var tryParseValue);
                     
-                    var cnEmailList = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmail);
-                    var cnEmailCcList = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmailCc);
-                    var peEmailList = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PeEmail);
-                    var peEmailCcList = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PeEmailCc);
-                    var propertyEmailList = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PropertyEmail);
-                    var propertyEmailCcList = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PropertyEmailCc);
-                    var loanEmailList = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_LoanEmail);
-                    var loanEmailCcList = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_LoanEmailCc);
-                    var fcaTaggingEmailList = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_FcaTagging);
-                    var approvedTreasuryEmailList = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_TreasuryApproval);
+                    var issd_TsCnEmail = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.ISSD_TS_CnEmail);
+                    var issd_TsCnEmailCc = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.ISSD_TS_CnEmail_Cc);
+                    var issd_TsPeEmail = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.ISSD_TS_PeEmail);
+                    var issd_TsPeEmailCc = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.ISSD_TS_PeEmail_Cc);
+                    var issd_TsPropertyEmail = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.ISSD_TS_PropertyEmail);
+                    var issd_TsPropertyEmailCc = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.ISSD_TS_PropertyEmail_Cc);
+                    var issd_TsLoanEmail = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.ISSD_TS_LoanEmail);
+                    var issd_TsLoanEmailCc = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.ISSD_TS_LoanEmail_Cc);
+                    var issd_FcaTaggingEmail = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.ISSD_FcaTagging);
+                    var issd_TApprovedEmail = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.ISSD_T_Approval);
 
-                    var cnEmailEnable = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmail_Enable);
-                    var cnEmailCcEnable = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmailCc_Enable);
-                    var peEmailEnable = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PeEmail_Enable);
-                    var peEmailCcEnable = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PeEmailCc_Enable);
-                    var propertyEmailEnable = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PropertyEmail_Enable);
-                    var propertyEmailCcEnable = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_PropertyEmailCc_Enable);
-                    var loanEmailEnable = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_LoanEmail_Enable);
-                    var loanEmailCcEnable = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_LoanEmailCc_Enable);
-                    var fcaTaggingEmailEnable = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_FcaTagging_Enable);
-                    var approvedTreasuryEmailEnable = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_TreasuryApproval_Enable);
+                    var issd_Enable_TsCnEmail = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.Enable_ISSD_TS_CnEmail);
+                    var issd_Enable_TsCnEmailCc = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.Enable_ISSD_TS_CnEmail_Cc);
+                    var issd_Enable_TsPeEmail = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.Enable_ISSD_TS_PeEmail);
+                    var issd_Enable_TsPeEmailCc = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.Enable_ISSD_TS_PeEmail_Cc);
+                    var issd_Enable_TsPropertyEmail = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.Enable_ISSD_TS_PropertyEmail);
+                    var issd_Enable_TsPropertyEmailCc = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.Enable_ISSD_TS_PropertyEmail_Cc);
+                    var issd_Enable_TsLoanEmail = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.Enable_ISSD_TS_LoanEmail);
+                    var issd_Enable_TsLoanEmailCc = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.Enable_ISSD_TS_LoanEmail_Cc);
+                    var issd_Enable_FcaTaggingEmail = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.Enable_ISSD_FcaTagging);
+                    var issd_Enable_TApprovedEmail = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.Enable_ISSD_T_Approval);
 
-                    var tSubmissionEmailCcList = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasurySubmissionCc);
-                    var tApprovedCcEmailList = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasuryApprovalCc);
+                    var fid_TSubmissionEmailCc = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.FID_T_Submission_Cc);
+                    var fid_TApprovedEmailCc = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.FID_T_Approval_Cc);
 
-                    var tSubmissionEmailCcEnable = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasurySubmissionCc_Enable);
-                    var tApprovedEmailCcEnable = appConfigs.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasuryApprovalCc_Enable);
+                    var fid_Enable_TSubmissionEmailCc = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.Enable_FID_T_Submission_Cc);
+                    var fid_Enable_TApprovedEmailCc = appConfigs.FirstOrDefault(x => x.Key == Common.EmailNotiKey.Enable_FID_T_Approval_Cc);
 
 
                     NotificationConfigViewModel viewModel = new NotificationConfigViewModel()
                     {
                         InflowFundCutOffTime = tryParseValue,
-                        tsCnEmail = cnEmailList.Value,
-                        tsCnEmailCc = cnEmailCcList.Value,
-                        tsPeEmail = peEmailList.Value,
-                        tsPeEmailCc = peEmailCcList.Value,
-                        tsPropertyEmail = propertyEmailList.Value,
-                        tsPropertyEmailCc = propertyEmailCcList.Value,
-                        tsLoanEmail = loanEmailList.Value,
-                        tsLoanEmailCc = loanEmailCcList.Value,
-                        tsFcaTaggingEmail = fcaTaggingEmailList.Value,
-                        tsApprovedTreasury = approvedTreasuryEmailList.Value,
-                        tSubmissionEmailCc = tSubmissionEmailCcList.Value,
-                        tApprovedEmailCc = tApprovedCcEmailList.Value,
 
-                        tsCnEmailEnable = Convert.ToBoolean(cnEmailEnable?.Value),
-                        tsCnEmailCcEnable = Convert.ToBoolean(cnEmailCcEnable?.Value),
-                        tsPeEmailEnable = Convert.ToBoolean(peEmailEnable?.Value),
-                        tsPeEmailCcEnable = Convert.ToBoolean(peEmailCcEnable?.Value),
-                        tsPropertyEmailEnable = Convert.ToBoolean(propertyEmailEnable?.Value),
-                        tsPropertyEmailCcEnable = Convert.ToBoolean(propertyEmailCcEnable?.Value),
-                        tsLoanEmailEnable = Convert.ToBoolean(loanEmailEnable?.Value),
-                        tsLoanEmailCcEnable = Convert.ToBoolean(loanEmailCcEnable?.Value),
-                        tsFcaTaggingEmailEnable = Convert.ToBoolean(fcaTaggingEmailEnable?.Value),
-                        tsApprovedTreasuryEnable = Convert.ToBoolean(approvedTreasuryEmailEnable?.Value),
-                        tSubmissionEmailCcEnable = Convert.ToBoolean(tSubmissionEmailCcEnable?.Value),
-                        tApprovedEmailCcEnable = Convert.ToBoolean(tApprovedEmailCcEnable?.Value)
+                        issd_TsCn = issd_TsCnEmail.Value,
+                        issd_TsCnCc = issd_TsCnEmailCc.Value,
+                        issd_TsPe = issd_TsPeEmail.Value,
+                        issd_TsPeCc = issd_TsPeEmailCc.Value,
+                        issd_TsProperty = issd_TsPropertyEmail.Value,
+                        issd_TsPropertyCc = issd_TsPropertyEmailCc.Value,
+                        issd_TsLoan = issd_TsLoanEmail.Value,
+                        issd_TsLoanCc = issd_TsLoanEmailCc.Value,
+                        issd_FcaTagging = issd_FcaTaggingEmail.Value,
+                        issd_TApproved = issd_TApprovedEmail.Value,
+
+                        issd_Enable_TsCn = Convert.ToBoolean(issd_Enable_TsCnEmail?.Value),
+                        issd_Enable_TsCnCc = Convert.ToBoolean(issd_Enable_TsCnEmailCc?.Value),
+                        issd_Enable_TsPe = Convert.ToBoolean(issd_Enable_TsPeEmail?.Value),
+                        issd_Enable_TsPeCc = Convert.ToBoolean(issd_Enable_TsPeEmailCc?.Value),
+                        issd_Enable_TsProperty = Convert.ToBoolean(issd_Enable_TsPropertyEmail?.Value),
+                        issd_Enable_TsPropertyCc = Convert.ToBoolean(issd_Enable_TsPropertyEmailCc?.Value),
+                        issd_Enable_TsLoan = Convert.ToBoolean(issd_Enable_TsLoanEmail?.Value),
+                        issd_Enable_TsLoanCc = Convert.ToBoolean(issd_Enable_TsLoanEmailCc?.Value),
+                        issd_Enable_FcaTagging = Convert.ToBoolean(issd_Enable_FcaTaggingEmail?.Value),
+                        issd_Enable_TApproved = Convert.ToBoolean(issd_Enable_TApprovedEmail?.Value),
+
+
+                        fid_T_SubmissionCc = fid_TSubmissionEmailCc.Value,
+                        fid_T_ApprovalCc = fid_TApprovedEmailCc.Value,
+
+                        fid_Enable_T_SubmissionCc = Convert.ToBoolean(fid_Enable_TSubmissionEmailCc?.Value),
+                        fid_Enable_T_ApprovalCc = Convert.ToBoolean(fid_Enable_TApprovedEmailCc?.Value)
                     };
 
                     return View(viewModel);
@@ -103,28 +109,16 @@ namespace xDC_Web.Controllers
             
         }
 
+        [KflowAuthorize(xDC.Utils.Common.PermissionKey.Settings_ApproverAssignment)]
         public ActionResult ApproverManagement()
         {
             return View();
         }
 
-        public ActionResult Workflow()
-        {
-            return View();
-        }
-
-        public ActionResult AuditTrail()
-        {
-            return View();
-        }
-
-        #region Dropdown Configuration
-
+        [KflowAuthorize(xDC.Utils.Common.PermissionKey.Settings_DropdownData)]
         public ActionResult DropdownConfig()
         {
             return View();
         }
-
-        #endregion
     }
 }

@@ -422,34 +422,39 @@ namespace xDC.Utils
             public const string AMSD_IF_CutOffTime = "Amsd.InflowFunds.CutOffTime";
             public const string AMSD_IF_Notification = "Amsd.InflowFunds.Notification";
 
-            public const string ISSD_TS_CnEmail = "Notify.TS.CnEmail";
-            public const string ISSD_TS_CnEmailCc = "Notify.TS.CnEmail.Cc";
-            public const string ISSD_TS_PeEmail = "Notify.TS.PeEmail";
-            public const string ISSD_TS_PeEmailCc = "Notify.TS.PeEmail.Cc";
-            public const string ISSD_TS_PropertyEmail = "Notify.TS.PropertyEmail";
-            public const string ISSD_TS_PropertyEmailCc = "Notify.TS.PropertyEmail.Cc";
-            public const string ISSD_TS_LoanEmail = "Notify.TS.LoanEmail";
-            public const string ISSD_TS_LoanEmailCc = "Notify.TS.LoanEmail.Cc";
-            public const string ISSD_TS_FcaTagging = "Notify.TS.FcaTagging";
-            public const string ISSD_TS_TreasuryApproval = "Notify.TS.TreasuryApproval";
+        }
 
-            public const string ISSD_TS_CnEmail_Enable = "Notify.TS.CnEmail.Enable";
-            public const string ISSD_TS_CnEmailCc_Enable = "Notify.TS.CnEmail.Cc.Enable";
-            public const string ISSD_TS_PeEmail_Enable = "Notify.TS.PeEmail.Enable";
-            public const string ISSD_TS_PeEmailCc_Enable = "Notify.TS.PeEmail.Cc.Enable";
-            public const string ISSD_TS_PropertyEmail_Enable = "Notify.TS.PropertyEmail.Enable";
-            public const string ISSD_TS_PropertyEmailCc_Enable = "Notify.TS.PropertyEmail.Cc.Enable";
-            public const string ISSD_TS_LoanEmail_Enable = "Notify.TS.LoanEmail.Enable";
-            public const string ISSD_TS_LoanEmailCc_Enable = "Notify.TS.LoanEmail.Cc.Enable";
-            public const string ISSD_TS_FcaTagging_Enable = "Notify.TS.FcaTagging.Enable";
-            public const string ISSD_TS_TreasuryApproval_Enable = "Notify.TS.TreasuryApproval.Enable";
+        public static class EmailNotiKey
+        {
+            public const string ISSD_TS_CnEmail = "Noti.ISSD.TS.CnEmail";
+            public const string ISSD_TS_CnEmail_Cc = "Noti.ISSD.TS.CnEmail.Cc";
+            public const string ISSD_TS_PeEmail = "Noti.ISSD.TS.PeEmail";
+            public const string ISSD_TS_PeEmail_Cc = "Noti.ISSD.TS.PeEmail.Cc";
+            public const string ISSD_TS_PropertyEmail = "Noti.ISSD.TS.PropertyEmail";
+            public const string ISSD_TS_PropertyEmail_Cc = "Noti.ISSD.TS.PropertyEmail.Cc";
+            public const string ISSD_TS_LoanEmail = "Noti.ISSD.TS.LoanEmail";
+            public const string ISSD_TS_LoanEmail_Cc = "Noti.ISSD.TS.LoanEmailCc";
+            public const string ISSD_FcaTagging = "Noti.ISSD.FcaTagging";
+            public const string ISSD_T_Approval = "Noti.ISSD.T.TreasuryApproval";
 
+            public const string FID_IF_Approved = "Noti.FID.IF.Approved";
+            public const string FID_T_Submission_Cc = "Noti.FID.T.TreasurySubmission.Cc";
+            public const string FID_T_Approval_Cc = "Noti.FID.T.TreasuryApproval.Cc";
 
-            public const string FID_T_TreasurySubmissionCc = "FID.T.TreasurySubmission.Cc";
-            public const string FID_T_TreasuryApprovalCc = "FID.T.TreasuryApproval.Cc";
+            public const string Enable_ISSD_TS_CnEmail = "Noti.Enable.ISSD.TS.CnEmail";
+            public const string Enable_ISSD_TS_CnEmail_Cc = "Noti.Enable.ISSD.TS.CnEmail.Cc";
+            public const string Enable_ISSD_TS_PeEmail = "Noti.Enable.ISSD.TS.PeEmail";
+            public const string Enable_ISSD_TS_PeEmail_Cc = "Noti.Enable.ISSD.TS.PeEmail.Cc";
+            public const string Enable_ISSD_TS_PropertyEmail = "Noti.Enable.ISSD.TS.PropertyEmail";
+            public const string Enable_ISSD_TS_PropertyEmail_Cc = "Noti.Enable.ISSD.TS.PropertyEmail.Cc";
+            public const string Enable_ISSD_TS_LoanEmail = "Noti.Enable.ISSD.TS.LoanEmail";
+            public const string Enable_ISSD_TS_LoanEmail_Cc = "Noti.Enable.ISSD.TS.LoanEmailCc";
+            public const string Enable_ISSD_FcaTagging = "Noti.Enable.ISSD.FcaTagging";
+            public const string Enable_ISSD_T_Approval = "Noti.Enable.ISSD.T.TreasuryApproval";
 
-            public const string FID_T_TreasurySubmissionCc_Enable = "FID.T.TreasurySubmission.Cc.Enable";
-            public const string FID_T_TreasuryApprovalCc_Enable = "FID.T.TreasuryApproval.Cc.Enable";
+            public const string Enable_FID_IF_Approved = "Noti.Enable.FID.IF.Approved";
+            public const string Enable_FID_T_Submission_Cc = "Noti.Enable.FID.T.TreasurySubmission.Cc";
+            public const string Enable_FID_T_Approval_Cc = "Noti.Enable.FID.T.TreasuryApproval.Cc";
         }
 
         public static class PermissionKey

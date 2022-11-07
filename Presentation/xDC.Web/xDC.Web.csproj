@@ -359,7 +359,7 @@
     <Content Include="Scripts\app\issd\tradeSettlement\view.js" />
     <Content Include="Scripts\app\setting\approverManagement.js" />
     <Content Include="Scripts\app\setting\dropdownConfig.js" />
-    <Content Include="Scripts\app\setting\notificationConfig.js" />
+    <Content Include="Scripts\app\setting\emailNotiConfig.js" />
     <Content Include="Scripts\aspnet\dx.aspnet.data.js" />
     <Content Include="Scripts\aspnet\dx.aspnet.mvc.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -613,9 +613,7 @@
     <Content Include="Views\Shared\_LayoutEmpty.cshtml" />
     <Content Include="Views\Amsd\Index.cshtml" />
     <Content Include="Views\Setting\DropdownConfig.cshtml" />
-    <Content Include="Views\Setting\NotificationConfig.cshtml" />
-    <Content Include="Views\Setting\Workflow.cshtml" />
-    <Content Include="Views\Setting\AuditTrail.cshtml" />
+    <Content Include="Views\Setting\EmailNotiConfig.cshtml" />
     <Content Include="Views\Admin\SystemInformation.cshtml" />
     <Content Include="Views\Admin\SystemLogs.cshtml" />
     <Content Include="Views\Admin\UserManagement.cshtml" />
@@ -717,7 +715,6 @@
     <Compile Include="Extension\CustomAttribute\InflowFundFormPermissionAttribute.cs" />
     <Compile Include="Extension\CustomAttribute\KflowApiAuthorize.cs" />
     <Compile Include="Extension\CustomAttribute\KflowAuthorize.cs" />
-    <Compile Include="Extension\CustomHtmlHelper\xDC_HtmlHelperTest.cs" />
     <Compile Include="Extension\DocGenerator\DealCutOffForm_FCY.cs" />
     <Compile Include="Extension\DocGenerator\TenAmDealCutOffDoc.cs" />
     <Compile Include="Extension\DocGenerator\DealCutOffForm_MYR.cs" />

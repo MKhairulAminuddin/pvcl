@@ -8,34 +8,40 @@ namespace xDC_Web.ViewModels
     public class NotificationConfigViewModel
     {
         public DateTime InflowFundCutOffTime { get; set; }
-        public string tsCnEmail { get; set; }
-        public string tsCnEmailCc { get; set; }
-        public string tsPeEmail { get; set; }
-        public string tsPeEmailCc { get; set; }
-        public string tsPropertyEmail { get; set; }
-        public string tsPropertyEmailCc { get; set; }
-        public string tsLoanEmail { get; set; }
-        public string tsLoanEmailCc { get; set; }
-        public string tsFcaTaggingEmail { get; set; }
-        public string tsApprovedTreasury { get; set; }
 
+        #region ISSD Notification
+        public string issd_TsCn { get; set; }
+        public string issd_TsCnCc { get; set; }
+        public string issd_TsPe { get; set; }
+        public string issd_TsPeCc { get; set; }
+        public string issd_TsProperty { get; set; }
+        public string issd_TsPropertyCc { get; set; }
+        public string issd_TsLoan { get; set; }
+        public string issd_TsLoanCc { get; set; }
+        public string issd_FcaTagging { get; set; }
+        public string issd_TApproved { get; set; }
 
-        public bool tsCnEmailEnable { get; set; }
-        public bool tsCnEmailCcEnable { get; set; }
-        public bool tsPeEmailEnable { get; set; }
-        public bool tsPeEmailCcEnable { get; set; }
-        public bool tsPropertyEmailEnable { get; set; }
-        public bool tsPropertyEmailCcEnable { get; set; }
-        public bool tsLoanEmailEnable { get; set; }
-        public bool tsLoanEmailCcEnable { get; set; }
-        public bool tsFcaTaggingEmailEnable { get; set; }
-        public bool tsApprovedTreasuryEnable { get; set; }
+        public bool issd_Enable_TsCn { get; set; }
+        public bool issd_Enable_TsCnCc { get; set; }
+        public bool issd_Enable_TsPe { get; set; }
+        public bool issd_Enable_TsPeCc { get; set; }
+        public bool issd_Enable_TsProperty { get; set; }
+        public bool issd_Enable_TsPropertyCc { get; set; }
+        public bool issd_Enable_TsLoan { get; set; }
+        public bool issd_Enable_TsLoanCc { get; set; }
+        public bool issd_Enable_FcaTagging { get; set; }
+        public bool issd_Enable_TApproved { get; set; }
 
-        public string tSubmissionEmailCc { get; set; }
-        public string tApprovedEmailCc { get; set; }
+        #endregion
 
-        public bool tSubmissionEmailCcEnable { get; set; }
-        public bool tApprovedEmailCcEnable { get; set; }
+        #region FID Notification
+        public string fid_T_SubmissionCc { get; set; }
+        public string fid_T_ApprovalCc { get; set; }
+
+        public bool fid_Enable_T_SubmissionCc { get; set; }
+        public bool fid_Enable_T_ApprovalCc { get; set; }
+
+        #endregion
 
     }
 }
