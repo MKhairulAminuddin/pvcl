@@ -27,8 +27,10 @@ INSERT [dbo].[Config_Application] ([Key], [Value], [CreatedDate]) VALUES (N'Noti
 INSERT [dbo].[Config_Application] ([Key], [Value], [CreatedDate]) VALUES (N'Noti.Enable.ISSD.FcaTagging', NULL, GETDATE())
 INSERT [dbo].[Config_Application] ([Key], [Value], [CreatedDate]) VALUES (N'Noti.Enable.ISSD.TreasuryApproval', NULL, GETDATE())
 
+INSERT [dbo].[Config_Application] ([Key], [Value], [CreatedDate]) VALUES (N'Noti.FID.IF.Approved', NULL, GETDATE())
 INSERT [dbo].[Config_Application] ([Key], [Value], [CreatedDate]) VALUES (N'Noti.FID.T.TreasurySubmission.Cc', NULL, GETDATE())
 INSERT [dbo].[Config_Application] ([Key], [Value], [CreatedDate]) VALUES (N'Noti.FID.T.TreasuryApproval.Cc', NULL, GETDATE())
 
+INSERT [dbo].[Config_Application] ([Key], [Value], [CreatedDate]) VALUES (N'Noti.Enable.FID.IF.Approved', NULL, GETDATE())
 INSERT [dbo].[Config_Application] ([Key], [Value], [CreatedDate]) VALUES (N'Noti.Enable.FID.T.TreasurySubmission.Cc', NULL, GETDATE())
 INSERT [dbo].[Config_Application] ([Key], [Value], [CreatedDate]) VALUES (N'Noti.Enable.FID.T.TreasuryApproval.Cc', NULL, GETDATE())

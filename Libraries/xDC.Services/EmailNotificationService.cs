@@ -122,7 +122,7 @@ namespace xDC.Services
                     {
                         var bodyBuilder = new StringBuilder();
                         var root = AppDomain.CurrentDomain.BaseDirectory;
-                        using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/NewlyApproved_InflowFundForm.html"))
+                        using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/IFForm_Approved.html"))
                         {
                             string readFile = reader.ReadToEnd();
                             string StrContent = string.Empty;
@@ -160,153 +160,44 @@ namespace xDC.Services
 
         #region Trade Settlement Form Notification
 
-        public static void TS_IncomingFund(int formId, string formType, string currency)
+        public static void TSForm_Approved(int formId, string formType, string currency)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var fidUsers = db.AspNetUsers.Where(user =>
-                        user.AspNetRoles.Any(r => r.Name == Config.Acl.Fid || r.Name == Config.Acl.PowerUser));
-
-                    var message = new MimeMessage()
-                    {
-                        Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                        Subject = $"{SubjectAppend} Approved ISSD Trade Settlement "
-                    };
-
-                    foreach (var fidUser in fidUsers)
-                    {
-                        message.To.Add(new MailboxAddress(fidUser.FullName, fidUser.Email));
-                    }
-
-                    var pageUrl = string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}", Config.EmailApplicationUrl, formId);
-
-                    var bodyBuilder = new StringBuilder();
-                    bodyBuilder.Append($"<p>Dear All, </p>");
-                    bodyBuilder.AppendLine($"<p>A {formType} ({currency}) form has been approved. Below are the details of it. </p>");
-
-                    var sb = new StringBuilder();
+                    var fidUsers = db.AspNetUsers.Where(user => user.AspNetRoles.Any(r => r.Name == Config.Acl.Fid || r.Name == Config.Acl.PowerUser));
 
                     if (fidUsers.Any())
                     {
-                        bodyBuilder.Append(TsTable(formId));
-                        bodyBuilder.AppendLine($"<p>Click <a href='{pageUrl}'>here</a> to view the submission in Kashflow.</p>");
-                        bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
-
-                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                        var bodyBuilder = new StringBuilder();
+                        var root = AppDomain.CurrentDomain.BaseDirectory;
+                        using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/IFForm_Approved.html"))
                         {
-                            Text = bodyBuilder.ToString()
-                        };
-
-                        SendEmail(message);
-                    }
-                    else
-                    {
-                        Logger.LogError("TS_IncomingFund email failed");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-            }
-        }
-
-        public static void TS_PartE_NotifyPe(int formId)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var configApp = db.Config_Application.FirstOrDefault(x => x.Key == EmailNotiKey.Enable_ISSD_TS_CnEmail);
-                    var isEmailNotificationEnable = Convert.ToBoolean(configApp.Value);
-                    var configAppCc = db.Config_Application.FirstOrDefault(x => x.Key == EmailNotiKey.Enable_ISSD_TS_CnEmail_Cc);
-                    var isEmailNotificationCcEnable = Convert.ToBoolean(configAppCc.Value);
-
-
-                    if (isEmailNotificationEnable)
-                    {
-                        var theForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId && x.FormType == Common.FormType.ISSD_TS_E);
+                            string readFile = reader.ReadToEnd();
+                            string StrContent = string.Empty;
+                            StrContent = readFile;
+                            StrContent = StrContent.Replace("[PageUrl]", string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}", Config.EmailApplicationUrl, formId));
+                            StrContent = StrContent.Replace("[DataTable]", TsTable(formId));
+                            bodyBuilder.Append(StrContent);
+                        }
 
                         var message = new MimeMessage()
                         {
                             Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                            Subject = Common.MailSubjectWithDate(Config.NotificationTsPeEmailSubject)
-                        };
-
-                        var dbRecipient = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmail);
-                        var recipients = dbRecipient.Value.ToString().Split(',');
-
-                        foreach (var recipient in recipients)
-                        {
-                            message.To.Add(MailboxAddress.Parse(recipient));
-                        }
-
-                        var dbRecipientCc = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_CnEmailCc);
-                        var recipientsCc = dbRecipientCc.Value.ToString().Split(',');
-
-                        foreach (var recipient in recipientsCc)
-                        {
-                            message.Cc.Add(MailboxAddress.Parse(recipient));
-                        }
-
-                        var bodyBuilder = new StringBuilder();
-                        bodyBuilder.Append($"<p>Dear All, </p>");
-                        bodyBuilder.AppendLine($"<p>A Trade Settlement ({theForm.FormType}) ({theForm.Currency}) form dated {theForm.SettlementDate?.ToString("dd/MM/yyyy")} has been submitted and approved by ISSD. Below are the details of the submission. </p>");
-
-                        var sb = new StringBuilder();
-
-                        var tsFormPartE = db.ISSD_TradeSettlement
-                            .Where(x => x.FormId == formId)
-                            .ToList();
-
-                        if (tsFormPartE.Any())
-                        {
-                            sb.AppendLine("<br/><b>Trade Settlement (Part E - ALTID)</b><br/>");
-
-                            using (var table = new Common.Table(sb))
-                            {
-                                using (var row = table.AddHeaderRow("#5B8EFB", "white"))
-                                {
-                                    row.AddCell("ALTID Distribution & Drawdown");
-                                    row.AddCell("Amount (+)");
-                                    row.AddCell("Amount (-)");
-                                    row.AddCell("Remarks");
-                                }
-
-                                foreach (var item in tsFormPartE)
-                                {
-                                    using (var row = table.AddRow())
-                                    {
-                                        row.AddCell(item.InstrumentCode);
-                                        row.AddCell(item.AmountPlus.ToString("N"));
-                                        row.AddCell(item.AmountMinus.ToString("N"));
-                                        row.AddCell(item.Remarks);
-                                    }
-                                }
-                            }
-
-                            bodyBuilder.Append(sb);
-                            bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
-
-
-                            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                            Subject = $"{SubjectAppend} Approved ISSD Trade Settlement ",
+                            Body = new TextPart(MimeKit.Text.TextFormat.Html)
                             {
                                 Text = bodyBuilder.ToString()
-                            };
+                            }
+                        };
 
-
-                            SendEmail(message);
-                        }
-                        else
+                        foreach (var fidUser in fidUsers)
                         {
-                            Logger.LogError("TS_PartE_NotifyPe email failed");
+                            message.To.Add(new MailboxAddress(fidUser.FullName, fidUser.Email));
                         }
-                    }
-                    else
-                    {
-                        Logger.LogError("TS_PartE_NotifyPe email disabled");
+
+                        SendEmail(message);
                     }
                 }
             }
@@ -316,101 +207,55 @@ namespace xDC.Services
             }
         }
 
-        public static void TS_PartH_Notify(int formId, string othersType)
+        public static void TSForm_PartE_PE(int formId)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var theForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId && x.FormType == Common.FormType.ISSD_TS_H);
+                    var isNotifyEnabled = EnableNotification(db, EmailNotiKey.Enable_ISSD_TS_PeEmail);
+                    var isNotifyCcEnabled = EnableNotification(db, EmailNotiKey.Enable_ISSD_TS_PeEmail_Cc);
 
-                    var message = new MimeMessage()
+                    if (isNotifyEnabled)
                     {
-                        Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount)
-                    };
+                        var theForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId && x.FormType == Common.FormType.ISSD_TS_E);
 
-                    var recipients = new List<string>();
-                    var cc = new List<string>();
-                    var tsFormPartE = new List<ISSD_TradeSettlement>();
-
-                    // 24/12/2021 - premah requested to remove
-                    /*if (othersType == Common.TsOthersTypeItem.Property)
-                    {
-                        message.Subject = Common.MailSubjectWithDate(Config.NotificationTsPropertyEmailSubject);
-
-                        recipients = Config.NotificationTsPropertyEmail.Split(';').ToList();
-                        cc = Config.NotificationTsPropertyEmailCc.Split(';').ToList();
-                        tsFormPartE = db.ISSD_TradeSettlement
-                            .Where(x => x.FormId == formId && x.OthersType == Common.TsOthersTypeItem.Property)
-                            .ToList();
-                    }*/
-                    if (othersType == Common.TsOthersTypeItem.Loan)
-                    {
-                        message.Subject = Common.MailSubjectWithDate(Config.NotificationTsLoanEmailSubject);
-
-                        recipients = Config.NotificationTsLoanEmail.Split(';').ToList();
-                        cc = Config.NotificationTsLoanEmailCc.Split(';').ToList();
-                        tsFormPartE = db.ISSD_TradeSettlement
-                            .Where(x => x.FormId == formId && x.OthersType == Common.TsOthersTypeItem.Loan)
-                            .ToList();
-                    }
-
-                    foreach (var recipient in recipients)
-                    {
-                        message.To.Add(MailboxAddress.Parse(recipient));
-                    }
-
-                    foreach (var recipient in cc)
-                    {
-                        message.Cc.Add(MailboxAddress.Parse(recipient));
-                    }
-
-                    var bodyBuilder = new StringBuilder();
-                    bodyBuilder.Append($"<p>Dear All, </p>");
-                    bodyBuilder.AppendLine($"<p>A Trade Settlement ({theForm.FormType}) ({theForm.Currency}) form dated {theForm.SettlementDate?.ToString("dd/MM/yyyy")} has been submitted and approved by ISSD. Below are the details of the submission. </p>");
-
-                    var sb = new StringBuilder();
-
-                    if (tsFormPartE.Any())
-                    {
-                        sb.AppendLine("<br/><b>Trade Settlement (Part H - Others) " + othersType + " </b><br/>");
-
-                        using (var table = new Common.Table(sb))
+                        var bodyBuilder = new StringBuilder();
+                        var root = AppDomain.CurrentDomain.BaseDirectory;
+                        using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/TSForm_PartE_PE.html"))
                         {
-                            using (var row = table.AddHeaderRow("#5B8EFB", "white"))
-                            {
-                                row.AddCell("Others");
-                                row.AddCell("Amount (+)");
-                                row.AddCell("Amount (-)");
-                                row.AddCell("Remarks");
-                            }
-
-                            foreach (var item in tsFormPartE)
-                            {
-                                using (var row = table.AddRow())
-                                {
-                                    row.AddCell(item.InstrumentCode);
-                                    row.AddCell(item.AmountPlus.ToString("N"));
-                                    row.AddCell(item.AmountMinus.ToString("N"));
-                                    row.AddCell(item.Remarks);
-                                }
-                            }
+                            string readFile = reader.ReadToEnd();
+                            string StrContent = string.Empty;
+                            StrContent = readFile;
+                            StrContent = StrContent.Replace("[FormType]", theForm.FormType);
+                            StrContent = StrContent.Replace("[FormCurrency]", theForm.Currency);
+                            StrContent = StrContent.Replace("[SettlementDate]", theForm.SettlementDate?.ToString("dd/MM/yyyy"));
+                            StrContent = StrContent.Replace("[DataTable]", TsTable(formId));
+                            bodyBuilder.Append(StrContent);
                         }
 
-                        bodyBuilder.Append(sb);
-                        bodyBuilder.AppendLine(Common.EmailTemplate.Footer);
-
-                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                        var message = new MimeMessage()
                         {
-                            Text = bodyBuilder.ToString()
+                            Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                            Subject = Common.MailSubjectWithDate(Config.NotificationTsPeEmailSubject),
+                            Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                            {
+                                Text = bodyBuilder.ToString()
+                            }
                         };
 
+                        message.To.AddRange(ReceipientsFromConfig(db, EmailNotiKey.ISSD_TS_PeEmail));
+
+                        if (isNotifyCcEnabled)
+                        {
+                            message.Cc.AddRange(ReceipientsFromConfig(db, EmailNotiKey.ISSD_TS_PeEmail_Cc));
+                        }
 
                         SendEmail(message);
                     }
                     else
                     {
-                        Logger.LogError("TS_PartH_Notify email failed");
+                        Logger.LogError("TSForm_PartE_NotifyPE email disabled");
                     }
                 }
             }
@@ -420,180 +265,104 @@ namespace xDC.Services
             }
         }
 
+        public static void TSForm_PartH_Loan(int formId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var isNotifyEnabled = EnableNotification(db, EmailNotiKey.Enable_ISSD_TS_LoanEmail);
+                    var isNotifyCcEnabled = EnableNotification(db, EmailNotiKey.Enable_ISSD_TS_LoanEmail_Cc);
+
+                    if (isNotifyEnabled)
+                    {
+                        var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId && x.FormType == Common.FormType.ISSD_TS_H);
+
+                        var bodyBuilder = new StringBuilder();
+                        var root = AppDomain.CurrentDomain.BaseDirectory;
+                        using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/TSForm_PartE_PE.html"))
+                        {
+                            string readFile = reader.ReadToEnd();
+                            string StrContent = string.Empty;
+                            StrContent = readFile;
+                            StrContent = StrContent.Replace("[FormType]", form.FormType);
+                            StrContent = StrContent.Replace("[FormCurrency]", form.Currency);
+                            StrContent = StrContent.Replace("[SettlementDate]", form.SettlementDate?.ToString("dd/MM/yyyy"));
+                            StrContent = StrContent.Replace("[DataTable]", TsTable(formId));
+                            bodyBuilder.Append(StrContent);
+                        }
+
+                        var message = new MimeMessage()
+                        {
+                            Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                            Subject = Common.MailSubjectWithDate(Config.NotificationTsLoanEmailSubject),
+                            Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                            {
+                                Text = bodyBuilder.ToString()
+                            }
+                        };
+
+                        message.To.AddRange(ReceipientsFromConfig(db, EmailNotiKey.ISSD_TS_LoanEmail));
+
+                        if (isNotifyCcEnabled)
+                        {
+                            message.Cc.AddRange(ReceipientsFromConfig(db, EmailNotiKey.ISSD_TS_LoanEmail_Cc));
+                        }
+
+                        SendEmail(message);
+
+                    }
+
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
 
         #endregion
 
         #region Treasury Form Notification
 
-        public static void TreasuryForm_SubmitApproval(int formId, string approverName, string notes)
-        {
-            using (var db = new kashflowDBEntities())
-            {
-                var approver = db.AspNetUsers.FirstOrDefault(x => x.UserName == approverName);
-
-                var ccEnable = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasurySubmissionCc_Enable)?.Value;
-                var ccs = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasurySubmissionCc)?.Value;
-
-                var message = new MimeMessage()
-                {
-                    Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                    Subject = $"{SubjectAppend} Request for Approval {Common.FormType.FID_TREASURY} form",
-                    To = { new MailboxAddress(approver.UserName, approver.Email) }
-                };
-
-                if (ccs != null && ccEnable != null)
-                {
-                    bool enableIncludeCc = bool.Parse(ccEnable);
-                    if (enableIncludeCc)
-                    {
-                        var ccsList = ccs.Split(',').ToList();
-                        foreach (var ccEmail in ccsList)
-                        {
-                            message.Cc.Add(MailboxAddress.Parse(ccEmail));
-                        }
-                    }
-                }
-
-                var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(Common.FormType.FID_TREASURY) + "{1}",
-                    Config.EmailApplicationUrl, formId);
-
-                var bodyBuilder = new StringBuilder();
-
-                var root = AppDomain.CurrentDomain.BaseDirectory;
-                using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/Treasury_SubmitForApproval.html"))
-                {
-                    string readFile = reader.ReadToEnd();
-                    string StrContent = string.Empty;
-                    StrContent = readFile;
-                    //Assing the field values in the template
-                    StrContent = StrContent.Replace("[ApproverName]", approver.FullName);
-                    StrContent = StrContent.Replace("[ApprovalUrl]", approvalPageUrl);
-                    StrContent = StrContent.Replace("[TreasuryTable]", TreasuryTable(formId));
-                    StrContent = StrContent.Replace("[Notes]", notes);
-                    bodyBuilder.Append(StrContent);
-                }
-
-                message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                {
-                    Text = bodyBuilder.ToString()
-                };
-
-                SendEmail(message);
-            }
-        }
-
-        public static void TreasuryForm_Approval(int formId, string preparerName, string notes)
-        {
-            using (var db = new kashflowDBEntities())
-            {
-                var preparer = db.AspNetUsers.FirstOrDefault(x => x.UserName == preparerName);
-                var ccEnable = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasurySubmissionCc_Enable)?.Value;
-                var ccs = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.FID_T_TreasuryApprovalCc)?.Value;
-                var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
-
-                var message = new MimeMessage()
-                {
-                    Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                    Subject = $"{SubjectAppend} Approval Status for submitted {Common.FormType.FID_TREASURY} form",
-                    To =
-                    {
-                        new MailboxAddress(preparer.UserName, preparer.Email)
-                    }
-                };
-
-                var approvalPageUrl = $"{Config.EmailApplicationUrl}{Common.Email_FormUrlMap(Common.FormType.FID_TREASURY)}{formId}";
-
-                var bodyBuilder = new StringBuilder();
-
-                var root = AppDomain.CurrentDomain.BaseDirectory;
-                using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/Treasury_Approval.html"))
-                {
-                    string readFile = reader.ReadToEnd();
-                    string StrContent = string.Empty;
-                    StrContent = readFile;
-                    //Assing the field values in the template
-                    StrContent = StrContent.Replace("[PreparerName]", preparer.FullName);
-                    StrContent = StrContent.Replace("[TreasuryTable]", TreasuryTable(formId));
-                    StrContent = StrContent.Replace("[Notes]", notes);
-                    if (form.FormStatus == Common.FormStatus.Approved)
-                    {
-                        StrContent = StrContent.Replace("[ApprovalResult]", $"<p>Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#2ECC71;'><strong>{form.FormStatus}</strong> ✔️</span>");
-
-                        if (ccs != null && ccEnable != null)
-                        {
-                            bool enableIncludeCc = bool.Parse(ccEnable);
-                            if (enableIncludeCc)
-                            {
-                                foreach (var cc in ccs.Split(',').ToList())
-                                {
-                                    message.Cc.Add(MailboxAddress.Parse(cc));
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        StrContent = StrContent.Replace("[ApprovalResult]", $"<p>Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#E74C3C;'><strong>{form.FormStatus}</strong> 💔</span>");
-                    }
-                    bodyBuilder.Append(StrContent);
-                }
-
-                message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                {
-                    Text = bodyBuilder.ToString()
-                };
-
-                SendEmail(message);
-            }
-        }
-
-        public static void ApprovedTreasuryToIssd()
+        public static void TForm_ISSD_Approved()
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var enable = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_TreasuryApproval_Enable)?.Value;
-                    var to = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_TreasuryApproval)?.Value;
+                    var isNotifyEnabled = EnableNotification(db, EmailNotiKey.Enable_ISSD_T_Approval);
 
-                    if (enable != null && to != null)
+                    if (isNotifyEnabled)
                     {
-                        var enableNotify = Convert.ToBoolean(enable);
-
-                        if (enableNotify)
+                        var message = new MimeMessage()
                         {
-                            var message = new MimeMessage()
-                            {
-                                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                                Subject = $"{SubjectAppend}{Config.NotiTreasuryIssdEmailSubject}"
-                            };
+                            Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                            Subject = $"{SubjectAppend}{Config.NotiTreasuryIssdEmailSubject}"
+                        };
 
-                            var toEmailList = to.Split(',').ToList();
-                            foreach (var recipient in toEmailList)
-                            {
-                                message.To.Add(MailboxAddress.Parse(recipient));
-                            }
+                        message.To.AddRange(ReceipientsFromConfig(db, EmailNotiKey.ISSD_T_Approval));
 
-                            var bodyBuilder = new StringBuilder();
-
-                            var root = AppDomain.CurrentDomain.BaseDirectory;
-                            using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/Treasury_approved_toISSD.html"))
-                            {
+                        var bodyBuilder = new StringBuilder();
+                        var root = AppDomain.CurrentDomain.BaseDirectory;
+                        using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/Treasury_approved_toISSD.html"))
+                        {
                                 
-                                string readFile = reader.ReadToEnd();
-                                string StrContent = string.Empty;
-                                StrContent = readFile;
-                                //Assing the field values in the template
-                                StrContent = StrContent.Replace("[Message]", "FID has approved a Cash flow.");
-                                bodyBuilder.Append(StrContent);
-                            }
-
-                            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                            {
-                                Text = bodyBuilder.ToString()
-                            };
-                            SendEmail(message);
+                            string readFile = reader.ReadToEnd();
+                            string StrContent = string.Empty;
+                            StrContent = readFile;
+                            //Assing the field values in the template
+                            StrContent = StrContent.Replace("[Message]", "FID has approved a Cash flow.");
+                            bodyBuilder.Append(StrContent);
                         }
+
+                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                        {
+                            Text = bodyBuilder.ToString()
+                        };
+
+                        SendEmail(message);
                     }
                 }
             }
@@ -613,45 +382,35 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var enableValue = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_FcaTagging_Enable)?.Value;
-                    var to = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.ISSD_TS_FcaTagging)?.Value;
+                    var isNotifyEnabled = EnableNotification(db, EmailNotiKey.Enable_ISSD_FcaTagging);
 
-                    if (enableValue != null && to != null)
+                    if (isNotifyEnabled)
                     {
-                        var enableNotification = bool.Parse(enableValue);
-                        if (enableNotification)
+                        var message = new MimeMessage()
                         {
-                            var message = new MimeMessage()
-                            {
-                                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                                Subject = $"{SubjectAppend}{Config.NotiFcaTaggingIssdEmailSubject}"
-                            };
+                            Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                            Subject = $"{SubjectAppend}{Config.NotiFcaTaggingIssdEmailSubject}"
+                        };
+                        message.To.AddRange(ReceipientsFromConfig(db, EmailNotiKey.ISSD_FcaTagging));
 
-                            var toList = to.Split(',').ToList();
-                            foreach (var toEmail in toList)
-                            {
-                                message.To.Add(MailboxAddress.Parse(toEmail));
-                            }
-
-                            var bodyBuilder = new StringBuilder();
-                            var root = AppDomain.CurrentDomain.BaseDirectory;
-                            using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/FcaTaggingStatus_ToISSD.html"))
-                            {
-                                string readFile = reader.ReadToEnd();
-                                string StrContent = string.Empty;
-                                StrContent = readFile;
-                                StrContent = StrContent.Replace("[Message]", "Below Trade Settlement items has been tagged with Bank code.");
-                                StrContent = StrContent.Replace("[FcaTaggingTable]", FcaTaggingTable(tradeSettlementItems));
-                                bodyBuilder.Append(StrContent);
-                            }
-
-                            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                            {
-                                Text = bodyBuilder.ToString()
-                            };
-
-                            SendEmail(message);
+                        var bodyBuilder = new StringBuilder();
+                        var root = AppDomain.CurrentDomain.BaseDirectory;
+                        using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/FcaTaggingStatus_ToISSD.html"))
+                        {
+                            string readFile = reader.ReadToEnd();
+                            string StrContent = string.Empty;
+                            StrContent = readFile;
+                            StrContent = StrContent.Replace("[Message]", "Below Trade Settlement items has been tagged with Bank code.");
+                            StrContent = StrContent.Replace("[FcaTaggingTable]", FcaTaggingTable(tradeSettlementItems));
+                            bodyBuilder.Append(StrContent);
                         }
+
+                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                        {
+                            Text = bodyBuilder.ToString()
+                        };
+
+                        SendEmail(message);
                     }
                 }
             }
@@ -726,127 +485,143 @@ namespace xDC.Services
 
         private static MimeMessage ComposeSubmitForApprovalMail(int formId, string formType, string approverName, string approverMail, string notes)
         {
-            var message = new MimeMessage()
+            using (var db = new kashflowDBEntities())
             {
-                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                Subject = $"{SubjectAppend} Request for Approval {formType}",
-                To =
+                var message = new MimeMessage()
                 {
-                    new MailboxAddress(approverName, approverMail)
-                }
-            };
+                    Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                    Subject = $"{SubjectAppend} Request for Approval {formType}",
+                    To =
+                    {
+                        new MailboxAddress(approverName, approverMail)
+                    }
+                };
 
-            var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}", Config.EmailApplicationUrl, formId);
+                var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}", Config.EmailApplicationUrl, formId);
 
-            var bodyBuilder = new StringBuilder();
-
-            var root = AppDomain.CurrentDomain.BaseDirectory;
-            using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/SubmitForApproval.html"))
-            {
-                string readFile = reader.ReadToEnd();
-                string StrContent = string.Empty;
-                StrContent = readFile;
-                //Assing the field values in the template
-                StrContent = StrContent.Replace("[ApproverName]", approverName);
-                StrContent = StrContent.Replace("[ApprovalUrl]", approvalPageUrl);
-                StrContent = StrContent.Replace("[FormType]", formType);
-                StrContent = StrContent.Replace("[Notes]", notes);
-
-                if (formType == Common.FormType.FID_TREASURY)
+                var bodyBuilder = new StringBuilder();
+                var root = AppDomain.CurrentDomain.BaseDirectory;
+                using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/SubmitForApproval.html"))
                 {
-                    StrContent = StrContent.Replace("[DataTable]", TreasuryTable(formId));
-                }
-                else if (Common.IsTsFormType(formType))
-                {
-                    StrContent = StrContent.Replace("[DataTable]", TsTable(formId));
-                }
-                else if (formType == Common.FormType.AMSD_IF)
-                {
-                    StrContent = StrContent.Replace("[DataTable]", InflowFundTable(formId));
-                }
-                else
-                {
-                    StrContent = StrContent.Replace("[DataTable]", "");
+                    string readFile = reader.ReadToEnd();
+                    string StrContent = string.Empty;
+                    StrContent = readFile;
+                    //Assing the field values in the template
+                    StrContent = StrContent.Replace("[ApproverName]", approverName);
+                    StrContent = StrContent.Replace("[ApprovalUrl]", approvalPageUrl);
+                    StrContent = StrContent.Replace("[FormType]", formType);
+                    StrContent = StrContent.Replace("[Notes]", notes);
+
+                    if (formType == Common.FormType.FID_TREASURY)
+                    {
+                        StrContent = StrContent.Replace("[DataTable]", TreasuryTable(formId));
+
+                        var isNotifyCcEnabled = EnableNotification(db, EmailNotiKey.Enable_FID_T_Submission_Cc);
+                        if (isNotifyCcEnabled)
+                        {
+                            message.Cc.AddRange(ReceipientsFromConfig(db, EmailNotiKey.FID_T_Submission_Cc));
+                        }
+                    }
+                    else if (Common.IsTsFormType(formType))
+                    {
+                        StrContent = StrContent.Replace("[DataTable]", TsTable(formId));
+                    }
+                    else if (formType == Common.FormType.AMSD_IF)
+                    {
+                        StrContent = StrContent.Replace("[DataTable]", InflowFundTable(formId));
+                    }
+                    else
+                    {
+                        StrContent = StrContent.Replace("[DataTable]", "");
+                    }
+
+                    bodyBuilder.Append(StrContent);
                 }
 
+                message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                {
+                    Text = bodyBuilder.ToString()
+                };
 
-                bodyBuilder.Append(StrContent);
+                return message;
             }
-
-            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-            {
-                Text = bodyBuilder.ToString()
-            };
-
-            return message;
         }
 
         private static MimeMessage ComposeApprovalFeedbackMail(int formId, string formType, string formStatus, string preparerName, string preparerMail, string notes)
         {
-            var message = new MimeMessage()
+            using (var db = new kashflowDBEntities())
             {
-                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                Subject = $"{SubjectAppend} Approval Status for submitted {formType} form",
-                To =
+                var message = new MimeMessage()
+                {
+                    Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                    Subject = $"{SubjectAppend} Approval Status for submitted {formType} form",
+                    To =
                 {
                     new MailboxAddress(preparerName, preparerMail)
                 }
-            };
+                };
 
-            var approvalPageUrl = $"{Config.EmailApplicationUrl}{Common.Email_FormUrlMap(formType)}{formId}";
+                var approvalPageUrl = $"{Config.EmailApplicationUrl}{Common.Email_FormUrlMap(formType)}{formId}";
 
-            var bodyBuilder = new StringBuilder();
+                var bodyBuilder = new StringBuilder();
 
-            var root = AppDomain.CurrentDomain.BaseDirectory;
-            using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/ApprovalStatus.html"))
-            {
-                string readFile = reader.ReadToEnd();
-                string StrContent = string.Empty;
-                StrContent = readFile;
-                //Assing the field values in the template
-                StrContent = StrContent.Replace("[PreparerName]", preparerName);
-                StrContent = StrContent.Replace("[ApprovalUrl]", approvalPageUrl);
-                StrContent = StrContent.Replace("[Notes]", notes);
-
-                if (formStatus == Common.FormStatus.Approved)
+                var root = AppDomain.CurrentDomain.BaseDirectory;
+                using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/ApprovalStatus.html"))
                 {
-                    StrContent = StrContent.Replace("[ApprovalStatusMessage]", 
-                        $"<p>Good News! Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#2ECC71;'>{formStatus}</span>");
-                }
-                else
-                {
-                    StrContent = StrContent.Replace("[ApprovalStatusMessage]", 
-                        $"<p>Bad News! Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#E74C3C;'>{formStatus}</span>");
-                }
-                
+                    string readFile = reader.ReadToEnd();
+                    string StrContent = string.Empty;
+                    StrContent = readFile;
+                    //Assing the field values in the template
+                    StrContent = StrContent.Replace("[PreparerName]", preparerName);
+                    StrContent = StrContent.Replace("[ApprovalUrl]", approvalPageUrl);
+                    StrContent = StrContent.Replace("[Notes]", notes);
 
-                if (formType == Common.FormType.FID_TREASURY)
-                {
-                    StrContent = StrContent.Replace("[DataTable]", TreasuryTable(formId));
-                }
-                else if (Common.IsTsFormType(formType))
-                {
-                    StrContent = StrContent.Replace("[DataTable]", TsTable(formId));
-                }
-                else if (formType == Common.FormType.AMSD_IF)
-                {
-                    StrContent = StrContent.Replace("[DataTable]", InflowFundTable(formId));
-                }
-                else
-                {
-                    StrContent = StrContent.Replace("[DataTable]", "");
-                }
+                    if (formStatus == Common.FormStatus.Approved)
+                    {
+                        StrContent = StrContent.Replace("[ApprovalStatusMessage]",
+                            $"<p>Good News! Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#2ECC71;'>{formStatus}</span>");
+                    }
+                    else
+                    {
+                        StrContent = StrContent.Replace("[ApprovalStatusMessage]",
+                            $"<p>Bad News! Your submitted form <a href='{approvalPageUrl}'>#{formId}</a> have been <span style='color:#E74C3C;'>{formStatus}</span>");
+                    }
 
 
-                bodyBuilder.Append(StrContent);
+                    if (formType == Common.FormType.FID_TREASURY)
+                    {
+                        StrContent = StrContent.Replace("[DataTable]", TreasuryTable(formId));
+
+                        var isNotifyCcEnabled = EnableNotification(db, EmailNotiKey.Enable_FID_T_Approval_Cc);
+                        if (isNotifyCcEnabled)
+                        {
+                            message.Cc.AddRange(ReceipientsFromConfig(db, EmailNotiKey.FID_T_Approval_Cc));
+                        }
+                    }
+                    else if (Common.IsTsFormType(formType))
+                    {
+                        StrContent = StrContent.Replace("[DataTable]", TsTable(formId));
+                    }
+                    else if (formType == Common.FormType.AMSD_IF)
+                    {
+                        StrContent = StrContent.Replace("[DataTable]", InflowFundTable(formId));
+                    }
+                    else
+                    {
+                        StrContent = StrContent.Replace("[DataTable]", "");
+                    }
+
+
+                    bodyBuilder.Append(StrContent);
+                }
+
+                message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                {
+                    Text = bodyBuilder.ToString()
+                };
+
+                return message;
             }
-
-            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-            {
-                Text = bodyBuilder.ToString()
-            };
-
-            return message;
         }
 
         private static MimeMessage Compose_TsAmendApprovedForm(ISSD_FormHeader form, InternetAddressList powerUsers)

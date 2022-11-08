@@ -1375,17 +1375,12 @@ namespace xDC.Services.App
                             db.SaveChanges();
 
                             FormService.NotifyPreparer(form.Id, form.FormType, form.FormStatus, form.PreparedBy, form.ApprovedBy, req.ApprovalNote);
-                            EmailNotificationService.TS_IncomingFund(form.Id, form.FormType, form.Currency);
+                            EmailNotificationService.TSForm_Approved(form.Id, form.FormType, form.Currency);
                             AuditService.FA_Approval(form.Id, form.FormType, form.FormStatus, form.SettlementDate, currentUser);
-
-                            /*if (WorkflowService.FormResubmissionFromApprovedRejected(form.Id, form.FormType))
-                            {
-
-                            }*/
 
                             if (form.FormType == Common.FormType.ISSD_TS_E && form.FormStatus == Common.FormStatus.Approved)
                             {
-                                EmailNotificationService.TS_PartE_NotifyPe(form.Id);
+                                EmailNotificationService.TSForm_PartE_PE(form.Id);
                             }
 
                             if (form.FormType == Common.FormType.ISSD_TS_H && form.FormStatus == Common.FormStatus.Approved)
@@ -1393,7 +1388,7 @@ namespace xDC.Services.App
                                 var tsLoanItemExist = db.ISSD_TradeSettlement.Any(x => x.FormId == form.Id && x.OthersType == Common.TsOthersTypeItem.Loan);
                                 if (tsLoanItemExist)
                                 {
-                                    EmailNotificationService.TS_PartH_Notify(form.Id, Common.TsOthersTypeItem.Loan);
+                                    EmailNotificationService.TSForm_PartH_Loan(form.Id);
                                 }
 
                             }
