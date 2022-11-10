@@ -34,3 +34,19 @@ INSERT [dbo].[Config_Application] ([Key], [Value], [CreatedDate]) VALUES (N'Noti
 INSERT [dbo].[Config_Application] ([Key], [Value], [CreatedDate]) VALUES (N'Noti.Enable.FID.IF.Approved', NULL, GETDATE())
 INSERT [dbo].[Config_Application] ([Key], [Value], [CreatedDate]) VALUES (N'Noti.Enable.FID.T.TreasurySubmission.Cc', NULL, GETDATE())
 INSERT [dbo].[Config_Application] ([Key], [Value], [CreatedDate]) VALUES (N'Noti.Enable.FID.T.TreasuryApproval.Cc', NULL, GETDATE())
+
+
+-- App log
+
+CREATE TABLE [App_Logs] (
+
+   [Id] int IDENTITY(1,1) NOT NULL,
+   [Message] nvarchar(max) NULL,
+   [MessageTemplate] nvarchar(max) NULL,
+   [Level] nvarchar(128) NULL,
+   [TimeStamp] datetime NOT NULL,
+   [Exception] nvarchar(max) NULL,
+   [Properties] nvarchar(max) NULL
+
+   CONSTRAINT [PK_Logs] PRIMARY KEY CLUSTERED ([Id] ASC)
+);

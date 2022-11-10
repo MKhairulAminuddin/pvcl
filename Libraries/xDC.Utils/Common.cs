@@ -170,17 +170,6 @@ namespace xDC.Utils
             return String.Empty;
         }
 
-        public static class EmailTemplate
-        {
-            public const string HeaderTitleNotification = "<div style='background-color:#5B8EFB;padding:1px 4px 1px 4px'><h2 style='color:#ffffff;'> &#128276; KASHFLOW NOTIFICATION</h2></div>";
-            public const string Footer = "<br/><br/><p style='font-size: smaller;font-style: italic;color: gray'>### This is a system generated email, please do not reply to this email. Don't you ever try. ###</p>";
-        }
-
-        public static string EmailTemplate_WorkflowNotesArea(string notes)
-        {
-            return $"<p><strong>Notes from preparer:</strong></p><div style='background-color:#FFF;border-radius:10px;padding:5px 10px;'><p>{notes}</p></div>";
-        }
-
         public static string TsCategoryUrlParamMapping(string value)
         {
             switch (value)

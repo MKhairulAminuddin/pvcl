@@ -116,7 +116,7 @@ namespace xDC.Services
                 using (var db = new kashflowDBEntities())
                 {
                     var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
-                    var enableNotify = EnableNotification(db, EmailNotiKey.Enable_FID_IF_Approved);
+                    var enableNotify = EnableNotification(EmailNotiKey.Enable_FID_IF_Approved);
 
                     if (form != null && enableNotify)
                     {
@@ -140,7 +140,7 @@ namespace xDC.Services
                                 Text = bodyBuilder.ToString()
                             },
                         };
-                        message.To.AddRange(ReceipientsFromConfig(db, EmailNotiKey.FID_IF_Approved));
+                        message.To.AddRange(ReceipientsFromConfig(EmailNotiKey.FID_IF_Approved));
 
                         SendEmail(message);
                     }
@@ -213,8 +213,8 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var isNotifyEnabled = EnableNotification(db, EmailNotiKey.Enable_ISSD_TS_PeEmail);
-                    var isNotifyCcEnabled = EnableNotification(db, EmailNotiKey.Enable_ISSD_TS_PeEmail_Cc);
+                    var isNotifyEnabled = EnableNotification(EmailNotiKey.Enable_ISSD_TS_PeEmail);
+                    var isNotifyCcEnabled = EnableNotification(EmailNotiKey.Enable_ISSD_TS_PeEmail_Cc);
 
                     if (isNotifyEnabled)
                     {
@@ -244,11 +244,11 @@ namespace xDC.Services
                             }
                         };
 
-                        message.To.AddRange(ReceipientsFromConfig(db, EmailNotiKey.ISSD_TS_PeEmail));
+                        message.To.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_TS_PeEmail));
 
                         if (isNotifyCcEnabled)
                         {
-                            message.Cc.AddRange(ReceipientsFromConfig(db, EmailNotiKey.ISSD_TS_PeEmail_Cc));
+                            message.Cc.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_TS_PeEmail_Cc));
                         }
 
                         SendEmail(message);
@@ -271,8 +271,8 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var isNotifyEnabled = EnableNotification(db, EmailNotiKey.Enable_ISSD_TS_LoanEmail);
-                    var isNotifyCcEnabled = EnableNotification(db, EmailNotiKey.Enable_ISSD_TS_LoanEmail_Cc);
+                    var isNotifyEnabled = EnableNotification(EmailNotiKey.Enable_ISSD_TS_LoanEmail);
+                    var isNotifyCcEnabled = EnableNotification(EmailNotiKey.Enable_ISSD_TS_LoanEmail_Cc);
 
                     if (isNotifyEnabled)
                     {
@@ -302,11 +302,11 @@ namespace xDC.Services
                             }
                         };
 
-                        message.To.AddRange(ReceipientsFromConfig(db, EmailNotiKey.ISSD_TS_LoanEmail));
+                        message.To.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_TS_LoanEmail));
 
                         if (isNotifyCcEnabled)
                         {
-                            message.Cc.AddRange(ReceipientsFromConfig(db, EmailNotiKey.ISSD_TS_LoanEmail_Cc));
+                            message.Cc.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_TS_LoanEmail_Cc));
                         }
 
                         SendEmail(message);
@@ -332,7 +332,7 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var isNotifyEnabled = EnableNotification(db, EmailNotiKey.Enable_ISSD_T_Approval);
+                    var isNotifyEnabled = EnableNotification(EmailNotiKey.Enable_ISSD_T_Approval);
 
                     if (isNotifyEnabled)
                     {
@@ -342,7 +342,7 @@ namespace xDC.Services
                             Subject = $"{SubjectAppend}{Config.NotiTreasuryIssdEmailSubject}"
                         };
 
-                        message.To.AddRange(ReceipientsFromConfig(db, EmailNotiKey.ISSD_T_Approval));
+                        message.To.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_T_Approval));
 
                         var bodyBuilder = new StringBuilder();
                         var root = AppDomain.CurrentDomain.BaseDirectory;
@@ -382,7 +382,7 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var isNotifyEnabled = EnableNotification(db, EmailNotiKey.Enable_ISSD_FcaTagging);
+                    var isNotifyEnabled = EnableNotification(EmailNotiKey.Enable_ISSD_FcaTagging);
 
                     if (isNotifyEnabled)
                     {
@@ -391,7 +391,7 @@ namespace xDC.Services
                             Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
                             Subject = $"{SubjectAppend}{Config.NotiFcaTaggingIssdEmailSubject}"
                         };
-                        message.To.AddRange(ReceipientsFromConfig(db, EmailNotiKey.ISSD_FcaTagging));
+                        message.To.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_FcaTagging));
 
                         var bodyBuilder = new StringBuilder();
                         var root = AppDomain.CurrentDomain.BaseDirectory;
@@ -442,44 +442,50 @@ namespace xDC.Services
 
         }
 
-        private static List<MailboxAddress> ReceipientsFromConfig(kashflowDBEntities Db, string configKey)
+        public static List<MailboxAddress> ReceipientsFromConfig(string configKey)
         {
-            var configValue = Db.Config_Application.FirstOrDefault(x => x.Key == configKey);
-            if (configValue != null)
+            using (var db = new kashflowDBEntities())
             {
-                var emailAddresses = configValue.Value.Split(',').ToList();
-                var mailboxAddress = new List<MailboxAddress>();
-                foreach (var email in emailAddresses)
+                var configValue = db.Config_Application.FirstOrDefault(x => x.Key == configKey);
+                if (configValue != null)
                 {
-                    mailboxAddress.Add(MailboxAddress.Parse(email));
+                    var emailAddresses = configValue.Value.Split(',').ToList();
+                    var mailboxAddress = new List<MailboxAddress>();
+                    foreach (var email in emailAddresses)
+                    {
+                        mailboxAddress.Add(MailboxAddress.Parse(email));
+                    }
+                    return mailboxAddress;
                 }
-                return mailboxAddress;
-            }
-            else
-            {
-                return null;
+                else
+                {
+                    return null;
+                }
             }
         }
 
-        private static bool EnableNotification(kashflowDBEntities Db, string configKey)
+        public static bool EnableNotification(string configKey)
         {
-            var configValue = Db.Config_Application.FirstOrDefault(x => x.Key == configKey);
-            if (configValue != null)
+            using (var db = new kashflowDBEntities())
             {
-                var conversionStatus = bool.TryParse(configValue.Value, out bool enableNotify);
-
-                if (conversionStatus)
+                var configValue = db.Config_Application.FirstOrDefault(x => x.Key == configKey);
+                if (configValue != null)
                 {
-                    return enableNotify;
+                    var conversionStatus = bool.TryParse(configValue.Value, out bool enableNotify);
+
+                    if (conversionStatus)
+                    {
+                        return enableNotify;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
                     return false;
                 }
-            }
-            else
-            {
-                return false;
             }
         }
 
@@ -516,10 +522,10 @@ namespace xDC.Services
                     {
                         StrContent = StrContent.Replace("[DataTable]", TreasuryTable(formId));
 
-                        var isNotifyCcEnabled = EnableNotification(db, EmailNotiKey.Enable_FID_T_Submission_Cc);
+                        var isNotifyCcEnabled = EnableNotification(EmailNotiKey.Enable_FID_T_Submission_Cc);
                         if (isNotifyCcEnabled)
                         {
-                            message.Cc.AddRange(ReceipientsFromConfig(db, EmailNotiKey.FID_T_Submission_Cc));
+                            message.Cc.AddRange(ReceipientsFromConfig(EmailNotiKey.FID_T_Submission_Cc));
                         }
                     }
                     else if (Common.IsTsFormType(formType))
@@ -592,10 +598,10 @@ namespace xDC.Services
                     {
                         StrContent = StrContent.Replace("[DataTable]", TreasuryTable(formId));
 
-                        var isNotifyCcEnabled = EnableNotification(db, EmailNotiKey.Enable_FID_T_Approval_Cc);
+                        var isNotifyCcEnabled = EnableNotification(EmailNotiKey.Enable_FID_T_Approval_Cc);
                         if (isNotifyCcEnabled)
                         {
-                            message.Cc.AddRange(ReceipientsFromConfig(db, EmailNotiKey.FID_T_Approval_Cc));
+                            message.Cc.AddRange(ReceipientsFromConfig(EmailNotiKey.FID_T_Approval_Cc));
                         }
                     }
                     else if (Common.IsTsFormType(formType))

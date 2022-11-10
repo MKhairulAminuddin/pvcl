@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Services;
 using xDC.Utils;
 
 namespace xDC_Web.Extension.MailGenerator
@@ -84,20 +85,22 @@ namespace xDC_Web.Extension.MailGenerator
                 var fileName = "TradeSettlement_CN_TRX_" + DateTime.Now.ToString("yyyyMMddhhss");
                 var mailMessage = new MailMessage();
 
-                var recipientsConfig = Config.NotificationTsCnEmail;
-                var recipients = recipientsConfig.Split(';').ToList();
-                foreach (var recipient in recipients.Where(recipient => !string.IsNullOrEmpty(recipient)))
+                var recipients = EmailNotificationService.ReceipientsFromConfig(Common.EmailNotiKey.ISSD_TS_CnEmail);
+                foreach (var recipient in recipients)
                 {
-                    mailMessage.To.Add(recipient);
+                    mailMessage.To.Add(recipient.Address);
                 }
 
-                var ccConfig = Config.NotificationTsCnEmailCc;
-                var ccList = ccConfig.Split(';').ToList();
-                foreach (var cc in ccList.Where(recipient => !string.IsNullOrEmpty(recipient)))
+                var ccsEnabled = EmailNotificationService.EnableNotification(Common.EmailNotiKey.Enable_ISSD_TS_CnEmail_Cc);
+                var ccs = EmailNotificationService.ReceipientsFromConfig(Common.EmailNotiKey.ISSD_TS_CnEmail_Cc);
+                if (ccsEnabled && ccs.Any())
                 {
-                    mailMessage.CC.Add(cc);
+                    foreach (var cc in ccs)
+                    {
+                        mailMessage.CC.Add(cc.Address);
+                    }
                 }
-
+                
                 mailMessage.From = new MailAddress(senderEmail);
                 mailMessage.Headers.Add("X-Unsent", "1");
                 mailMessage.Subject = Common.MailSubjectWithDate(Config.NotificationTsCnEmailSubject);
