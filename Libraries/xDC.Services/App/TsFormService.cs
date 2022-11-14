@@ -1447,7 +1447,6 @@ namespace xDC.Services.App
 
         #endregion
 
-
         public static List<ISSD_TradeSettlement> GetTradeSettlement(kashflowDBEntities db, int formId)
         {
             var result = db.ISSD_TradeSettlement
@@ -1614,6 +1613,88 @@ namespace xDC.Services.App
                 .FirstOrDefault();
 
             return result;
+        }
+
+        public static List<TsOpeningBalance> OpeningBalanceSummary(long submissionDateEpoch = 0)
+        {
+            try
+            {
+                DateTime selectedDate;
+                if (submissionDateEpoch != 0)
+                {
+                    selectedDate = Utils.Common.ConvertEpochToDateTime(submissionDateEpoch).Value;
+                }
+                else
+                {
+                    selectedDate = DateTime.Now;
+                }
+
+                using (var db = new kashflowDBEntities())
+                {
+                    var openingBalanceSummary = FcaTaggingSvc.GetOpeningBalance(db, selectedDate);
+
+                    if (openingBalanceSummary.Any())
+                    {
+                        return openingBalanceSummary.OrderBy(x => x.Currency).ThenBy(x => x.Account).ToList();
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return null;
+            }
+        }
+
+        public static List<TsFormSummary> TsFormSummaryList(long submissionDateEpoch = 0)
+        {
+            try
+            {
+                DateTime selectedDate;
+                if (submissionDateEpoch != 0)
+                {
+                    selectedDate = Utils.Common.ConvertEpochToDateTime(submissionDateEpoch).Value;
+                }
+                else
+                {
+                    selectedDate = DateTime.Now;
+                }
+
+                using (var db = new kashflowDBEntities())
+                {
+                    var tsForms = db.ISSD_FormHeader.Where(x => DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(selectedDate))
+                        .Select(x => new TsFormSummary()
+                    {
+                        FormId = x.Id,
+                        SettlementDate = x.SettlementDate,
+                        Currency = x.Currency,
+                        PreparedBy = x.PreparedBy,
+                        SubmittedDate = x.PreparedDate,
+                        ApprovedBy = x.ApprovedBy,
+                        ApprovedDate = x.ApprovedDate,
+                        FormType = x.FormType,
+                        FormStatus = x.FormStatus
+                    }).ToList();
+
+                    if (tsForms.Any())
+                    {
+                        return tsForms;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return null;
+            }
         }
 
         #region Private Functions

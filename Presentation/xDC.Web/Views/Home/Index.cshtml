@@ -1,14 +1,150 @@
-@using xDC_Web.Models
+@using xDC.Domain.Web.HOME
 
 @{
     ViewBag.Title = "";
 }
 
 <section class="content container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            
+    @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.AMSD_InflowFundForm_Edit))
+    {
+        <div class="row">
+            <div class="col-md-4">
+                <div class="box box-solid">
+                    <div class="box-header">
+                        Todays Inflow Funds
+                    </div>
+                    <div class="box-body">
+                        @if (Model.IfAmountSummary != null)
+                        {
+
+                            foreach (var item in Model.IfAmountSummary)
+                            {
+                                <p><b>@item.Bank:</b> MYR @item.TotalAmount.ToString("N2")</p>
+                            }
+
+                        }
+                        else
+                        {
+                            <div>No form submitted today</div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="box box-solid">
+                    <div class="box-header">
+                        Todays Inflow Fund Forms Submission
+                    </div>
+                    <div class="box-body">
+                        @if (Model.IfFormSummary != null)
+                        {
+                            foreach (var item in Model.IfFormSummary)
+                            {
+                                <p>
+                                    A form submitted by @item.PreparedBy - @formatFormStatus(item.FormStatus)
+                                </p>
+                            }
+                        }
+                        else
+                        {
+                            <div>No form submitted today</div>
+                        }
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    }
+
+    @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.ISSD_TradeSettlementForm_Edit))
+    {
+        <div class="row">
+            <div class="col-md-4">
+                <div class="box box-solid">
+                    <div class="box-header">
+                        Todays Opening Balance
+                    </div>
+                    <div class="box-body">
+                        @if (Model.TsOpeningBalanceSummary != null)
+                        {
+                            <table class="table table-hover table-condensed">  
+                                <thead>
+                                    <tr>
+                                        <th width="160px">Account</th>
+                                        <th width="120px">Currecy</th>
+                                        <th>Total Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.TsOpeningBalanceSummary)
+                                    {
+                                        <tr>
+                                            <td>@item.Account</td>
+                                            <td>@item.Currency</td>
+                                            <td>@item.Amount.ToString("N2")</td> 
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            
+
+                        }
+                        else
+                        {
+                            <div>No Opening Balance Data Today</div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="box box-solid">
+                    <div class="box-header">
+                        Todays Trade Settlement Forms Submission
+                    </div>
+                    <div class="box-body">
+                        @if (Model.TsFormSummary != null)
+                        {
+                            foreach (var item in Model.TsFormSummary)
+                            {
+                                <p>
+                                    A @item.FormType form submitted by @item.PreparedBy - @formatFormStatus(item.FormStatus)
+                                </p>
+                            }
+                        }
+                        else
+                        {
+                            <div>No form submitted today</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    }
 </section>
+
+@functions {
+    public static HtmlString formatFormStatus(string value)
+    {
+        if(value == "Pending Approval")
+        {
+            return new HtmlString(string.Format("<span class='text-warning'><b>{0}</b></span>", value));
+        }
+        else if (value == "Approved")
+        {
+            return new HtmlString(string.Format("<span class='text-success'><b>{0}</b></span>", value));
+        }
+        else if (value == "Rejected")
+        {
+            return new HtmlString(string.Format("<span class='text-danger'><b>{0}</b></span>", value));
+        }
+        else if (value == "Draft")
+        {
+            return new HtmlString(string.Format("<span class='text-info'><b>{0}</b></span>", value));
+        }
+        else
+        {
+            return new HtmlString(string.Format("<span><b>{0}</b></span>", value));
+        }
+    }
+}
 

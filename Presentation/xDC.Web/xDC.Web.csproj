@@ -714,7 +714,6 @@
     <Compile Include="Controllers\SettingController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Extension\AdAuthentication.cs" />
-    <Compile Include="Extension\CustomAttribute\InflowFundFormPermissionAttribute.cs" />
     <Compile Include="Extension\CustomAttribute\KflowApiAuthorize.cs" />
     <Compile Include="Extension\CustomAttribute\KflowAuthorize.cs" />
     <Compile Include="Extension\DocGenerator\DealCutOffForm_FCY.cs" />

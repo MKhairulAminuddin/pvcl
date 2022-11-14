@@ -77,11 +77,15 @@
     <Compile Include="WebApi\Form_FcaTagging\DetailRes.cs" />
     <Compile Include="WebApi\Form_FcaTagging\FcaBankAccountRes.cs" />
     <Compile Include="WebApi\Form_FcaTagging\SummaryRes.cs" />
+    <Compile Include="Web\AMSD\InflowFundForm\IfAmountSummary.cs" />
+    <Compile Include="Web\AMSD\InflowFundForm\IfFormSummaryList.cs" />
     <Compile Include="Web\AMSD\InflowFundForm\InflowFundFormsLandingPage.cs" />
     <Compile Include="Web\AMSD\InflowFundForm\InflowFundForm.cs" />
     <Compile Include="Web\FID\FcaTaggingForm\FcaAccountAssignmentFormVM.cs" />
     <Compile Include="Web\FID\TreasuryForm\TreasuryFormPage.cs" />
+    <Compile Include="Web\HOME\HomeDashboard.cs" />
     <Compile Include="Web\ISSD\TradeSettlementForm\TsConsolidatedPage.cs" />
+    <Compile Include="Web\ISSD\TradeSettlementForm\TsFormSummary.cs" />
     <Compile Include="Web\ISSD\TradeSettlementForm\TsLandingPage.cs" />
     <Compile Include="Web\ISSD\TradeSettlementForm\TsOpeningBalance.cs" />
     <Compile Include="Web\Setting\EmailConfigSetting.cs" />

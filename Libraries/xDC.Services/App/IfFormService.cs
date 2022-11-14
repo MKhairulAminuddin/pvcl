@@ -171,5 +171,84 @@ namespace xDC.Services.App
 
         #endregion
 
+        public static List<IfFormSummaryList> IfFormSummaryList(long submissionDateEpoch = 0)
+        {
+            try
+            {
+                DateTime selectedDate;
+                if (submissionDateEpoch != 0)
+                {
+                    selectedDate = Utils.Common.ConvertEpochToDateTime(submissionDateEpoch).Value;
+                }
+                else
+                {
+                    selectedDate = DateTime.Now;
+                }
+
+                using (var db = new kashflowDBEntities())
+                {
+                    var ifForms = db.AMSD_IF.Where(x => DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(selectedDate)).Select(x => new IfFormSummaryList()
+                    {
+                        FormId = x.Id,
+                        PreparedBy = x.PreparedBy,
+                        ApprovedBy = x.ApprovedBy,
+                        FormStatus = x.FormStatus,
+                        SubmittedDate = x.PreparedDate,
+                        ApprovedDate = x.ApprovedDate
+                    }).ToList();
+
+                    if (ifForms.Any())
+                    {
+                        return ifForms;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return null;
+            }           
+        }
+
+        public static List<IfAmountSummary> IfAmountSummary(long submissionDateepoch = 0)
+        {
+            try
+            {
+                DateTime selectedDate;
+                if (submissionDateepoch != 0)
+                {
+                    selectedDate = Utils.Common.ConvertEpochToDateTime(submissionDateepoch).Value;
+                }
+                else
+                {
+                    selectedDate = DateTime.Now;
+                }
+
+                using (var db = new kashflowDBEntities())
+                {
+                    var ifFormIds = db.AMSD_IF.Where(x => DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(selectedDate)).Select(x => x.Id).ToList();
+                    if (ifFormIds.Any())
+                    {
+                        var ifFormitems = db.AMSD_IF_Item.Where(x => ifFormIds.Contains(x.FormId)).GroupBy(x => x.Bank).Select(x => new IfAmountSummary()
+                        {
+                            Bank = x.Key,
+                            TotalAmount = x.Sum(y => y.Amount)
+                        }).ToList();
+                        return ifFormitems;
+                    }
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return null;
+            }
+        }
     }
 }
