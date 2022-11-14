@@ -41,6 +41,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -83,6 +84,7 @@
     <Compile Include="Web\ISSD\TradeSettlementForm\TsConsolidatedPage.cs" />
     <Compile Include="Web\ISSD\TradeSettlementForm\TsLandingPage.cs" />
     <Compile Include="Web\ISSD\TradeSettlementForm\TsOpeningBalance.cs" />
+    <Compile Include="Web\Setting\EmailConfigSetting.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Audit\" />

@@ -771,7 +771,6 @@
     <Compile Include="Models\ViewFormHeaderModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="ViewModels\NotificationConfigViewModel.cs" />
     <Compile Include="ViewModels\User\Profile.cs" />
   </ItemGroup>
   <ItemGroup />

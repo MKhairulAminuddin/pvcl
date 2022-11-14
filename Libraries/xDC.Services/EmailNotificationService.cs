@@ -160,53 +160,6 @@ namespace xDC.Services
 
         #region Trade Settlement Form Notification
 
-        public static void TSForm_Approved(int formId, string formType, string currency)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var fidUsers = db.AspNetUsers.Where(user => user.AspNetRoles.Any(r => r.Name == Config.Acl.Fid || r.Name == Config.Acl.PowerUser));
-
-                    if (fidUsers.Any())
-                    {
-                        var bodyBuilder = new StringBuilder();
-                        var root = AppDomain.CurrentDomain.BaseDirectory;
-                        using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/IFForm_Approved.html"))
-                        {
-                            string readFile = reader.ReadToEnd();
-                            string StrContent = string.Empty;
-                            StrContent = readFile;
-                            StrContent = StrContent.Replace("[PageUrl]", string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}", Config.EmailApplicationUrl, formId));
-                            StrContent = StrContent.Replace("[DataTable]", TsTable(formId));
-                            bodyBuilder.Append(StrContent);
-                        }
-
-                        var message = new MimeMessage()
-                        {
-                            Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                            Subject = $"{SubjectAppend} Approved ISSD Trade Settlement ",
-                            Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                            {
-                                Text = bodyBuilder.ToString()
-                            }
-                        };
-
-                        foreach (var fidUser in fidUsers)
-                        {
-                            message.To.Add(new MailboxAddress(fidUser.FullName, fidUser.Email));
-                        }
-
-                        SendEmail(message);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-            }
-        }
-
         public static void TSForm_PartE_PE(int formId)
         {
             try
@@ -277,43 +230,108 @@ namespace xDC.Services
                     if (isNotifyEnabled)
                     {
                         var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId && x.FormType == Common.FormType.ISSD_TS_H);
+                        var isItemExists = db.ISSD_TradeSettlement.Any(x => x.FormId == formId && x.OthersType == TsOthersTypeItem.Loan);
 
-                        var bodyBuilder = new StringBuilder();
-                        var root = AppDomain.CurrentDomain.BaseDirectory;
-                        using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/TSForm_PartE_PE.html"))
+                        if (form != null)
                         {
-                            string readFile = reader.ReadToEnd();
-                            string StrContent = string.Empty;
-                            StrContent = readFile;
-                            StrContent = StrContent.Replace("[FormType]", form.FormType);
-                            StrContent = StrContent.Replace("[FormCurrency]", form.Currency);
-                            StrContent = StrContent.Replace("[SettlementDate]", form.SettlementDate?.ToString("dd/MM/yyyy"));
-                            StrContent = StrContent.Replace("[DataTable]", TsTable(formId));
-                            bodyBuilder.Append(StrContent);
-                        }
-
-                        var message = new MimeMessage()
-                        {
-                            Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                            Subject = Common.MailSubjectWithDate(Config.NotificationTsLoanEmailSubject),
-                            Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                            if (isItemExists)
                             {
-                                Text = bodyBuilder.ToString()
+                                var bodyBuilder = new StringBuilder();
+                                var root = AppDomain.CurrentDomain.BaseDirectory;
+                                using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/TSForm_PartE_PE.html"))
+                                {
+                                    string readFile = reader.ReadToEnd();
+                                    string StrContent = string.Empty;
+                                    StrContent = readFile;
+                                    StrContent = StrContent.Replace("[FormType]", form.FormType);
+                                    StrContent = StrContent.Replace("[FormCurrency]", form.Currency);
+                                    StrContent = StrContent.Replace("[SettlementDate]", form.SettlementDate?.ToString("dd/MM/yyyy"));
+                                    StrContent = StrContent.Replace("[DataTable]", TsOthersTable(formId, TsOthersTypeItem.Loan));
+                                    bodyBuilder.Append(StrContent);
+                                }
+
+                                var message = new MimeMessage()
+                                {
+                                    Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                                    Subject = Common.MailSubjectWithDate(Config.NotificationTsLoanEmailSubject),
+                                    Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                                    {
+                                        Text = bodyBuilder.ToString()
+                                    }
+                                };
+
+                                message.To.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_TS_LoanEmail));
+
+                                if (isNotifyCcEnabled)
+                                {
+                                    message.Cc.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_TS_LoanEmail_Cc));
+                                }
+
+                                SendEmail(message);
                             }
-                        };
-
-                        message.To.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_TS_LoanEmail));
-
-                        if (isNotifyCcEnabled)
-                        {
-                            message.Cc.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_TS_LoanEmail_Cc));
                         }
-
-                        SendEmail(message);
-
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
 
-                    
+        public static void TSForm_PartH_Property(int formId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var isNotifyEnabled = EnableNotification(EmailNotiKey.Enable_ISSD_TS_PropertyEmail);
+                    var isNotifyCcEnabled = EnableNotification(EmailNotiKey.Enable_ISSD_TS_PropertyEmail_Cc);
+
+                    if (isNotifyEnabled)
+                    {
+                        var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId && x.FormType == Common.FormType.ISSD_TS_H);
+                        var isItemExists = db.ISSD_TradeSettlement.Any(x => x.FormId == formId && x.OthersType == TsOthersTypeItem.Property);
+
+                        if (form != null)
+                        {
+                            if (isItemExists)
+                            {
+                                var bodyBuilder = new StringBuilder();
+                                var root = AppDomain.CurrentDomain.BaseDirectory;
+                                using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/TSForm_PartE_PE.html"))
+                                {
+                                    string readFile = reader.ReadToEnd();
+                                    string StrContent = string.Empty;
+                                    StrContent = readFile;
+                                    StrContent = StrContent.Replace("[FormType]", form.FormType);
+                                    StrContent = StrContent.Replace("[FormCurrency]", form.Currency);
+                                    StrContent = StrContent.Replace("[SettlementDate]", form.SettlementDate?.ToString("dd/MM/yyyy"));
+                                    StrContent = StrContent.Replace("[DataTable]", TsOthersTable(formId, TsOthersTypeItem.Property));
+                                    bodyBuilder.Append(StrContent);
+                                }
+
+                                var message = new MimeMessage()
+                                {
+                                    Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                                    Subject = Common.MailSubjectWithDate(Config.NotificationTsPropertyEmailSubject),
+                                    Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                                    {
+                                        Text = bodyBuilder.ToString()
+                                    }
+                                };
+
+                                message.To.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_TS_LoanEmail));
+
+                                if (isNotifyCcEnabled)
+                                {
+                                    message.Cc.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_TS_LoanEmail_Cc));
+                                }
+
+                                SendEmail(message);
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -522,10 +540,10 @@ namespace xDC.Services
                     {
                         StrContent = StrContent.Replace("[DataTable]", TreasuryTable(formId));
 
-                        var isNotifyCcEnabled = EnableNotification(EmailNotiKey.Enable_FID_T_Submission_Cc);
+                        var isNotifyCcEnabled = EnableNotification(EmailNotiKey.Enable_FID_T_Submitted_Cc);
                         if (isNotifyCcEnabled)
                         {
-                            message.Cc.AddRange(ReceipientsFromConfig(EmailNotiKey.FID_T_Submission_Cc));
+                            message.Cc.AddRange(ReceipientsFromConfig(EmailNotiKey.FID_T_Submitted_Cc));
                         }
                     }
                     else if (Common.IsTsFormType(formType))
@@ -598,15 +616,27 @@ namespace xDC.Services
                     {
                         StrContent = StrContent.Replace("[DataTable]", TreasuryTable(formId));
 
-                        var isNotifyCcEnabled = EnableNotification(EmailNotiKey.Enable_FID_T_Approval_Cc);
-                        if (isNotifyCcEnabled)
+                        if (formStatus == FormStatus.Approved)
                         {
-                            message.Cc.AddRange(ReceipientsFromConfig(EmailNotiKey.FID_T_Approval_Cc));
+                            var isNotifyCcEnabled = EnableNotification(EmailNotiKey.Enable_FID_T_Approved_Cc);
+                            if (isNotifyCcEnabled)
+                            {
+                                message.Cc.AddRange(ReceipientsFromConfig(EmailNotiKey.FID_T_Approved_Cc));
+                            }
                         }
                     }
                     else if (Common.IsTsFormType(formType))
                     {
                         StrContent = StrContent.Replace("[DataTable]", TsTable(formId));
+
+                        if (formStatus == FormStatus.Approved)
+                        {
+                            var enableFidCc = EnableNotification(EmailNotiKey.Enable_FID_TS_Approved_Cc);
+                            if (enableFidCc)
+                            {
+                                message.Cc.AddRange(ReceipientsFromConfig(EmailNotiKey.FID_TS_Approved_Cc));
+                            }
+                        }
                     }
                     else if (formType == Common.FormType.AMSD_IF)
                     {
@@ -628,211 +658,6 @@ namespace xDC.Services
 
                 return message;
             }
-        }
-
-        private static MimeMessage Compose_TsAmendApprovedForm(ISSD_FormHeader form, InternetAddressList powerUsers)
-        {
-            var bodyBuilder = new StringBuilder();
-            var formUrl = $"{Config.EmailApplicationUrl}{Common.Email_FormUrlMap(form.FormType)}{form.Id}";
-
-            var message = new MimeMessage()
-            {
-                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
-                Subject = $"{SubjectAppend} Submitted {form.FormType} form amended"
-            };
-            message.To.AddRange(powerUsers);
-
-            var root = AppDomain.CurrentDomain.BaseDirectory;
-            using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/TS_AmendAfterCutOff.html"))
-            {
-                string readFile = reader.ReadToEnd();
-                string StrContent = string.Empty;
-                StrContent = readFile;
-                StrContent = StrContent.Replace("[Message]", $"<p>An approved form <a href='{formUrl}'>#{form.Id}</a> has been amended.</p>");
-                bodyBuilder.Append(StrContent);
-            }
-
-            message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-            {
-                Text = bodyBuilder.ToString()
-            };
-
-            return message;
-        }
-
-        private static StringBuilder ConstructTable(List<ISSD_TradeSettlement> tradeItems)
-        {
-            var output = new StringBuilder();
-
-            var equity = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Equity).ToList();
-            if (equity.Any())
-            {
-                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Equity</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Stock Code/ISIN</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Maturity (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Sales (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Purchase (-)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
-                foreach (var item in equity)
-                {
-                    output.Append(string.Format(
-                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{5}</td></tr>",
-                        item.InstrumentCode, item.StockCode,
-                        item.Maturity.ToString("N"),
-                         item.Sales.ToString("N"), item.Purchase.ToString("N"),
-                        item.Remarks));
-                }
-                output.Append("</table>");
-            }
-
-            var bond = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Bond).ToList();
-            if (bond.Any())
-            {
-                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Bond</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Stock Code/ISIN</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Maturity (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Sales (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Purchase (-)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
-                foreach (var item in bond)
-                {
-                    output.Append(string.Format(
-                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{5}</td></tr>",
-                        item.InstrumentCode, item.StockCode,
-                         item.Maturity.ToString("N"), item.Sales.ToString("N"), item.Purchase.ToString("N"),
-                        item.Remarks));
-                }
-                output.Append("</table>");
-            }
-
-            var cp = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Cp).ToList();
-            if (cp.Any())
-            {
-                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>CP</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Stock Code/ISIN</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Maturity (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Sales (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Purchase (-)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
-                foreach (var item in cp)
-                {
-                    output.Append(string.Format(
-                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{5}</td></tr>",
-                        item.InstrumentCode, item.StockCode,
-                         item.Maturity.ToString("N"), item.Sales.ToString("N"), item.Purchase.ToString("N"),
-                        item.Remarks));
-                }
-                output.Append("</table>");
-            }
-
-            var np = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.NotesPapers).ToList();
-            if (np.Any())
-            {
-                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Notes/Papers</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Stock Code/ISIN</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Maturity (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Sales (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Purchase (-)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
-                foreach (var item in np)
-                {
-                    output.Append(string.Format(
-                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{5}</td></tr>",
-                        item.InstrumentCode, item.StockCode,
-                         item.Maturity.ToString("N"), item.Sales.ToString("N"), item.Purchase.ToString("N"),
-                        item.Remarks));
-                }
-                output.Append("</table>");
-            }
-
-            var repo = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Repo).ToList();
-            if (repo.Any())
-            {
-                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>REPO</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Stock Code/ISIN</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>1st Leg(+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>2st Leg (-)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
-                foreach (var item in repo)
-                {
-                    output.Append(string.Format(
-                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td></tr>",
-                        item.InstrumentCode, item.StockCode,
-                        item.FirstLeg.ToString("N"), item.SecondLeg.ToString("N"),
-                        item.Remarks));
-                }
-                output.Append("</table>");
-            }
-
-            var coupon = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Coupon).ToList();
-            if (coupon.Any())
-            {
-                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Coupon</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Stock Code/ISIN</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
-                foreach (var item in coupon)
-                {
-                    output.Append(string.Format(
-                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td></tr>",
-                        item.InstrumentCode, item.StockCode, item.AmountPlus.ToString("N"), item.Remarks));
-                }
-                output.Append("</table>");
-            }
-
-            var mtm = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Mtm).ToList();
-            if (mtm.Any())
-            {
-                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Payment/Receipt (MTM)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (-)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
-                foreach (var item in mtm)
-                {
-                    output.Append(string.Format(
-                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td></tr>",
-                        item.InstrumentCode, item.StockCode, item.AmountPlus.ToString("N"), item.AmountMinus.ToString("N"), item.Remarks));
-                }
-                output.Append("</table>");
-            }
-
-            var fx = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Fx).ToList();
-            if (fx.Any())
-            {
-                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>FX</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Stock Code/ISIN</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (-)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
-                foreach (var item in fx)
-                {
-                    output.Append(string.Format(
-                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{4}</td></tr>",
-                        item.InstrumentCode, item.StockCode, item.AmountPlus.ToString("N"), item.AmountMinus.ToString("N"), item.Remarks));
-                }
-                output.Append("</table>");
-            }
-
-            var altid = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Altid).ToList();
-            if (altid.Any())
-            {
-                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>ALTID</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (-)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
-                foreach (var item in altid)
-                {
-                    output.Append(string.Format(
-                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{3}</td></tr>",
-                        item.InstrumentCode, item.AmountPlus.ToString("N"), item.AmountMinus.ToString("N"), item.Remarks));
-                }
-                output.Append("</table>");
-            }
-
-            var fees = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Fees).ToList();
-            if (fees.Any())
-            {
-                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Fees</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
-                foreach (var item in fees)
-                {
-                    output.Append(string.Format(
-                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td></tr>",
-                        item.InstrumentCode, item.AmountPlus.ToString("N"), item.Remarks));
-                }
-                output.Append("</table>");
-            }
-
-            var cn = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Cn).ToList();
-            if (cn.Any())
-            {
-                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Contribution Credited</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
-                foreach (var item in cn)
-                {
-                    output.Append(string.Format(
-                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td></tr>",
-                        item.InstrumentCode, item.AmountPlus.ToString("N"), item.Remarks));
-                }
-                output.Append("</table>");
-            }
-
-            var others = tradeItems.Where(x => x.InstrumentType == Common.TsItemCategory.Others).ToList();
-            if (others.Any())
-            {
-                output.Append("<table style='border-collapse: collapse;'><tr><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Others</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Amount (+)</th><th style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>Remarks</th></tr>");
-                foreach (var item in others)
-                {
-                    output.Append(string.Format(
-                        "<tr><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{0}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{1}</td><td style='border: 1px solid #999;padding: 0.5rem;text-align: left;'>{2}</td></tr>",
-                        item.InstrumentCode, item.AmountPlus.ToString("N"), item.Remarks));
-                }
-                output.Append("</table>");
-            }
-
-            return output;
-
         }
 
         private static string TreasuryTable(int formId)
@@ -1569,381 +1394,21 @@ namespace xDC.Services
             }
         }
 
-        private static string TsTable(List<ISSD_TradeSettlement> tradeItems, string tradeType)
+        private static string TsOthersTable(int formId, string othersType)
         {
             using (var db = new kashflowDBEntities())
             {
-                var bodyBuilder = new StringBuilder();
+                var theForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
 
-                var sb = new StringBuilder();
+                var tsTradeItems = db.ISSD_TradeSettlement
+                    .Where(x => x.FormId == formId && x.InstrumentType == TsItemCategory.Others)
+                    .ToList();
 
-                if (tradeType == TsItemCategory.Equity)
+                if (tsTradeItems.Any(x => x.OthersType == othersType))
                 {
-                    using (var table = new Common.Table(sb))
-                    {
-                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
-                        {
-                            row.AddCell("No");
-                            row.AddCell(Common.TsItemCategory.Equity);
-                            row.AddCell("Stock Code/ ISIN");
-                            row.AddCell("Maturity (+)");
-                            row.AddCell("Sales (+)");
-                            row.AddCell("Purchase (-)");
-                            row.AddCell("Remarks");
-                        }
+                    var bodyBuilder = new StringBuilder();
+                    var sb = new StringBuilder();
 
-                        var counter = 1;
-
-                        foreach (var item in tradeItems)
-                        {
-                            using (var row = table.AddRow())
-                            {
-                                row.AddCell(counter.ToString());
-                                row.AddCell(item.InstrumentCode);
-                                row.AddCell(item.StockCode);
-                                row.AddCell(item.Maturity.ToString("N"));
-                                row.AddCell(item.Sales.ToString("N"));
-                                row.AddCell(item.Purchase.ToString("N"));
-                                row.AddCell(item.Remarks);
-                            }
-
-                            counter++;
-                        }
-                    }
-                }
-
-                if (tradeType == TsItemCategory.Bond)
-                {
-                    using (var table = new Common.Table(sb))
-                    {
-                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
-                        {
-                            row.AddCell("No");
-                            row.AddCell(Common.TsItemCategory.Bond);
-                            row.AddCell("Stock Code/ ISIN");
-                            row.AddCell("Bond Type");
-                            row.AddCell("Maturity (+)");
-                            row.AddCell("Sales (+)");
-                            row.AddCell("Purchase (-)");
-                            row.AddCell("Remarks");
-                        }
-
-                        var counter = 1;
-
-                        foreach (var item in tradeItems)
-                        {
-                            using (var row = table.AddRow())
-                            {
-                                row.AddCell(counter.ToString());
-                                row.AddCell(item.InstrumentCode);
-                                row.AddCell(item.StockCode);
-                                row.AddCell(item.BondType);
-                                row.AddCell(item.Maturity.ToString("N"));
-                                row.AddCell(item.Sales.ToString("N"));
-                                row.AddCell(item.Purchase.ToString("N"));
-                                row.AddCell(item.Remarks);
-                            }
-
-                            counter++;
-                        }
-                    }
-                }
-
-                if (tradeType == TsItemCategory.Coupon)
-                {
-                    using (var table = new Common.Table(sb))
-                    {
-                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
-                        {
-                            row.AddCell("No");
-                            row.AddCell(Common.TsItemCategory.Coupon);
-                            row.AddCell("Stock Code/ ISIN");
-                            row.AddCell("Coupon Type");
-                            row.AddCell("Maturity (+)");
-                            row.AddCell("Sales (+)");
-                            row.AddCell("Purchase (-)");
-                            row.AddCell("Remarks");
-                        }
-
-                        var counter = 1;
-
-                        foreach (var item in tradeItems)
-                        {
-                            using (var row = table.AddRow())
-                            {
-                                row.AddCell(counter.ToString());
-                                row.AddCell(item.InstrumentCode);
-                                row.AddCell(item.StockCode);
-                                row.AddCell(item.CouponType);
-                                row.AddCell(item.Maturity.ToString("N"));
-                                row.AddCell(item.Sales.ToString("N"));
-                                row.AddCell(item.Purchase.ToString("N"));
-                                row.AddCell(item.Remarks);
-                            }
-
-                            counter++;
-                        }
-                    }
-                }
-
-                if (tradeType == TsItemCategory.Cp)
-                {
-                    using (var table = new Common.Table(sb))
-                    {
-                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
-                        {
-                            row.AddCell("No");
-                            row.AddCell(Common.TsItemCategory.Cp);
-                            row.AddCell("Stock Code/ ISIN");
-                            row.AddCell("Maturity (+)");
-                            row.AddCell("Sales (+)");
-                            row.AddCell("Purchase (-)");
-                            row.AddCell("Remarks");
-                        }
-
-                        var counter = 1;
-
-                        foreach (var item in tradeItems)
-                        {
-                            using (var row = table.AddRow())
-                            {
-                                row.AddCell(counter.ToString());
-                                row.AddCell(item.InstrumentCode);
-                                row.AddCell(item.StockCode);
-                                row.AddCell(item.Maturity.ToString("N"));
-                                row.AddCell(item.Sales.ToString("N"));
-                                row.AddCell(item.Purchase.ToString("N"));
-                                row.AddCell(item.Remarks);
-                            }
-
-                            counter++;
-                        }
-                    }
-                }
-
-                if (tradeType == TsItemCategory.NotesPapers)
-                {
-                    using (var table = new Common.Table(sb))
-                    {
-                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
-                        {
-                            row.AddCell("No");
-                            row.AddCell(Common.TsItemCategory.NotesPapers);
-                            row.AddCell("Stock Code/ ISIN");
-                            row.AddCell("Maturity (+)");
-                            row.AddCell("Sales (+)");
-                            row.AddCell("Purchase (-)");
-                            row.AddCell("Remarks");
-                        }
-
-                        var counter = 1;
-
-                        foreach (var item in tradeItems)
-                        {
-                            using (var row = table.AddRow())
-                            {
-                                row.AddCell(counter.ToString());
-                                row.AddCell(item.InstrumentCode);
-                                row.AddCell(item.StockCode);
-                                row.AddCell(item.Maturity.ToString("N"));
-                                row.AddCell(item.Sales.ToString("N"));
-                                row.AddCell(item.Purchase.ToString("N"));
-                                row.AddCell(item.Remarks);
-                            }
-
-                            counter++;
-                        }
-                    }
-                }
-
-                if (tradeType == TsItemCategory.Repo)
-                {
-                    using (var table = new Common.Table(sb))
-                    {
-                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
-                        {
-                            row.AddCell("No");
-                            row.AddCell(Common.TsItemCategory.Repo);
-                            row.AddCell("Stock Code/ ISIN");
-                            row.AddCell("First Leg (+)");
-                            row.AddCell("Second Leg (-)");
-                            row.AddCell("Remarks");
-                        }
-
-                        var counter = 1;
-
-                        foreach (var item in tradeItems)
-                        {
-                            using (var row = table.AddRow())
-                            {
-                                row.AddCell(counter.ToString());
-                                row.AddCell(item.InstrumentCode);
-                                row.AddCell(item.StockCode);
-                                row.AddCell(item.FirstLeg.ToString("N"));
-                                row.AddCell(item.SecondLeg.ToString("N"));
-                                row.AddCell(item.Remarks);
-                            }
-
-                            counter++;
-                        }
-                    }
-                }
-
-                if (tradeType == TsItemCategory.Mtm)
-                {
-                    using (var table = new Common.Table(sb))
-                    {
-                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
-                        {
-                            row.AddCell("No");
-                            row.AddCell(Common.TsItemCategory.Mtm);
-                            row.AddCell("Amount (+)");
-                            row.AddCell("Amount (-)");
-                            row.AddCell("Remarks");
-                        }
-
-                        var counter = 1;
-
-                        foreach (var item in tradeItems)
-                        {
-                            using (var row = table.AddRow())
-                            {
-                                row.AddCell(counter.ToString());
-                                row.AddCell(item.InstrumentCode);
-                                row.AddCell(item.AmountPlus.ToString("N"));
-                                row.AddCell(item.AmountMinus.ToString("N"));
-                                row.AddCell(item.Remarks);
-                            }
-
-                            counter++;
-                        }
-                    }
-                }
-
-                if (tradeType == TsItemCategory.Fx)
-                {
-                    using (var table = new Common.Table(sb))
-                    {
-                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
-                        {
-                            row.AddCell("No");
-                            row.AddCell(Common.TsItemCategory.Fx);
-                            row.AddCell("Amount (+)");
-                            row.AddCell("Amount (-)");
-                            row.AddCell("Remarks");
-                        }
-
-                        var counter = 1;
-
-                        foreach (var item in tradeItems)
-                        {
-                            using (var row = table.AddRow())
-                            {
-                                row.AddCell(counter.ToString());
-                                row.AddCell(item.InstrumentCode);
-                                row.AddCell(item.AmountPlus.ToString("N"));
-                                row.AddCell(item.AmountMinus.ToString("N"));
-                                row.AddCell(item.Remarks);
-                            }
-
-                            counter++;
-                        }
-                    }
-                }
-
-                if (tradeType == TsItemCategory.Altid)
-                {
-                    using (var table = new Common.Table(sb))
-                    {
-                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
-                        {
-                            row.AddCell("No");
-                            row.AddCell(Common.TsItemCategory.Altid);
-                            row.AddCell("Amount (+)");
-                            row.AddCell("Amount (-)");
-                            row.AddCell("Remarks");
-                        }
-
-                        var counter = 1;
-
-                        foreach (var item in tradeItems)
-                        {
-                            using (var row = table.AddRow())
-                            {
-                                row.AddCell(counter.ToString());
-                                row.AddCell(item.InstrumentCode);
-                                row.AddCell(item.AmountPlus.ToString("N"));
-                                row.AddCell(item.AmountMinus.ToString("N"));
-                                row.AddCell(item.Remarks);
-                            }
-
-                            counter++;
-                        }
-                    }
-                }
-
-                if (tradeType == TsItemCategory.Fees)
-                {
-                    using (var table = new Common.Table(sb))
-                    {
-                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
-                        {
-                            row.AddCell("No");
-                            row.AddCell(Common.TsItemCategory.Fees);
-                            row.AddCell("Amount (+)");
-                            row.AddCell("Amount (-)");
-                            row.AddCell("Remarks");
-                        }
-
-                        var counter = 1;
-
-                        foreach (var item in tradeItems)
-                        {
-                            using (var row = table.AddRow())
-                            {
-                                row.AddCell(counter.ToString());
-                                row.AddCell(item.InstrumentCode);
-                                row.AddCell(item.AmountPlus.ToString("N"));
-                                row.AddCell(item.AmountMinus.ToString("N"));
-                                row.AddCell(item.Remarks);
-                            }
-
-                            counter++;
-                        }
-                    }
-                }
-
-                if (tradeType == TsItemCategory.Cn)
-                {
-                    using (var table = new Common.Table(sb))
-                    {
-                        using (var row = table.AddHeaderRow("#5B8EFB", "white"))
-                        {
-                            row.AddCell("No");
-                            row.AddCell(Common.TsItemCategory.Cn);
-                            row.AddCell("Amount (+)");
-                            row.AddCell("Remarks");
-                        }
-
-                        var counter = 1;
-
-                        foreach (var item in tradeItems)
-                        {
-                            using (var row = table.AddRow())
-                            {
-                                row.AddCell(counter.ToString());
-                                row.AddCell(item.InstrumentCode);
-                                row.AddCell(item.AmountPlus.ToString("N"));
-                                row.AddCell(item.Remarks);
-                            }
-
-                            counter++;
-                        }
-                    }
-                }
-
-                if (tradeType == TsItemCategory.Others)
-                {
                     using (var table = new Common.Table(sb))
                     {
                         using (var row = table.AddHeaderRow("#5B8EFB", "white"))
@@ -1958,7 +1423,7 @@ namespace xDC.Services
 
                         var counter = 1;
 
-                        foreach (var item in tradeItems)
+                        foreach (var item in tsTradeItems.Where(x => x.OthersType == othersType))
                         {
                             using (var row = table.AddRow())
                             {
@@ -1973,11 +1438,15 @@ namespace xDC.Services
                             counter++;
                         }
                     }
+
+                    bodyBuilder.Append(sb);
+
+                    return bodyBuilder.ToString();
                 }
-
-                bodyBuilder.Append(sb);
-
-                return bodyBuilder.ToString();
+                else
+                {
+                    return null;
+                }
             }
         }
 

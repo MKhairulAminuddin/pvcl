@@ -1,338 +1,114 @@
-﻿@model xDC_Web.ViewModels.NotificationConfigViewModel
+﻿@model xDC.Domain.Web.Setting.EmailConfigSetting
 
 @{
     ViewBag.Title = "Notification Configuration";
 }
 
-<section class="content-header content-toolbar">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="left-container">
-                <div>
-                    
-                </div>
-
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div id="right-toolbar-container" class="right-container">
-
-            </div>
-        </div>
-    </div>
-</section>
-
-
 <section class="content container-fluid">
     <div class="row">
         <div class="col-md-12">
             <div class="box box-danger">
-                <div class="box-header with-border">
-                    <div class="box-title">AMSD related email notification</div>
-                    <div class="pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                            <i class="fa fa-minus"></i>
-                        </button>
-                    </div>
-                </div>
                 <div class="box-body">
-                    @*<div class="row">
-                    <div class="col-md-6">
-                        <p>Enable Notification</p>
-                    </div>
-                    <div class="col-md-6">
-                        @(Html.DevExtreme()
-                            .CheckBoxFor(m => m.InflowFundEnableNotification)
-                            .ID("inFundEnableNotiCb"))
-                    </div>
-                </div>*@
-                    @*<div class="row">
-                    <div class="col-md-6">
-                        <p>Enable Admin Modification Notification</p>
-                    </div>
-                    <div class="col-md-6">
-                        @(Html.DevExtreme()
-                            .CheckBoxFor(m => m.InflowFundEnableAdminModificationNotification)
-                            .ID("inFundEnableAdminEditNotiCb"))
-                    </div>
-                </div>*@
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p>Cut Off Time</p>
-                        </div>
-                        <div class="col-md-6">
-                            @(Html.DevExtreme()
-                                .DateBoxFor(m => m.InflowFundCutOffTime)
-                                .ID("inFundCutOffTimeDb")
-                                .Type(DateBoxType.Time))
-                        </div>
-                    </div>
-                </div>
-                <div class="box-footer">
-                    <div class="pull-right">
-                        @(Html.DevExtreme().Button()
-                            .ID("inflowFundSaveButton")
-                            .StylingMode(ButtonStylingMode.Contained)
-                            .Text("Save Changes")
-                            .Type(ButtonType.Default))
-                    </div>
-                </div>
-            </div>
+                    @using (Html.BeginForm())
+                    {
 
-            <div class="box box-success">
-                <div class="box-header with-border">
-                    <div class="box-title">
-                        ISSD related email notifications
-                    </div>
-                    <div class="pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                            <i class="fa fa-minus"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="box-body">
-                    <form name="IssdNotificationForm" id="IssdNotificationForm">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <h5><strong>Notification Type</strong></h5>
-                            </div>
-                            <div class="col-md-2">
-                                <h5><strong>Enable</strong></h5>
-                            </div>
-                            <div class="col-md-6">
-                                <h5><strong>Receipient</strong></h5>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <p>Contribution Email</p>
-                                <p><small><i>*Turn off this will disable this email notification even the CC is on.</i></small></p>
-                            </div>
-                            <div class="col-md-2">
-                                @(Html.DevExtreme().SwitchFor(m => m.issd_Enable_TsCnEmail)
-                                .ID("cnEmailEnable")
-                                )
-                            </div>
-                            <div class="col-md-6">
-                                @(Html.DevExtreme().TextBoxFor(m => m.issd_TsCnEmail)
-                                .ID("cnEmail")
-                                )
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <p>Contribution Email <strong>CC</strong></p>
-                            </div>
-                            <div class="col-md-2">
-                                @(Html.DevExtreme().SwitchFor(m => m.issd_Enable_TsCnEmailCc)
-                                .ID("cnEmailCcEnable")
-                                )
-                            </div>
-                            <div class="col-md-6">
-                                @(Html.DevExtreme().TextBoxFor(m => m.issd_TsCnEmailCc)
-                                .ID("cnEmailCc")
-                                )
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <p>PE Email</p>
-                                <p><small><i>*Turn off this will disable this email notification even the CC is on.</i></small></p>
-                            </div>
-                            <div class="col-md-2">
-                                @(Html.DevExtreme().SwitchFor(m => m.issd_Enable_TsPeEmail)
-                                .ID("peEmailEnable")
-                                )
-                            </div>
-                            <div class="col-md-6">
-                                @(Html.DevExtreme().TextBoxFor(m => m.issd_TsPeEmail)
-                                .ID("peEmail")
-                                )
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <p>PE Email <strong>CC</strong></p>
-                            </div>
-                            <div class="col-md-2">
-                                @(Html.DevExtreme().SwitchFor(m => m.issd_Enable_TsPeEmailCc)
-                                .ID("peEmailCcEnable")
-                                )
-                            </div>
-                            <div class="col-md-6">
-                                @(Html.DevExtreme().TextBoxFor(m => m.issd_TsPeEmailCc)
-                                .ID("peEmailCc")
-                                )
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <p>Property Email</p>
-                                <p><small><i>*Turn off this will disable this email notification even the CC is on.</i></small></p>
-                            </div>
-                            <div class="col-md-2">
-                                @(Html.DevExtreme().SwitchFor(m => m.issd_Enable_TsPropertyEmail)
-                                .ID("propertyEmailEnable")
-                                )
-                            </div>
-                            <div class="col-md-6">
-                                @(Html.DevExtreme().TextBoxFor(m => m.issd_TsPropertyEmail)
-                                .ID("propertyEmail")
-                                )
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <p>Property Email <strong>CC</strong></p>
-                            </div>
-                            <div class="col-md-2">
-                                @(Html.DevExtreme().SwitchFor(m => m.issd_Enable_TsPropertyEmailCc)
-                                .ID("propertyEmailCcEnable")
-                                )
-                            </div>
-                            <div class="col-md-6">
-                                @(Html.DevExtreme().TextBoxFor(m => m.issd_TsPropertyEmailCc)
-                                .ID("propertyEmailCc")
-                                )
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <p>Loan Email</p>
-                                <p><small><i>*Turn off this will disable this email notification even the CC is on.</i></small></p>
-                            </div>
-                            <div class="col-md-2">
-                                @(Html.DevExtreme().SwitchFor(m => m.issd_Enable_TsLoanEmail)
-                                .ID("loanEmailEnable")
-                                )
-                            </div>
-                            <div class="col-md-6">
-                                @(Html.DevExtreme().TextBoxFor(m => m.issd_TsLoanEmail)
-                                .ID("loanEmail")
-                                )
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <p>Loan Email <strong>CC</strong></p>
-                            </div>
-                            <div class="col-md-2">
-                                @(Html.DevExtreme().SwitchFor(m => m.issd_Enable_TsLoanEmailCc)
-                                .ID("loanEmailCcEnable")
-                                )
-                            </div>
-                            <div class="col-md-6">
-                                @(Html.DevExtreme().TextBoxFor(m => m.issd_TsLoanEmailCc)
-                                .ID("loanEmailCc")
-                                )
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <p>FCA Tagging Email</p>
-                            </div>
-                            <div class="col-md-2">
-                                @(Html.DevExtreme().SwitchFor(m => m.issd_Enable_FcaTaggingEmail)
-                                .ID("fcaTaggingEmailEnable")
-                                )
-                            </div>
-                            <div class="col-md-6">
-                                @(Html.DevExtreme().TextBoxFor(m => m.issd_FcaTaggingEmail)
-                                .ID("fcaTaggingEmail")
-                                )
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <p>Treasury Approval Notification</p>
-                            </div>
-                            <div class="col-md-2">
-                                @(Html.DevExtreme().SwitchFor(m => m.issd_Enable_TApprovedEmail)
-                                .ID("approvedTreasuryEnable")
-                                )
-                            </div>
-                            <div class="col-md-6">
-                                @(Html.DevExtreme().TextBoxFor(m => m.issd_TApprovedEmail)
-                                .ID("approvedTreasury")
-                                )
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="pull-right">
-                                    @(Html.DevExtreme().Button()
-                                    .ID("tsSaveButton")
-                                    .StylingMode(ButtonStylingMode.Contained)
-                                    .UseSubmitBehavior(true)
-                                    .Text("Save Changes")
-                                    .Type(ButtonType.Default))
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+                        using (Html.DevExtreme().ValidationGroup())
+                        {
 
-            <div class="box box-warning">
-                <div class="box-header with-border">
-                    <div class="box-title">FID Notifications</div>
-                    <div class="pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                            <i class="fa fa-minus"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <h5><strong>Notification Type</strong></h5>
-                        </div>
-                        <div class="col-md-2">
-                            <h5><strong>Enable</strong></h5>
-                        </div>
-                        <div class="col-md-6">
-                            <h5><strong>Receipient</strong></h5>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <p>Treasury Form Submission <strong>CC</strong></p>
-                        </div>
-                        <div class="col-md-2">
-                            @(Html.DevExtreme().SwitchFor(m => m.fid_Enable_TSubmissionEmailCc)
-                                .ID("treasurySubmissionEmailCcEnable")
-                                )
-                        </div>
-                        <div class="col-md-6">
-                            @(Html.DevExtreme().TextBoxFor(m => m.fid_TSubmissionEmailCc)
-                                .ID("treasurySubmissionEmailCc")
-                                )
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <p>Treasury Form Approval <strong>CC</strong></p>
-                        </div>
-                        <div class="col-md-2">
-                            @(Html.DevExtreme().SwitchFor(m => m.fid_Enable_TApprovedEmailCc)
-                                .ID("treasuryApprovalEmailCcEnable")
-                                )
-                        </div>
-                        <div class="col-md-6">
-                            @(Html.DevExtreme().TextBoxFor(m => m.fid_TApprovedEmailCc)
-                                .ID("treasuryApprovedEmailCc")
-                                )
-                        </div>
-                    </div>
-                </div>
-                <div class="box-footer">
-                    <div class="pull-right">
-                        @(Html.DevExtreme().Button()
-                            .ID("treasurySaveButton")
-                            .StylingMode(ButtonStylingMode.Contained)
-                            .Text("Save Changes")
-                            .Type(ButtonType.Default))
-                    </div>
+                            @Html.AntiForgeryToken()
+
+                            @(Html.DevExtreme().Form<xDC.Domain.Web.Setting.EmailConfigSetting>()
+                                .ShowValidationSummary(true)
+                                .ColCount(2)
+                                .Items(items => {
+
+                                    items.AddGroup()
+                                        .Caption("ISSD Related")
+                                        .Items(groupItems => {
+                                            groupItems.AddTabbed()
+                                                        .TabPanelOptions(o => { o.DeferRendering(false); })
+                                                        .Tabs(tabItems =>
+                                                        {
+                                                            tabItems.Add()
+                                                                .Title("Trade Settlement")
+                                                                .Items(tabItem =>
+                                                                {
+                                                                    tabItem.AddSimpleFor(m => m.issd_TsCn).Editor(e => e.TextBox()).Label(x => x.Text("Part G (Contribution)")).HelpText("This email used in Part G (Form) under Generate Contribution Email function.");
+                                                                    tabItem.AddSimpleFor(m => m.issd_Enable_TsCn).Editor(e => e.Switch()).Label(x => x.Text("Enable"));
+                                                                    tabItem.AddSimpleFor(m => m.issd_TsCnCc).Editor(e => e.TextBox()).Label(x => x.Text("CC Part G (Contribution)"));
+                                                                    tabItem.AddSimpleFor(m => m.issd_Enable_TsCnCc).Editor(e => e.Switch()).Label(x => x.Text("Enable"));
+                                                                    tabItem.AddSimpleFor(m => m.issd_TsPe).Editor(e => e.TextBox()).Label(x => x.Text("Part E (PE)"));
+                                                                    tabItem.AddSimpleFor(m => m.issd_Enable_TsPe).Editor(e => e.Switch()).Label(x => x.Text("Enable"));
+                                                                    tabItem.AddSimpleFor(m => m.issd_TsPeCc).Editor(e => e.TextBox()).Label(x => x.Text("CC Part E (PE)"));
+                                                                    tabItem.AddSimpleFor(m => m.issd_Enable_TsPeCc).Editor(e => e.Switch()).Label(x => x.Text("Enable"));
+                                                                    tabItem.AddSimpleFor(m => m.issd_TsProperty).Editor(e => e.TextBox()).Label(x => x.Text("Part H (Property)"));
+                                                                    tabItem.AddSimpleFor(m => m.issd_Enable_TsProperty).Editor(e => e.Switch()).Label(x => x.Text("Enable"));
+                                                                    tabItem.AddSimpleFor(m => m.issd_TsPropertyCc).Editor(e => e.TextBox()).Label(x => x.Text("CC Part H (Property)"));
+                                                                    tabItem.AddSimpleFor(m => m.issd_Enable_TsPropertyCc).Editor(e => e.Switch()).Label(x => x.Text("Enable"));
+                                                                    tabItem.AddSimpleFor(m => m.issd_TsLoan).Editor(e => e.TextBox()).Label(x => x.Text("Part H (Loan)"));
+                                                                    tabItem.AddSimpleFor(m => m.issd_Enable_TsLoan).Editor(e => e.Switch()).Label(x => x.Text("Enable"));
+                                                                    tabItem.AddSimpleFor(m => m.issd_TsLoanCc).Editor(e => e.TextBox()).Label(x => x.Text("CC Part H (Loan)"));
+                                                                    tabItem.AddSimpleFor(m => m.issd_Enable_TsLoanCc).Editor(e => e.Switch()).Label(x => x.Text("Enable"));
+                                                                });
+
+                                                            tabItems.Add()
+                                                                .Title("FCA Tagging")
+                                                                .Items(tabItem =>
+                                                                {
+                                                                    tabItem.AddSimpleFor(m => m.issd_FcaTagging).Editor(e => e.TextBox()).Label(x => x.Text("FCA Tagging Notification"));
+                                                                    tabItem.AddSimpleFor(m => m.issd_Enable_FcaTagging).Editor(e => e.Switch()).Label(x => x.Text("Enable FCA Tagging Notification"));
+                                                                });
+
+                                                            tabItems.Add()
+                                                                .Title("Treasury (with no trades info)")
+                                                                .Items(tabItem =>
+                                                                {
+                                                                    tabItem.AddSimpleFor(m => m.issd_TApproved).Editor(e => e.TextBox()).Label(x => x.Text("Notify on approved"));
+                                                                    tabItem.AddSimpleFor(m => m.issd_Enable_TApproved).Editor(e => e.Switch()).Label(x => x.Text("Enable notify on approved"));
+                                                                });
+                                                        });
+                                        });
+
+                                    items.AddGroup()
+                                        .Caption("FID Related")
+                                        .Items(groupItems =>
+                                        {
+                                            groupItems.AddTabbed()
+                                                        .TabPanelOptions(o => { o.DeferRendering(false); })
+                                                        .Tabs(tabItems =>
+                                                        {
+                                                            tabItems.Add()
+                                                                .Title("Trade Settlement")
+                                                                .Items(tabItem =>
+                                                                {
+                                                                    tabItem.AddSimpleFor(m => m.fid_TS_ApprovedCc).Editor(e => e.TextBox()).Label(x => x.Text("CC on approved"));
+                                                                    tabItem.AddSimpleFor(m => m.fid_Enable_TS_ApprovedCc).Editor(e => e.Switch()).Label(x => x.Text("Enable CC on approved"));
+                                                                });
+
+                                                            tabItems.Add()
+                                                                .Title("Treasury Form")
+                                                                .Items(tabItem =>
+                                                                {
+                                                                    tabItem.AddSimpleFor(m => m.fid_T_SubmittedCc).Editor(e => e.TextBox()).Label(x => x.Text("CC on submitted"));
+                                                                    tabItem.AddSimpleFor(m => m.fid_Enable_T_SubmittedCc).Editor(e => e.Switch()).Label(x => x.Text("Enable CC on submitted"));
+                                                                    tabItem.AddSimpleFor(m => m.fid_T_ApprovedCc).Editor(e => e.TextBox()).Label(x => x.Text("CC on approved"));
+                                                                    tabItem.AddSimpleFor(m => m.fid_Enable_T_ApprovedCc).Editor(e => e.Switch()).Label(x => x.Text("Enable CC on approved"));
+                                                                });
+                                                        });
+                                        });
+
+                                    items.AddButton()
+                                        .HorizontalAlignment(HorizontalAlignment.Left)
+                                        .ButtonOptions(b => b.Text("Save Changes")
+                                            .Type(ButtonType.Success)
+                                            .UseSubmitBehavior(true)
+                                    );
+
+                                })
+                                .FormData(Model)
+                            )
+                        }
+                    }
                 </div>
             </div>
         </div>

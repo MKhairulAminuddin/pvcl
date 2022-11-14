@@ -6,30 +6,6 @@
             UpdateIssd: window.location.origin + "/api/setting/UpdIssdNotification"
         }
 
-        //#region Inflow Fund Form - Email Notification Setting
-
-        $("#inflowFundSaveButton").dxButton("instance").option("onClick", function (e) {
-
-            var data = {
-                "inflowFundEnableNotification": $("#inFundEnableNotiCb").dxCheckBox("instance").option('value'),
-                "inflowFundEnableAdminModificationNotification": true,
-                "inflowFundCutOffTime": new Date(moment($("#inFundCutOffTimeDb").dxDateBox("instance").option('value'))).toISOString()
-            };
-
-            $.ajax({
-                data: data,
-                dataType: 'json',
-                url: '../api/setting/UpdateInflowFundFormNotificationSetting',
-                method: 'post'
-            }).done(function (data) {
-                $("#error_container").bs_success("Inflow Form setting updates saved");
-
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                app.alertError(textStatus + ': ' + errorThrown);
-            });
-        });
-
-        //#endregion
 
         //#region Trade Settlement Form - Email Notification Setting
 
@@ -126,61 +102,6 @@
             }],
         });
 
-        $("#IssdNotificationForm").on("submit", function (e) {
-                var data = {
-                    "tsCnEmailEnable": cnEmailEnable.option('value'),
-                    "tsCnEmailCcEnable": cnEmailCcEnable.option('value'),
-                    "tsPeEmailEnable": peEmailEnable.option('value'),
-                    "tsPeEmailCcEnable": peEmailCcEnable.option('value'),
-                    "tsPropertyEmailEnable": propertyEmailEnable.option('value'),
-                    "tsPropertyEmailCcEnable": propertyEmailCcEnable.option('value'),
-                    "tsLoanEmailEnable": loanEmailEnable.option('value'),
-                    "tsLoanEmailCcEnable": loanEmailCcEnable.option('value'),
-                    "tsFcaTaggingEmailEnable": fcaTaggingEmailEnable.option('value'),
-                    "tsApprovedTreasuryEnable": approvedTreasuryEnable.option('value'),
-
-                    "tsCnEmail": issdCnEmail.dxTextBox("instance").option('value'),
-                    "tsCnEmailCc": issdCnEmailCc.dxTextBox("instance").option('value'),
-                    "tsPeEmail": issdPeEmail.dxTextBox("instance").option('value'),
-                    "tsPeEmailCc": issdEmailCc.dxTextBox("instance").option('value'),
-                    "tsPropertyEmail": issdPropertyEmail.dxTextBox("instance").option('value'),
-                    "tsPropertyEmailCc": issdPropertyEmailCc.dxTextBox("instance").option('value'),
-                    "tsLoanEmail": issdLoanEmail.dxTextBox("instance").option('value'),
-                    "tsLoanEmailCc": issdLoanEmailCc.dxTextBox("instance").option('value'),
-                    "tsFcaTaggingEmail": issdFcaTaggingEmail.dxTextBox("instance").option('value'),
-                    "tsApprovedTreasury": issdApprovedTreasury.dxTextBox("instance").option('value'),
-                }
-                
-
-                $.ajax({
-                    data: data,
-                    dataType: 'json',
-                    url: referenceUrl.UpdateIssd,
-                    method: 'post',
-                    success: function (response) {
-                        app.toast("Saving....", "info", 3000);
-                        //setTimeout(() => window.location.reload(), 1000);
-                        
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        app.alertError(errorThrown + ": " + jqXHR.responseJSON);
-                    },
-                    complete: function (data) {
-
-                    }
-                });
-
-            e.preventDefault();
-        });
-
-        //#endregion
-
-
-        //#region  Treasury Form - Email Notification Setting
-
-        //#endregion
-
-
 
         var treasurySubmissionEmailCcEnable = $("#treasurySubmissionEmailCcEnable").dxSwitch('instance');
         var treasuryApprovalEmailCcEnable = $("#treasuryApprovalEmailCcEnable").dxSwitch('instance');
@@ -200,33 +121,78 @@
             }],
         }).dxTextBox("instance");
 
-        $("#treasurySaveButton").dxButton({
+
+
+        $("#formSaveButton").dxButton({
             onClick: function (e) {
-                var data = {
-                    "tSubmissionEmailCcEnable": treasurySubmissionEmailCcEnable.option('value'),
-                    "tApprovedEmailCcEnable": treasuryApprovalEmailCcEnable.option('value'),
+                if (issdCnEmail.validate()) {
 
-                    "tSubmissionEmailCc": treasurySubmissionEmailCc.option('value'),
-                    "tApprovedEmailCc": treasuryApprovedEmailCc.option('value')
+
+                    var data = {
+                        "inflowFundCutOffTime": new Date(moment($("#inFundCutOffTimeDb").dxDateBox("instance").option('value'))).toISOString(),
+
+                        "issd_Enable_TsCn": cnEmailEnable.option('value'),
+                        "issd_Enable_TsCnCc": cnEmailCcEnable.option('value'),
+                        "issd_TsPe": peEmailEnable.option('value'),
+                        "issd_Enable_TsPeCc": peEmailCcEnable.option('value'),
+                        "issd_Enable_TsProperty": propertyEmailEnable.option('value'),
+                        "issd_Enable_TsPropertyCc": propertyEmailCcEnable.option('value'),
+                        "issd_Enable_TsLoan": loanEmailEnable.option('value'),
+                        "issd_Enable_TsLoanCc": loanEmailCcEnable.option('value'),
+                        "issd_Enable_FcaTagging": fcaTaggingEmailEnable.option('value'),
+                        "issd_Enable_TApproved": approvedTreasuryEnable.option('value'),
+
+                        "issd_TsCn": issdCnEmail.dxTextBox("instance").option('value'),
+                        "issd_TsCnCc": issdCnEmailCc.dxTextBox("instance").option('value'),
+                        "issd_TsPe": issdPeEmail.dxTextBox("instance").option('value'),
+                        "issd_TsPeCc": issdEmailCc.dxTextBox("instance").option('value'),
+                        "issd_TsProperty": issdPropertyEmail.dxTextBox("instance").option('value'),
+                        "issd_TsPropertyCc": issdPropertyEmailCc.dxTextBox("instance").option('value'),
+                        "issd_TsLoan": issdLoanEmail.dxTextBox("instance").option('value'),
+                        "issd_TsLoanCc": issdLoanEmailCc.dxTextBox("instance").option('value'),
+                        "issd_FcaTagging": issdFcaTaggingEmail.dxTextBox("instance").option('value'),
+                        "issd_TApproved": issdApprovedTreasury.dxTextBox("instance").option('value'),
+
+
+                        "fid_T_SubmissionCc": treasurySubmissionEmailCc.option('value'),
+                        "fid_T_ApprovalCc": treasuryApprovedEmailCc.option('value'),
+
+                        "fid_Enable_T_SubmissionCc": treasurySubmissionEmailCcEnable.option('value'),
+                        "fid_Enable_T_ApprovalCc": treasuryApprovalEmailCcEnable.option('value'),
+                    }
+
+
+                    $.ajax({
+                        data: data,
+                        dataType: 'json',
+                        url: referenceUrl.UpdateIssd,
+                        method: 'post',
+                        success: function (response) {
+                            app.toast("Saved: " + response, "info", 3000);
+                            console.log(response)
+                            //setTimeout(() => window.location.reload(), 1000);
+
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            app.alertError(errorThrown + ": " + jqXHR.responseJSON);
+                        },
+                        complete: function (data) {
+
+                        }
+                    });
+
                 }
-                console.log(data);
 
-                $.ajax({
-                    data: data,
-                    dataType: 'json',
-                    url: '../api/setting/UpdTreasuryFormNotificationSetting',
-                    method: 'post'
-                }).done(function (data) {
-                    $("#error_container").bs_success("Treasury setting updated");
 
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    app.alertError(textStatus + ': ' + errorThrown);
-                });
+                e.event.preventDefault();
             }
         });
 
+        //#endregion
+
+
         function validateEmails(string) {
-            if (string === undefined || string === "") {
+            if (string === undefined || string === "" || string === null) {
                 return true;
             }
 

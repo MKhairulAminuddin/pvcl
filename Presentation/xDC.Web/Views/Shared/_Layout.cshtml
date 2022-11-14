@@ -213,7 +213,7 @@
                                 }
                                 @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.Settings_EmailNotification))
                                 {
-                                    <li><a href="@Url.Action("NotificationConfig","Setting")"><i class="fa fa-circle-thin"></i> <span>Email Notification</span></a></li>
+                                    <li><a href="@Url.Action("EmailNotiConfig","Setting")"><i class="fa fa-circle-thin"></i> <span>Email Notification</span></a></li>
                                 }
                                 @if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.Settings_ApproverAssignment))
                                 {
