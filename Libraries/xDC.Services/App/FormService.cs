@@ -58,7 +58,7 @@ namespace xDC.Services.App
         public static bool EnableRetractSubmission(string currentUser, string formPreparedBy, string formStatus, string permissionKey)
         {
             var haveEditPermission = new AuthService().IsUserHaveAccess(currentUser, permissionKey);
-            var isPendingApproval = formStatus == Common.FormStatus.PendingApproval;
+            var isPendingApproval = formStatus == Common.FormStatus.PendingApproval || formStatus == Common.FormStatus.Approved || formStatus == Common.FormStatus.Rejected;
             var isPreparedByMe = currentUser == formPreparedBy;
 
             return (haveEditPermission && isPendingApproval && isPreparedByMe);
@@ -79,6 +79,7 @@ namespace xDC.Services.App
                             {
                                 ifForm.FormStatus = Common.FormStatus.Draft;
                                 ifForm.ApprovedBy = null;
+                                ifForm.ApprovedDate = null;
                                 db.SaveChanges();
 
                                 AuditService.Capture_FA(ifForm.Id, ifForm.FormType, Common.FormActionType.RetractSubmission, 
@@ -98,6 +99,7 @@ namespace xDC.Services.App
                             {
                                 treasuryForm.FormStatus = Common.FormStatus.Draft;
                                 treasuryForm.ApprovedBy = null;
+                                treasuryForm.ApprovedDate = null;
                                 db.SaveChanges();
 
                                 AuditService.Capture_FA(treasuryForm.Id, treasuryForm.FormType, Common.FormActionType.RetractSubmission, 
@@ -125,6 +127,7 @@ namespace xDC.Services.App
                             {
                                 tsForm.FormStatus = Common.FormStatus.Draft;
                                 tsForm.ApprovedBy = null;
+                                tsForm.ApprovedDate = null;
                                 db.SaveChanges();
 
                                 AuditService.Capture_FA(tsForm.Id, tsForm.FormType, Common.FormActionType.RetractSubmission,
@@ -193,7 +196,7 @@ namespace xDC.Services.App
         public static bool EnableSubmitForApproval(string assignedApprover, string formStatus)
         {
             var isApproverAssigned = !string.IsNullOrEmpty(assignedApprover);
-            var isPendingApproval = formStatus == Common.FormStatus.PendingApproval;
+            var isPendingApproval = formStatus == null || formStatus == FormStatus.Draft;
 
             return !isApproverAssigned && isPendingApproval;
         }

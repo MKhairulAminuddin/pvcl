@@ -646,6 +646,21 @@
             columnFixing: {
                 enabled: true,
             },
+            onSaved: function(e) {
+                if (e.component.getDataSource().items().length > 0) {
+
+                    var dataSource = e.component.getDataSource();
+                    var dataStore = dataSource.store();
+                    dataStore._array.forEach(function (i) {
+                        if (!i.manualCalc_P_Plus_I) {
+                            i.principalIntProfitReceivable = treasury.Calc_P_Plus_I(i.principal, $currencySelectBox.option("value"), i.maturityDate, i.valueDate, i.ratePercent);
+                        }
+                    });
+                    dataSource.reload();
+                    e.component.refresh();
+
+                }
+            }
         };
 
         $inflowDepositGrid = $("#inflowDepositGrid").dxDataGrid({

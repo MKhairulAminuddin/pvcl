@@ -1,9 +1,3 @@
-/****** Object:  Table [dbo].[AspNetRolePermissions]    Script Date: 3/10/2022 9:16:12 AM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
 
 CREATE TABLE [dbo].[AspNetRolePermissions](
 	[RoleId] [int] NOT NULL,

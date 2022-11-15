@@ -94,6 +94,13 @@ namespace xDC_Web.Controllers
             }
         }
 
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
+        [Route("TradeSettlement/View/{id}")]
+        public ActionResult ViewPart(string id)
+        {
+            return TS_View(id);
+        }
+
         #region TS Part A (Equity)
 
         [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]

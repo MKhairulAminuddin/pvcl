@@ -70,7 +70,7 @@ namespace xDC_Web.Controllers.Api
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.Log_UserAccess.OrderByDescending(x => x.RecordedDate).ToList();
+                    var result = db.Audit_UserAccess.OrderByDescending(x => x.RecordedDate).ToList();
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
@@ -94,7 +94,7 @@ namespace xDC_Web.Controllers.Api
                     var fromDate = xDC.Utils.Common.ConvertEpochToDateTime(req.FromDateUnix);
                     var toDate = xDC.Utils.Common.ConvertEpochToDateTime(req.ToDateUnix);
 
-                    var result = db.Log_UserAccess
+                    var result = db.Audit_UserAccess
                         .Where(x => 
                             DbFunctions.TruncateTime(x.RecordedDate) >= DbFunctions.TruncateTime(fromDate) && 
                             DbFunctions.TruncateTime(x.RecordedDate) <= DbFunctions.TruncateTime(toDate))

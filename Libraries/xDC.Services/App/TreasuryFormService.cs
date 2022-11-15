@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using xDC.Domain.Web.AMSD.InflowFundForm;
 using xDC.Domain.Web.FID.TreasuryForm;
+using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Domain.WebApi.Forms;
 using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
@@ -47,7 +48,7 @@ namespace xDC.Services.App
                             EnableEdit = FormService.EnableEdit(item.FormStatus, item.PreparedBy, item.ApprovedBy, currentUser),
                             EnableDelete = FormService.EnableDelete(item.FormStatus, item.PreparedBy, item.ApprovedBy, currentUser),
                             EnablePrint = FormService.EnablePrint(currentUser, item.FormStatus, PermissionKey.ISSD_TradeSettlementForm_Download),
-                            EnableRetractSubmission = FormService.EnableRetractSubmission(currentUser, item.PreparedBy, item.FormStatus, PermissionKey.ISSD_TradeSettlementForm_Edit),
+                            EnableRetractSubmission = FormService.EnableRetractSubmission(currentUser, item.PreparedBy, item.FormStatus, PermissionKey.FID_TreasuryForm_Edit),
 
                             IsRejected = (currentUser == item.PreparedBy && item.FormStatus == Common.FormStatus.Rejected),
                             IsPendingMyApproval = (currentUser == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
@@ -153,7 +154,50 @@ namespace xDC.Services.App
 
         #endregion
 
+        public static List<TreasuryFormSummary> TreasuryFormSummaryList(long submissionDateEpoch = 0)
+        {
+            try
+            {
+                DateTime selectedDate;
+                if (submissionDateEpoch != 0)
+                {
+                    selectedDate = Utils.Common.ConvertEpochToDateTime(submissionDateEpoch).Value;
+                }
+                else
+                {
+                    selectedDate = DateTime.Now;
+                }
 
+                using (var db = new kashflowDBEntities())
+                {
+                    var tsForms = db.FID_Treasury.Where(x => DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(selectedDate))
+                        .Select(x => new TreasuryFormSummary()
+                        {
+                            FormId = x.Id,
+                            Currency = x.Currency,
+                            PreparedBy = x.PreparedBy,
+                            SubmittedDate = x.PreparedDate,
+                            ApprovedBy = x.ApprovedBy,
+                            ApprovedDate = x.ApprovedDate,
+                            FormStatus = x.FormStatus
+                        }).ToList();
+
+                    if (tsForms.Any())
+                    {
+                        return tsForms;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return null;
+            }
+        }
         public static List<EDW_FID_List> List_Issuer(kashflowDBEntities db)
         {
             // check for same date and same currency exist

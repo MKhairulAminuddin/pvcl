@@ -1,11 +1,4 @@
 
-USE [KashflowDb]
-GO
-/****** Object:  Table [dbo].[AspNetPermission]    Script Date: 3/10/2022 9:13:59 AM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 CREATE TABLE [dbo].[AspNetPermission](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[PermissionName] [nvarchar](50) NOT NULL,
@@ -17,6 +10,7 @@ CREATE TABLE [dbo].[AspNetPermission](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+
 SET IDENTITY_INSERT [dbo].[AspNetPermission] ON 
 GO
 INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (1, N'Administration', 1, 0)

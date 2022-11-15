@@ -83,6 +83,7 @@
     <Compile Include="Web\AMSD\InflowFundForm\InflowFundForm.cs" />
     <Compile Include="Web\FID\FcaTaggingForm\FcaAccountAssignmentFormVM.cs" />
     <Compile Include="Web\FID\TreasuryForm\TreasuryFormPage.cs" />
+    <Compile Include="Web\FID\TreasuryForm\TreasuryFormSummary.cs" />
     <Compile Include="Web\HOME\HomeDashboard.cs" />
     <Compile Include="Web\ISSD\TradeSettlementForm\TsConsolidatedPage.cs" />
     <Compile Include="Web\ISSD\TradeSettlementForm\TsFormSummary.cs" />

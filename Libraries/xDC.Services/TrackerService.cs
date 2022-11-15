@@ -16,14 +16,14 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var newItem = new Log_UserAccess()
+                    var newItem = new Audit_UserAccess()
                     {
                         UserName = username,
                         ClientAddress = ipadress,
                         ClientBrowser = browser,
                         RecordedDate = DateTime.Now
                     };
-                    var result = db.Log_UserAccess.Add(newItem);
+                    var result = db.Audit_UserAccess.Add(newItem);
                     db.SaveChanges();
                 }
             }

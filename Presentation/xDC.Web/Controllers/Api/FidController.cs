@@ -192,7 +192,8 @@ namespace xDC_Web.Controllers.Api
                     foreach (var item in result)
                     {
                         var rate = (double) item.RatePercent / 100;
-                        var tenor = (double) item.Tenor / 365;
+                        var tenorDays = (item.MaturityDate.Date - item.ValueDate.Date).TotalDays;
+                        var tenor = (double)tenorDays / 365;
 
                         item.IntProfitReceivable = item.Principal * tenor * rate;
                         item.PrincipalIntProfitReceivable = item.Principal + item.IntProfitReceivable;

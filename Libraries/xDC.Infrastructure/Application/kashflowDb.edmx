@@ -155,6 +155,16 @@
           <Property Name="PerformedBy" Type="nvarchar" MaxLength="150" Nullable="false" />
           <Property Name="RecordedDate" Type="datetime" Nullable="false" />
         </EntityType>
+        <EntityType Name="Audit_UserAccess">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="150" />
+          <Property Name="ClientAddress" Type="nvarchar" MaxLength="150" />
+          <Property Name="ClientBrowser" Type="nvarchar" MaxLength="150" />
+          <Property Name="RecordedDate" Type="datetime" />
+        </EntityType>
         <EntityType Name="Audit_UserManagement">
           <Key>
             <PropertyRef Name="Id" />
@@ -229,7 +239,7 @@
           <Property Name="KeyType" Type="nvarchar" MaxLength="250" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'KashflowDb.dbo.EDW_BankBalance' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'KashflowDb_15112022.dbo.EDW_BankBalance' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="EDW_BankBalance">
           <Key>
             <PropertyRef Name="CreatedDate" />
@@ -258,7 +268,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_BankBalance' does not have a pr
           <Property Name="Type" Type="varchar" MaxLength="100" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'KashflowDb.dbo.EDW_Maturity_Deposit' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'KashflowDb_15112022.dbo.EDW_Maturity_Deposit' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="EDW_Maturity_Deposit">
           <Key>
             <PropertyRef Name="ValueDate" />
@@ -279,7 +289,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_Maturity_Deposit' does not have
           <Property Name="Currency" Type="varchar" MaxLength="10" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'KashflowDb.dbo.EDW_Maturity_MM' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'KashflowDb_15112022.dbo.EDW_Maturity_MM' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="EDW_Maturity_MM">
           <Key>
             <PropertyRef Name="ValueDate" />
@@ -304,7 +314,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_Maturity_MM' does not have a pr
           <Property Name="Issuer" Type="varchar" MaxLength="256" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'KashflowDb_15112022.dbo.EDW_TradeItem' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="EDW_TradeItem">
           <Key>
             <PropertyRef Name="Amount" />
@@ -355,7 +365,6 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="RatePercent" Type="float" Nullable="false" />
           <Property Name="IntProfitReceivable" Type="float" Nullable="false" />
           <Property Name="PrincipalIntProfitReceivable" Type="float" Nullable="false" />
-          <Property Name="ManualCalc_P_Plus_I" Type="bit" Nullable="false" />
           <Property Name="AssetType" Type="nvarchar" MaxLength="50" />
           <Property Name="RepoTag" Type="nvarchar" MaxLength="50" />
           <Property Name="ContactPerson" Type="nvarchar" MaxLength="100" />
@@ -363,6 +372,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="FcaAccount" Type="nvarchar" MaxLength="50" />
           <Property Name="ModifiedBy" Type="nvarchar" MaxLength="150" />
           <Property Name="ModifiedDate" Type="datetime" />
+          <Property Name="ManualCalc_P_Plus_I" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="FID_Treasury_MMI">
           <Key>
@@ -449,16 +459,6 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="CouponType" Type="nvarchar" MaxLength="10" />
           <Property Name="BondType" Type="nvarchar" MaxLength="10" />
         </EntityType>
-        <EntityType Name="Log_UserAccess">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="UserName" Type="nvarchar" MaxLength="150" />
-          <Property Name="ClientAddress" Type="nvarchar" MaxLength="150" />
-          <Property Name="ClientBrowser" Type="nvarchar" MaxLength="150" />
-          <Property Name="RecordedDate" Type="datetime" />
-        </EntityType>
         <EntityType Name="TenAmDealCutOff_ClosingBalance">
           <Key>
             <PropertyRef Name="Id" />
@@ -540,6 +540,7 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="Audit_10AMDCO_ClosingBalance" EntityType="Self.Audit_10AMDCO_ClosingBalance" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Audit_Form" EntityType="Self.Audit_Form" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Audit_RoleManagement" EntityType="Self.Audit_RoleManagement" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Audit_UserAccess" EntityType="Self.Audit_UserAccess" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Audit_UserManagement" EntityType="Self.Audit_UserManagement" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Config_Application" EntityType="Self.Config_Application" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Config_Approver" EntityType="Self.Config_Approver" Schema="dbo" store:Type="Tables" />
@@ -553,7 +554,6 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="Form_Workflow" EntityType="Self.Form_Workflow" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ISSD_FormHeader" EntityType="Self.ISSD_FormHeader" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ISSD_TradeSettlement" EntityType="Self.ISSD_TradeSettlement" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Log_UserAccess" EntityType="Self.Log_UserAccess" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TenAmDealCutOff_ClosingBalance" EntityType="Self.TenAmDealCutOff_ClosingBalance" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EDW_BankBalance" EntityType="Self.EDW_BankBalance" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
@@ -664,7 +664,6 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <EntitySet Name="ISSD_TradeSettlement" EntityType="kashflowDbModel.ISSD_TradeSettlement" />
           <EntitySet Name="FID_Treasury" EntityType="kashflowDbModel.FID_Treasury" />
           <EntitySet Name="FID_Treasury_MMI" EntityType="kashflowDbModel.FID_Treasury_MMI" />
-          <EntitySet Name="Log_UserAccess" EntityType="kashflowDbModel.Log_UserAccess" />
           <EntitySet Name="Audit_10AMDCO_ClosingBalance" EntityType="kashflowDbModel.Audit_10AMDCO_ClosingBalance" />
           <EntitySet Name="AspNetPermission" EntityType="kashflowDbModel.AspNetPermission" />
           <EntitySet Name="AspNetRoles" EntityType="kashflowDbModel.AspNetRoles" />
@@ -676,9 +675,10 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
             <End Role="AspNetRoles" EntitySet="AspNetRoles" />
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
           </AssociationSet>
-          <EntitySet Name="Audit_UserManagement" EntityType="kashflowDbModel.Audit_UserManagement" />
-          <EntitySet Name="Audit_RoleManagement" EntityType="kashflowDbModel.Audit_RoleManagement" />
           <EntitySet Name="FID_Treasury_Deposit" EntityType="kashflowDbModel.FID_Treasury_Deposit" />
+          <EntitySet Name="Audit_UserAccess" EntityType="kashflowDbModel.Audit_UserAccess" />
+          <EntitySet Name="Audit_RoleManagement" EntityType="kashflowDbModel.Audit_RoleManagement" />
+          <EntitySet Name="Audit_UserManagement" EntityType="kashflowDbModel.Audit_UserManagement" />
           </EntityContainer>
         <EntityType Name="AspNetActiveDirectoryUsers">
           <Key>
@@ -1035,16 +1035,6 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
         </EntityType>
-        <EntityType Name="Log_UserAccess">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="ClientAddress" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="ClientBrowser" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="RecordedDate" Type="DateTime" Precision="3" />
-        </EntityType>
         <EntityType Name="Audit_10AMDCO_ClosingBalance">
           <Key>
             <PropertyRef Name="Id" />
@@ -1086,28 +1076,6 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <End Type="kashflowDbModel.AspNetRoles" Role="AspNetRoles" Multiplicity="*" />
           <End Type="kashflowDbModel.AspNetUsers" Role="AspNetUsers" Multiplicity="*" />
         </Association>
-        <EntityType Name="Audit_UserManagement">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Activity" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="Remarks" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="UserAccount" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="PerformedBy" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="RecordedDate" Type="DateTime" Nullable="false" Precision="3" />
-        </EntityType>
-        <EntityType Name="Audit_RoleManagement">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Activity" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="Remarks" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="Role" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="PerformedBy" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="RecordedDate" Type="DateTime" Nullable="false" Precision="3" />
-        </EntityType>
         <EntityType Name="FID_Treasury_Deposit">
           <Key>
             <PropertyRef Name="Id" />
@@ -1133,6 +1101,38 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
           <Property Name="FcaAccount" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedBy" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Audit_UserAccess">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ClientAddress" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ClientBrowser" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="RecordedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="Audit_RoleManagement">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Activity" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Remarks" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Role" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="PerformedBy" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="RecordedDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="Audit_UserManagement">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Activity" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="Remarks" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="UserAccount" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="PerformedBy" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="RecordedDate" Type="DateTime" Nullable="false" Precision="3" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -1505,17 +1505,6 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Log_UserAccess">
-            <EntityTypeMapping TypeName="kashflowDbModel.Log_UserAccess">
-              <MappingFragment StoreEntitySet="Log_UserAccess">
-                <ScalarProperty Name="RecordedDate" ColumnName="RecordedDate" />
-                <ScalarProperty Name="ClientBrowser" ColumnName="ClientBrowser" />
-                <ScalarProperty Name="ClientAddress" ColumnName="ClientAddress" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Audit_10AMDCO_ClosingBalance">
             <EntityTypeMapping TypeName="kashflowDbModel.Audit_10AMDCO_ClosingBalance">
               <MappingFragment StoreEntitySet="Audit_10AMDCO_ClosingBalance">
@@ -1565,30 +1554,6 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
               <ScalarProperty Name="Id" ColumnName="RoleId" />
             </EndProperty>
           </AssociationSetMapping>
-          <EntitySetMapping Name="Audit_UserManagement">
-            <EntityTypeMapping TypeName="kashflowDbModel.Audit_UserManagement">
-              <MappingFragment StoreEntitySet="Audit_UserManagement">
-                <ScalarProperty Name="RecordedDate" ColumnName="RecordedDate" />
-                <ScalarProperty Name="PerformedBy" ColumnName="PerformedBy" />
-                <ScalarProperty Name="UserAccount" ColumnName="UserAccount" />
-                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
-                <ScalarProperty Name="Activity" ColumnName="Activity" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Audit_RoleManagement">
-            <EntityTypeMapping TypeName="kashflowDbModel.Audit_RoleManagement">
-              <MappingFragment StoreEntitySet="Audit_RoleManagement">
-                <ScalarProperty Name="RecordedDate" ColumnName="RecordedDate" />
-                <ScalarProperty Name="PerformedBy" ColumnName="PerformedBy" />
-                <ScalarProperty Name="Role" ColumnName="Role" />
-                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
-                <ScalarProperty Name="Activity" ColumnName="Activity" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="FID_Treasury_Deposit">
             <EntityTypeMapping TypeName="kashflowDbModel.FID_Treasury_Deposit">
               <MappingFragment StoreEntitySet="FID_Treasury_Deposit">
@@ -1612,6 +1577,41 @@ warning 6002: The table/view 'KashflowDb.dbo.EDW_TradeItem' does not have a prim
                 <ScalarProperty Name="Dealer" ColumnName="Dealer" />
                 <ScalarProperty Name="CashflowType" ColumnName="CashflowType" />
                 <ScalarProperty Name="FormId" ColumnName="FormId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Audit_UserAccess">
+            <EntityTypeMapping TypeName="kashflowDbModel.Audit_UserAccess">
+              <MappingFragment StoreEntitySet="Audit_UserAccess">
+                <ScalarProperty Name="RecordedDate" ColumnName="RecordedDate" />
+                <ScalarProperty Name="ClientBrowser" ColumnName="ClientBrowser" />
+                <ScalarProperty Name="ClientAddress" ColumnName="ClientAddress" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Audit_RoleManagement">
+            <EntityTypeMapping TypeName="kashflowDbModel.Audit_RoleManagement">
+              <MappingFragment StoreEntitySet="Audit_RoleManagement">
+                <ScalarProperty Name="RecordedDate" ColumnName="RecordedDate" />
+                <ScalarProperty Name="PerformedBy" ColumnName="PerformedBy" />
+                <ScalarProperty Name="Role" ColumnName="Role" />
+                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+                <ScalarProperty Name="Activity" ColumnName="Activity" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Audit_UserManagement">
+            <EntityTypeMapping TypeName="kashflowDbModel.Audit_UserManagement">
+              <MappingFragment StoreEntitySet="Audit_UserManagement">
+                <ScalarProperty Name="RecordedDate" ColumnName="RecordedDate" />
+                <ScalarProperty Name="PerformedBy" ColumnName="PerformedBy" />
+                <ScalarProperty Name="UserAccount" ColumnName="UserAccount" />
+                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+                <ScalarProperty Name="Activity" ColumnName="Activity" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

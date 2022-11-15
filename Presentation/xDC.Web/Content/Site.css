@@ -456,6 +456,8 @@ div .validation-summary-errors.text-danger {
 
 .kf1-bg-blue {
     background-color: #5b8efb;
+    color: #121212;
+    font-weight: bold;
 }
 
 .kf1-bg-orange {

@@ -1,12 +1,4 @@
-USE [KashflowDb]
-GO
 
-/****** Object:  Table [dbo].[Log_UserAccess]    Script Date: 11/10/2022 4:16:27 PM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
 
 CREATE TABLE [dbo].[Audit_UserManagement](
 	[Id] [int] IDENTITY(1,1) NOT NULL,

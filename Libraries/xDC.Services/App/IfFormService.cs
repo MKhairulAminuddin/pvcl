@@ -230,7 +230,7 @@ namespace xDC.Services.App
 
                 using (var db = new kashflowDBEntities())
                 {
-                    var ifFormIds = db.AMSD_IF.Where(x => DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(selectedDate)).Select(x => x.Id).ToList();
+                    var ifFormIds = db.AMSD_IF.Where(x => DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(selectedDate) && x.FormStatus == Utils.Common.FormStatus.Approved).Select(x => x.Id).ToList();
                     if (ifFormIds.Any())
                     {
                         var ifFormitems = db.AMSD_IF_Item.Where(x => ifFormIds.Contains(x.FormId)).GroupBy(x => x.Bank).Select(x => new IfAmountSummary()

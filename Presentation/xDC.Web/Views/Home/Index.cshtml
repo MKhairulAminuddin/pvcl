@@ -5,45 +5,72 @@
 }
 
 <section class="content container-fluid">
-    @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.AMSD_InflowFundForm_Edit))
+    @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.AMSD_InflowFundForm_Edit)
+        || User.IsInRole("Power User"))
     {
         <div class="row">
             <div class="col-md-4">
-                <div class="box box-solid">
-                    <div class="box-header">
-                        Todays Inflow Funds
+                <div class="box">
+                    <div class="box-header bg-navy">
+                        <i class="fa fa-money"></i><h3 class="box-title">Today's Inflow Funds</h3>
                     </div>
                     <div class="box-body">
                         @if (Model.IfAmountSummary != null)
                         {
-
-                            foreach (var item in Model.IfAmountSummary)
-                            {
-                                <p><b>@item.Bank:</b> MYR @item.TotalAmount.ToString("N2")</p>
-                            }
-
+                            <div class="table-responsive">
+                                <table class="table table-hover table-condensed table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th width="160px">Bank</th>
+                                            <th>Total Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.IfAmountSummary)
+                                        {
+                                            <tr>
+                                                <td>@item.Bank</td>
+                                                <td>@item.TotalAmount.ToString("N2")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         }
                         else
                         {
-                            <div>No form submitted today</div>
+                            <div>No data for today</div>
                         }
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="box box-solid">
-                    <div class="box-header">
-                        Todays Inflow Fund Forms Submission
+                <div class="box">
+                    <div class="box-header bg-navy">
+                        <i class="fa fa-tasks"></i><h3 class="box-title">Today's Inflow Fund Forms Submission</h3>
                     </div>
                     <div class="box-body">
                         @if (Model.IfFormSummary != null)
                         {
-                            foreach (var item in Model.IfFormSummary)
-                            {
-                                <p>
-                                    A form submitted by @item.PreparedBy - @formatFormStatus(item.FormStatus)
-                                </p>
-                            }
+                            <div class="table-responsive">
+                                <table class="table table-condensed table-hover">
+                                    <thead>
+                                        <tr><th>#</th><th>Submission</th><th></th></tr>
+                                    </thead>
+                                    <tbody>
+                                        @{ int i = 1; }
+                                        @foreach (var item in Model.IfFormSummary)
+                                        {
+                                            <tr>
+                                                <th scope="row">@i</th>
+                                                <td>A form submitted by @item.PreparedBy at @item.SubmittedDate.ToString("hh:mm tt") - @formatFormStatus(item.FormStatus)</td>
+                                                <td><a href="./amsd/inflowfund/view/@item.FormId"><i class="fa fa-external-link-square"></i></a></td>
+                                            </tr>
+                                            i++;
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         }
                         else
                         {
@@ -55,38 +82,39 @@
         </div>
     }
 
-    @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.ISSD_TradeSettlementForm_Edit))
+    @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.ISSD_TradeSettlementForm_Edit)
+        || User.IsInRole("Power User"))
     {
         <div class="row">
             <div class="col-md-4">
-                <div class="box box-solid">
-                    <div class="box-header">
-                        Todays Opening Balance
+                <div class="box">
+                    <div class="box-header bg-purple">
+                        <i class="fa fa-money"></i><h3 class="box-title">Today's Opening Balance</h3>
                     </div>
                     <div class="box-body">
                         @if (Model.TsOpeningBalanceSummary != null)
                         {
-                            <table class="table table-hover table-condensed">  
-                                <thead>
-                                    <tr>
-                                        <th width="160px">Account</th>
-                                        <th width="120px">Currecy</th>
-                                        <th>Total Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model.TsOpeningBalanceSummary)
-                                    {
+                            <div class="table-responsive">
+                                <table class="table table-hover table-condensed table-hover">
+                                    <thead>
                                         <tr>
-                                            <td>@item.Account</td>
-                                            <td>@item.Currency</td>
-                                            <td>@item.Amount.ToString("N2")</td> 
+                                            <th width="160px">Account</th>
+                                            <th width="120px">Currecy</th>
+                                            <th>Total Amount</th>
                                         </tr>
-                                    }
-                                </tbody>
-                            </table>
-                            
-
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.TsOpeningBalanceSummary)
+                                        {
+                                            <tr>
+                                                <td>@item.Account</td>
+                                                <td>@item.Currency</td>
+                                                <td>@item.Amount.ToString("N2")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         }
                         else
                         {
@@ -95,20 +123,34 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="box box-solid">
-                    <div class="box-header">
-                        Todays Trade Settlement Forms Submission
+            <div class="col-md-4">
+                <div class="box">
+                    <div class="box-header bg-purple">
+                        <i class="fa fa-tasks"></i><h3 class="box-title">Today's Trade Settlement Forms Submission</h3>
                     </div>
                     <div class="box-body">
                         @if (Model.TsFormSummary != null)
                         {
-                            foreach (var item in Model.TsFormSummary)
-                            {
-                                <p>
-                                    A @item.FormType form submitted by @item.PreparedBy - @formatFormStatus(item.FormStatus)
-                                </p>
-                            }
+                            <div class="table-responsive">
+                                <table class="table table-condensed table-hover">
+                                    <thead>
+                                        <tr><th>#</th><th>Submission</th><th></th></tr>
+                                    </thead>
+                                    <tbody>
+                                        @{ int i = 1; }
+                                        @foreach (var item in Model.TsFormSummary)
+                                        {
+                                            <tr>
+                                                <th scope="row">@i</th>
+                                                <td>A @item.FormType form submitted by @item.PreparedBy at @item.SubmittedDate.ToString("hh:mm tt") - @formatFormStatus(item.FormStatus)</td>
+                                                <td><a href="./issd/TradeSettlement/View/@item.FormId"><i class="fa fa-external-link-square"></i></a></td>
+                                            </tr>
+
+                                            i++;
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         }
                         else
                         {
@@ -118,9 +160,52 @@
                 </div>
             </div>
         </div>
-        
+
     }
-</section>
+
+    @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.FID_TreasuryForm_Edit)
+        || User.IsInRole("Power User"))
+    {
+        <div class="row">
+            <div class="col-md-4">
+                <div class="box">
+                    <div class="box-header bg-blue">
+                        <i class="fa fa-tasks"></i><h3 class="box-title">Today's Treasury Forms Submission</h3>
+                    </div>
+                    <div class="box-body">
+                        @if (Model.TreasuryFormSummary != null)
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-condensed table-hover">
+                                    <thead>
+                                        <tr><th>#</th><th>Submission</th><th></th></tr>
+                                    </thead>
+                                    <tbody>
+                                        @{ int i = 1; }
+                                        @foreach (var item in Model.TreasuryFormSummary)
+                                        {
+                                            <tr>
+                                                <th scope="row">@i</th>
+                                                <td>A form submitted by @item.PreparedBy at @item.SubmittedDate.ToString("hh:mm tt") - @formatFormStatus(item.FormStatus)</td>
+                                                <td><a href="./fid/Treasury/View/@item.FormId"><i class="fa fa-external-link-square"></i></a></td>
+                                            </tr>
+
+                                            i++;
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div>No form submitted today</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+     }
+    </section>
 
 @functions {
     public static HtmlString formatFormStatus(string value)

@@ -55,6 +55,7 @@ namespace xDC_Web.Controllers
             return View(model);
         }
 
+        [HandleAntiForgeryError]
         [ValidateAntiForgeryToken]
         public virtual ActionResult Logoff()
         {

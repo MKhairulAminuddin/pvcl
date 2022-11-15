@@ -14,6 +14,7 @@ namespace xDC.Domain.Web.HOME
         public List<IfAmountSummary> IfAmountSummary { get; set; }
         public List<TsOpeningBalance> TsOpeningBalanceSummary { get; set; }
         public List<TsFormSummary> TsFormSummary { get; set; }
+        public List<TreasuryFormSummary> TreasuryFormSummary { get; set; }
 
         public HomeDashboard()
         {
@@ -21,6 +22,7 @@ namespace xDC.Domain.Web.HOME
             this.IfAmountSummary = new List<IfAmountSummary>();
             this.TsOpeningBalanceSummary = new List<TsOpeningBalance>();
             this.TsFormSummary = new List<TsFormSummary>();
+            this.TreasuryFormSummary = new List<TreasuryFormSummary>();
         }
     }
 }

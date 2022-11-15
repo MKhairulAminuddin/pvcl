@@ -12,7 +12,7 @@ namespace xDC.Infrastructure.Application
     using System;
     using System.Collections.Generic;
     
-    public partial class Log_UserAccess
+    public partial class Audit_UserAccess
     {
         public int Id { get; set; }
         public string UserName { get; set; }

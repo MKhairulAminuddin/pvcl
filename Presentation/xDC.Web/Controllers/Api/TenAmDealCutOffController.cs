@@ -467,6 +467,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("Audit/ClosingBalance/{dateEpoch}")]
+        [KflowApiAuthorize(Common.PermissionKey.Report_DCO_10am_EditClosingBalance)]
         public HttpResponseMessage AuditClosingBalance(long dateEpoch, DataSourceLoadOptions loadOptions)
         {
             try
