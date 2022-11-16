@@ -15,16 +15,19 @@ using xDC.Domain.WebApi.Audit;
 using xDC.Infrastructure.Application;
 using xDC.Services;
 using xDC.Utils;
+using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.Models;
+using static xDC.Utils.Common;
 
 namespace xDC_Web.Controllers.Api
 {
-    [Authorize(Roles = "Administrator, Power User")]
+    [KflowApiAuthorize(PermissionKey.AuditTrail)]
     [RoutePrefix("api/audit")]
     public class AuditController : ApiController
     {
         [HttpGet]
         [Route("auditForm/{fromDateEpoch}/{toDateEpoch}/{formId}/{formType}/{userId}/{actionType}")]
+        [KflowApiAuthorize(PermissionKey.AuditTrail_FormAudit)]
         public HttpResponseMessage AuditForm(long fromDateEpoch, long toDateEpoch, string formId, string formType, string userId, string actionType, DataSourceLoadOptions loadOptions)
         {
             try
@@ -64,6 +67,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("UserAccess")]
+        [KflowApiAuthorize(PermissionKey.AuditTrail_UserAccessAudit)]
         public HttpResponseMessage GetUserAccessLog(DataSourceLoadOptions loadOptions)
         {
             try
@@ -85,6 +89,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Route("UserAccess")]
+        [KflowApiAuthorize(PermissionKey.AuditTrail_UserAccessAudit)]
         public HttpResponseMessage GetUserAccessAudit([FromBody] AuditReq req, DataSourceLoadOptions loadOptions)
         {
             try
@@ -123,6 +128,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("UserManagement")]
+        [KflowApiAuthorize(PermissionKey.AuditTrail_UserManagementAudit)]
         public HttpResponseMessage GetUserManagementAudit(DataSourceLoadOptions loadOptions)
         {
             try
@@ -149,6 +155,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Route("UserManagement")]
+        [KflowApiAuthorize(PermissionKey.AuditTrail_UserManagementAudit)]
         public HttpResponseMessage GetUserManagementAuditFiltered([FromBody] AuditReq req,DataSourceLoadOptions loadOptions)
         {
             try
@@ -181,6 +188,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("RoleManagement")]
+        [KflowApiAuthorize(PermissionKey.AuditTrail_RoleManagementAudit)]
         public HttpResponseMessage GetRoleManagementAudit(DataSourceLoadOptions loadOptions)
         {
             try
@@ -207,6 +215,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Route("RoleManagement")]
+        [KflowApiAuthorize(PermissionKey.AuditTrail_RoleManagementAudit)]
         public HttpResponseMessage GetRoleManagementAuditFiltered([FromBody] AuditReq req, DataSourceLoadOptions loadOptions)
         {
             try

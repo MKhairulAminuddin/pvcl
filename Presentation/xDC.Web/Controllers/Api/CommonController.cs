@@ -75,17 +75,8 @@ namespace xDC_Web.Controllers.Api
                 {
                     var result = db.AspNetActiveDirectoryUsers.Where(x => x.Title != null).ToList();
                     
-                    var systemUser = db.AspNetUsers.Where(x => x.AspNetRoles.Select(y => y.Name).Contains(Config.Acl.Amsd)).ToList();
+                    var systemUser = db.AspNetUsers.ToList();
                     
-                    var issdUsers = db.AspNetUsers.Where(x => x.AspNetRoles.Select(y => y.Name).Contains(Config.Acl.Issd)).ToList();
-                    systemUser.AddRange(issdUsers);
-                    
-                    var fidUsers = db.AspNetUsers.Where(x => x.AspNetRoles.Select(y => y.Name).Contains(Config.Acl.Fid)).ToList();
-                    systemUser.AddRange(fidUsers);
-                    
-                    var puUsers = db.AspNetUsers.Where(x => x.AspNetRoles.Select(y => y.Name).Contains(Config.Acl.PowerUser)).ToList();
-                    systemUser.AddRange(puUsers);
-
                     var finalResult = new List<AspNetActiveDirectoryUsers>();
 
                     foreach (var user in systemUser)

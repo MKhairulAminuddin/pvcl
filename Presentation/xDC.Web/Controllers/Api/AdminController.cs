@@ -20,10 +20,12 @@ using System.Data.Entity;
 using xDC.Services;
 using xDC.Logging;
 using xDC.Domain.WebApi.Administration;
+using static xDC.Utils.Common;
+using xDC_Web.Extension.CustomAttribute;
 
 namespace xDC_Web.Controllers.Api
 {
-    [Authorize(Roles = "Administrator")]
+    [KflowApiAuthorize(PermissionKey.Administration)]
     [RoutePrefix("api/admin")]
     public class AdminController : ApiController
     {
@@ -32,6 +34,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("GetUsers")]
+        [KflowApiAuthorize(PermissionKey.Administration_UserManagement)]
         public HttpResponseMessage GetUsers(DataSourceLoadOptions loadOptions)
         {
             try
@@ -67,6 +70,7 @@ namespace xDC_Web.Controllers.Api
         
         [HttpPost]
         [Route("InsertUser")]
+        [KflowApiAuthorize(PermissionKey.Administration_UserManagement)]
         public HttpResponseMessage InsertUser(FormDataCollection form)
         {
             try
@@ -119,6 +123,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPut]
         [Route("UpdateUser")]
+        [KflowApiAuthorize(PermissionKey.Administration_UserManagement)]
         public HttpResponseMessage UpdateUser(FormDataCollection form)
         {
             try
@@ -163,6 +168,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpDelete]
         [Route("DeleteUser")]
+        [KflowApiAuthorize(PermissionKey.Administration_UserManagement)]
         public HttpResponseMessage DeleteUser(FormDataCollection form)
         {
             try
@@ -200,6 +206,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("GetRoles")]
+        [KflowApiAuthorize(PermissionKey.Administration_RolesManagement)]
         public HttpResponseMessage GetRoles(DataSourceLoadOptions loadOptions)
         {
             var response = new AuthService().GetRoles(out bool statusRequest);
@@ -216,6 +223,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPut]
         [Route("UpdateRole")]
+        [KflowApiAuthorize(PermissionKey.Administration_RolesManagement)]
         public HttpResponseMessage UpdateRole(FormDataCollection form)
         {
             try
@@ -245,6 +253,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpDelete]
         [Route("DeleteRole")]
+        [KflowApiAuthorize(PermissionKey.Administration_RolesManagement)]
         public HttpResponseMessage DeleteRole(FormDataCollection form)
         {
             try
@@ -271,6 +280,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("GetPermissions")]
+        [KflowApiAuthorize(PermissionKey.Administration_RolesManagement)]
         public HttpResponseMessage GetPermissions(DataSourceLoadOptions loadOptions)
         {
             var result = new AuthService().GetPermissions(out bool statusRequest);
@@ -287,6 +297,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("GetRolePermissions/{roleId}")]
+        [KflowApiAuthorize(PermissionKey.Administration_RolesManagement)]
         public HttpResponseMessage GetRolePermissions(int roleId, DataSourceLoadOptions loadOptions)
         {
             var result = new AuthService().GetRolePermissions(roleId, out bool statusRequest);
@@ -303,6 +314,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Route("UpdateRolePermission/{roleId}")]
+        [KflowApiAuthorize(PermissionKey.Administration_RolesManagement)]
         public HttpResponseMessage UpdateRolePermissions(int roleId,[FromBody] UpdatePremissionReq req)
         {
             if (new AuthService().UpdateRolePermission(roleId, req, User.Identity.Name))
@@ -317,6 +329,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Route("AddNewRole")]
+        [KflowApiAuthorize(PermissionKey.Administration_RolesManagement)]
         public HttpResponseMessage AddNewRole([FromBody] NewRoleReq req)
         {
             if (new AuthService().AddNewRole(req.RoleName, req.Permissions, User.Identity.Name))
@@ -335,6 +348,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Route("TestEmail")]
+        [KflowApiAuthorize(PermissionKey.Administration_Utility)]
         public HttpResponseMessage TestEmail(FormDataCollection form)
         {
             try

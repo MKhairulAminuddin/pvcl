@@ -169,7 +169,7 @@ namespace xDC.Services
                     {
                         if (!string.IsNullOrEmpty(roleName))
                         {
-                            AuditService.Capture_UMA(Common.UserManagementActionType.ChangeRole, $"From {existingUser.AspNetRoles.First().Name} to {roleName}", existingUser.UserName, performedBy);
+                            AuditService.Capture_UMA(Common.UserManagementActionType.ChangeRole, $"From {existingUser.AspNetRoles?.First().Name} to {roleName}", existingUser.UserName, performedBy);
 
                             var getAspNetRole = db.AspNetRoles.FirstOrDefault(x => x.Name == roleName);
                             existingUser.AspNetRoles = new List<AspNetRoles>()
@@ -504,6 +504,17 @@ namespace xDC.Services
                                             AuditService.Capture_RMA(Common.RoleManagementActionType.AddPermission, $"Added {newAssignedPermission.PermissionName} permission to role {newRole.Name}", newRole.Name, performedBy);
                                         }
                                     }
+
+                                    foreach (var item in req.Select(x => x.ParentId).Distinct())
+                                    {
+                                        var parentPermission = db.AspNetPermission.FirstOrDefault(x => x.Id == item);
+                                        if (parentPermission != null)
+                                        {
+                                            addNewRole.AspNetPermission.Add(parentPermission);
+                                            AuditService.Capture_RMA(Common.RoleManagementActionType.AddPermission, $"Added {parentPermission.PermissionName} permission to role {newRole.Name}", newRole.Name, performedBy);
+                                        }
+                                    }
+
                                     db.SaveChanges();
                                 }
                             }

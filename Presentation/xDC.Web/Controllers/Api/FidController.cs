@@ -27,8 +27,8 @@ using TreasuryFormVM = xDC_Web.Models.TreasuryFormVM;
 
 namespace xDC_Web.Controllers.Api
 {
-    [Authorize(Roles = "Administrator, Power User, FID")]
     [RoutePrefix("api/fid")]
+    [KflowAuthorize(Common.PermissionKey.FID)]
     public class FidController : ApiController
     {
         #region FCA Tagging
@@ -447,6 +447,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Route("Treasury/New")]
+        [KflowApiAuthorize(PermissionKey.FID_TreasuryForm_Edit)]
         public HttpResponseMessage Treasury_FormNew([FromBody] TreasuryFormVM input)
         {
             try
@@ -626,6 +627,7 @@ namespace xDC_Web.Controllers.Api
 
         [HttpPost]
         [Route("Treasury/Edit")]
+        [KflowApiAuthorize(PermissionKey.FID_TreasuryForm_Edit)]
         public HttpResponseMessage Treasury_FormEdit([FromBody] TreasuryFormVM input)
         {
             try

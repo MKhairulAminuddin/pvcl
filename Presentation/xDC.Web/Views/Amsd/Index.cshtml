@@ -48,7 +48,9 @@
         <div class="col-md-6">
             <div class="left-container">
                 <div>
-                    @(Html.DevExtreme().Button()
+                    @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.AMSD_InflowFundForm_Edit))
+                    {
+                        @(Html.DevExtreme().Button()
                         .Type(ButtonType.Default)
                         .Icon("plus")
                         .Text("Create Inflow Fund Form")
@@ -56,6 +58,7 @@
                         .StylingMode(ButtonStylingMode.Contained)
                         .OnClick(@<text> function(){ window.location = "@Url.Action("InflowFund_New", "Amsd")"; } </text>)
                         )
+                    }
                 </div>
             </div>
         </div>

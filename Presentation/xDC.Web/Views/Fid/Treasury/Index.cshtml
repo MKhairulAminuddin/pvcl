@@ -9,13 +9,16 @@
         <div class="col-md-6">
             <div class="left-container">
                 <div>
-                    @(Html.DevExtreme().Button()
+                    @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.FID_TreasuryForm_Edit))
+                    {
+                        @(Html.DevExtreme().Button()
                         .Type(ButtonType.Default)
                         .Icon("plus")
                         .Text("New Treasury Form")
                         .StylingMode(ButtonStylingMode.Contained)
                         .OnClick(@<text> function(){ window.location = "@Url.Action("TreasuryNew", "Fid")"; } </text>)
                         )
+                    }
                 </div>
             </div>
         </div>

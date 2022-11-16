@@ -115,7 +115,7 @@ namespace xDC_Web.Controllers
 
                             EnableDraftButton = (getForm.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
                             EnableSaveAdminChanges = User.IsInRole(Config.Acl.PowerUser) && (getForm.FormStatus == Common.FormStatus.Approved),
-                            EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Issd) && getForm.ApprovedBy == User.Identity.Name && getForm.FormStatus == Common.FormStatus.PendingApproval)
+                            EnableApproveRejectBtn = (new AuthService().IsUserHaveAccess(User.Identity.Name, Common.PermissionKey.AMSD_InflowFundForm_Edit) && getForm.ApprovedBy == User.Identity.Name && getForm.FormStatus == Common.FormStatus.PendingApproval)
 
                         };
                         return View("InflowFund/Edit", formObj);

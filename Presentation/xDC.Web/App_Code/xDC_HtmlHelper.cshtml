@@ -79,29 +79,10 @@
     var username = HttpContext.Current.User.Identity.Name;
     var role = "Anonymous";
 
-    if (HttpContext.Current.User.IsInRole(Config.Acl.Administrator))
+    var userRoleFromDb = xDC_Web.Extension.MenuSecurity.CurrentUserRole();
+    if (!string.IsNullOrEmpty(userRoleFromDb))
     {
-        role = Config.Acl.Administrator;
-    }
-    else if (HttpContext.Current.User.IsInRole(Config.Acl.PowerUser))
-    {
-        role = Config.Acl.PowerUser;
-    }
-    else if (HttpContext.Current.User.IsInRole(Config.Acl.Amsd))
-    {
-        role = Config.Acl.Amsd;
-    }
-    else if (HttpContext.Current.User.IsInRole(Config.Acl.Fid))
-    {
-        role = Config.Acl.Fid;
-    }
-    else if (HttpContext.Current.User.IsInRole(Config.Acl.Issd))
-    {
-        role = Config.Acl.Issd;
-    }
-    else
-    {
-        role = "Error";
+            role = userRoleFromDb;
     }
 
     <p class='dropdown-header-title'>@username</p> <p class='dropdown-header-subtitle'>@role</p>

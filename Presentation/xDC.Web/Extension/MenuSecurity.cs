@@ -14,5 +14,10 @@ namespace xDC_Web.Extension
         {
             return IsAuthenticated() && new xDC.Services.AuthService().IsUserHaveAccess(HttpContext.Current.User.Identity.Name, permissionKey);
         }
+
+        public static string CurrentUserRole()
+        {
+            return new xDC.Services.AuthService().GetUserRoles(HttpContext.Current.User.Identity.Name);
+        }
     }
 }

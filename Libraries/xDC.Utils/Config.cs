@@ -37,9 +37,6 @@ namespace xDC.Utils
         {
             public const  string Administrator = "Administrator";
             public const string PowerUser = "Power User";
-            public const string Amsd = "AMSD";
-            public const string Issd = "ISSD";
-            public const string Fid = "FID";
         }
     }
 }

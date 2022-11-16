@@ -440,7 +440,7 @@ namespace xDC_Web.Controllers
                 AdminEditedBy = form.AdminEdittedBy,
                 AdminEditedDate = form.AdminEdittedDate,
 
-                EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Issd) && form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval),
+                EnableApproveRejectBtn = (form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval),
                 EnableReassign = (form.FormStatus == Common.FormStatus.PendingApproval && form.ApprovedBy != User.Identity.Name)
             };
         }
@@ -471,7 +471,7 @@ namespace xDC_Web.Controllers
 
                 EnableDraftButton = (form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
                 EnableSaveAdminChanges = User.IsInRole(Config.Acl.PowerUser) && (form.FormStatus == Common.FormStatus.Approved),
-                EnableApproveRejectBtn = (User.IsInRole(Config.Acl.Issd) && form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval)
+                EnableApproveRejectBtn = (form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval)
             };
         }
 
