@@ -17,7 +17,7 @@ using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services;
-using xDC.Services.App;
+using xDC.Services.Form;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.Extension.DocGenerator;
@@ -33,6 +33,22 @@ namespace xDC_Web.Controllers.Api
     [RoutePrefix("api/issd")]
     public class IssdController : ApiController
     {
+        #region Fields
+
+        private readonly ITsFormService _tsFormService;
+
+        #endregion
+
+        #region Ctor
+
+        public IssdController(ITsFormService tsFormService)
+        {
+            _tsFormService = tsFormService;
+        }
+
+        #endregion
+
+
         #region TS Landing Page
 
         [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_View)]
@@ -241,11 +257,10 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                var createdFormId = TsFormService.CreateNewForm(req, User.Identity.Name);
-                if (createdFormId > 0)
+                var createdForm = _tsFormService.CreateForm(req, User.Identity.Name, out int createdFormId);
+                if (createdForm && createdFormId > 0)
                 {
                     return Request.CreateResponse(HttpStatusCode.Created, createdFormId);
-
                 }
                 else
                 {
@@ -266,10 +281,10 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                var editedFormId = TsFormService.EditForm(req, User.Identity.Name);
-                if (editedFormId > 0)
+                var changesSaved = _tsFormService.EditForm(req, User.Identity.Name);
+                if (changesSaved)
                 {
-                    return Request.CreateResponse(HttpStatusCode.Created, editedFormId);
+                    return Request.CreateResponse(HttpStatusCode.Created, req.Id);
 
                 }
                 else
@@ -291,11 +306,11 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                var formApprovalResult = TsFormService.FormApproval(req, User.Identity.Name);
+                var formApprovalResult = _tsFormService.FormApproval(req, User.Identity.Name);
 
-                if (formApprovalResult > 0)
+                if (formApprovalResult)
                 {
-                    return Request.CreateResponse(HttpStatusCode.Accepted, formApprovalResult);
+                    return Request.CreateResponse(HttpStatusCode.Accepted, req.FormId);;
                 }
                 else
                 {
@@ -316,7 +331,7 @@ namespace xDC_Web.Controllers.Api
             try
             {
                 var key = Convert.ToInt32(input.Get("id"));
-                var deleteFormResult = TsFormService.DeleteForm(key, User.Identity.Name);
+                var deleteFormResult = _tsFormService.DeleteForm(key, User.Identity.Name);
 
                 if (deleteFormResult)
                 {

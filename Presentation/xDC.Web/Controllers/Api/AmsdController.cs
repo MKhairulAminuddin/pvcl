@@ -15,12 +15,14 @@ using xDC.Utils;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services;
-using xDC.Services.App;
 using xDC_Web.ViewModels.Amsd;
 using xDC_Web.ViewModels;
 using static xDC.Utils.Common;
 using xDC_Web.Extension.CustomAttribute;
 using xDC.Domain.WebApi.Forms.TradeSettlement;
+using xDC.Services.Form;
+using xDC.Domain.Form;
+using xDC.Services.Audit;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -28,6 +30,22 @@ namespace xDC_Web.Controllers.Api
     [RoutePrefix("api/amsd")]
     public class AmsdController : ApiController
     {
+        #region Fields
+
+        private readonly IIfFormService _ifFormService;
+
+        #endregion
+
+        #region Ctor
+
+        public AmsdController(IIfFormService ifFormService)
+        {
+            _ifFormService = ifFormService;
+        }
+
+        #endregion
+
+
         [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_View)]
         [HttpGet]
         [Route("inflowfund")]
@@ -35,7 +53,7 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                var IfHomeGrid1Data = IfFormService.GetTsHomeGrid1(User.Identity.Name);
+                var IfHomeGrid1Data = _ifFormService.GetHomeGrid(User.Identity.Name);
 
                 if (IfHomeGrid1Data != null)
                 {
@@ -60,7 +78,7 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                var retractFormStatus = FormService.RetractFormSubmission(req.FormId, User.Identity.Name, FormType.AMSD_IF);
+                var retractFormStatus = _ifFormService.WithdrawForm(req.FormId, User.Identity.Name, FormType.AMSD_IF);
 
                 if (retractFormStatus)
                 {
@@ -78,74 +96,6 @@ namespace xDC_Web.Controllers.Api
 
         }
 
-        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
-        [HttpGet]
-        [Route("IsTodayInflowFormExisted")]
-        public HttpResponseMessage IsTodayInflowFormExisted()
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var todaysDate = DateTime.Now.Date;
-                    var existingRecord = db.AMSD_IF.ToList();
-                    existingRecord = existingRecord.Where(x => x.PreparedDate.Value.Date == todaysDate.Date).ToList();
-
-                    if (existingRecord.Any())
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, false);
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK, false);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex);
-            }
-        }
-
-        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
-        [HttpGet]
-        [Route("IsViolatedCutOffTime")]
-        public HttpResponseMessage IsViolatedCutOffTime()
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var cutOffTime = db.Config_Application.FirstOrDefault(x => x.Key == Common.AppConfigKey.AMSD_IF_CutOffTime);
-
-                    if (cutOffTime != null)
-                    {
-                        var cutOffTimeParsed = TimeSpan.Parse(cutOffTime.Value);
-                        var isViolateCutOffTime = DateTime.Now.TimeOfDay > cutOffTimeParsed;
-
-                        if (isViolateCutOffTime)
-                        {
-                            return Request.CreateResponse(HttpStatusCode.OK, isViolateCutOffTime);
-                        }
-                        else
-                        {
-                            return Request.CreateResponse(HttpStatusCode.OK, isViolateCutOffTime);
-                        }
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Hmm.. I don't know the cut off time tho...");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex);
-            }
-        }
-
         #region Inflow Fund Form
 
         [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
@@ -155,63 +105,38 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                using (var db = new kashflowDBEntities())
+                var ifForm = new AMSD_IF()
                 {
-                    var form = new AMSD_IF
+                    FormType = FormType.AMSD_IF,
+                    Currency = "MYR",
+                    PreparedBy = User.Identity.Name,
+                    PreparedDate = DateTime.Now,
+                    FormDate = DateTime.Now,
+                    ApprovedBy = input.Approver,
+                };
+
+                var ifFormItems = new List<AMSD_IF_Item>();
+                foreach (var item in input.AmsdInflowFunds)
+                {
+                    ifFormItems.Add(new AMSD_IF_Item()
                     {
-                        FormType = Common.FormType.AMSD_IF,
-                        Currency = "MYR",
-                        PreparedBy = User.Identity.Name,
-                        PreparedDate = DateTime.Now,
-                        FormDate = DateTime.Now
-                    };
+                        FundType = item.FundType,
+                        Bank = item.Bank,
+                        Amount = item.Amount,
+                        ModifiedBy = User.Identity.Name,
+                        ModifiedDate = DateTime.Now
+                    });
+                }
 
-                    if (!string.IsNullOrEmpty(input.Approver))
-                    {
-                        form.ApprovedBy = input.Approver;
-                        form.FormStatus = Common.FormStatus.PendingApproval;
-                    }
-                    else
-                    {
-                        form.FormStatus = Common.FormStatus.Draft;
-                    }
-                    
-                    db.AMSD_IF.Add(form);
-                    db.SaveChanges();
+                var formCreated = _ifFormService.CreateForm(ifForm, ifFormItems, input.ApprovalNotes, out int createdFormId);
 
-                    var newRecordInflowFunds = new List<AMSD_IF_Item>();
-
-                    foreach (var item in input.AmsdInflowFunds)
-                    {
-                        newRecordInflowFunds.Add(new AMSD_IF_Item()
-                        {
-                            FormId = form.Id,
-                            FundType = item.FundType,
-                            Bank = item.Bank,
-                            Amount = item.Amount,
-                            ModifiedBy = User.Identity.Name,
-                            ModifiedDate = DateTime.Now
-                        });
-                    }
-                    
-                    db.AMSD_IF_Item.AddRange(newRecordInflowFunds);
-                    db.SaveChanges();
-
-                    AuditService.Capture_FA(form.Id, form.FormType, FormActionType.Create, User.Identity.Name, $"Created an {form.FormType} form");
-
-                    if (form.FormStatus == Common.FormStatus.PendingApproval)
-                    {
-                        new NotificationService().NotifyApprovalRequest(form.ApprovedBy, form.Id, form.PreparedBy, form.FormType);
-                        EmailNotificationService.WF_ApprovalSubmission(form.Id, form.FormType, form.ApprovedBy, input.ApprovalNotes);
-                        WorkflowService.SubmitForApprovalWorkflow(form.Id, form.FormType, input.ApprovalNotes);
-
-                        AuditService.Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
-                    }
-
-                    
-                    
-                    return Request.CreateResponse(HttpStatusCode.Created, form.Id);
-                    
+                if (formCreated)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Created, createdFormId);
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Unable to create form");
                 }
             }
             catch (Exception ex)
@@ -225,143 +150,35 @@ namespace xDC_Web.Controllers.Api
         [Route("InflowFund/Edit/{formId}")]
         public HttpResponseMessage InflowFund_EditForm(int formId, [FromBody] InflowFundsModel input)
         {
+            var form = new AMSD_IF()
+            {
+                Id = formId,
+
+                //check for power admin edit
+                AdminEditted = input.IsSaveAdminEdit,
+                AdminEdittedBy = input.IsSaveAdminEdit ? User.Identity.Name: null,
+                AdminEdittedDate = input.IsSaveAdminEdit ? DateTime.Now:null,
+
+                // check whether draft or reassigning
+                FormStatus = input.IsSaveAsDraft ? FormStatus.Draft : input.Approver!= null? FormStatus.PendingApproval:null,
+
+            };
+
+            if (!form.AdminEditted)
+            {
+                form.PreparedBy = User.Identity.Name;
+                form.PreparedDate = DateTime.Now;
+            }
+
+
+
             try
             {
-                using (var db = new kashflowDBEntities())
-                {
-                    var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
-
-                    if (form != null)
-                    {
-                        if (input.IsSaveAdminEdit)
-                        {
-                            form.AdminEditted = true;
-                            form.AdminEdittedBy = User.Identity.Name;
-                            form.AdminEdittedDate = DateTime.Now;
-                            AuditService.FA_AdminEdit(form.Id, form.FormType, form.FormDate, User.Identity.Name);
-                        }
-
-                        if (input.IsSaveAsDraft)
-                        {
-                            form.PreparedBy = User.Identity.Name;
-                            form.PreparedDate = DateTime.Now;
-                        }
-
-                        // Reassign Approver and Resubmit Form
-                        if (input.Approver != null && !input.IsSaveAdminEdit)
-                        {
-                            //reassign
-                            if (form.ApprovedBy != input.Approver)
-                            {
-                                AuditService.FA_ReassignApprover(form.Id, form.FormType, form.FormDate, User.Identity.Name,
-                                    form.ApprovedBy, input.Approver);
-                            }
-
-                            //resubmit
-                            if (form.FormStatus == Common.FormStatus.PendingApproval)
-                            {
-                                AuditService.FA_Resubmission(form.Id, form.FormType, form.FormDate, User.Identity.Name);
-                            }
-
-                            form.ApprovedBy = input.Approver;
-                            form.ApprovedDate = null; // empty the date as this is new submission
-                            form.FormStatus = Common.FormStatus.PendingApproval;
-                        }
-                        
-                        // Update table items
-                        if (input.AmsdInflowFunds.Any())
-                        {
-                            var existingItemInDb = db.AMSD_IF_Item.Where(x => x.FormId == form.Id);
-                            var itemInGrid = input.AmsdInflowFunds;
-
-                            //delete existing
-                            var existingItemInGrid = itemInGrid.Where(x => x.Id != 0).Select(x => x.Id).ToList();
-                            var removedItems =
-                                existingItemInDb.Where(x => !existingItemInGrid.Contains(x.Id));
-
-                            if (removedItems.Any())
-                            {
-                                foreach (var item in removedItems)
-                                {
-                                    AuditService.FA_RemoveRow(form.Id, form.FormType, form.FormDate, User.Identity.Name,
-                                        $"{item.FundType}, {item.Bank}, {item.Amount}");
-                                }
-                                db.AMSD_IF_Item.RemoveRange(removedItems);
-                            }
-
-                            foreach (var item in itemInGrid)
-                            {
-                                if (item.Id != 0)
-                                {
-                                    //edit existing
-                                    var itemInDb = existingItemInDb.FirstOrDefault(x => x.Id == item.Id);
-                                    if (itemInDb != null)
-                                    {
-                                        if (itemInDb.Amount != item.Amount)
-                                        {
-                                            AuditService.FA_EditRow(form.Id, form.FormType,
-                                                form.FormDate, User.Identity.Name, itemInDb.Amount.ToString(),
-                                                item.Amount.ToString(), "Amount");
-
-                                            itemInDb.Amount = item.Amount;
-                                        }
-                                        if (itemInDb.Bank != item.Bank)
-                                        {
-                                            AuditService.FA_EditRow(form.Id, form.FormType,
-                                                form.FormDate, User.Identity.Name, itemInDb.Bank,
-                                                item.Bank, "Bank");
-
-                                            itemInDb.Bank = item.Bank;
-                                        }
-                                        if (itemInDb.FundType != item.FundType)
-                                        {
-                                            AuditService.FA_EditRow(form.Id, form.FormType,
-                                                form.FormDate, User.Identity.Name, itemInDb.FundType,
-                                                item.FundType, "Fund Type");
-
-                                            itemInDb.FundType = item.FundType;
-                                        }
-
-                                        itemInDb.ModifiedBy = User.Identity.Name;
-                                        itemInDb.ModifiedDate = DateTime.Now;
-                                    }
-                                }
-                                else
-                                {
-                                    // add new
-                                    db.AMSD_IF_Item.Add(new AMSD_IF_Item
-                                    {
-                                        FormId = form.Id,
-                                        FundType = item.FundType,
-                                        Bank = item.Bank,
-                                        Amount = item.Amount,
-                                        ModifiedBy = User.Identity.Name,
-                                        ModifiedDate = DateTime.Now
-                                    });
-                                    AuditService.FA_AddRow(form.Id, form.FormType,
-                                                form.FormDate, User.Identity.Name,
-                                                $"{item.FundType}, {item.Bank}, {item.Amount}");
-                                }
-                            }
-
-                        }
-                        
-                        db.SaveChanges();
-
-                        // Submit for approval
-                        if (input.Approver != null && (form.FormStatus == FormStatus.PendingApproval || form.FormStatus == FormStatus.Draft) && !input.IsSaveAdminEdit)
-                        {
-                            FormService.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name, form.FormType, input.ApprovalNotes);
-                            AuditService.Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
-                        }
-
                         return Request.CreateResponse(HttpStatusCode.Accepted, form.Id);
-                    }
-                    else
-                    {
+                    
+                    
                         return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not found!");
-                    }
-                }
+                    
             }
             catch (Exception ex)
             {
@@ -436,7 +253,6 @@ namespace xDC_Web.Controllers.Api
                             db.SaveChanges();
 
                             new NotificationService().NotifyApprovalResult(form.PreparedBy, form.Id, form.ApprovedBy, form.FormType, form.FormStatus);
-                            EmailNotificationService.WF_ApprovalResult(form.Id, form.FormType, form.FormStatus, form.PreparedBy, input.ApprovalNote);
                             WorkflowService.ApprovalResponse(form.Id, form.FormStatus, input.ApprovalNote, form.FormType, form.PreparedBy, form.ApprovedBy);
                             AuditService.FA_Approval(form.Id, form.FormType, form.FormStatus, form.FormDate, User.Identity.Name);
 
@@ -469,17 +285,16 @@ namespace xDC_Web.Controllers.Api
 
         #region Inflow Funds Grid
 
-        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
+        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_View)]
         [HttpGet]
         [Route("GetInflowFunds/{formId}")]
-        public HttpResponseMessage GetInflowFunds(int formId, DataSourceLoadOptions loadOptions)
+        public HttpResponseMessage GetInflowFundFormItems(int formId, DataSourceLoadOptions loadOptions)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.AMSD_IF_Item
-                        .Where(x => x.FormId == formId).ToList();
+                    var result = _ifFormService.GetFormItems(formId).OrderBy(x => x.Id).ToList();
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
             }

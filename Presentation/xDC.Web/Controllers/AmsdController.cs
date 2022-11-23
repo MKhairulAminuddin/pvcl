@@ -6,7 +6,7 @@ using xDC.Domain.Web.AMSD.InflowFundForm;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services;
-using xDC.Services.App;
+using xDC.Services.Form;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.Extension.DocGenerator;
@@ -21,12 +21,27 @@ namespace xDC_Web.Controllers
     [RoutePrefix("amsd")]
     public class AmsdController : BaseController
     {
+        #region Fields
+
+        private readonly IIfFormService _ifFormService;
+
+        #endregion
+
+        #region Ctor
+
+        public AmsdController(IIfFormService ifFormService)
+        {
+            _ifFormService = ifFormService;
+        }
+
+        #endregion
+
         [KflowAuthorize(Common.PermissionKey.AMSD_InflowFundForm_View)]
         public ActionResult Index()
         {
             try
             {
-                var data = IfFormService.GetLandingPageData(User.Identity.Name);
+                var data = _ifFormService.GetLandingPageData(User.Identity.Name);
 
                 if (data != null)
                 {
@@ -54,18 +69,15 @@ namespace xDC_Web.Controllers
         {
             try
             {
-                using (var db = new kashflowDBEntities())
+                var model = new InflowFundForm()
                 {
-                    var model = new InflowFundForm()
-                    {
-                        PreparedBy = User.Identity.Name,
-                        PreparedDate = DateTime.Now,
-                        FormStatus = Common.FormStatus.Draft,
-                        EnableDraftButton = true
-                    };
+                    PreparedBy = User.Identity.Name,
+                    PreparedDate = DateTime.Now,
+                    FormStatus = Common.FormStatus.Draft,
+                    EnableDraftButton = true
+                };
 
-                    return View("InflowFund/New", model);
-                }
+                return View("InflowFund/New", model);
             }
             catch (Exception ex)
             {
@@ -141,7 +153,7 @@ namespace xDC_Web.Controllers
         {
             try
             {
-                var form = IfFormService.GetPageViewData(formId, User.Identity.Name);
+                var form = _ifFormService.GetPageViewData(formId, User.Identity.Name);
 
                 if (form != null)
                 {

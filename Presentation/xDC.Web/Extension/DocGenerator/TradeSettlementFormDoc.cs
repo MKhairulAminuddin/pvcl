@@ -11,7 +11,7 @@ using xDC.Domain.ISSD_TS;
 using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
-using xDC.Services.App;
+using xDC.Services.Form;
 using xDC.Utils;
 
 namespace xDC_Web.Extension.DocGenerator
@@ -84,7 +84,7 @@ namespace xDC_Web.Extension.DocGenerator
                         var getTrades = new List<ISSD_TradeSettlement>();
                         foreach (var formId in associatedFormIdParts)
                         {
-                            getTrades.AddRange(TsFormService.GetTradeSettlement(db, formId));
+                            getTrades.AddRange(db.ISSD_TradeSettlement.Where(x => x.FormId == formId).ToList());
                         }
 
                         var worflows = new List<Form_Workflow>();

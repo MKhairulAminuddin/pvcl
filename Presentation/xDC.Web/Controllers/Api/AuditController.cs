@@ -13,7 +13,7 @@ using DevExtreme.AspNet.Mvc;
 using Newtonsoft.Json;
 using xDC.Domain.WebApi.Audit;
 using xDC.Infrastructure.Application;
-using xDC.Services;
+using xDC.Services.Audit;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.Models;

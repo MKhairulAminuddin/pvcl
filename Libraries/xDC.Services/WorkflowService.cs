@@ -41,32 +41,6 @@ namespace xDC.Services
             }
         }
 
-        public static bool FormResubmissionFromApprovedRejected(int formId, string formType)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var formApprovedWf = db.Form_Workflow.Where(x => x.FormId == formId && x.FormType == formType 
-                                            && (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected));
-
-                    if (formApprovedWf.Count() > 0)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return false;
-            }
-        }
-
         public static void SubmitForApprovalWorkflow(int formId, string formType, string notes)
         {
             try

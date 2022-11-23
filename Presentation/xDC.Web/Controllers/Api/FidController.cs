@@ -14,7 +14,8 @@ using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services;
-using xDC.Services.App;
+using xDC.Services.Audit;
+using xDC.Services.Form;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.Models;
@@ -31,6 +32,21 @@ namespace xDC_Web.Controllers.Api
     [KflowAuthorize(Common.PermissionKey.FID)]
     public class FidController : ApiController
     {
+        #region Fields
+
+        private readonly ITreasuryFormService _treasuryFormService;
+
+        #endregion
+
+        #region Ctor
+
+        public FidController(ITreasuryFormService treasuryFormService)
+        {
+            _treasuryFormService = treasuryFormService;
+        }
+
+        #endregion
+
         #region FCA Tagging
 
         [HttpGet]
@@ -135,11 +151,12 @@ namespace xDC_Web.Controllers.Api
 
         [HttpGet]
         [Route("Treasury")]
+        [KflowAuthorize(PermissionKey.FID_TreasuryForm_View)]
         public HttpResponseMessage TreasuryHomeGrid1(DataSourceLoadOptions loadOptions)
         {
             try
             {
-                var TreasuryHomeGrid1Data = TreasuryFormService.GetTsHomeGrid1(User.Identity.Name);
+                var TreasuryHomeGrid1Data = _treasuryFormService.GetTsHomeGrid1(User.Identity.Name);
 
                 if (TreasuryHomeGrid1Data != null)
                 {

@@ -75,20 +75,29 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationLogService.cs" />
-    <Compile Include="App\IfFormService.cs" />
-    <Compile Include="App\FormService.cs" />
-    <Compile Include="App\TreasuryFormService.cs" />
-    <Compile Include="App\FcaTaggingSvc.cs" />
-    <Compile Include="App\TsFormService.cs" />
-    <Compile Include="AuditService.cs" />
+    <Compile Include="Form\IfFormService.cs" />
+    <Compile Include="Form\FormService.cs" />
+    <Compile Include="Form\IIfFormService.cs" />
+    <Compile Include="Form\ITreasuryFormService.cs" />
+    <Compile Include="Form\ITsFormService.cs" />
+    <Compile Include="Form\TreasuryFormService.cs" />
+    <Compile Include="Form\FcaTaggingSvc.cs" />
+    <Compile Include="Form\TsFormService.cs" />
+    <Compile Include="Audit\AuditService.cs" />
     <Compile Include="AuthService.cs" />
     <Compile Include="FcaTaggingFormService.cs" />
     <Compile Include="EmailNotificationService.cs" />
     <Compile Include="NotificationService.cs" />
+    <Compile Include="Notification\EmailNotification.cs" />
+    <Compile Include="Notification\IEmailNotification.cs" />
+    <Compile Include="Notification\INotificationService.cs" />
+    <Compile Include="Notification\NotificationService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SettingService.cs" />
     <Compile Include="TrackerService.cs" />
     <Compile Include="WorkflowService.cs" />
+    <Compile Include="Workflow\IWorkflowService.cs" />
+    <Compile Include="Workflow\WorkflowService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\xDC.Domain\xDC.Domain.csproj">

@@ -13,6 +13,7 @@ using System.Xml.Linq;
 using System.Web.Security;
 using System.Runtime.Remoting.Contexts;
 using xDC.Utils;
+using xDC.Services.Audit;
 
 namespace xDC.Services
 {

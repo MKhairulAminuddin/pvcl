@@ -11,16 +11,25 @@ using xDC.Domain.WebApi.Forms;
 using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Services.Notification;
 using xDC.Utils;
 using static xDC.Utils.Common;
 
-namespace xDC.Services.App
+namespace xDC.Services.Form
 {
-    public static class TreasuryFormService
+    public class TreasuryFormService : FormService, ITreasuryFormService
     {
-        #region Grid
+        #region Ctor
 
-        public static List<TreasuryHomeGrid1> GetTsHomeGrid1(string currentUser)
+        public TreasuryFormService(Workflow.IWorkflowService wfService, INotificationService notifyService) : base(wfService, notifyService)
+        {
+        }
+
+        #endregion
+
+        #region Read Form Data
+
+        public List<TreasuryHomeGrid1> GetTsHomeGrid1(string currentUser)
         {
             try
             {
@@ -45,13 +54,13 @@ namespace xDC.Services.App
                             ApprovedBy = item.ApprovedBy,
                             ApprovedDate = item.ApprovedDate,
 
-                            EnableEdit = FormService.EnableEdit(item.FormStatus, item.PreparedBy, item.ApprovedBy, currentUser),
-                            EnableDelete = FormService.EnableDelete(item.FormStatus, item.PreparedBy, item.ApprovedBy, currentUser),
-                            EnablePrint = FormService.EnablePrint(currentUser, item.FormStatus, PermissionKey.ISSD_TradeSettlementForm_Download),
-                            EnableRetractSubmission = FormService.EnableRetractSubmission(currentUser, item.PreparedBy, item.FormStatus, PermissionKey.FID_TreasuryForm_Edit),
+                            EnableEdit = this.EnableEdit(item.FormStatus, currentUser, PermissionKey.FID_TreasuryForm_Edit),
+                            EnableDelete = this.EnableDelete(item.FormStatus, item.ApprovedBy, currentUser, PermissionKey.FID_TreasuryForm_Edit),
+                            EnablePrint = this.EnablePrint(currentUser, item.FormStatus, PermissionKey.ISSD_TradeSettlementForm_Download),
+                            EnableRetractSubmission = this.EnableFormWithdrawal(currentUser, item.PreparedBy, item.FormStatus, PermissionKey.FID_TreasuryForm_Edit),
 
-                            IsRejected = (currentUser == item.PreparedBy && item.FormStatus == Common.FormStatus.Rejected),
-                            IsPendingMyApproval = (currentUser == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
+                            IsRejected = currentUser == item.PreparedBy && item.FormStatus == FormStatus.Rejected,
+                            IsPendingMyApproval = currentUser == item.ApprovedBy && item.FormStatus == FormStatus.PendingApproval,
                             IsPendingApproval = item.FormStatus == FormStatus.PendingApproval
                         });
                     }
@@ -66,102 +75,14 @@ namespace xDC.Services.App
             }
         }
 
-        #endregion
-
-        #region Form Page
-
-        public static TreasuryFormPage GetViewPageData(int formId, string currentUser)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
-
-                    if (form != null)
-                    {
-                        var formModel = new TreasuryFormPage()
-                        {
-                            Id = form.Id,
-                            FormStatus = form.FormStatus,
-                            ValueDate = form.ValueDate,
-                            Currency = form.Currency,
-                            PreparedBy = form.PreparedBy,
-                            PreparedDate = form.PreparedDate,
-                            ApprovedBy = form.ApprovedBy,
-                            ApprovedDate = form.ApprovedDate,
-                            ApprovalNotes = WorkflowService.GetApprovalNotes(form.Id, form.FormType),
-
-                            EnableApproveRejectBtn = FormService.EnableApprovalAction(currentUser, form.ApprovedBy, form.FormStatus, db),
-                            EnableReassign = FormService.EnableReassignApprover(currentUser, form.ApprovedBy, form.PreparedBy, form.FormStatus),
-                            EnableEditDraftBtn = FormService.EnableEdit(form.FormStatus, form.PreparedBy, form.ApprovedBy, currentUser)
-                        };
-
-                        return formModel;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return null;
-            }
-        }
-
-        public static TreasuryFormPage GetEditPageData(int formId, string currentUser)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
-
-                    if (form != null)
-                    {
-                        var model = new TreasuryFormPage
-                        {
-                            Currency = form.Currency,
-                            ValueDate = form.ValueDate,
-                            FormStatus = form.FormStatus,
-                            PreparedBy = form.PreparedBy,
-                            PreparedDate = form.PreparedDate,
-                            ApprovedBy = form.ApprovedBy,
-                            ApprovedDate = form.ApprovedDate,
-
-                            EnableSubmitForApproval = FormService.EnableSubmitForApproval(form.ApprovedBy, form.FormStatus),
-                            EnableResubmitBtn = FormService.EnableFormResubmission(currentUser, form.FormStatus, form.PreparedBy),
-                            EnableSaveAsDraftBtn = FormService.EnableSaveAsDraftBtn(currentUser, form.FormStatus, form.PreparedBy, form.ApprovedBy),
-                            EnableReassign = FormService.EnableReassignApprover(currentUser, form.ApprovedBy, form.PreparedBy, form.FormStatus)
-                        };
-                        return model;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return null;
-            }
-        }
-
-        #endregion
-
-        public static List<TreasuryFormSummary> TreasuryFormSummaryList(long submissionDateEpoch = 0)
+        public List<TreasuryFormSummary> TreasuryFormSummaryList(long submissionDateEpoch = 0)
         {
             try
             {
                 DateTime selectedDate;
                 if (submissionDateEpoch != 0)
                 {
-                    selectedDate = Utils.Common.ConvertEpochToDateTime(submissionDateEpoch).Value;
+                    selectedDate = ConvertEpochToDateTime(submissionDateEpoch).Value;
                 }
                 else
                 {
@@ -198,21 +119,107 @@ namespace xDC.Services.App
                 return null;
             }
         }
-        public static List<EDW_FID_List> List_Issuer(kashflowDBEntities db)
+
+        public TreasuryFormPage GetViewPageData(int formId, string currentUser)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
+
+                    if (form != null)
+                    {
+                        var formModel = new TreasuryFormPage()
+                        {
+                            Id = form.Id,
+                            FormStatus = form.FormStatus,
+                            ValueDate = form.ValueDate,
+                            Currency = form.Currency,
+                            PreparedBy = form.PreparedBy,
+                            PreparedDate = form.PreparedDate,
+                            ApprovedBy = form.ApprovedBy,
+                            ApprovedDate = form.ApprovedDate,
+                            ApprovalNotes = WorkflowService.GetApprovalNotes(form.Id, form.FormType),
+
+                            EnableApproveRejectBtn = this.EnableFormApproval(currentUser, form.ApprovedBy, form.FormStatus, db),
+                            EnableReassign = this.EnableReassignApprover(form.FormStatus, form.ApprovedBy, currentUser, PermissionKey.FID_TreasuryForm_Edit),
+                            EnableEditDraftBtn = this.EnableEdit(form.FormStatus, currentUser, PermissionKey.FID_TreasuryForm_Edit)
+                        };
+
+                        return formModel;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return null;
+            }
+        }
+
+        public TreasuryFormPage GetEditPageData(int formId, string currentUser)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
+
+                    if (form != null)
+                    {
+                        var model = new TreasuryFormPage
+                        {
+                            Currency = form.Currency,
+                            ValueDate = form.ValueDate,
+                            FormStatus = form.FormStatus,
+                            PreparedBy = form.PreparedBy,
+                            PreparedDate = form.PreparedDate,
+                            ApprovedBy = form.ApprovedBy,
+                            ApprovedDate = form.ApprovedDate,
+
+                            EnableSubmitForApproval = this.EnableApprovalSubmission(form.FormStatus, form.ApprovedBy, currentUser, PermissionKey.FID_TreasuryForm_Edit),
+                            EnableResubmitBtn = this.EnableResubmission(form.FormStatus, form.ApprovedBy, currentUser, PermissionKey.FID_TreasuryForm_Edit),
+                            EnableSaveAsDraftBtn = this.EnableSaveAsDraft(currentUser, form.FormStatus, form.PreparedBy, form.ApprovedBy),
+                            EnableReassign = this.EnableReassignApprover(form.FormStatus, form.ApprovedBy, currentUser, PermissionKey.FID_TreasuryForm_Edit)
+                        };
+                        return model;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+                return null;
+            }
+        }
+
+        #endregion
+
+        
+        public List<EDW_FID_List> List_Issuer(kashflowDBEntities db)
         {
             // check for same date and same currency exist
             var issuerList = db.EDW_FID_List.Where(x => x.Type == "ISSUER").ToList();
             return issuerList;
         }
 
-        public static List<string> List_FcaBankAccount(kashflowDBEntities db)
+        public List<string> List_FcaBankAccount(kashflowDBEntities db)
         {
             // check for same date and same currency exist
             var fcaBankAccounts = db.Config_FcaBankAccount.Select(x => x.AccountName3).ToList();
             return fcaBankAccounts;
         }
 
-        public static List<EDW_FID_List> List_CounterParty(kashflowDBEntities db)
+        public List<EDW_FID_List> List_CounterParty(kashflowDBEntities db)
         {
             // check for same date and same currency exist
             var counterPartyList = db.EDW_FID_List.Where(x => x.Type == "COUNTERPARTY").ToList();

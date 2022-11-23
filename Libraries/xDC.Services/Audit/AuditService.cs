@@ -11,7 +11,7 @@ using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Utils;
 
-namespace xDC.Services
+namespace xDC.Services.Audit
 {
     public static class AuditService
     {
@@ -96,7 +96,7 @@ namespace xDC.Services
 
                         FA_SaveRecord(obj);
                     }
-                    
+
                 }
             }
             catch (Exception ex)
@@ -171,7 +171,7 @@ namespace xDC.Services
                 FormId = formId,
                 FormType = formType,
                 FormDate = formDate,
-                ActionType = (approvalStatus == Common.FormStatus.Approved) ? Common.FormActionType.Approve : Common.FormActionType.Reject,
+                ActionType = approvalStatus == Common.FormStatus.Approved ? Common.FormActionType.Approve : Common.FormActionType.Reject,
 
                 ModifiedBy = modifiedBy,
                 ModifiedOn = DateTime.Now,
@@ -280,8 +280,8 @@ namespace xDC.Services
                     {
                         if (req.FromDateUnix != 0 && req.FromDateUnix != 0)
                         {
-                            var fromDate = xDC.Utils.Common.ConvertEpochToDateTime(req.FromDateUnix);
-                            var toDate = xDC.Utils.Common.ConvertEpochToDateTime(req.ToDateUnix);
+                            var fromDate = Common.ConvertEpochToDateTime(req.FromDateUnix);
+                            var toDate = Common.ConvertEpochToDateTime(req.ToDateUnix);
 
                             result = result.Where(x => DbFunctions.TruncateTime(x.RecordedDate) >= DbFunctions.TruncateTime(fromDate) &&
                                                 DbFunctions.TruncateTime(x.RecordedDate) <= DbFunctions.TruncateTime(toDate));
@@ -348,8 +348,8 @@ namespace xDC.Services
                     {
                         if (req.FromDateUnix != 0 && req.FromDateUnix != 0)
                         {
-                            var fromDate = xDC.Utils.Common.ConvertEpochToDateTime(req.FromDateUnix);
-                            var toDate = xDC.Utils.Common.ConvertEpochToDateTime(req.ToDateUnix);
+                            var fromDate = Common.ConvertEpochToDateTime(req.FromDateUnix);
+                            var toDate = Common.ConvertEpochToDateTime(req.ToDateUnix);
 
                             result = result.Where(x => DbFunctions.TruncateTime(x.RecordedDate) >= DbFunctions.TruncateTime(fromDate) &&
                                                 DbFunctions.TruncateTime(x.RecordedDate) <= DbFunctions.TruncateTime(toDate));

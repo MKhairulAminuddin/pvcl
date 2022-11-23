@@ -55,6 +55,7 @@
     <Compile Include="Auth\AspNetUserRoles.cs" />
     <Compile Include="Auth\AspNetUsers.cs" />
     <Compile Include="Auth\AspNetUsersWithRole.cs" />
+    <Compile Include="Form\Form.cs" />
     <Compile Include="ISSD_TS\TS_TotalFlow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebApi\Administration\NewPermissionReq.cs" />

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Security;
 using System.Xml.Linq;
 using xDC.Domain.ISSD_TS;
 using xDC.Domain.Web;
@@ -16,42 +17,57 @@ using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Services.Audit;
+using xDC.Services.Notification;
+using xDC.Services.Workflow;
 using xDC.Utils;
 using static xDC.Utils.Common;
 
-namespace xDC.Services.App
+namespace xDC.Services.Form
 {
-    public static class TsFormService
+    /// <summary>
+    /// Trade Settlement Form
+    /// </summary>
+    public class TsFormService : FormService, ITsFormService
     {
+        #region Ctor
+
+        public TsFormService(IWorkflowService wfService, INotificationService notifyService)
+            : base(wfService, notifyService)
+        {
+        }
+
+        #endregion
+
         #region Landing Page
 
-        public static TsLandingPage GetLandingPageData(string currentUser)
+        public TsLandingPage GetLandingPageData(string currentUser)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var enableCreateForm = new AuthService().IsUserHaveAccess(currentUser, Common.PermissionKey.ISSD_TradeSettlementForm_Edit);
+                    var enableCreateForm = new AuthService().IsUserHaveAccess(currentUser, PermissionKey.ISSD_TradeSettlementForm_Edit);
                     var today = DateTime.Now;
 
                     var model = new TsLandingPage()
                     {
                         CountTodaySubmission = db.ISSD_FormHeader
-                                                        .Count(x => x.FormType.Contains(Common.FormType.ISSD_TS)
+                                                        .Count(x => x.FormType.Contains(FormType.ISSD_TS)
                                                             && DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(today)
-                                                            && x.FormStatus != Common.FormStatus.Draft),
+                                                            && x.FormStatus != FormStatus.Draft),
                         CountTodayPendingApproval = db.ISSD_FormHeader
-                                                        .Count(x => x.FormType.Contains(Common.FormType.ISSD_TS)
+                                                        .Count(x => x.FormType.Contains(FormType.ISSD_TS)
                                                                 && DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(today)
-                                                                && x.FormStatus == Common.FormStatus.PendingApproval),
+                                                                && x.FormStatus == FormStatus.PendingApproval),
                         CountTodayApproved = db.ISSD_FormHeader
-                                                        .Count(x => x.FormType.Contains(Common.FormType.ISSD_TS)
+                                                        .Count(x => x.FormType.Contains(FormType.ISSD_TS)
                                                                 && DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(today)
-                                                                && x.FormStatus == Common.FormStatus.Approved),
+                                                                && x.FormStatus == FormStatus.Approved),
                         CountTodayRejected = db.ISSD_FormHeader
-                                                        .Count(x => x.FormType.Contains(Common.FormType.ISSD_TS)
+                                                        .Count(x => x.FormType.Contains(FormType.ISSD_TS)
                                                                 && DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(today)
-                                                                && x.FormStatus == Common.FormStatus.Rejected),
+                                                                && x.FormStatus == FormStatus.Rejected),
                         EnableCreateForm = enableCreateForm
                     };
 
@@ -65,15 +81,15 @@ namespace xDC.Services.App
             }
         }
 
-        public static List<TsConsolidatedPage> GetConsolidatedPage(long settlementDateEpoch, string currency)
+        public List<TsConsolidatedPage> GetConsolidatedPage(long settlementDateEpoch, string currency)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+                    var settlementDate = ConvertEpochToDateTime(settlementDateEpoch);
 
-                    var trades = TsFormService.GetTradeSettlement(db, settlementDate.Value.Date, currency);
+                    var trades = GetTradeSettlement(db, settlementDate.Value.Date, currency);
 
                     var result = trades
                         .GroupBy(i => 1)
@@ -82,31 +98,31 @@ namespace xDC.Services.App
                             SettlementDate = settlementDate.Value,
                             Currency = currency,
 
-                            TotalEquity = x.Count(y => y.InstrumentType == Common.TsItemCategory.Equity),
-                            TotalBond = x.Count(y => y.InstrumentType == Common.TsItemCategory.Bond),
-                            TotalCp = x.Count(y => y.InstrumentType == Common.TsItemCategory.Cp),
-                            TotalNotesPapers = x.Count(y => y.InstrumentType == Common.TsItemCategory.NotesPapers),
-                            TotalRepo = x.Count(y => y.InstrumentType == Common.TsItemCategory.Repo),
-                            TotalCoupon = x.Count(y => y.InstrumentType == Common.TsItemCategory.Coupon),
-                            TotalFees = x.Count(y => y.InstrumentType == Common.TsItemCategory.Fees),
-                            TotalMtm = x.Count(y => y.InstrumentType == Common.TsItemCategory.Mtm),
-                            TotalFx = x.Count(y => y.InstrumentType == Common.TsItemCategory.Fx),
-                            TotalCn = x.Count(y => y.InstrumentType == Common.TsItemCategory.Cn),
-                            TotalAltid = x.Count(y => y.InstrumentType == Common.TsItemCategory.Altid),
-                            TotalOthers = x.Count(y => y.InstrumentType == Common.TsItemCategory.Others),
+                            TotalEquity = x.Count(y => y.InstrumentType == TsItemCategory.Equity),
+                            TotalBond = x.Count(y => y.InstrumentType == TsItemCategory.Bond),
+                            TotalCp = x.Count(y => y.InstrumentType == TsItemCategory.Cp),
+                            TotalNotesPapers = x.Count(y => y.InstrumentType == TsItemCategory.NotesPapers),
+                            TotalRepo = x.Count(y => y.InstrumentType == TsItemCategory.Repo),
+                            TotalCoupon = x.Count(y => y.InstrumentType == TsItemCategory.Coupon),
+                            TotalFees = x.Count(y => y.InstrumentType == TsItemCategory.Fees),
+                            TotalMtm = x.Count(y => y.InstrumentType == TsItemCategory.Mtm),
+                            TotalFx = x.Count(y => y.InstrumentType == TsItemCategory.Fx),
+                            TotalCn = x.Count(y => y.InstrumentType == TsItemCategory.Cn),
+                            TotalAltid = x.Count(y => y.InstrumentType == TsItemCategory.Altid),
+                            TotalOthers = x.Count(y => y.InstrumentType == TsItemCategory.Others),
 
-                            FormIdEquity = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Equity)?.FormId,
-                            FormIdBond = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Bond)?.FormId,
-                            FormIdCp = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Cp)?.FormId,
-                            FormIdNotesPapers = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.NotesPapers)?.FormId,
-                            FormIdRepo = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Repo)?.FormId,
-                            FormIdCoupon = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Coupon)?.FormId,
-                            FormIdFees = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Fees)?.FormId,
-                            FormIdMtm = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Mtm)?.FormId,
-                            FormIdFx = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Fx)?.FormId,
-                            FormIdCn = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Cn)?.FormId,
-                            FormIdAltid = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Altid)?.FormId,
-                            FormIdOthers = x.FirstOrDefault(y => y.InstrumentType == Common.TsItemCategory.Others)?.FormId,
+                            FormIdEquity = x.FirstOrDefault(y => y.InstrumentType == TsItemCategory.Equity)?.FormId,
+                            FormIdBond = x.FirstOrDefault(y => y.InstrumentType == TsItemCategory.Bond)?.FormId,
+                            FormIdCp = x.FirstOrDefault(y => y.InstrumentType == TsItemCategory.Cp)?.FormId,
+                            FormIdNotesPapers = x.FirstOrDefault(y => y.InstrumentType == TsItemCategory.NotesPapers)?.FormId,
+                            FormIdRepo = x.FirstOrDefault(y => y.InstrumentType == TsItemCategory.Repo)?.FormId,
+                            FormIdCoupon = x.FirstOrDefault(y => y.InstrumentType == TsItemCategory.Coupon)?.FormId,
+                            FormIdFees = x.FirstOrDefault(y => y.InstrumentType == TsItemCategory.Fees)?.FormId,
+                            FormIdMtm = x.FirstOrDefault(y => y.InstrumentType == TsItemCategory.Mtm)?.FormId,
+                            FormIdFx = x.FirstOrDefault(y => y.InstrumentType == TsItemCategory.Fx)?.FormId,
+                            FormIdCn = x.FirstOrDefault(y => y.InstrumentType == TsItemCategory.Cn)?.FormId,
+                            FormIdAltid = x.FirstOrDefault(y => y.InstrumentType == TsItemCategory.Altid)?.FormId,
+                            FormIdOthers = x.FirstOrDefault(y => y.InstrumentType == TsItemCategory.Others)?.FormId,
 
                         }).ToList();
 
@@ -124,7 +140,7 @@ namespace xDC.Services.App
 
         #region Grid
 
-        public static List<TsHomeGrid1> GetTsHomeGrid1(string currentUser)
+        public List<TsHomeGrid1> GetTsHomeGrid1(string currentUser)
         {
             try
             {
@@ -154,8 +170,8 @@ namespace xDC.Services.App
                             EnablePrint = FormService.EnablePrint(currentUser, item.FormStatus, PermissionKey.ISSD_TradeSettlementForm_Download),
                             EnableRetractSubmission = FormService.EnableRetractSubmission(currentUser, item.PreparedBy, item.FormStatus, PermissionKey.ISSD_TradeSettlementForm_Edit),
 
-                            IsRejected = (currentUser == item.PreparedBy && item.FormStatus == Common.FormStatus.Rejected),
-                            IsPendingMyApproval = (currentUser == item.ApprovedBy && item.FormStatus == Common.FormStatus.PendingApproval),
+                            IsRejected = currentUser == item.PreparedBy && item.FormStatus == FormStatus.Rejected,
+                            IsPendingMyApproval = currentUser == item.ApprovedBy && item.FormStatus == FormStatus.PendingApproval,
                             IsPendingApproval = item.FormStatus == FormStatus.PendingApproval
                         });
                     }
@@ -170,19 +186,19 @@ namespace xDC.Services.App
             }
         }
 
-        public static List<TsHomeGrid2> GetTsHomeGrid2(string currentUser)
+        public List<TsHomeGrid2> GetTsHomeGrid2(string currentUser)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
                     var result = db.ISSD_FormHeader
-                        .Where(x => x.FormStatus == Common.FormStatus.Approved)
+                        .Where(x => x.FormStatus == FormStatus.Approved)
                         .GroupBy(x => new { x.SettlementDate, x.Currency })
                         .Select(x => new
                         {
-                            SettlementDate = x.Key.SettlementDate,
-                            Currency = x.Key.Currency,
+                            x.Key.SettlementDate,
+                            x.Key.Currency,
                             ApprovedDate = x.Max(i => i.ApprovedDate)
                         });
 
@@ -209,7 +225,7 @@ namespace xDC.Services.App
             }
         }
 
-        public static List<ISSD_TradeSettlement> GetTsItemsGrid(int formId, string instrumentType)
+        public List<ISSD_TradeSettlement> GetTsItemsGrid(int formId, string instrumentType)
         {
             try
             {
@@ -238,113 +254,117 @@ namespace xDC.Services.App
 
         #region Form Page
 
-        public static int CreateNewForm(TsCreateNewFormRequest req, string currentUser)
+        public bool CreateForm(TsCreateNewFormRequest req, string currentUser, out int createdFormId)
         {
+            createdFormId = 0;
+
             try
             {
-                var settlementDateConverted = Common.ConvertEpochToDateTime(req.SettlementDateEpoch);
-                req.Currency = req.Currency.ToUpper();
-
                 using (var db = new kashflowDBEntities())
                 {
-                    var newFormHeader = new ISSD_FormHeader()
+                    var form = new ISSD_FormHeader()
                     {
-                        FormType = Common.FormTypeMapping(req.FormType),
+                        FormType = FormTypeMapping(req.FormType),
                         PreparedBy = currentUser,
                         PreparedDate = DateTime.Now,
-                        FormStatus = (req.IsSaveAsDraft) ? Common.FormStatus.Draft : Common.FormStatus.PendingApproval,
-                        SettlementDate = Common.ConvertEpochToDateTime(req.SettlementDateEpoch)?.Date,
-                        Currency = req.Currency,
-                        ApprovedBy = (req.IsSaveAsDraft) ? null : req.Approver
+                        FormStatus = req.IsSaveAsDraft ? FormStatus.Draft : FormStatus.PendingApproval,
+                        SettlementDate = ConvertEpochToDateTime(req.SettlementDateEpoch)?.Date,
+                        Currency = req.Currency.ToUpper(),
+                        ApprovedBy = req.IsSaveAsDraft ? null : req.Approver
                     };
 
-                    db.ISSD_FormHeader.Add(newFormHeader);
-                    db.SaveChanges();
+                    db.ISSD_FormHeader.Add(form);
+                    var formCreated = db.SaveChanges();
 
-                    var newTrades = new List<ISSD_TradeSettlement>();
-
-                    if (req.Equity.Any())
+                    if (formCreated > 0)
                     {
-                        NewTsObjMapping(req.Equity, newFormHeader.Id, Common.TsItemCategory.Equity, req.Currency, currentUser, ref newTrades);
+                        var newTrades = new List<ISSD_TradeSettlement>();
+
+                        if (req.Equity.Any())
+                        {
+                            NewTsObjMapping(req.Equity, form.Id, TsItemCategory.Equity, req.Currency, currentUser, ref newTrades);
+                        }
+
+                        if (req.Bond.Any())
+                        {
+                            NewTsObjMapping(req.Bond, form.Id, TsItemCategory.Bond, req.Currency, currentUser, ref newTrades);
+                        }
+
+                        if (req.Cp.Any())
+                        {
+                            NewTsObjMapping(req.Cp, form.Id, TsItemCategory.Cp, req.Currency, currentUser, ref newTrades);
+                        }
+
+                        if (req.NotesPaper.Any())
+                        {
+                            NewTsObjMapping(req.NotesPaper, form.Id, TsItemCategory.NotesPapers, req.Currency, currentUser, ref newTrades);
+                        }
+
+                        if (req.Repo.Any())
+                        {
+                            NewTsObjMapping(req.Repo, form.Id, TsItemCategory.Repo, req.Currency, currentUser, ref newTrades);
+                        }
+
+                        if (req.Coupon.Any())
+                        {
+                            NewTsObjMapping(req.Coupon, form.Id, TsItemCategory.Coupon, req.Currency, currentUser, ref newTrades);
+                        }
+
+                        if (req.Fees.Any())
+                        {
+                            NewTsObjMapping(req.Fees, form.Id, TsItemCategory.Fees, req.Currency, currentUser, ref newTrades);
+                        }
+
+                        if (req.Mtm.Any())
+                        {
+                            NewTsObjMapping(req.Mtm, form.Id, TsItemCategory.Mtm, req.Currency, currentUser, ref newTrades);
+                        }
+
+                        if (req.FxSettlement.Any())
+                        {
+                            NewTsObjMapping(req.FxSettlement, form.Id, TsItemCategory.Fx, req.Currency, currentUser, ref newTrades);
+                        }
+
+                        if (req.ContributionCredited.Any())
+                        {
+                            NewTsObjMapping(req.ContributionCredited, form.Id, TsItemCategory.Cn, req.Currency, currentUser, ref newTrades);
+                        }
+
+                        if (req.Altid.Any())
+                        {
+                            NewTsObjMapping(req.Altid, form.Id, TsItemCategory.Altid, req.Currency, currentUser, ref newTrades);
+                        }
+
+                        if (req.Others.Any())
+                        {
+                            NewTsObjMapping(req.Others, form.Id, TsItemCategory.Others, req.Currency, currentUser, ref newTrades);
+                        }
+
+                        db.ISSD_TradeSettlement.AddRange(newTrades);
+                        var createdFormItems = db.SaveChanges();
+
+                        if (createdFormItems > 0)
+                        {
+                            createdFormId = form.Id;
+                            if (form.FormStatus == FormStatus.PendingApproval)
+                            {
+                                this.Create(form.Id, form.FormType, form.PreparedBy, form.ApprovedBy, req.ApprovalNotes);
+                            }
+                            return true;
+                        }
                     }
 
-                    if (req.Bond.Any())
-                    {
-                        NewTsObjMapping(req.Bond, newFormHeader.Id, Common.TsItemCategory.Bond, req.Currency, currentUser, ref newTrades);
-                    }
-
-                    if (req.Cp.Any())
-                    {
-                        NewTsObjMapping(req.Cp, newFormHeader.Id, Common.TsItemCategory.Cp, req.Currency, currentUser, ref newTrades);
-                    }
-
-                    if (req.NotesPaper.Any())
-                    {
-                        NewTsObjMapping(req.NotesPaper, newFormHeader.Id, Common.TsItemCategory.NotesPapers, req.Currency, currentUser, ref newTrades);
-                    }
-
-                    if (req.Repo.Any())
-                    {
-                        NewTsObjMapping(req.Repo, newFormHeader.Id, Common.TsItemCategory.Repo, req.Currency, currentUser, ref newTrades);
-                    }
-
-                    if (req.Coupon.Any())
-                    {
-                        NewTsObjMapping(req.Coupon, newFormHeader.Id, Common.TsItemCategory.Coupon, req.Currency, currentUser, ref newTrades);
-                    }
-
-                    if (req.Fees.Any())
-                    {
-                        NewTsObjMapping(req.Fees, newFormHeader.Id, Common.TsItemCategory.Fees, req.Currency, currentUser, ref newTrades);
-                    }
-
-                    if (req.Mtm.Any())
-                    {
-                        NewTsObjMapping(req.Mtm, newFormHeader.Id, Common.TsItemCategory.Mtm, req.Currency, currentUser, ref newTrades);
-                    }
-
-                    if (req.FxSettlement.Any())
-                    {
-                        NewTsObjMapping(req.FxSettlement, newFormHeader.Id, Common.TsItemCategory.Fx, req.Currency, currentUser, ref newTrades);
-                    }
-
-                    if (req.ContributionCredited.Any())
-                    {
-                        NewTsObjMapping(req.ContributionCredited, newFormHeader.Id, Common.TsItemCategory.Cn, req.Currency, currentUser, ref newTrades);
-                    }
-
-                    if (req.Altid.Any())
-                    {
-                        NewTsObjMapping(req.Altid, newFormHeader.Id, Common.TsItemCategory.Altid, req.Currency, currentUser, ref newTrades);
-                    }
-
-                    if (req.Others.Any())
-                    {
-                        NewTsObjMapping(req.Others, newFormHeader.Id, Common.TsItemCategory.Others, req.Currency, currentUser, ref newTrades);
-                    }
-
-                    db.ISSD_TradeSettlement.AddRange(newTrades);
-                    db.SaveChanges();
-
-                    AuditService.Capture_FA(newFormHeader.Id, newFormHeader.FormType, FormActionType.Create, currentUser, $"Created an {newFormHeader.FormType} form");
-
-                    if (req.Approver != null)
-                    {
-                        FormService.NotifyApprover(req.Approver, newFormHeader.Id, currentUser, newFormHeader.FormType, req.ApprovalNotes);
-                        AuditService.Capture_FA(newFormHeader.Id, newFormHeader.FormType, FormActionType.RequestApproval, currentUser, $"Request Approval for {newFormHeader.FormType} form");
-                    }
-
-                    return newFormHeader.Id;
+                    return false;
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex.Message);
-                return 0;
+                return false;
             }
         }
 
-        public static int EditForm(TsCreateNewFormRequest req, string currentUser)
+        public bool EditForm(TsCreateNewFormRequest req, string currentUser)
         {
             try
             {
@@ -372,7 +392,7 @@ namespace xDC.Services.App
 
                         form.ApprovedBy = req.Approver;
                         form.ApprovedDate = null; // empty the date as this is new submission
-                        form.FormStatus = Common.FormStatus.PendingApproval;
+                        form.FormStatus = FormStatus.PendingApproval;
                     }
 
                     var formTradeItems = db.ISSD_TradeSettlement.Where(x => x.FormId == form.Id).ToList();
@@ -458,7 +478,7 @@ namespace xDC.Services.App
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, Common.TsItemCategory.Equity, req.Currency, currentUser));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Equity, req.Currency, currentUser));
 
                                 AuditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
@@ -555,7 +575,7 @@ namespace xDC.Services.App
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, Common.TsItemCategory.Bond, req.Currency, currentUser));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Bond, req.Currency, currentUser));
 
                                 AuditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
@@ -644,7 +664,7 @@ namespace xDC.Services.App
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, Common.TsItemCategory.Cp, req.Currency, currentUser));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Cp, req.Currency, currentUser));
 
                                 AuditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
@@ -733,7 +753,7 @@ namespace xDC.Services.App
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, Common.TsItemCategory.NotesPapers, req.Currency, currentUser));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.NotesPapers, req.Currency, currentUser));
 
                                 AuditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
@@ -814,7 +834,7 @@ namespace xDC.Services.App
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, Common.TsItemCategory.Repo, req.Currency, currentUser));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Repo, req.Currency, currentUser));
 
                                 AuditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
@@ -895,7 +915,7 @@ namespace xDC.Services.App
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, Common.TsItemCategory.Coupon, req.Currency, currentUser));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Coupon, req.Currency, currentUser));
 
                                 AuditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
@@ -968,7 +988,7 @@ namespace xDC.Services.App
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, Common.TsItemCategory.Mtm, req.Currency, currentUser));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Mtm, req.Currency, currentUser));
 
                                 AuditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
@@ -1041,7 +1061,7 @@ namespace xDC.Services.App
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, Common.TsItemCategory.Fx, req.Currency, currentUser));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Fx, req.Currency, currentUser));
 
                                 AuditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
@@ -1114,7 +1134,7 @@ namespace xDC.Services.App
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, Common.TsItemCategory.Altid, req.Currency, currentUser));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Altid, req.Currency, currentUser));
 
                                 AuditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
@@ -1180,7 +1200,7 @@ namespace xDC.Services.App
 
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, Common.TsItemCategory.Cn, req.Currency, currentUser));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Cn, req.Currency, currentUser));
 
                                 AuditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
@@ -1253,7 +1273,7 @@ namespace xDC.Services.App
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, Common.TsItemCategory.Fees, req.Currency, currentUser));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Fees, req.Currency, currentUser));
 
                                 AuditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
@@ -1335,80 +1355,33 @@ namespace xDC.Services.App
                             }
                             else
                             {
-                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, Common.TsItemCategory.Others, req.Currency, currentUser));
+                                db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Others, req.Currency, currentUser));
                             }
                         }
                     }
 
-                    db.SaveChanges();
+                    var formChangesSaved = db.SaveChanges();
 
-                    if (req.Approver != null && !req.IsSaveAsDraft && !req.IsSaveAdminEdit)
+                    if (formChangesSaved > 0)
                     {
-                        FormService.NotifyApprover(form.ApprovedBy, form.Id, currentUser, form.FormType, req.ApprovalNotes);
+                        if (form.FormStatus == FormStatus.PendingApproval)
+                        {
+                            this.Create(form.Id, form.FormType, form.PreparedBy, form.ApprovedBy, req.ApprovalNotes);
+                        }
+                        return true;
                     }
-                    
-                    return form.Id;
+
+                    return false;
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex.Message);
-                return 0;
+                return false;
             }
         }
 
-        public static int FormApproval(TsFormApprovalRequest req, string currentUser)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var formId = Convert.ToInt32(req.FormId);
-                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
-
-                    if (form != null)
-                    {
-                        if (form.ApprovedBy == currentUser)
-                        {
-                            form.ApprovedDate = DateTime.Now;
-                            form.FormStatus = (req.ApprovalStatus) ? Common.FormStatus.Approved : Common.FormStatus.Rejected;
-                            db.SaveChanges();
-
-                            FormService.NotifyPreparer(form.Id, form.FormType, form.FormStatus, form.PreparedBy, form.ApprovedBy, req.ApprovalNote);
-                            AuditService.FA_Approval(form.Id, form.FormType, form.FormStatus, form.SettlementDate, currentUser);
-
-                            if (form.FormType == Common.FormType.ISSD_TS_E && form.FormStatus == Common.FormStatus.Approved)
-                            {
-                                EmailNotificationService.TSForm_PartE_PE(form.Id);
-                            }
-
-                            if (form.FormType == Common.FormType.ISSD_TS_H && form.FormStatus == Common.FormStatus.Approved)
-                            {
-                                EmailNotificationService.TSForm_PartH_Loan(form.Id);
-                                EmailNotificationService.TSForm_PartH_Property(form.Id);
-                            }
-
-                            return formId;
-                        }
-                        else
-                        {
-                            return 0;
-                        }
-                    }
-                    else
-                    {
-                        return 0;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex.Message);
-                return 0;
-            }
-        }
-
-        public static bool DeleteForm(int formId, string currentUser)
+        public bool DeleteForm(int formId, string currentUser)
         {
             try
             {
@@ -1426,16 +1399,16 @@ namespace xDC.Services.App
                             db.ISSD_TradeSettlement.RemoveRange(tradeItems);
                         }
 
-                        db.SaveChanges();
+                        var deletionAccepted = db.SaveChanges();
 
-                        AuditService.Capture_FA(form.Id, form.FormType, FormActionType.Delete, currentUser, $"Deleted {form.FormType} form");
+                        if (deletionAccepted > 0)
+                        {
+                            this.Delete(form.Id, form.FormType, currentUser);
+                            return true;
+                        }
+                    }
 
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 }
             }
             catch (Exception ex)
@@ -1445,23 +1418,62 @@ namespace xDC.Services.App
             }
         }
 
-        #endregion
-
-        public static List<ISSD_TradeSettlement> GetTradeSettlement(kashflowDBEntities db, int formId)
+        public bool FormApproval(TsFormApprovalRequest req, string currentUser)
         {
-            var result = db.ISSD_TradeSettlement
-                .Where(x => x.FormId == formId)
-                .ToList();
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formId = Convert.ToInt32(req.FormId);
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
 
-            return result;
+                    if (form != null)
+                    {
+                        if (form.ApprovedBy == currentUser)
+                        {
+                            form.ApprovedDate = DateTime.Now;
+                            form.FormStatus = req.ApprovalStatus ? FormStatus.Approved : FormStatus.Rejected;
+                            var approvalSaved = db.SaveChanges();
+
+                            if (approvalSaved > 0)
+                            {
+                                this.ApprovalResponse(form.Id, form.FormType, form.PreparedBy, form.ApprovedBy, req.ApprovalNote, form.FormStatus);
+
+                                // TODO: refactore notification
+                                if (form.FormType == FormType.ISSD_TS_E && form.FormStatus == FormStatus.Approved)
+                                {
+                                    EmailNotificationService.TSForm_PartE_PE(form.Id);
+                                }
+
+                                if (form.FormType == FormType.ISSD_TS_H && form.FormStatus == FormStatus.Approved)
+                                {
+                                    EmailNotificationService.TSForm_PartH_Loan(form.Id);
+                                    EmailNotificationService.TSForm_PartH_Property(form.Id);
+                                }
+
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+                return false;
+            }
         }
 
-        public static List<ISSD_TradeSettlement> GetTradeSettlement(kashflowDBEntities db, DateTime settlementDate, string currency)
+        
+        #endregion
+
+        public List<ISSD_TradeSettlement> GetTradeSettlement(kashflowDBEntities db, DateTime settlementDate, string currency)
         {
             var forms = db.ISSD_FormHeader.Where(x =>
                 DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate) &&
                 x.Currency == currency);
-            
+
             var trades = new List<ISSD_TradeSettlement>();
 
             if (forms.Any())
@@ -1474,21 +1486,19 @@ namespace xDC.Services.App
                         trades.AddRange(tradesFromId);
                     }
                 }
-                
+
             }
 
             return trades;
         }
 
-        public static List<TsOpeningBalance> GetOpeningBalance(kashflowDBEntities db, DateTime settlementDate, string currency)
+        public List<TsOpeningBalance> GetOpeningBalance(kashflowDBEntities db, DateTime settlementDate, string currency)
         {
             var result = new List<TsOpeningBalance>();
 
             var ob = db.EDW_BankBalance
-                .AsNoTracking()
-                .Where(x =>
-                    DbFunctions.TruncateTime(x.SettlementDate) ==
-                    DbFunctions.TruncateTime(settlementDate) && x.Currency == currency)
+                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate) 
+                            && x.Currency == currency)
                 .GroupBy(x => new { x.SettlementDate, x.InstrumentType })
                 .Select(x => new
                 {
@@ -1508,7 +1518,7 @@ namespace xDC.Services.App
             return result;
         }
 
-        public static TS_TotalFlow GetTotalFlow(kashflowDBEntities db, List<int> formId, DateTime settlementDate, string currency)
+        public TS_TotalFlow GetTotalFlow(kashflowDBEntities db, List<int> formId, DateTime settlementDate, string currency)
         {
             var trades = new List<ISSD_TradeSettlement>();
 
@@ -1544,7 +1554,7 @@ namespace xDC.Services.App
                            totalFlow.totalAmountPlus;
                 cbOutflow = totalFlow.totalPurchase + totalFlow.totalSecondLeg + totalFlow.totalAmountMinus;
             }
-             
+
             var result = new TS_TotalFlow()
             {
                 Currency = currency,
@@ -1556,9 +1566,9 @@ namespace xDC.Services.App
             return result;
         }
 
-        public static bool EditFormRules(string formStatus, string approvedBy, string currentUser, out string errorMessage)
+        public bool EditFormRules(string formStatus, string approvedBy, string currentUser, out string errorMessage)
         {
-            var isPendingApproval = formStatus == Common.FormStatus.PendingApproval;
+            var isPendingApproval = formStatus == FormStatus.PendingApproval;
             var isYouAreTheApprover = approvedBy == currentUser;
 
             if (isPendingApproval)
@@ -1578,7 +1588,7 @@ namespace xDC.Services.App
             }
         }
 
-        public static double GetTotalInflowByCategory(kashflowDBEntities db, List<int> approvedFormIds, string category)
+        public double GetTotalInflowByCategory(kashflowDBEntities db, List<int> approvedFormIds, string category)
         {
             var result = db.ISSD_TradeSettlement
                 .Where(x => approvedFormIds.Contains(x.FormId) && x.InstrumentType == category)
@@ -1591,13 +1601,13 @@ namespace xDC.Services.App
                     Maturity = x.Sum(y => y.Maturity),
                     FirstLeg = x.Sum(y => y.FirstLeg)
                 })
-                .Select(x => (x.Sales + x.Maturity + x.AmountPlus + x.FirstLeg))
+                .Select(x => x.Sales + x.Maturity + x.AmountPlus + x.FirstLeg)
                 .FirstOrDefault();
 
             return result;
         }
-        
-        public static double GetTotalOutflowByCategory(kashflowDBEntities db, List<int> approvedFormIds, string category)
+
+        public double GetTotalOutflowByCategory(kashflowDBEntities db, List<int> approvedFormIds, string category)
         {
             var result = db.ISSD_TradeSettlement
                 .Where(x => approvedFormIds.Contains(x.FormId) && x.InstrumentType == category)
@@ -1609,20 +1619,20 @@ namespace xDC.Services.App
                     Purchase = x.Sum(y => y.Purchase),
                     SecondLeg = x.Sum(y => y.SecondLeg)
                 })
-                .Select(x => (x.AmountMinus + x.Purchase + x.SecondLeg))
+                .Select(x => x.AmountMinus + x.Purchase + x.SecondLeg)
                 .FirstOrDefault();
 
             return result;
         }
 
-        public static List<TsOpeningBalance> OpeningBalanceSummary(long submissionDateEpoch = 0)
+        public List<TsOpeningBalance> OpeningBalanceSummary(long submissionDateEpoch = 0)
         {
             try
             {
                 DateTime selectedDate;
                 if (submissionDateEpoch != 0)
                 {
-                    selectedDate = Utils.Common.ConvertEpochToDateTime(submissionDateEpoch).Value;
+                    selectedDate = ConvertEpochToDateTime(submissionDateEpoch).Value;
                 }
                 else
                 {
@@ -1650,14 +1660,14 @@ namespace xDC.Services.App
             }
         }
 
-        public static List<TsFormSummary> TsFormSummaryList(long submissionDateEpoch = 0)
+        public List<TsFormSummary> TsFormSummaryList(long submissionDateEpoch = 0)
         {
             try
             {
                 DateTime selectedDate;
                 if (submissionDateEpoch != 0)
                 {
-                    selectedDate = Utils.Common.ConvertEpochToDateTime(submissionDateEpoch).Value;
+                    selectedDate = ConvertEpochToDateTime(submissionDateEpoch).Value;
                 }
                 else
                 {
@@ -1668,17 +1678,17 @@ namespace xDC.Services.App
                 {
                     var tsForms = db.ISSD_FormHeader.Where(x => DbFunctions.TruncateTime(x.PreparedDate) == DbFunctions.TruncateTime(selectedDate))
                         .Select(x => new TsFormSummary()
-                    {
-                        FormId = x.Id,
-                        SettlementDate = x.SettlementDate,
-                        Currency = x.Currency,
-                        PreparedBy = x.PreparedBy,
-                        SubmittedDate = x.PreparedDate,
-                        ApprovedBy = x.ApprovedBy,
-                        ApprovedDate = x.ApprovedDate,
-                        FormType = x.FormType,
-                        FormStatus = x.FormStatus
-                    }).ToList();
+                        {
+                            FormId = x.Id,
+                            SettlementDate = x.SettlementDate,
+                            Currency = x.Currency,
+                            PreparedBy = x.PreparedBy,
+                            SubmittedDate = x.PreparedDate,
+                            ApprovedBy = x.ApprovedBy,
+                            ApprovedDate = x.ApprovedDate,
+                            FormType = x.FormType,
+                            FormStatus = x.FormStatus
+                        }).ToList();
 
                     if (tsForms.Any())
                     {
@@ -1699,7 +1709,7 @@ namespace xDC.Services.App
 
         #region Private Functions
 
-        private static void NewTsObjMapping(List<TsTradeItem> trades, int formId, string category, string currency, string currentUser, ref List<ISSD_TradeSettlement> tsItemObj)
+        private void NewTsObjMapping(List<TsTradeItem> trades, int formId, string category, string currency, string currentUser, ref List<ISSD_TradeSettlement> tsItemObj)
         {
             foreach (var item in trades)
             {
@@ -1720,13 +1730,13 @@ namespace xDC.Services.App
                     ModifiedBy = currentUser,
                     ModifiedDate = DateTime.Now,
 
-                    InflowAmount = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg),
-                    OutflowAmount = (item.AmountMinus + item.Purchase + item.SecondLeg),
+                    InflowAmount = item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg,
+                    OutflowAmount = item.AmountMinus + item.Purchase + item.SecondLeg,
 
-                    InflowTo = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg) > 0 && currency == "MYR"
+                    InflowTo = item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg > 0 && currency == "MYR"
                         ? "RENTAS"
                         : null,
-                    OutflowFrom = (item.AmountMinus + item.Purchase + item.SecondLeg) > 0 && currency == "MYR"
+                    OutflowFrom = item.AmountMinus + item.Purchase + item.SecondLeg > 0 && currency == "MYR"
                         ? "RENTAS"
                         : null,
                     AssignedBy = null,
@@ -1739,7 +1749,7 @@ namespace xDC.Services.App
             }
         }
 
-        private static ISSD_TradeSettlement NewTsObjMapping(TsTradeItem item, int formId, string category, string currency, string currentUser)
+        private ISSD_TradeSettlement NewTsObjMapping(TsTradeItem item, int formId, string category, string currency, string currentUser)
         {
             return new ISSD_TradeSettlement
             {
@@ -1758,13 +1768,13 @@ namespace xDC.Services.App
                 ModifiedBy = currentUser,
                 ModifiedDate = DateTime.Now,
 
-                InflowAmount = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg),
-                OutflowAmount = (item.AmountMinus + item.Purchase + item.SecondLeg),
+                InflowAmount = item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg,
+                OutflowAmount = item.AmountMinus + item.Purchase + item.SecondLeg,
 
-                InflowTo = (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg) > 0 && currency == "MYR"
+                InflowTo = item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg > 0 && currency == "MYR"
                         ? "RENTAS"
                         : null,
-                OutflowFrom = (item.AmountMinus + item.Purchase + item.SecondLeg) > 0 && currency == "MYR"
+                OutflowFrom = item.AmountMinus + item.Purchase + item.SecondLeg > 0 && currency == "MYR"
                         ? "RENTAS"
                         : null,
                 AssignedBy = null,
@@ -1776,14 +1786,14 @@ namespace xDC.Services.App
             };
         }
 
-        private static double SumInflowAmount(TsTradeItem item)
+        private double SumInflowAmount(TsTradeItem item)
         {
-            return (item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg);
+            return item.AmountPlus + item.Sales + item.Maturity + item.FirstLeg;
         }
 
-        private static double SumOutflowAmount(TsTradeItem item)
+        private double SumOutflowAmount(TsTradeItem item)
         {
-            return (item.AmountMinus + item.Purchase + item.SecondLeg);
+            return item.AmountMinus + item.Purchase + item.SecondLeg;
         }
 
         #endregion

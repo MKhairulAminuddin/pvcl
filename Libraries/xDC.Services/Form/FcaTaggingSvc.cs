@@ -9,7 +9,7 @@ using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Infrastructure.Application;
 using xDC.Utils;
 
-namespace xDC.Services.App
+namespace xDC.Services.Form
 {
     public static class FcaTaggingSvc
     {
@@ -78,7 +78,7 @@ namespace xDC.Services.App
             var ob = db.EDW_BankBalance
                 .AsNoTracking()
                 .Where(x =>
-                    DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate) 
+                    DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate)
                     && x.Currency == currency
                     && x.InstrumentType == account)
                 .Select(x => x.Amount ?? 0)

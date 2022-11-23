@@ -16,6 +16,7 @@ using xDC.Utils;
 using xDC_Web.Models;
 using System.Data.Entity;
 using xDC_Web.ViewModels.DealCutOff;
+using xDC.Services.Audit;
 
 namespace xDC_Web.Controllers.Api
 {
