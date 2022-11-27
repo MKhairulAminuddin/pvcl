@@ -7,11 +7,11 @@ using xDC.Utils;
 
 namespace xDC.Logging
 {
-    public static class Logger
+    public class Logger: IXDcLogger
     {
-        private static readonly ILogger _errorLogger;
+        private readonly ILogger _errorLogger;
 
-        static Logger()
+        public Logger()
         {
             var logPath = !string.IsNullOrEmpty(Config.LoggerFilePathFormat) ? Config.LoggerFilePathFormat : "~/log-.txt";
 
@@ -21,17 +21,17 @@ namespace xDC.Logging
                 .CreateLogger();
         }
 
-        public static void LogError(Exception error)
+        public void LogError(Exception error)
         {
             _errorLogger.Error("{@error}", error);
         }
 
-        public static void LogError(string error)
+        public void LogError(string error)
         {
             _errorLogger.Error("{@error}", error);
         }
 
-        public static void LogInfo(string info)
+        public void LogInfo(string info)
         {
             _errorLogger.Information("{@info}", info);
         }
