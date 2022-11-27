@@ -13,11 +13,26 @@ using xDC.Utils;
 
 namespace xDC.Services.Audit
 {
-    public static class AuditService
+    public class AuditService: IAuditService
     {
+        #region Fields
+
+        private readonly IXDcLogger _logger;
+
+        #endregion
+
+        #region Ctor
+
+        public AuditService(IXDcLogger logger)
+        {
+            _logger = logger;
+        }
+
+        #endregion
+
         #region Audit form
 
-        public static void FA_SaveRecord(Audit_Form obj)
+        private void FA_Add(Audit_Form obj)
         {
             try
             {
@@ -29,83 +44,39 @@ namespace xDC.Services.Audit
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
             }
         }
 
-        public static void Capture_FA(int formId, string formType, string actionType, string modifiedBy, string remarks = null)
+        public void FA_Add(int formId, string formType, DateTime formDate, string actionType, string modifiedBy, string remarks = null)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    if (formType == Common.FormType.AMSD_IF)
+                    var obj = new Audit_Form()
                     {
-                        var theForm = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
+                        FormId = formId,
+                        FormType = formType,
+                        FormDate = formDate,
+                        ActionType = actionType,
 
-                        var obj = new Audit_Form()
-                        {
-                            FormId = theForm.Id,
-                            FormType = theForm.FormType,
-                            FormDate = theForm.FormDate,
-                            ActionType = actionType,
+                        ModifiedBy = modifiedBy,
+                        ModifiedOn = DateTime.Now,
 
-                            ModifiedBy = modifiedBy,
-                            ModifiedOn = DateTime.Now,
+                        Remarks = remarks
+                    };
 
-                            Remarks = remarks
-                        };
-
-                        FA_SaveRecord(obj);
-                    }
-                    else if (formType.Contains(Common.FormType.ISSD_TS))
-                    {
-                        var theForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
-
-                        var obj = new Audit_Form()
-                        {
-                            FormId = theForm.Id,
-                            FormType = theForm.FormType,
-                            FormDate = theForm.SettlementDate,
-                            ActionType = actionType,
-
-                            ModifiedBy = modifiedBy,
-                            ModifiedOn = DateTime.Now,
-
-                            Remarks = remarks
-                        };
-
-                        FA_SaveRecord(obj);
-                    }
-                    else if (formType == Common.FormType.FID_TREASURY)
-                    {
-                        var theForm = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
-
-                        var obj = new Audit_Form()
-                        {
-                            FormId = theForm.Id,
-                            FormType = theForm.FormType,
-                            FormDate = theForm.ValueDate,
-                            ActionType = actionType,
-
-                            ModifiedBy = modifiedBy,
-                            ModifiedOn = DateTime.Now,
-
-                            Remarks = remarks
-                        };
-
-                        FA_SaveRecord(obj);
-                    }
-
+                    FA_Add(obj);
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
             }
         }
 
-        public static void FA_EditRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore, string valueAfter, string columnName)
+        public void FA_EditRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore, string valueAfter, string columnName)
         {
             var obj = new Audit_Form()
             {
@@ -123,10 +94,10 @@ namespace xDC.Services.Audit
 
             };
 
-            FA_SaveRecord(obj);
+            FA_Add(obj);
         }
 
-        public static void FA_AddRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueAfter)
+        public void FA_AddRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueAfter)
         {
             var obj = new Audit_Form()
             {
@@ -142,10 +113,10 @@ namespace xDC.Services.Audit
                 ValueAfter = valueAfter
             };
 
-            FA_SaveRecord(obj);
+            FA_Add(obj);
         }
 
-        public static void FA_RemoveRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore)
+        public void FA_RemoveRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore)
         {
             var obj = new Audit_Form()
             {
@@ -161,10 +132,10 @@ namespace xDC.Services.Audit
                 ValueBefore = valueBefore
             };
 
-            FA_SaveRecord(obj);
+            FA_Add(obj);
         }
 
-        public static void FA_Approval(int formId, string formType, string approvalStatus, DateTime? formDate, string modifiedBy)
+        public void FA_Approval(int formId, string formType, string approvalStatus, DateTime? formDate, string modifiedBy)
         {
             var obj = new Audit_Form()
             {
@@ -179,10 +150,10 @@ namespace xDC.Services.Audit
                 Remarks = $"{formType} form {approvalStatus}"
             };
 
-            FA_SaveRecord(obj);
+            FA_Add(obj);
         }
 
-        public static void FA_AssignApprover(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore, string valueAfter)
+        public void FA_AssignApprover(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore, string valueAfter)
         {
             var obj = new Audit_Form()
             {
@@ -199,10 +170,10 @@ namespace xDC.Services.Audit
                 ValueAfter = valueAfter
             };
 
-            FA_SaveRecord(obj);
+            FA_Add(obj);
         }
 
-        public static void FA_ReassignApprover(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore, string valueAfter)
+        public void FA_ReassignApprover(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore, string valueAfter)
         {
             var obj = new Audit_Form()
             {
@@ -219,10 +190,10 @@ namespace xDC.Services.Audit
                 ValueAfter = valueAfter
             };
 
-            FA_SaveRecord(obj);
+            FA_Add(obj);
         }
 
-        public static void FA_Resubmission(int formId, string formType, DateTime? formDate, string modifiedBy)
+        public void FA_Resubmission(int formId, string formType, DateTime? formDate, string modifiedBy)
         {
             var obj = new Audit_Form()
             {
@@ -237,10 +208,10 @@ namespace xDC.Services.Audit
                 Remarks = $"Resubmit Form"
             };
 
-            FA_SaveRecord(obj);
+            FA_Add(obj);
         }
 
-        public static void FA_AdminEdit(int formId, string formType, DateTime? formDate, string modifiedBy)
+        public void FA_AdminEdit(int formId, string formType, DateTime? formDate, string modifiedBy)
         {
             var obj = new Audit_Form()
             {
@@ -255,19 +226,15 @@ namespace xDC.Services.Audit
                 Remarks = $"Form editted by Power User/ Admin"
             };
 
-            FA_SaveRecord(obj);
+            FA_Add(obj);
         }
 
         #endregion
 
-        #region Audit 10AM Deal Cut Off Closing Balance
-
-
-        #endregion
 
         #region User Management Audit
 
-        public static List<Audit_UserManagement> Get_UMA(out bool status, AuditReq req = null)
+        public List<Audit_UserManagement> Get_UMA(out bool status, AuditReq req = null)
         {
             status = false;
             try
@@ -299,14 +266,14 @@ namespace xDC.Services.Audit
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
 
                 status = false;
                 return null;
             }
         }
 
-        public static void Capture_UMA(string activityType, string remarks, string userAccount, string performedBy)
+        public void Capture_UMA(string activityType, string remarks, string userAccount, string performedBy)
         {
             try
             {
@@ -327,7 +294,7 @@ namespace xDC.Services.Audit
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
             }
         }
 
@@ -335,7 +302,7 @@ namespace xDC.Services.Audit
 
         #region Role Management Audit
 
-        public static List<Audit_RoleManagement> Get_RMA(out bool status, AuditReq req = null)
+        public List<Audit_RoleManagement> Get_RMA(out bool status, AuditReq req = null)
         {
             status = false;
             try
@@ -367,14 +334,14 @@ namespace xDC.Services.Audit
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
 
                 status = false;
                 return null;
             }
         }
 
-        public static void Capture_RMA(string activityType, string remarks, string role, string performedBy)
+        public void Capture_RMA(string activityType, string remarks, string role, string performedBy)
         {
             try
             {
@@ -395,7 +362,7 @@ namespace xDC.Services.Audit
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
             }
         }
 

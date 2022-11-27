@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationLogService.cs" />
+    <Compile Include="Audit\IAuditService.cs" />
     <Compile Include="Form\IfFormService.cs" />
     <Compile Include="Form\FormService.cs" />
     <Compile Include="Form\IIfFormService.cs" />
