@@ -22,11 +22,18 @@ namespace xDC.Services.Form
 {
     public class IfFormService : FormService, IIfFormService
     {
+        #region Fields
+
+        private readonly IXDcLogger _logger;
+
+        #endregion
+
         #region Ctor
 
-        public IfFormService(IWorkflowService wfService, INotificationService notifyService) 
+        public IfFormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger) 
             : base(wfService, notifyService)
         {
+            _logger = logger;
         }
 
         #endregion
@@ -67,7 +74,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
@@ -128,7 +135,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
@@ -178,7 +185,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
                 return null;
             }
         }
@@ -194,7 +201,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }

@@ -48,7 +48,7 @@ namespace xDC.Services.Audit
             }
         }
 
-        public void FA_Add(int formId, string formType, DateTime formDate, string actionType, string modifiedBy, string remarks = null)
+        public void FA_Add(int formId, string formType, DateTime? formDate, string actionType, string modifiedBy, string remarks = null)
         {
             try
             {

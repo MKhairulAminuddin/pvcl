@@ -17,7 +17,17 @@ namespace xDC.Services.Notification
     {
         #region Fields
 
+        private readonly IXDcLogger _logger;
         private string SubjectAppend => !Config.IsLive ? "[UAT - Kashflow]" : "[Kashflow]";
+
+        #endregion
+
+        #region Ctor
+
+        public EmailNotification(IXDcLogger logger)
+        {
+            _logger = logger;
+        }
 
         #endregion
 
@@ -36,13 +46,13 @@ namespace xDC.Services.Notification
                     }
                     else
                     {
-                        Logger.LogError("SubmitForApproval Failed. Approver email not found in AD.");
+                        _logger.LogError("SubmitForApproval Failed. Approver email not found in AD.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
             }
         }
 
@@ -62,14 +72,14 @@ namespace xDC.Services.Notification
                     }
                     else
                     {
-                        Logger.LogError("SendApprovalStatus email failed. Preparer info not found in AD.");
+                        _logger.LogError("SendApprovalStatus email failed. Preparer info not found in AD.");
                     }
 
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
             }
         }
 
@@ -88,7 +98,7 @@ namespace xDC.Services.Notification
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
             }
 
         }

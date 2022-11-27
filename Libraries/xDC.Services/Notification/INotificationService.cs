@@ -8,8 +8,8 @@ namespace xDC.Services.Notification
 {
     public interface INotificationService
     {
-        void NotifyPreparer(int formId, string formType, string formStatus, string formPreparer, string notes);
-        void NotifyApprover(int formId, string formType, string approver, string notes);
+        void NotifyPreparer(int formId, string formType, string formStatus, string preparer, string approver, string notes);
+        void NotifyApprover(int formId, string formType, string preparer, string approver, string notes);
 
     }
 }

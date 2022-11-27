@@ -74,7 +74,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApplicationLogService.cs" />
     <Compile Include="Audit\IAuditService.cs" />
     <Compile Include="Form\IfFormService.cs" />
     <Compile Include="Form\FormService.cs" />
@@ -88,9 +87,10 @@
     <Compile Include="AuthService.cs" />
     <Compile Include="FcaTaggingFormService.cs" />
     <Compile Include="EmailNotificationService.cs" />
-    <Compile Include="NotificationService.cs" />
     <Compile Include="Notification\EmailNotification.cs" />
     <Compile Include="Notification\IEmailNotification.cs" />
+    <Compile Include="Notification\IInAppNotification.cs" />
+    <Compile Include="Notification\InAppNotification.cs" />
     <Compile Include="Notification\INotificationService.cs" />
     <Compile Include="Notification\NotificationService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

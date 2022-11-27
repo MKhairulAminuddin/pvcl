@@ -21,15 +21,19 @@ namespace xDC.Services.Form
 
         private readonly IWorkflowService _wfService;
         private readonly INotificationService _notifyService;
+        private readonly IAuditService _auditService;
+        private readonly IXDcLogger _logger;
 
         #endregion
 
         #region Ctor
 
-        public FormService(IWorkflowService wfService, INotificationService notifyService)
+        public FormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService)
         {
             _wfService = wfService;
             _notifyService = notifyService;
+            _logger = logger;
+            _auditService = auditService;
         }
 
         #endregion
@@ -122,13 +126,13 @@ namespace xDC.Services.Form
             try
             {
                 _wfService.Initiate(formId, formType, preparer, approver, notes);
-                _notifyService.NotifyApprover(formId, formType, approver, notes);
+                _notifyService.NotifyApprover(formId, formType, preparer, approver, notes);
                 // AuditService.Capture_FA(form.Id, form.FormType, FormActionType.Create, User.Identity.Name, $"Created an {form.FormType} form");
                 // AuditService.Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
             }
         }
 
@@ -140,7 +144,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
             }
         }
 
@@ -149,14 +153,14 @@ namespace xDC.Services.Form
             try
             {
                 _wfService.Approval(formId, formType, preparer, approver, notes, formStatus);
-                _notifyService.NotifyPreparer(formId, formType, formStatus, approver, notes);
+                _notifyService.NotifyPreparer(formId, formType, formStatus, preparer, approver, notes);
                 // AuditService.Capture_FA(form.Id, form.FormType, FormActionType.Create, User.Identity.Name, $"Created an {form.FormType} form");
                 // AuditService.Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
                 // AuditService.FA_Approval(form.Id, form.FormType, form.FormStatus, form.SettlementDate, currentUser);
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
             }
         }
 
@@ -180,7 +184,7 @@ namespace xDC.Services.Form
                                 ifForm.ApprovedDate = null;
                                 var updateStatus = db.SaveChanges();
 
-                                AuditService.Capture_FA(ifForm.Id, ifForm.FormType, FormActionType.RetractSubmission,
+                                _auditService.FA_Add(ifForm.Id, ifForm.FormType, ifForm.FormDate, FormActionType.RetractSubmission,
                                     performedBy, $"Retract form submission for {ifForm.FormType} form.");
 
                                 return updateStatus > 0;
@@ -200,7 +204,7 @@ namespace xDC.Services.Form
                                 treasuryForm.ApprovedDate = null;
                                 var updateStatus = db.SaveChanges();
 
-                                AuditService.Capture_FA(treasuryForm.Id, treasuryForm.FormType, FormActionType.RetractSubmission,
+                                _auditService.FA_Add(treasuryForm.Id, treasuryForm.FormType, treasuryForm.ValueDate, FormActionType.RetractSubmission,
                                     performedBy, $"Retract form submission for {treasuryForm.FormType} form.");
 
                                 return updateStatus > 0;
@@ -228,7 +232,7 @@ namespace xDC.Services.Form
                                 tsForm.ApprovedDate = null;
                                 var updateStatus = db.SaveChanges();
 
-                                AuditService.Capture_FA(tsForm.Id, tsForm.FormType, FormActionType.RetractSubmission,
+                                _auditService.FA_Add(tsForm.Id, tsForm.FormType, tsForm.SettlementDate, FormActionType.RetractSubmission,
                                     performedBy, $"Retract form submission for {tsForm.FormType} form.");
 
                                 return updateStatus > 0; ;
@@ -246,7 +250,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
                 return false;
             }
         }

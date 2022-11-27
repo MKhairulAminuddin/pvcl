@@ -11,7 +11,7 @@ namespace xDC.Services.Audit
     public interface IAuditService
     {
         // Form Audit
-        void FA_Add(int formId, string formType, DateTime formDate, string actionType, string modifiedBy, string remarks = null);
+        void FA_Add(int formId, string formType, DateTime? formDate, string actionType, string modifiedBy, string remarks = null);
         void FA_EditRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore, string valueAfter, string columnName);
         void FA_AddRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueAfter);
         void FA_RemoveRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore);

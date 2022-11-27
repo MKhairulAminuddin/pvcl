@@ -17,13 +17,28 @@ namespace xDC.Services.Workflow
         // reassign approver
         // retract submission
         // get info
-        
+
+        #region Fields
+
+        private readonly IXDcLogger _logger;
+
+
         private readonly string Wf_PendingApproval = "Pending Approval";
         private readonly string Wf_ReassignApprover = "Reassign Approver";
         private readonly string Wf_WithdrawSubmission = "Withdraw Submission";
         private readonly string Wf_Approved = "Approved";
         private readonly string Wf_Rejected = "Rejected";
 
+        #endregion
+
+        #region Ctor
+
+        public WorkflowService(IXDcLogger logger)
+        {
+            _logger = logger;
+        }
+
+        #endregion
 
         public bool Initiate(int formId, string formType, string preparer, string approver, string notes)
         {
@@ -49,7 +64,7 @@ namespace xDC.Services.Workflow
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return false;
             }
         }
@@ -80,7 +95,7 @@ namespace xDC.Services.Workflow
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return false;
             }
         }
@@ -107,7 +122,7 @@ namespace xDC.Services.Workflow
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
             }
         }
 
@@ -131,7 +146,7 @@ namespace xDC.Services.Workflow
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
             }
         }
 
@@ -147,7 +162,7 @@ namespace xDC.Services.Workflow
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }

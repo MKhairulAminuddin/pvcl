@@ -13,6 +13,7 @@ namespace xDC.Services.Notification
         #region Fields
 
         private readonly IEmailNotification _emailNotify;
+        private readonly IInAppNotification _inAppNotify;
 
         #endregion
 
@@ -27,13 +28,15 @@ namespace xDC.Services.Notification
 
         #region Methods
 
-        public void NotifyPreparer(int formId, string formType, string formStatus, string formPreparer, string notes)
+        public void NotifyPreparer(int formId, string formType, string formStatus, string preparer, string approver, string notes)
         {
-            _emailNotify.ApprovalResponse(formId, formType, formStatus, formPreparer, notes);
+            _emailNotify.ApprovalResponse(formId, formType, formStatus, preparer, notes);
+            _inAppNotify.ApprovalResponse(formId, formType, formStatus, approver, notes);
         }
-        public void NotifyApprover(int formId, string formType, string approver, string notes)
+        public void NotifyApprover(int formId, string formType, string preparer, string approver, string notes)
         {
             _emailNotify.ApprovalSubmission(formId, formType, approver, notes);
+            _inAppNotify.ApprovalSubmission(formId, formType, preparer, approver);
         }
 
         public void NotifyReassignedApprover()
