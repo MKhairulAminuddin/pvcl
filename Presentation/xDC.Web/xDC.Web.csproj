@@ -694,7 +694,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
-    <Compile Include="Controllers\AmsdController.cs" />
+    <Compile Include="Controllers\Mvc\AmsdController.cs" />
     <Compile Include="Controllers\Api\AdminController.cs" />
     <Compile Include="Controllers\Api\AmsdController.cs" />
     <Compile Include="Controllers\Api\AuditController.cs" />

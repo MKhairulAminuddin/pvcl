@@ -23,6 +23,7 @@ using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Services.Form;
 using xDC.Domain.Form;
 using xDC.Services.Audit;
+using xDC.Domain.Web.AMSD.InflowFundForm;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -49,7 +50,7 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_View)]
         [HttpGet]
         [Route("inflowfund")]
-        public HttpResponseMessage InflowFund_Form(DataSourceLoadOptions loadOptions)
+        public HttpResponseMessage InflowFund_LandingPageGrid(DataSourceLoadOptions loadOptions)
         {
             try
             {
@@ -101,36 +102,13 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
         [HttpPost]
         [Route("InflowFund/New")]
-        public HttpResponseMessage InflowFund_NewForm([FromBody] InflowFundsModel input)
+        public HttpResponseMessage InflowFund_CreateNew([FromBody] IfFormPage input)
         {
             try
             {
-                var ifForm = new AMSD_IF()
-                {
-                    FormType = FormType.AMSD_IF,
-                    Currency = "MYR",
-                    PreparedBy = User.Identity.Name,
-                    PreparedDate = DateTime.Now,
-                    FormDate = DateTime.Now,
-                    ApprovedBy = input.Approver,
-                };
+                var createdFormId = _ifFormService.CreateForm(input, User.Identity.Name);
 
-                var ifFormItems = new List<AMSD_IF_Item>();
-                foreach (var item in input.AmsdInflowFunds)
-                {
-                    ifFormItems.Add(new AMSD_IF_Item()
-                    {
-                        FundType = item.FundType,
-                        Bank = item.Bank,
-                        Amount = item.Amount,
-                        ModifiedBy = User.Identity.Name,
-                        ModifiedDate = DateTime.Now
-                    });
-                }
-
-                var formCreated = _ifFormService.CreateForm(ifForm, ifFormItems, input.ApprovalNotes, out int createdFormId);
-
-                if (formCreated)
+                if (createdFormId > 0)
                 {
                     return Request.CreateResponse(HttpStatusCode.Created, createdFormId);
                 }
@@ -148,86 +126,25 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
         [HttpPost]
         [Route("InflowFund/Edit/{formId}")]
-        public HttpResponseMessage InflowFund_EditForm(int formId, [FromBody] InflowFundsModel input)
+        public HttpResponseMessage InflowFund_EditForm(int formId, [FromBody] IfFormPage input)
         {
-            var form = new AMSD_IF()
-            {
-                Id = formId,
+            var edittedForm = _ifFormService.EditForm(formId, input, User.Identity.Name);
+            if (edittedForm < 1) return Request.CreateResponse(HttpStatusCode.BadRequest, "Bad Request");
 
-                //check for power admin edit
-                AdminEditted = input.IsSaveAdminEdit,
-                AdminEdittedBy = input.IsSaveAdminEdit ? User.Identity.Name: null,
-                AdminEdittedDate = input.IsSaveAdminEdit ? DateTime.Now:null,
-
-                // check whether draft or reassigning
-                FormStatus = input.IsSaveAsDraft ? FormStatus.Draft : input.Approver!= null? FormStatus.PendingApproval:null,
-
-            };
-
-            if (!form.AdminEditted)
-            {
-                form.PreparedBy = User.Identity.Name;
-                form.PreparedDate = DateTime.Now;
-            }
-
-
-
-            try
-            {
-                        return Request.CreateResponse(HttpStatusCode.Accepted, form.Id);
-                    
-                    
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not found!");
-                    
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-
+            return Request.CreateResponse(HttpStatusCode.Accepted, edittedForm);
         }
 
         [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
         [HttpDelete]
         [Route("InflowFund")]
         public HttpResponseMessage InflowFund_DeleteForm(FormDataCollection input)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var key = Convert.ToInt32(input.Get("id"));
+        {           
+            var key = Convert.ToInt32(input.Get("id"));
 
-                    var form = db.AMSD_IF.FirstOrDefault(x =>
-                        x.Id == key && x.FormStatus != Common.FormStatus.PendingApproval);
-                    
-                    if (form != null)
-                    {
-                        AuditService.Capture_FA(form.Id, form.FormType, FormActionType.Delete, User.Identity.Name, $"Deleted a {form.FormType} form. (Form status at the moment of deletion is {form.FormStatus}).");
+            var form = _ifFormService.DeleteForm(key, User.Identity.Name);
+            if (form < 1) return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not found!");
 
-                        var inflowFunds = db.AMSD_IF_Item.Where(x => x.FormId == form.Id);
-                        if (inflowFunds.Any())
-                        {
-                            db.AMSD_IF_Item.RemoveRange(inflowFunds);
-                        }
-                        
-                        db.AMSD_IF.Remove(form);
-                        db.SaveChanges();
-
-                        return Request.CreateResponse(HttpStatusCode.OK);
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not found!");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
-            }
-
+            return Request.CreateResponse(HttpStatusCode.OK);
         }
 
         [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]

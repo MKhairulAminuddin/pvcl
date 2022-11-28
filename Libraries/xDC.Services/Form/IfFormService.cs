@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using xDC.Domain.Form;
 using xDC.Domain.Web;
 using xDC.Domain.Web.AMSD.InflowFundForm;
 using xDC.Domain.WebApi.Forms.TradeSettlement;
@@ -22,25 +23,28 @@ namespace xDC.Services.Form
 {
     public class IfFormService : FormService, IIfFormService
     {
+
         #region Fields
 
+        private readonly IAuditService _auditService;
         private readonly IXDcLogger _logger;
 
         #endregion
 
         #region Ctor
 
-        public IfFormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger) 
-            : base(wfService, notifyService)
+        public IfFormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService) 
+            : base(wfService, notifyService, logger, auditService)
         {
+            _auditService = auditService;
             _logger = logger;
         }
 
         #endregion
 
-        #region Landing Page
+        #region Pages
 
-        public LandingPage GetLandingPageData(string currentUser)
+        public LandingPage GetLandingPage(string currentUser)
         {
             try
             {
@@ -79,7 +83,7 @@ namespace xDC.Services.Form
             }
         }
 
-        public InflowFundForm GetPageViewData(int formId, string currentUser)
+        public InflowFundForm ViewFormPage(int formId, string currentUser)
         {
             try
             {
@@ -138,6 +142,13 @@ namespace xDC.Services.Form
                 _logger.LogError(ex);
                 return null;
             }
+        }
+
+        public InflowFundForm EditFormPage(int formId, string currentUser)
+        {
+            var form = ViewFormPage(formId, currentUser);
+
+            return form == null ? null : form;
         }
 
         #endregion
@@ -288,192 +299,212 @@ namespace xDC.Services.Form
 
         #endregion
 
-        public bool CreateForm(AMSD_IF form, List<AMSD_IF_Item> formItems, string notes, out int createdFormId)
-        {
-            createdFormId = 0;
+        #region Form Action
 
+        public int CreateForm(IfFormPage input, string currentUser)
+        {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    if (!string.IsNullOrEmpty(form.ApprovedBy))
+                    var ifForm = new AMSD_IF()
                     {
-                        form.FormStatus = Common.FormStatus.PendingApproval;
-                    }
-                    else
-                    {
-                        form.FormStatus = Common.FormStatus.Draft;
-                    }
-
-                    db.AMSD_IF.Add(form);
+                        FormType = FormType.AMSD_IF,
+                        Currency = "MYR",
+                        PreparedBy = currentUser,
+                        PreparedDate = DateTime.Now,
+                        FormDate = DateTime.Now,
+                        ApprovedBy = input.Approver,
+                    };
+                    ifForm.FormStatus = (!string.IsNullOrEmpty(ifForm.ApprovedBy)) ? 
+                                            FormStatus.PendingApproval : 
+                                            FormStatus.Draft;
+                    db.AMSD_IF.Add(ifForm);
                     var createdForm = db.SaveChanges();
 
-                    if (createdForm > 0)
+                    if (createdForm < 1) return 0;
+
+                    
+
+                    var ifFormItems = new List<AMSD_IF_Item>();
+                    foreach (var item in input.IfItems)
                     {
-                        formItems.ForEach(x => x.FormId = form.Id);
-
-                        db.AMSD_IF_Item.AddRange(formItems);
-                        var createdFormItems = db.SaveChanges();
-
-                        if (createdFormItems > 0)
+                        ifFormItems.Add(new AMSD_IF_Item()
                         {
-                            if (form.FormStatus == FormStatus.PendingApproval)
-                            {
-                                this.Create(form.Id, form.FormType, form.PreparedBy, form.ApprovedBy, notes);
-                            }
-
-                            createdFormId = form.Id;
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
+                            FundType = item.FundType,
+                            Bank = item.Bank,
+                            Amount = item.Amount,
+                            ModifiedBy = currentUser,
+                            ModifiedDate = DateTime.Now
+                        });
                     }
-                    else
+                    // inject items with generated form ID
+                    ifFormItems.ForEach(x => x.FormId = ifForm.Id);
+                    db.AMSD_IF_Item.AddRange(ifFormItems);
+                    var createdFormItems = db.SaveChanges();
+
+
+
+                    if (ifForm.FormStatus == FormStatus.PendingApproval)
                     {
-                        return false;
+                        Create(ifForm.Id, ifForm.FormType, ifForm.PreparedBy, ifForm.ApprovedBy, input.ApprovalNotes);
                     }
+
+                    return ifForm.Id;
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
-                return false;
+                _logger.LogError(ex);
+                return 0;
             }
         }
 
-        public bool EditForm(AMSD_IF form, List<AMSD_IF_Item> formItems, string notes, string currentUser)
+        public int EditForm(int formId, IfFormPage input, string currentUser)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var existingForm = db.AMSD_IF.FirstOrDefault(x => x.Id == form.Id);
+                    var existingForm = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
+                    if (existingForm == null) return 0;
 
-                    if (existingForm != null)
+                    if (input.IsSaveAdminEdit)
                     {
-                        existingForm.PreparedBy = form.PreparedBy != existingForm.PreparedBy? form.PreparedBy: existingForm.PreparedBy;
-                        existingForm.PreparedDate = form.PreparedDate != existingForm.PreparedDate ? form.PreparedDate : existingForm.PreparedDate;
-
-                        if (form.AdminEditted)
-                        {
-                            existingForm.AdminEditted = form.AdminEditted;
-                            existingForm.AdminEdittedBy = form.AdminEdittedBy;
-                            existingForm.AdminEdittedDate = form.AdminEdittedDate;
-                            AuditService.FA_AdminEdit(form.Id, form.FormType, form.FormDate, form.AdminEdittedBy);
-                        }
-
-                        var saveFormChanges = db.SaveChanges();
-
-                        if (saveFormChanges > 0)
-                        {
-                            if (formItems.Any())
-                            {
-                                var existingItemInDb = db.AMSD_IF_Item.Where(x => x.FormId == form.Id);
-
-                                //delete existing
-                                var existingItemInGrid = formItems.Where(x => x.Id != 0).Select(x => x.Id).ToList();
-                                var removedItems =
-                                    existingItemInDb.Where(x => !existingItemInGrid.Contains(x.Id));
-
-                                if (removedItems.Any())
-                                {
-                                    foreach (var item in removedItems)
-                                    {
-                                        AuditService.FA_RemoveRow(form.Id, form.FormType, form.FormDate, currentUser,
-                                            $"{item.FundType}, {item.Bank}, {item.Amount}");
-                                    }
-                                    db.AMSD_IF_Item.RemoveRange(removedItems);
-                                }
-
-                                foreach (var item in formItems)
-                                {
-                                    if (item.Id != 0)
-                                    {
-                                        //edit existing
-                                        var itemInDb = existingItemInDb.FirstOrDefault(x => x.Id == item.Id);
-                                        if (itemInDb != null)
-                                        {
-                                            if (itemInDb.Amount != item.Amount)
-                                            {
-                                                AuditService.FA_EditRow(form.Id, form.FormType,
-                                                    form.FormDate, currentUser, itemInDb.Amount.ToString(),
-                                                    item.Amount.ToString(), "Amount");
-
-                                                itemInDb.Amount = item.Amount;
-                                            }
-                                            if (itemInDb.Bank != item.Bank)
-                                            {
-                                                AuditService.FA_EditRow(form.Id, form.FormType,
-                                                    form.FormDate, currentUser, itemInDb.Bank,
-                                                    item.Bank, "Bank");
-
-                                                itemInDb.Bank = item.Bank;
-                                            }
-                                            if (itemInDb.FundType != item.FundType)
-                                            {
-                                                AuditService.FA_EditRow(form.Id, form.FormType,
-                                                    form.FormDate, currentUser, itemInDb.FundType,
-                                                    item.FundType, "Fund Type");
-
-                                                itemInDb.FundType = item.FundType;
-                                            }
-
-                                            itemInDb.ModifiedBy = currentUser;
-                                            itemInDb.ModifiedDate = DateTime.Now;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        // add new
-                                        db.AMSD_IF_Item.Add(new AMSD_IF_Item
-                                        {
-                                            FormId = form.Id,
-                                            FundType = item.FundType,
-                                            Bank = item.Bank,
-                                            Amount = item.Amount,
-                                            ModifiedBy = currentUser,
-                                            ModifiedDate = DateTime.Now
-                                        });
-                                        AuditService.FA_AddRow(form.Id, form.FormType,
-                                                    form.FormDate, currentUser,
-                                                    $"{item.FundType}, {item.Bank}, {item.Amount}");
-                                    }
-                                }
-
-                            }
-
-                            var saveFormItemsChanges = db.SaveChanges();
-
-                            if (saveFormItemsChanges > 0)
-                            {
-                                this.ApprovalResponse(existingForm.Id, existingForm.FormType, existingForm.PreparedBy, existingForm.ApprovedBy, notes, existingForm.FormStatus);
-
-                            }
-                        }
-
-                        // Update table items
-                        
-
-                        // Submit for approval
-                        if (input.Approver != null && (form.FormStatus == FormStatus.PendingApproval || form.FormStatus == FormStatus.Draft) && !input.IsSaveAdminEdit)
-                        {
-                            FormService.NotifyApprover(form.ApprovedBy, form.Id, User.Identity.Name, form.FormType, input.ApprovalNotes);
-                            AuditService.Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
-                        }
-
-                        return Request.CreateResponse(HttpStatusCode.Accepted, form.Id);
+                        existingForm.AdminEditted = true; ;
+                        existingForm.AdminEdittedBy = currentUser;
+                        existingForm.AdminEdittedDate = DateTime.Now;
+                        _auditService.FA_AdminEdit(existingForm.Id, existingForm.FormType, existingForm.FormDate, currentUser);
                     }
                     else
                     {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Form not found!");
+                        existingForm.PreparedBy = currentUser != existingForm.PreparedBy ? currentUser : existingForm.PreparedBy;
+                        existingForm.PreparedDate = currentUser != existingForm.PreparedBy ? DateTime.Now : existingForm.PreparedDate;
                     }
+
+                    var saveFormChanges = db.SaveChanges();
+                    if (saveFormChanges < 1) return 0;
+
+
+                    if (input.IfItems.Any())
+                    {
+                        var existingFormItems = db.AMSD_IF_Item.Where(x => x.FormId == formId);
+
+                        //delete existing
+                        var existingItemInGrid = input.IfItems.Where(x => x.Id != 0).Select(x => x.Id).ToList();
+                        var removedItems = existingFormItems.Where(x => !existingItemInGrid.Contains(x.Id));
+
+                        if (removedItems.Any())
+                        {
+                            foreach (var item in removedItems)
+                            {
+                                _auditService.FA_RemoveRow(formId, existingForm.FormType, existingForm.FormDate, currentUser,
+                                    $"{item.FundType}, {item.Bank}, {item.Amount}");
+                            }
+                            db.AMSD_IF_Item.RemoveRange(removedItems);
+                        }
+
+                        foreach (var item in input.IfItems)
+                        {
+                            if (item.Id != 0)
+                            {
+                                //edit existing
+                                var itemInDb = existingFormItems.FirstOrDefault(x => x.Id == item.Id);
+                                if (itemInDb != null)
+                                {
+                                    if (itemInDb.Amount != item.Amount)
+                                    {
+                                        _auditService.FA_EditRow(formId, existingForm.FormType,
+                                            existingForm.FormDate, currentUser, itemInDb.Amount.ToString(),
+                                            item.Amount.ToString(), "Amount");
+
+                                        itemInDb.Amount = item.Amount;
+                                    }
+                                    if (itemInDb.Bank != item.Bank)
+                                    {
+                                        _auditService.FA_EditRow(formId, existingForm.FormType,
+                                            existingForm.FormDate, currentUser, itemInDb.Bank,
+                                            item.Bank, "Bank");
+
+                                        itemInDb.Bank = item.Bank;
+                                    }
+                                    if (itemInDb.FundType != item.FundType)
+                                    {
+                                        _auditService.FA_EditRow(formId, existingForm.FormType,
+                                            existingForm.FormDate, currentUser, itemInDb.FundType,
+                                            item.FundType, "Fund Type");
+
+                                        itemInDb.FundType = item.FundType;
+                                    }
+
+                                    itemInDb.ModifiedBy = currentUser;
+                                    itemInDb.ModifiedDate = DateTime.Now;
+                                }
+                            }
+                            else
+                            {
+                                // add new
+                                db.AMSD_IF_Item.Add(new AMSD_IF_Item
+                                {
+                                    FormId = formId,
+                                    FundType = item.FundType,
+                                    Bank = item.Bank,
+                                    Amount = item.Amount,
+                                    ModifiedBy = currentUser,
+                                    ModifiedDate = DateTime.Now
+                                });
+                                _auditService.FA_AddRow(formId, existingForm.FormType,
+                                            existingForm.FormDate, currentUser,
+                                            $"{item.FundType}, {item.Bank}, {item.Amount}");
+                            }
+                        }
+
+                    }
+
+                    var saveFormItemsChanges = db.SaveChanges();
+                    if (saveFormItemsChanges < 1) return 0;
+
+                    if ((existingForm.FormStatus == FormStatus.PendingApproval) && input.Approver != null)
+                    {
+                        this.Create(existingForm.Id, existingForm.FormType, existingForm.PreparedBy, existingForm.ApprovedBy, input.ApprovalNotes);
+                    }
+                    return formId;
+                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+                return 0;
+            }
+        }
+
+        public int DeleteForm(int formId, string currentUser)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId && x.FormStatus != Common.FormStatus.PendingApproval);
+                    if (form == null) return 0;
+                    
+                    var formItems = db.AMSD_IF_Item.Where(x => x.FormId == formId);
+                    if (formItems.Any())
+                    {
+                        db.AMSD_IF_Item.RemoveRange(formItems);
+                    }
+                    db.AMSD_IF.Remove(form);
+                    var deletedForm = db.SaveChanges();
+
+                    if (deletedForm < 1) return 0;
+
+                    _auditService.FA_Add(form.Id, form.FormType, form.FormDate, FormActionType.Delete, currentUser, $"Deleted a {form.FormType} form. (Form status at the moment of deletion is {form.FormStatus}).");
+                    return 1;
                 }
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+                _logger.LogError(ex.Message);
+                return 0;
             }
         }
 
@@ -482,5 +513,9 @@ namespace xDC.Services.Form
             var withdraFormStatus = this.RetractFormSubmission(formId, performedBy, formType);
             return withdraFormStatus;
         }
+
+        #endregion
+
+
     }
 }

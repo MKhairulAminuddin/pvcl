@@ -12,16 +12,21 @@ namespace xDC.Services.Form
     public interface IIfFormService
     {
         // read data
-        LandingPage GetLandingPageData(string currentUser);
+        LandingPage GetLandingPage(string currentUser);
+        InflowFundForm ViewFormPage(int formId, string currentUser);
+        InflowFundForm EditFormPage(int formId, string currentUser);
+
         List<IfHomeGrid1> GetHomeGrid(string currentUser);
         IQueryable<AMSD_IF_Item> GetFormItems(int formId);
-        InflowFundForm GetPageViewData(int formId, string currentUser);
+        
         List<IfFormSummaryList> IfFormSummaryList(long submissionDateEpoch = 0);
         List<IfAmountSummary> IfAmountSummary(long submissionDateepoch = 0);
 
 
         // form
-        bool CreateForm(AMSD_IF form, List<AMSD_IF_Item> formItems, string notes, out int createdFormId);
+        int CreateForm(IfFormPage input, string currentUser);
+        int EditForm(int formId, IfFormPage input, string currentUser);
+        int DeleteForm(int formId, string currentUser);
         bool WithdrawForm(int formId, string performedBy, string formType);
     }
 }
