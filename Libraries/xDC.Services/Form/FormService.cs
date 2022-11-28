@@ -121,47 +121,27 @@ namespace xDC.Services.Form
 
 
 
-        public void Create(int formId, string formType, string preparer, string approver, string notes)
+        public void Create(int formId, string formType, DateTime? formDate, string preparer, string approver, string notes)
         {
-            try
-            {
-                _wfService.Initiate(formId, formType, preparer, approver, notes);
-                _notifyService.NotifyApprover(formId, formType, preparer, approver, notes);
-                // AuditService.Capture_FA(form.Id, form.FormType, FormActionType.Create, User.Identity.Name, $"Created an {form.FormType} form");
-                // AuditService.Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex);
-            }
+            _wfService.Initiate(formId, formType, preparer, approver, notes);
+            _notifyService.NotifyApprover(formId, formType, preparer, approver, notes);
+
+            _auditService.FA_Add(formId, formType, formDate, FormActionType.Create, preparer, $"Created an {formType} form");
+            _auditService.FA_Add(formId, formType, formDate, FormActionType.RequestApproval, preparer, $"Request Approval for {formType} form");
         }
 
-        public void Delete(int formId, string formType, string currentUser)
+        public void Delete(int formId, string formType, DateTime? formDate, string currentUser)
         {
-            try
-            {
-                //AuditService.Capture_FA(form.Id, form.FormType, FormActionType.Delete, currentUser, $"Deleted {form.FormType} form");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex);
-            }
+            _auditService.FA_Add(formId, formType, formDate, FormActionType.Delete, currentUser, $"Deleted {formType} form");
         }
 
-        public void ApprovalResponse(int formId, string formType, string preparer, string approver, string notes, string formStatus)
+        public void ApprovalResponse(int formId, string formType, DateTime? formDate, string preparer, string approver, string notes, string formStatus)
         {
-            try
-            {
-                _wfService.Approval(formId, formType, preparer, approver, notes, formStatus);
-                _notifyService.NotifyPreparer(formId, formType, formStatus, preparer, approver, notes);
-                // AuditService.Capture_FA(form.Id, form.FormType, FormActionType.Create, User.Identity.Name, $"Created an {form.FormType} form");
-                // AuditService.Capture_FA(form.Id, form.FormType, FormActionType.RequestApproval, User.Identity.Name, $"Request Approval for {form.FormType} form");
-                // AuditService.FA_Approval(form.Id, form.FormType, form.FormStatus, form.SettlementDate, currentUser);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex);
-            }
+            
+            _wfService.Approval(formId, formType, preparer, approver, notes, formStatus);
+            _notifyService.NotifyPreparer(formId, formType, formStatus, preparer, approver, notes);
+
+            _auditService.FA_Approval(formId, formType, formStatus, formDate, approver);
         }
 
         public bool RetractFormSubmission(int formId, string performedBy, string formType)

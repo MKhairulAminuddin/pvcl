@@ -2,7 +2,7 @@
 
     $(function () {
 
-        //#region Variable
+        //#region Fields
 
         var $inflowFundsGrid,
             $approverDropdown,
@@ -18,7 +18,7 @@
             $submitForApprovalModalBtn = $("#submitForApprovalModalBtn");
         
         var referenceUrl = {
-            loadGrid: window.location.origin + "/api/amsd/GetInflowFunds/" + app.getUrlId(),
+            loadGrid: window.location.origin + "/api/amsd/InflowFund/Items/" + app.getUrlId(),
 
             dsFundType: window.location.origin + "/api/common/GetInflowFundsFundType",
             dsBank: window.location.origin + "/api/common/GetInflowFundsBank",

@@ -7,9 +7,11 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Security;
 using xDC.Domain.Form;
 using xDC.Domain.Web;
 using xDC.Domain.Web.AMSD.InflowFundForm;
+using xDC.Domain.WebApi.Forms.InflowFund;
 using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
@@ -255,7 +257,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
@@ -292,10 +294,12 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
+
+
 
         #endregion
 
@@ -347,7 +351,7 @@ namespace xDC.Services.Form
 
                     if (ifForm.FormStatus == FormStatus.PendingApproval)
                     {
-                        Create(ifForm.Id, ifForm.FormType, ifForm.PreparedBy, ifForm.ApprovedBy, input.ApprovalNotes);
+                        Create(ifForm.Id, ifForm.FormType, ifForm.FormDate, ifForm.PreparedBy, ifForm.ApprovedBy, input.ApprovalNotes);
                     }
 
                     return ifForm.Id;
@@ -466,7 +470,7 @@ namespace xDC.Services.Form
 
                     if ((existingForm.FormStatus == FormStatus.PendingApproval) && input.Approver != null)
                     {
-                        this.Create(existingForm.Id, existingForm.FormType, existingForm.PreparedBy, existingForm.ApprovedBy, input.ApprovalNotes);
+                        Create(existingForm.Id, existingForm.FormType, existingForm.FormDate, existingForm.PreparedBy, existingForm.ApprovedBy, input.ApprovalNotes);
                     }
                     return formId;
                  }
@@ -499,6 +503,32 @@ namespace xDC.Services.Form
 
                     _auditService.FA_Add(form.Id, form.FormType, form.FormDate, FormActionType.Delete, currentUser, $"Deleted a {form.FormType} form. (Form status at the moment of deletion is {form.FormStatus}).");
                     return 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return 0;
+            }
+        }
+
+        public int ApproveForm(IfFormApprovingReq input, string currentUser)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.AMSD_IF.FirstOrDefault(x => x.Id == input.FormId);
+                    if (form == null) return 0;
+                    
+                    form.ApprovedDate = DateTime.Now;
+                    form.FormStatus = (input.ApprovalStatus) ? FormStatus.Approved : FormStatus.Rejected;
+
+                    var saveFormApproval = db.SaveChanges();
+                    if(saveFormApproval < 1) return 0;
+
+                    ApprovalResponse(form.Id, form.FormType, form.FormDate, form.PreparedBy, form.ApprovedBy, input.ApprovalNote, form.FormStatus);
+                    return form.Id;
                 }
             }
             catch (Exception ex)

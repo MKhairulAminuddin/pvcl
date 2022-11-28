@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace xDC.Domain.WebApi.Forms.TradeSettlement
+namespace xDC.Domain.WebApi.Forms.InflowFund
 {
-    public class InflowFundFormApprovalRequest
+    public class IfFormApprovingReq
     {
         public int Id { get; set; }
         public int FormId { get; set; }

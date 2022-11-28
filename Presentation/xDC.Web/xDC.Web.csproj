@@ -314,7 +314,7 @@
     <Content Include="Scripts\app\amsd\inflowFund\edit.js" />
     <Content Include="Scripts\app\amsd\inflowFund\view.js" />
     <Content Include="Scripts\app\amsd\inflowFund\new.js" />
-    <Content Include="Scripts\app\amsd\index.js" />
+    <Content Include="Scripts\app\amsd\inflowFund\index.js" />
     <Content Include="Scripts\app.dxGrid.utils.js" />
     <Content Include="Scripts\app\audit\form.js" />
     <Content Include="Scripts\app\fid\fcaTagging\view.js" />
@@ -613,7 +613,7 @@
     <Content Include="Web.config" />
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\Shared\_LayoutEmpty.cshtml" />
-    <Content Include="Views\Amsd\Index.cshtml" />
+    <Content Include="Views\Amsd\InflowFund\Index.cshtml" />
     <Content Include="Views\Setting\DropdownConfig.cshtml" />
     <Content Include="Views\Setting\EmailNotiConfig.cshtml" />
     <Content Include="Views\Admin\SystemInformation.cshtml" />
@@ -709,7 +709,7 @@
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\FidController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\IssdController.cs" />
+    <Compile Include="Controllers\Mvc\IssdController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\SettingController.cs" />
     <Compile Include="Controllers\UserController.cs" />

@@ -37,6 +37,8 @@ namespace xDC_Web.Controllers.Mvc
 
         #endregion
 
+        #region Inflow Fund Form Page
+
         [KflowAuthorize(Common.PermissionKey.AMSD_InflowFundForm_View)]
         public ActionResult Index()
         {
@@ -48,11 +50,8 @@ namespace xDC_Web.Controllers.Mvc
                 return View("Error");
             }
 
-            return View(data);
+            return View("InflowFund/Index", data);
         }
-
-
-        #region Inflow Fund Form Page
 
         [KflowAuthorize(Common.PermissionKey.AMSD_InflowFundForm_Edit)]
         [Route("InflowFund/New")]
@@ -102,7 +101,6 @@ namespace xDC_Web.Controllers.Mvc
 
         #endregion
 
-
         #region Print Form
 
         [KflowAuthorize(Common.PermissionKey.AMSD_InflowFundForm_Download)]
@@ -147,6 +145,5 @@ namespace xDC_Web.Controllers.Mvc
         }
 
         #endregion
-
     }
 }

@@ -2,8 +2,7 @@
 
     $(function () {
 
-        var $amsdGrid,
-            $newInflowFundBtn,
+        var $ifFormGrid,
             $retractSubmissionModal = $("#retractSubmissionModal"),
             $retractFormBtn = $("#retractFormBtn"),
             $retractFormCancelBtn = $("#retractFormCancelBtn"),
@@ -21,9 +20,10 @@
             $clearFilterBtn = $("#clearFilterBtn");
 
         var referenceUrl = {
-            loadAmsdGrid: window.location.origin + "/api/amsd/inflowfund",
-            deleteForm: window.location.origin + "/api/amsd/inflowfund",
-            retractForm: window.location.origin + "/api/amsd/inflowfund/retractForm",
+            ifFormGrid: window.location.origin + "/api/amsd/inflowfund/home",
+
+            ifFormDelete: window.location.origin + "/api/amsd/inflowfund/delete",
+            ifFormRetract: window.location.origin + "/api/amsd/inflowfund/retract",
             
             editPageRedirect: window.location.origin + "/amsd/inflowfund/edit/",
             viewPageRedirect: window.location.origin + "/amsd/inflowfund/view/",
@@ -32,10 +32,10 @@
             printResponse: window.location.origin + "/amsd/inflowfund/Printed/",
         };
         
-        $amsdGrid = $("#amsdGrid").dxDataGrid({
+        $ifFormGrid = $("#amsdGrid").dxDataGrid({
             dataSource: DevExpress.data.AspNet.createStore({
                 key: "id",
-                loadUrl: referenceUrl.loadAmsdGrid
+                loadUrl: referenceUrl.ifFormGrid
             }),
             columns: [
                 {
@@ -107,11 +107,11 @@
 
                                     $.ajax({
                                         type: "delete",
-                                        url: referenceUrl.deleteForm,
+                                        url: referenceUrl.ifFormDelete,
                                         data: data,
                                         success: function (data) {
                                             app.toast("Form Deleted!", "warning", 2000);
-                                            $amsdGrid.refresh();
+                                            $ifFormGrid.refresh();
                                         },
                                         fail: function (jqXHR, textStatus, errorThrown) {
                                             app.alertError(textStatus + ': ' + errorThrown);
@@ -256,7 +256,7 @@
 
         $todayFilterBtn.dxButton({
             onClick: function (e) {
-                $amsdGrid.filter([
+                $ifFormGrid.filter([
                     ["preparedDate", ">=", moment().startOf("day").toDate()],
                     "and",
                     ["preparedDate", "<", moment().add(1, "days").toDate()]
@@ -266,7 +266,7 @@
 
         $draftFilterBtn.dxButton({
             onClick: function (e) {
-                $amsdGrid.filter([
+                $ifFormGrid.filter([
                     ["formStatus", "=", "Draft"]
                 ]);
             }
@@ -274,7 +274,7 @@
 
         $pendingApprovalFilterBtn.dxButton({
             onClick: function (e) {
-                $amsdGrid.filter([
+                $ifFormGrid.filter([
                     ["formStatus", "=", "Pending Approval"]
                 ]);
             }
@@ -282,7 +282,7 @@
 
         $approvedFilterBtn.dxButton({
             onClick: function (e) {
-                $amsdGrid.filter([
+                $ifFormGrid.filter([
                     ["formStatus", "=", "Approved"]
                 ]);
             }
@@ -290,7 +290,7 @@
 
         $rejectedFilterBtn.dxButton({
             onClick: function (e) {
-                $amsdGrid.filter([
+                $ifFormGrid.filter([
                     ["formStatus", "=", "Rejected"]
                 ]);
             }
@@ -298,7 +298,7 @@
 
         $clearFilterBtn.dxButton({
             onClick: function (e) {
-                $amsdGrid.clearFilter();
+                $ifFormGrid.clearFilter();
             }
         });
 
@@ -315,7 +315,7 @@
                         formId: parseInt($retractFormId.text())
                     },
                     dataType: 'json',
-                    url: referenceUrl.retractForm,
+                    url: referenceUrl.ifFormRetract,
                     method: 'post',
                     success: function (data) {
                         app.alertSuccess("Form status retracted success");

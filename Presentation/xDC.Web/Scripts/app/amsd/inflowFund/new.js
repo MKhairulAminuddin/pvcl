@@ -1,33 +1,44 @@
 ﻿(function ($, window, document) {
 
     $(function () {
-        var $submitForApprovalModalBtn = $("#submitForApprovalModalBtn"),
+
+        //#region Fields
+
+        var $inflowFundsGrid, $approverDropdown, $historyBtn, $submitBtn, $tbFormId, $tbFormStatus, $approvalNotes,
+            $submitForApprovalModalBtn = $("#submitForApprovalModalBtn"),
             $inflowFundForm = $("#inflowFundForm"),
             $selectApproverModal = $("#selectApproverModal");
 
+        var referenceUrl = {
+            apiFundTypes: window.location.origin + "/api/common/GetInflowFundsFundType",
+            apiBank: window.location.origin + "/api/common/GetInflowFundsBank",
+            apiIfFormApprovers: window.location.origin + "/api/common/GetApproverAmsdInflowFunds",
+
+            postForm: window.location.origin + "/api/amsd/InflowFund/New",
+            postResult: window.location.origin + "/amsd/InflowFund/View/"
+        };
+
+        //#endregion
+
+        //#region Data Source
 
         var fundTypeStore = DevExpress.data.AspNet.createStore({
             key: "id",
-            loadUrl: window.location.origin + "/api/common/GetInflowFundsFundType"
+            loadUrl: referenceUrl.apiFundTypes
         });
 
         var bankStore = DevExpress.data.AspNet.createStore({
             key: "id",
-            loadUrl: window.location.origin + "/api/common/GetInflowFundsBank"
+            loadUrl: referenceUrl.apiBank
         });
 
         var approverStore = DevExpress.data.AspNet.createStore({
             key: "id",
-            loadUrl: window.location.origin + "/api/common/GetApproverAmsdInflowFunds"
+            loadUrl: referenceUrl.apiIfFormApprovers
         });
-        
 
-        var $inflowFundsGrid, $approverDropdown, $historyBtn, $submitBtn, $tbFormId, $tbFormStatus, $approvalNotes;
+        //#endregion
 
-        var referenceUrl = {
-            postForm: window.location.origin + "/api/amsd/InflowFund/New",
-            postResult: window.location.origin + "/amsd/InflowFund/View/"
-        };
 
         var postData = function (isDraft) {
             var data = {

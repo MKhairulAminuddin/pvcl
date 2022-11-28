@@ -10,7 +10,7 @@ using DevExpress.Web.Data;
 using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
 using Newtonsoft.Json;
-using xDC.Domain.WebApi.Forms.TradeSettlement;
+using xDC.Domain.WebApi.Forms.InflowFund;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services;

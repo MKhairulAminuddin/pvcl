@@ -19,35 +19,48 @@ using xDC_Web.Models;
 using xDC_Web.ViewModels;
 using xDC_Web.ViewModels.Fid;
 
-namespace xDC_Web.Controllers
+namespace xDC_Web.Controllers.Mvc
 {
     [Authorize]
     [KflowAuthorize(Common.PermissionKey.ISSD)]
     [RoutePrefix("issd")]
     public class IssdController : BaseController
     {
+        #region Fields
+
+        private readonly ITsFormService _tsFormService;
+
+        #endregion
+
+        #region Ctor
+
+        public IssdController(ITsFormService tsFormService)
+        {
+            _tsFormService = tsFormService;
+        }
+
+        #endregion
+
         #region Trade Settlement Form
 
         [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
         [Route("TradeSettlement")]
         public ActionResult TsLandingPage()
         {
-            var landingPageData = TsFormService.GetLandingPageData(User.Identity.Name);
+            var landingPageData = _tsFormService.GetLandingPageData(User.Identity.Name);
 
-            if (landingPageData != null)
-            {
-                return View("TradeSettlement/Index", landingPageData);
-            }
-            else
+            if (landingPageData == null)
             {
                 TempData["ErrorMessage"] = "Internal Server Error";
                 return View("Error");
             }
+
+            return View("TradeSettlement/Index", landingPageData);
         }
 
         [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
         [Route("TradeSettlement/View/")]
-        public ActionResult TradeSettlementView(string settlementDateEpoch, string currency)
+        public ActionResult TsForm_View(string settlementDateEpoch, string currency)
         {
             try
             {
@@ -431,7 +444,7 @@ namespace xDC_Web.Controllers
                 PreparedBy = form.PreparedBy,
                 PreparedDate = form.PreparedDate,
 
-                IsApproved = (form.FormStatus == Common.FormStatus.Approved),
+                IsApproved = form.FormStatus == Common.FormStatus.Approved,
                 ApprovedBy = form.ApprovedBy,
                 ApprovedDate = form.ApprovedDate,
                 ApprovalNote = wf?.WorkflowNotes,
@@ -440,8 +453,8 @@ namespace xDC_Web.Controllers
                 AdminEditedBy = form.AdminEdittedBy,
                 AdminEditedDate = form.AdminEdittedDate,
 
-                EnableApproveRejectBtn = (form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval),
-                EnableReassign = (form.FormStatus == Common.FormStatus.PendingApproval && form.ApprovedBy != User.Identity.Name)
+                EnableApproveRejectBtn = form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval,
+                EnableReassign = form.FormStatus == Common.FormStatus.PendingApproval && form.ApprovedBy != User.Identity.Name
             };
         }
 
@@ -457,7 +470,7 @@ namespace xDC_Web.Controllers
                 PreparedBy = form.PreparedBy,
                 PreparedDate = form.PreparedDate,
 
-                IsApproved = (form.FormStatus == Common.FormStatus.Approved),
+                IsApproved = form.FormStatus == Common.FormStatus.Approved,
                 ApprovedBy = form.ApprovedBy,
                 ApprovedDate = form.ApprovedDate,
                 ApprovalNote = wf?.WorkflowNotes,
@@ -466,12 +479,12 @@ namespace xDC_Web.Controllers
                 AdminEditedBy = form.AdminEdittedBy,
                 AdminEditedDate = form.AdminEdittedDate,
 
-                EnableResubmit = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected) && (!User.IsInRole(Config.Acl.PowerUser) && (form.ApprovedBy != User.Identity.Name)),
-                EnableSubmitForApproval = (form.FormStatus == Common.FormStatus.Draft || form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
+                EnableResubmit = (form.FormStatus == Common.FormStatus.Approved || form.FormStatus == Common.FormStatus.Rejected) && !User.IsInRole(Config.Acl.PowerUser) && form.ApprovedBy != User.Identity.Name,
+                EnableSubmitForApproval = (form.FormStatus == Common.FormStatus.Draft || form.FormStatus == Common.FormStatus.Draft) && !User.IsInRole(Config.Acl.PowerUser),
 
-                EnableDraftButton = (form.FormStatus == Common.FormStatus.Draft) && (!User.IsInRole(Config.Acl.PowerUser)),
-                EnableSaveAdminChanges = User.IsInRole(Config.Acl.PowerUser) && (form.FormStatus == Common.FormStatus.Approved),
-                EnableApproveRejectBtn = (form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval)
+                EnableDraftButton = form.FormStatus == Common.FormStatus.Draft && !User.IsInRole(Config.Acl.PowerUser),
+                EnableSaveAdminChanges = User.IsInRole(Config.Acl.PowerUser) && form.FormStatus == Common.FormStatus.Approved,
+                EnableApproveRejectBtn = form.ApprovedBy == User.Identity.Name && form.FormStatus == Common.FormStatus.PendingApproval
             };
         }
 

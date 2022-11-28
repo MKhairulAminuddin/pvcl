@@ -66,7 +66,6 @@
     <Compile Include="WebApi\Administration\UpdatePremissionReq.cs" />
     <Compile Include="WebApi\Administration\RolesRes.cs" />
     <Compile Include="WebApi\Audit\AuditReq.cs" />
-    <Compile Include="WebApi\Forms\InflowFund\InflowFundFormApprovalRequest.cs" />
     <Compile Include="WebApi\Forms\InflowFund\IfHomeGrid1.cs" />
     <Compile Include="WebApi\Forms\TradeSettlement\TsCreateNewFormRequest.cs" />
     <Compile Include="WebApi\Forms\TradeSettlement\TsFormApprovalRequest.cs" />
@@ -79,6 +78,7 @@
     <Compile Include="WebApi\Form_FcaTagging\FcaBankAccountRes.cs" />
     <Compile Include="WebApi\Form_FcaTagging\SummaryRes.cs" />
     <Compile Include="Web\AMSD\InflowFundForm\IfAmountSummary.cs" />
+    <Compile Include="WebApi\Forms\InflowFund\IfFormApprovingReq.cs" />
     <Compile Include="Web\AMSD\InflowFundForm\IfFormPage.cs" />
     <Compile Include="Web\AMSD\InflowFundForm\IfFormSummaryList.cs" />
     <Compile Include="Web\AMSD\InflowFundForm\IfItemFormPage.cs" />

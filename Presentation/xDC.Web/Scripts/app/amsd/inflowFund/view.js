@@ -1,7 +1,8 @@
 ﻿(function ($, window, document) {
 
     $(function () {
-        //#region Variables
+
+        //#region Fields
 
         var $inflowFundsGrid,
             $printBtn,
@@ -23,7 +24,9 @@
             loadWorkflow: window.location.origin + "/api/common/GetWorkflow/1/" + app.getUrlId(),
             loadAuditTrail: window.location.origin + "/api/common/FormAuditTrail/1/" + app.getUrlId(),
 
-            loadGrid: window.location.origin + "/api/amsd/GetInflowFunds/" + app.getUrlId(),
+            loadGrid: window.location.origin + "/api/amsd/InflowFund/Items/" + app.getUrlId(),
+
+            approvalReassign: window.location.origin + "/api/common/reassignApprover",
 
             approvalRequest: window.location.origin + "/api/amsd/InflowFund/Approval",
             approvalResponse: window.location.origin + "/amsd/inflowfund/view/",
@@ -121,7 +124,7 @@
 
                     $.ajax({
                         type: "POST",
-                        url: window.location.origin + "/api/common/reassignApprover",
+                        url: referenceUrl.approvalReassign,
                         data: data,
                         dataType: "text",
                         success: function (data) {
@@ -387,10 +390,6 @@
         });
 
         //#endregion
-
-        
-        
-        
 
     });
 }(window.jQuery, window, document));

@@ -30,11 +30,20 @@ namespace xDC.Services.Form
     /// </summary>
     public class TsFormService : FormService, ITsFormService
     {
+        #region Fields
+
+        private readonly IAuditService _auditService;
+        private readonly IXDcLogger _logger;
+
+        #endregion
+
         #region Ctor
 
-        public TsFormService(IWorkflowService wfService, INotificationService notifyService)
-            : base(wfService, notifyService)
+        public TsFormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService) 
+            : base(wfService, notifyService, logger, auditService)
         {
+            _auditService = auditService;
+            _logger = logger;
         }
 
         #endregion
@@ -348,7 +357,7 @@ namespace xDC.Services.Form
                             createdFormId = form.Id;
                             if (form.FormStatus == FormStatus.PendingApproval)
                             {
-                                this.Create(form.Id, form.FormType, form.PreparedBy, form.ApprovedBy, req.ApprovalNotes);
+                                Create(form.Id, form.FormType, form.SettlementDate, form.PreparedBy, form.ApprovedBy, req.ApprovalNotes);
                             }
                             return true;
                         }
@@ -1366,7 +1375,7 @@ namespace xDC.Services.Form
                     {
                         if (form.FormStatus == FormStatus.PendingApproval)
                         {
-                            this.Create(form.Id, form.FormType, form.PreparedBy, form.ApprovedBy, req.ApprovalNotes);
+                            Create(form.Id, form.FormType, form.SettlementDate, form.PreparedBy, form.ApprovedBy, req.ApprovalNotes);
                         }
                         return true;
                     }
@@ -1403,7 +1412,7 @@ namespace xDC.Services.Form
 
                         if (deletionAccepted > 0)
                         {
-                            this.Delete(form.Id, form.FormType, currentUser);
+                            Delete(form.Id, form.FormType, form.SettlementDate, currentUser);
                             return true;
                         }
                     }
