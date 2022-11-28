@@ -89,6 +89,7 @@
     <Compile Include="Web\FID\TreasuryForm\TreasuryFormSummary.cs" />
     <Compile Include="Web\HOME\HomeDashboard.cs" />
     <Compile Include="Web\ISSD\TradeSettlementForm\TsConsolidatedPage.cs" />
+    <Compile Include="Web\ISSD\TradeSettlementForm\TsForm.cs" />
     <Compile Include="Web\ISSD\TradeSettlementForm\TsFormSummary.cs" />
     <Compile Include="Web\ISSD\TradeSettlementForm\TsLandingPage.cs" />
     <Compile Include="Web\ISSD\TradeSettlementForm\TsOpeningBalance.cs" />

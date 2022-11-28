@@ -23,7 +23,6 @@ namespace xDC.Services.Form
         TS_TotalFlow GetTotalFlow(kashflowDBEntities db, List<int> formId, DateTime settlementDate, string currency);
 
         // TODO: Refactor this
-        bool EditFormRules(string formStatus, string approvedBy, string currentUser, out string errorMessage);
         double GetTotalInflowByCategory(kashflowDBEntities db, List<int> approvedFormIds, string category);
         double GetTotalOutflowByCategory(kashflowDBEntities db, List<int> approvedFormIds, string category);
         List<TsOpeningBalance> OpeningBalanceSummary(long submissionDateEpoch = 0);
@@ -36,5 +35,9 @@ namespace xDC.Services.Form
         bool EditForm(TsCreateNewFormRequest req, string currentUser);
         bool DeleteForm(int formId, string currentUser);
         bool FormApproval(TsFormApprovalRequest req, string currentUser);
+        TsForm ViewConsolidatedForm(string settlementDateEpoch, string currency);
+        TsForm ViewForm(int formId, string currentUser);
+        TsForm ViewEditForm(int formId, string currentUser);
+        TsForm ViewNewForm(string formType, string currentUser);
     }
 }

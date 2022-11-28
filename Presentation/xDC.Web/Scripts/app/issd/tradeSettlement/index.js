@@ -74,6 +74,10 @@
             printPart: window.location.origin + "/api/issd/ts/generatePart",
             printConsolidated: window.location.origin + "/api/issd/ts/generateConsolidated",
             viewPrinted: window.location.origin + "/issd/ViewPrinted/",
+            viewConsolidated: window.location.origin + "/issd/TradeSettlement/ConsolidatedView/",
+            viewNew: window.location.origin + "/issd/TradeSettlement/New/",
+            viewEdit: window.location.origin + "/issd/TradeSettlement/Edit/",
+            viewForm: window.location.origin + "/issd/TradeSettlement/View/"
         }
         
         $issdGrid = $("#issdGrid").dxDataGrid({
@@ -146,36 +150,7 @@
                                 return e.row.data.enableEdit;
                             },
                             onClick: function (e) {
-                                switch (e.row.data.formType) {
-                                    case "Trade Settlement (Part A)":
-                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartA/Edit/" + e.row.data.id;
-                                        return;
-                                    case "Trade Settlement (Part B)":
-                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartB/Edit/" + e.row.data.id;
-                                        return;
-                                    case "Trade Settlement (Part C)":
-                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartC/Edit/" + e.row.data.id;
-                                        return;
-                                    case "Trade Settlement (Part D)":
-                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartD/Edit/" + e.row.data.id;
-                                        return;
-                                    case "Trade Settlement (Part E)":
-                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartE/Edit/" + e.row.data.id;
-                                        return;
-                                    case "Trade Settlement (Part F)":
-                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartF/Edit/" + e.row.data.id;
-                                        return;
-                                    case "Trade Settlement (Part G)":
-                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartG/Edit/" + e.row.data.id;
-                                        return;
-                                    case "Trade Settlement (Part H)":
-                                        window.location.href = window.location.origin + "/issd/TradeSettlement/PartH/Edit/" + e.row.data.id;
-                                        return;
-                                    
-                                    default:
-                                        alert("Invalid selection!");
-                                }
-                                
+                                window.location.href = referenceUrl.viewEdit + e.row.data.id;
                                 e.event.preventDefault();
                             }
                         },
@@ -218,35 +193,7 @@
                             icon: "fa fa-eye",
                             cssClass: "dx-datagrid-command-btn",
                             onClick: function (e) {
-                                switch (e.row.data.formType) {
-                                    case "Trade Settlement (Part A)":
-                                        app.openInNewTab(window.location.origin + "/issd/TradeSettlement/PartA/View/" + e.row.data.id);
-                                        return;
-                                    case "Trade Settlement (Part B)":
-                                        app.openInNewTab(window.location.origin + "/issd/TradeSettlement/PartB/View/" + e.row.data.id);
-                                        return;
-                                    case "Trade Settlement (Part C)":
-                                        app.openInNewTab(window.location.origin + "/issd/TradeSettlement/PartC/View/" + e.row.data.id);
-                                        return;
-                                    case "Trade Settlement (Part D)":
-                                        app.openInNewTab(window.location.origin + "/issd/TradeSettlement/PartD/View/" + e.row.data.id);
-                                        return;
-                                    case "Trade Settlement (Part E)":
-                                        app.openInNewTab(window.location.origin + "/issd/TradeSettlement/PartE/View/" + e.row.data.id);
-                                        return;
-                                    case "Trade Settlement (Part F)":
-                                        app.openInNewTab(window.location.origin + "/issd/TradeSettlement/PartF/View/" + e.row.data.id);
-                                        return;
-                                    case "Trade Settlement (Part G)":
-                                        app.openInNewTab(window.location.origin + "/issd/TradeSettlement/PartG/View/" + e.row.data.id);
-                                        return;
-                                    case "Trade Settlement (Part H)":
-                                        app.openInNewTab(window.location.origin + "/issd/TradeSettlement/PartH/View/" + e.row.data.id);
-                                        return;
-
-                                    default:
-                                        alert("Invalid selection!");
-                                }
+                                app.openInNewTab(referenceUrl.viewForm + e.row.data.id);
                                 e.event.preventDefault();
                             }
                         },
@@ -441,28 +388,28 @@
             onItemClick: function (e) {
                 switch (e.itemData) {
                     case "A - Equity":
-                        window.location = window.location.origin + "/issd/TradeSettlement/PartA/New";
+                        window.location = referenceUrl.viewNew + "3";
                         return;
                     case "B - Bond, CP, Notes/Papers, Coupon":
-                        window.location = window.location.origin + "/issd/TradeSettlement/PartB/New";
+                        window.location = referenceUrl.viewNew + "4";
                         return;
                     case "C - REPO":
-                        window.location = window.location.origin + "/issd/TradeSettlement/PartC/New";
+                        window.location = referenceUrl.viewNew + "5";
                         return;
                     case "D - MTM, FX":
-                        window.location = window.location.origin + "/issd/TradeSettlement/PartD/New";
+                        window.location = referenceUrl.viewNew + "6";
                         return;
                     case "E - ALTID":
-                        window.location = window.location.origin + "/issd/TradeSettlement/PartE/New";
+                        window.location = referenceUrl.viewNew + "7";
                         return;
                     case "F - Fees":
-                        window.location = window.location.origin + "/issd/TradeSettlement/PartF/New";
+                        window.location = referenceUrl.viewNew + "8";
                         return;
                     case "G - Contribution":
-                        window.location = window.location.origin + "/issd/TradeSettlement/PartG/New";
+                        window.location = referenceUrl.viewNew + "9";
                         return;
                     case "H - Others":
-                        window.location = window.location.origin + "/issd/TradeSettlement/PartH/New";
+                        window.location = referenceUrl.viewNew + "10";
                         return;
                     default:
                         alert("Invalid Selection");
@@ -506,9 +453,9 @@
                             cssClass: "dx-datagrid-command-btn",
                             onClick: function (e) {
                                 app.openInNewTab(
-                                    window.location.origin +
-                                    "/issd/TradeSettlement/View/?settlementDateEpoch=" + moment(e.row.data.formDate).unix() +
-                                    "&currency=" + e.row.data.currency);
+                                    referenceUrl.viewConsolidated
+                                    + moment(e.row.data.formDate).unix()
+                                    + "/" + e.row.data.currency);
 
                                 e.event.preventDefault();
                             }

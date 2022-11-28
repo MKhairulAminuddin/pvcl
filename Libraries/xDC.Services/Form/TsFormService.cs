@@ -34,6 +34,7 @@ namespace xDC.Services.Form
 
         private readonly IAuditService _auditService;
         private readonly IXDcLogger _logger;
+        private readonly IWorkflowService _wfService;
 
         #endregion
 
@@ -42,6 +43,7 @@ namespace xDC.Services.Form
         public TsFormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService) 
             : base(wfService, notifyService, logger, auditService)
         {
+            _wfService = wfService;
             _auditService = auditService;
             _logger = logger;
         }
@@ -1474,7 +1476,159 @@ namespace xDC.Services.Form
             }
         }
 
-        
+        public TsForm ViewConsolidatedForm(string settlementDateEpoch, string currency)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var settlementDate = Common.ConvertEpochToDateTime(Convert.ToInt64(settlementDateEpoch));
+                    var settlementDateOnly = settlementDate.Value.Date;
+
+                    var form = db.ISSD_FormHeader.Where(x =>
+                        DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDateOnly) 
+                        && x.Currency == currency);
+
+                    if (!form.Any()) return null;
+
+                    var consolidatedForm = new TsForm()
+                    {
+                        FormStatus = form.First().FormStatus,
+                        SettlementDate = form.First().SettlementDate,
+                        Currency = form.First().Currency,
+                        OpeningBalance = new List<TsOpeningBalance>()
+                    };
+
+                    var ob = GetOpeningBalance(db, settlementDateOnly, currency);
+                    consolidatedForm.OpeningBalance.AddRange(ob);
+
+                    var totalOb = consolidatedForm.OpeningBalance.Sum(x => x.Amount);
+                    var totalFlow = GetTotalFlow(db, form.Select(x => x.Id).ToList(), settlementDateOnly, currency);
+
+                    consolidatedForm.ClosingBalance = totalOb + totalFlow.Inflow - totalFlow.Outflow;
+
+                    return consolidatedForm;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+                return null;
+            }
+        }
+
+        public TsForm ViewForm(int formId, string currentUser)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
+                    if (form == null) return null;
+
+                    var wf = _wfService.Info(form.Id, form.FormType)
+                        .Where(x => x.WorkflowStatus == FormStatus.PendingApproval)
+                        .OrderByDescending(x => x.RecordedDate)
+                        .FirstOrDefault();
+
+                    var outputForm = new TsForm()
+                    {
+                        Id = form.Id,
+                        FormStatus = form.FormStatus,
+                        FormType = form.FormType,
+                        SettlementDate = form.SettlementDate,
+                        Currency = form.Currency,
+
+                        PreparedBy = form.PreparedBy,
+                        PreparedDate = form.PreparedDate,
+
+                        IsApproved = form.FormStatus == FormStatus.Approved,
+                        ApprovedBy = form.ApprovedBy,
+                        ApprovedDate = form.ApprovedDate,
+                        ApprovalNote = wf?.WorkflowNotes,
+
+                        IsAdminEdited = form.AdminEditted,
+                        AdminEditedBy = form.AdminEdittedBy,
+                        AdminEditedDate = form.AdminEdittedDate,
+
+                        EnableApproveRejectBtn = EnableFormApproval(currentUser, form.ApprovedBy, form.FormStatus, db),
+                        EnableReassign = EnableReassignApprover(form.FormStatus, form.ApprovedBy, currentUser, PermissionKey.ISSD_TradeSettlementForm_Edit)
+                    };
+
+                    return outputForm;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return null;
+            }
+        }
+
+        public TsForm ViewEditForm(int formId, string currentUser)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
+                    if (form == null) return null;
+
+                    var wf = _wfService.Info(form.Id, form.FormType)
+                        //.Where(x => x.WorkflowStatus == FormStatus.PendingApproval)
+                        .OrderByDescending(x => x.RecordedDate)
+                        .FirstOrDefault();
+
+                    var outputForm = new TsForm()
+                    {
+                        Id = form.Id,
+                        FormStatus = form.FormStatus,
+                        SettlementDate = form.SettlementDate,
+                        Currency = form.Currency,
+
+                        PreparedBy = form.PreparedBy,
+                        PreparedDate = form.PreparedDate,
+
+                        IsApproved = form.FormStatus == Common.FormStatus.Approved,
+                        ApprovedBy = form.ApprovedBy,
+                        ApprovedDate = form.ApprovedDate,
+                        ApprovalNote = wf?.WorkflowNotes,
+
+                        IsAdminEdited = form.AdminEditted,
+                        AdminEditedBy = form.AdminEdittedBy,
+                        AdminEditedDate = form.AdminEdittedDate,
+
+                        EnableResubmit = EnableResubmission(form.FormStatus, form.ApprovedBy, currentUser, PermissionKey.ISSD_TradeSettlementForm_Edit),
+                        EnableSubmitForApproval = EnableApprovalSubmission(form.FormStatus, form.ApprovedBy, currentUser, PermissionKey.ISSD_TradeSettlementForm_Edit),
+
+                        EnableDraftButton = EnableSaveAsDraft(currentUser, form.FormStatus, form.PreparedBy, form.ApprovedBy),
+                        EnableSaveAdminChanges = false, // TODO: Admin Changes
+                    };
+
+                    return outputForm;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return null;
+            }
+        }
+
+        public TsForm ViewNewForm(string formType, string currentUser)
+        {
+            var form = new TsForm()
+            {
+                PreparedBy = currentUser,
+                PreparedDate = DateTime.Now,
+                FormStatus = Common.FormStatus.Draft,
+                EnableDraftButton = true,
+                FormType = formType
+            };
+
+            return form;
+        }
+
         #endregion
 
         public List<ISSD_TradeSettlement> GetTradeSettlement(kashflowDBEntities db, DateTime settlementDate, string currency)
@@ -1573,28 +1727,6 @@ namespace xDC.Services.Form
             };
 
             return result;
-        }
-
-        public bool EditFormRules(string formStatus, string approvedBy, string currentUser, out string errorMessage)
-        {
-            var isPendingApproval = formStatus == FormStatus.PendingApproval;
-            var isYouAreTheApprover = approvedBy == currentUser;
-
-            if (isPendingApproval)
-            {
-                errorMessage = "Form is still in Pending Approval status";
-                return true;
-            }
-            else if (isYouAreTheApprover)
-            {
-                errorMessage = "You are this form Approver. Then you cannot edit it";
-                return true;
-            }
-            else
-            {
-                errorMessage = null;
-                return false;
-            }
         }
 
         public double GetTotalInflowByCategory(kashflowDBEntities db, List<int> approvedFormIds, string category)
