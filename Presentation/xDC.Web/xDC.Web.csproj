@@ -721,8 +721,6 @@
     <Compile Include="Extension\DocGenerator\DealCutOffForm_MYR.cs" />
     <Compile Include="Extension\DocGenerator\DocGeneratorBase.cs" />
     <Compile Include="Extension\DocGenerator\TreasuryFormDoc.cs" />
-    <Compile Include="Extension\DocGenerator\TradeSettlementFormDoc.cs" />
-    <Compile Include="Extension\DocGenerator\InflowFundsFormDoc.cs" />
     <Compile Include="Extension\HandleAntiForgeryError.cs" />
     <Compile Include="Extension\MailGenerator\BaseGenerator.cs" />
     <Compile Include="Extension\MailGenerator\CnEmailGenerator.cs" />

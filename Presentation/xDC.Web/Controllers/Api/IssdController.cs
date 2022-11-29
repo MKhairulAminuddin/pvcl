@@ -17,6 +17,7 @@ using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services;
+using xDC.Services.FileGenerator;
 using xDC.Services.Form;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
@@ -36,14 +37,16 @@ namespace xDC_Web.Controllers.Api
         #region Fields
 
         private readonly ITsFormService _tsFormService;
+        private readonly IGenFile_TsForm _tsFormGen;
 
         #endregion
 
         #region Ctor
 
-        public IssdController(ITsFormService tsFormService)
+        public IssdController(ITsFormService tsFormService, IGenFile_TsForm tsFormGen)
         {
             _tsFormService = tsFormService;
+            _tsFormGen = tsFormGen;
         }
 
         #endregion
@@ -182,9 +185,6 @@ namespace xDC_Web.Controllers.Api
 
         #endregion
 
-        #region TS View Page
-
-        #endregion
 
         #region TS Generate File for download
 
@@ -193,30 +193,12 @@ namespace xDC_Web.Controllers.Api
         [HttpPost]
         public HttpResponseMessage GenerateConsolidated([FromBody] TsGenerateFileRequest req)
         {
-            try
-            {
-                var settlementDateParsed = ConvertEpochToDateTime(req.settlementDate);
+            var settlementDateParsed = ConvertEpochToDateTime(req.settlementDate);
+            var generatedDoc = _tsFormGen.GenId_ConsolidatedTsForm(settlementDateParsed.Value.Date, req.currency, req.isExportAsExcel);
 
-                var generatedDocumentFile =
-                    new TradeSettlementFormDoc().GenerateFileConsolidated(settlementDateParsed.Value.Date,
-                        req.currency.ToUpper(), req.isExportAsExcel);
+            if (string.IsNullOrEmpty(generatedDoc)) return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
 
-                if (!string.IsNullOrEmpty(generatedDocumentFile))
-                {
-                    return Request.CreateResponse(HttpStatusCode.Created, generatedDocumentFile);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex.Message);
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
-            }
-
-
+            return Request.CreateResponse(HttpStatusCode.Created, generatedDoc);
         }
 
         [Route("ts/generatePart")]
@@ -224,26 +206,10 @@ namespace xDC_Web.Controllers.Api
         [HttpPost]
         public HttpResponseMessage GeneratePart([FromBody] TsGenerateFileRequest req)
         {
-            try
-            {
-                var generatedDocumentFile = new TradeSettlementFormDoc().GenerateFile(req.formId, req.isExportAsExcel);
+            var generatedDoc = _tsFormGen.GenId_TsForm(req.formId, req.isExportAsExcel);
+            if (string.IsNullOrEmpty(generatedDoc)) return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
 
-                if (!string.IsNullOrEmpty(generatedDocumentFile))
-                {
-                    return Request.CreateResponse(HttpStatusCode.Created, generatedDocumentFile);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex.Message);
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
-            }
-
-
+            return Request.CreateResponse(HttpStatusCode.Created, generatedDoc);
         }
 
         #endregion

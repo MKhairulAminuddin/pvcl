@@ -66,6 +66,7 @@
     <Compile Include="WebApi\Administration\UpdatePremissionReq.cs" />
     <Compile Include="WebApi\Administration\RolesRes.cs" />
     <Compile Include="WebApi\Audit\AuditReq.cs" />
+    <Compile Include="WebApi\Forms\InflowFund\IfForm_PrintReq.cs" />
     <Compile Include="WebApi\Forms\InflowFund\IfHomeGrid1.cs" />
     <Compile Include="WebApi\Forms\TradeSettlement\TsCreateNewFormRequest.cs" />
     <Compile Include="WebApi\Forms\TradeSettlement\TsFormApprovalRequest.cs" />

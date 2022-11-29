@@ -7,140 +7,64 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
-using xDC.Domain.ISSD_TS;
 using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services.Form;
+using xDC.Services.Workflow;
 using xDC.Utils;
 
-namespace xDC_Web.Extension.DocGenerator
+namespace xDC.Services.FileGenerator
 {
-    public class TradeSettlementFormDoc : DocGeneratorBase
+    public class GenFile_TsForm: FileGenerator, IGenFile_TsForm
     {
+        #region Fields
+
         private Color _tableHeaderPrimaryColor = System.Drawing.ColorTranslator.FromHtml("#5b8efb");
         private Color _inflowColor = System.Drawing.ColorTranslator.FromHtml("#E8F5E9");
         private Color _outFlowColor = System.Drawing.ColorTranslator.FromHtml("#FFEBEE");
         private Color _otherColor = System.Drawing.ColorTranslator.FromHtml("#FFFDE7");
 
-        public string GenerateFile(int formId, bool isExportAsExcel)
+        private readonly IXDcLogger _logger;
+        private readonly ITsFormService _tsFormService;
+        private readonly IWorkflowService _wfService;
+
+        #endregion
+
+        #region Ctor
+
+        public GenFile_TsForm(IXDcLogger logger, ITsFormService tsFormService, IWorkflowService wfService)
         {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
-
-                    if (form != null)
-                    {
-                        var tradeItems = db.ISSD_TradeSettlement.Where(x => x.FormId == formId).ToList();
-                        
-                        IWorkbook workbook = GenerateDocument(form, tradeItems);
-                        var randomFileName = Common.DownloadedFileName.ISSD_TS + DateTime.Now.ToString("yyyyMMddHHmmss");
-
-                        if (isExportAsExcel)
-                        {
-                            var documentFormat = DocumentFormat.Xlsx;
-                            var tempFolder = Common.GetSystemTempFilePath(randomFileName + ".xlsx");
-                            workbook.SaveDocument(tempFolder, documentFormat);
-                        }
-                        else
-                        {
-                            var tempFolder = Common.GetSystemTempFilePath(randomFileName + ".pdf");
-                            workbook.ExportToPdf(tempFolder);
-                        }
-
-                        return randomFileName;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return null;
-            }
+            _logger = logger;
+            _tsFormService = tsFormService;
+            _wfService = wfService;
         }
 
-        public string GenerateFileConsolidated(DateTime settlementDate, string currency, bool isExportAsExcel)
+        #endregion
+
+        #region Methods
+
+        public string GenId_TsForm(int formId, bool isExportAsExcel)
         {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var getForm = db.ISSD_FormHeader.Where(x =>
-                            DbFunctions.TruncateTime(x.SettlementDate) == settlementDate.Date 
-                            && x.Currency == currency 
-                            && x.FormStatus == Common.FormStatus.Approved).ToList();
+            IWorkbook workbook = GenDoc_Ts(formId);
+            if (workbook == null) return null;
 
-                    if (getForm.Any())
-                    {
-                        var associatedFormIdParts = getForm.Select(x => x.Id).ToList();
-
-                        var getTrades = new List<ISSD_TradeSettlement>();
-                        foreach (var formId in associatedFormIdParts)
-                        {
-                            getTrades.AddRange(db.ISSD_TradeSettlement.Where(x => x.FormId == formId).ToList());
-                        }
-
-                        var worflows = new List<Form_Workflow>();
-                        foreach (var formId in associatedFormIdParts)
-                        {
-                            var workflow = db.Form_Workflow
-                                .Where(x => x.WorkflowStatus == Common.FormStatus.Approved
-                                            && x.FormId == formId)
-                                .OrderByDescending(x => x.RecordedDate)
-                                .FirstOrDefault();
-                            
-                            if (workflow != null)
-                            {
-                                worflows.Add(workflow);
-                            }
-                        }
-
-                        var getOpeningBalance = new List<TsOpeningBalance>();
-                        var firstForm = getForm.FirstOrDefault();
-                        if (firstForm != null)
-                        {
-                            getOpeningBalance = TsFormService.GetOpeningBalance(db, firstForm.SettlementDate.Value, firstForm.Currency);
-                        }
-                        
-                        IWorkbook workbook = GenerateDocumentConsolidated(settlementDate, currency, worflows, getTrades, getOpeningBalance);
-                        var randomFileName = Common.DownloadedFileName.ISSD_TS_Consolidated + DateTime.Now.ToString("yyyyMMddHHmmss");
-
-                        if (isExportAsExcel)
-                        {
-                            var documentFormat = DocumentFormat.Xlsx;
-                            var tempFolder = Common.GetSystemTempFilePath(randomFileName + ".xlsx");
-                            workbook.SaveDocument(tempFolder, documentFormat);
-                        }
-                        else
-                        {
-                            var tempFolder = Common.GetSystemTempFilePath(randomFileName + ".pdf");
-                            workbook.ExportToPdf(tempFolder);
-                        }
-
-                        return randomFileName;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return null;
-            }
+            return SaveAndGenDocId(workbook, Common.DownloadedFileName.ISSD_TS_Consolidated, isExportAsExcel);
         }
 
-        private IWorkbook GenerateDocument(ISSD_FormHeader formHeader, List<ISSD_TradeSettlement> trades)
+        public string GenId_ConsolidatedTsForm(DateTime settlementDate, string currency, bool isExportAsExcel)
+        {
+            IWorkbook workbook = GenDoc_TsConsolidated(settlementDate, currency.ToUpper());
+            if (workbook == null) return null;
+
+            return SaveAndGenDocId(workbook, Common.DownloadedFileName.ISSD_TS_Consolidated, isExportAsExcel);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private IWorkbook GenDoc_Ts(int formId)
         {
             IWorkbook workbook = new Workbook();
             workbook.Options.Culture = new CultureInfo("en-US");
@@ -149,36 +73,50 @@ namespace xDC_Web.Extension.DocGenerator
             workbook.BeginUpdate();
             try
             {
-                var sheet = workbook.Worksheets[0];
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
+                    if (form == null) return null;
 
-                if (formHeader.SettlementDate != null)
-                    sheet["B2"].Value = formHeader.SettlementDate.Value.ToString("dd/MM/yyyy");
-                sheet["B3"].Value = formHeader.Currency;
-                sheet["B4"].Value = formHeader.FormType;
-
-                sheet["J2"].Value = formHeader.PreparedBy;
-                sheet["J3"].Value = formHeader.PreparedDate?.ToString("dd/MM/yyyy");
-
-                sheet["J4"].Value = formHeader.ApprovedBy;
-                sheet["J5"].Value = formHeader.ApprovedDate?.ToString("dd/MM/yyyy");
-
-                sheet["J6"].Value = formHeader.FormStatus;
-                
-                int tradeItemStartRow = 10;
-
-                Content_TradeItems(workbook, sheet, trades, tradeItemStartRow, out tradeItemStartRow);
-                
-                var footerRowNumber = tradeItemStartRow + 4;
-                sheet["A" + footerRowNumber + ":J" + footerRowNumber].Merge();
-                sheet["A" + footerRowNumber + ":J" + footerRowNumber].Value = "Generated on " + DateTime.Now.ToString("dd/MM/yyyy HH:ss") + " by "+ HttpContext.Current.User.Identity.Name;
-                sheet["A" + footerRowNumber + ":J" + footerRowNumber].Font.Italic = true;
-                sheet["A" + footerRowNumber + ":J" + footerRowNumber].Font.Size = 10;
-                sheet["A" + footerRowNumber + ":J" + footerRowNumber].Font.Color = Color.LightSlateGray;
-                sheet["A" + footerRowNumber + ":J" + footerRowNumber].Alignment.Horizontal =
-                    SpreadsheetHorizontalAlignment.Right;
+                    var trades = db.ISSD_TradeSettlement.Where(x => x.FormId == formId).ToList();
 
 
-                workbook.Calculate();
+
+                    var sheet = workbook.Worksheets[0];
+
+                    if (form.SettlementDate != null) 
+                        sheet["B2"].Value = form.SettlementDate.Value.ToString("dd/MM/yyyy");
+                    sheet["B3"].Value = form.Currency;
+                    sheet["B4"].Value = form.FormType;
+
+                    sheet["J2"].Value = form.PreparedBy;
+                    sheet["J3"].Value = form.PreparedDate?.ToString("dd/MM/yyyy");
+
+                    sheet["J4"].Value = form.ApprovedBy;
+                    sheet["J5"].Value = form.ApprovedDate?.ToString("dd/MM/yyyy");
+
+                    sheet["J6"].Value = form.FormStatus;
+
+                    int tradeItemStartRow = 10;
+
+                    Content_TradeItems(workbook, sheet, trades, tradeItemStartRow, out tradeItemStartRow);
+
+                    var footerRowNumber = tradeItemStartRow + 4;
+                    sheet["A" + footerRowNumber + ":J" + footerRowNumber].Merge();
+                    sheet["A" + footerRowNumber + ":J" + footerRowNumber].Value = "Generated on " + DateTime.Now.ToString("dd/MM/yyyy HH:ss") + " by " + HttpContext.Current.User.Identity.Name;
+                    sheet["A" + footerRowNumber + ":J" + footerRowNumber].Font.Italic = true;
+                    sheet["A" + footerRowNumber + ":J" + footerRowNumber].Font.Size = 10;
+                    sheet["A" + footerRowNumber + ":J" + footerRowNumber].Font.Color = Color.LightSlateGray;
+                    sheet["A" + footerRowNumber + ":J" + footerRowNumber].Alignment.Horizontal =
+                        SpreadsheetHorizontalAlignment.Right;
+
+
+                    workbook.Calculate();
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex);
             }
             finally
             {
@@ -188,7 +126,7 @@ namespace xDC_Web.Extension.DocGenerator
             return workbook;
         }
 
-        private IWorkbook GenerateDocumentConsolidated(DateTime settlementDate, string currency, List<Form_Workflow> formWorkflow, List<ISSD_TradeSettlement> trades, List<TsOpeningBalance> ob)
+        private IWorkbook GenDoc_TsConsolidated(DateTime settlementDate, string currency)
         {
             IWorkbook workbook = new Workbook();
             workbook.Options.Culture = new CultureInfo("en-US");
@@ -197,59 +135,87 @@ namespace xDC_Web.Extension.DocGenerator
             workbook.BeginUpdate();
             try
             {
-                var sheet = workbook.Worksheets[0];
-
-                sheet["B2"].Value = settlementDate.ToString("dd/MM/yyyy");
-                sheet["B3"].Value = currency;
-
-                int tradeItemStartRow = 7;
-                // Opening Balance
-                if (ob.Any())
+                using (var db = new kashflowDBEntities())
                 {
-                    sheet["A5"].Value = "Opening Balance:";
-                    sheet["A5"].Font.Bold = true;
-                    sheet["A5:B5"].Merge();
+                    var forms = db.ISSD_FormHeader.Where(x =>
+                            DbFunctions.TruncateTime(x.SettlementDate) == settlementDate.Date
+                            && x.Currency == currency
+                            && x.FormStatus == Common.FormStatus.Approved).ToList();
+                    if (!forms.Any()) return null;
 
-                    var headerStartRow = tradeItemStartRow;
 
-                    foreach (var item in ob)
+                    var trades = new List<ISSD_TradeSettlement>();
+                    foreach (var form in forms)
                     {
-                        sheet["A" + tradeItemStartRow].Value = item.Account;
-                        sheet["B" + tradeItemStartRow].Value = item.Amount;
-                        sheet["B" + tradeItemStartRow].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-
-                        sheet["A" + tradeItemStartRow].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
-                        sheet["B" + tradeItemStartRow].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
-                        sheet["B" + tradeItemStartRow].FillColor = _otherColor;
-
-                        tradeItemStartRow++;
+                        trades.AddRange(db.ISSD_TradeSettlement.Where(x => x.FormId == form.Id).ToList());
                     }
 
-                    tradeItemStartRow += 2;
+                    var wfHistories = new List<Form_Workflow>();
+                    foreach (var form in forms)
+                    {
+                        var workflow = _wfService.Info(form.Id, form.FormType).Where(x => x.WorkflowStatus == Common.FormStatus.Approved).FirstOrDefault();
+                        if (workflow != null) wfHistories.Add(workflow);
+                    }
+
+                    var openingBalances = new List<TsOpeningBalance>();
+                    openingBalances = _tsFormService.GetOpeningBalance(db, settlementDate, currency);
+
+
+
+                    var sheet = workbook.Worksheets[0];
+
+                    sheet["B2"].Value = settlementDate.ToString("dd/MM/yyyy");
+                    sheet["B3"].Value = currency;
+
+                    int tradeItemStartRow = 7;
+                    // Opening Balance
+                    if (openingBalances.Any())
+                    {
+                        sheet["A5"].Value = "Opening Balance:";
+                        sheet["A5"].Font.Bold = true;
+                        sheet["A5:B5"].Merge();
+
+                        var headerStartRow = tradeItemStartRow;
+
+                        foreach (var item in openingBalances)
+                        {
+                            sheet["A" + tradeItemStartRow].Value = item.Account;
+                            sheet["B" + tradeItemStartRow].Value = item.Amount;
+                            sheet["B" + tradeItemStartRow].NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
+
+                            sheet["A" + tradeItemStartRow].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
+                            sheet["B" + tradeItemStartRow].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
+                            sheet["B" + tradeItemStartRow].FillColor = _otherColor;
+
+                            tradeItemStartRow++;
+                        }
+
+                        tradeItemStartRow += 2;
+                    }
+
+                    Content_TradeItems(workbook, sheet, trades, tradeItemStartRow, out tradeItemStartRow);
+
+                    Content_WorkflowItems(sheet, wfHistories, tradeItemStartRow, out tradeItemStartRow);
+
+                    var footerRowNumber = tradeItemStartRow + 4;
+                    sheet["A" + footerRowNumber + ":G" + footerRowNumber].Merge();
+                    sheet["A" + footerRowNumber + ":G" + footerRowNumber].Value = "Generated on " +
+                                                                                  DateTime.Now.ToString(
+                                                                                      "dd/MM/yyyy HH:ss") + " by " +
+                                                                                  HttpContext.Current.User.Identity.Name;
+                    sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Italic = true;
+                    sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Size = 10;
+                    sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Color = Color.LightSlateGray;
+                    sheet["A" + footerRowNumber + ":G" + footerRowNumber].Alignment.Horizontal =
+                        SpreadsheetHorizontalAlignment.Right;
+
+
+                    workbook.Calculate();
                 }
-                
-                Content_TradeItems(workbook, sheet, trades, tradeItemStartRow, out tradeItemStartRow);
-                
-                Content_WorkflowItems(sheet, formWorkflow, tradeItemStartRow, out tradeItemStartRow);
-
-                var footerRowNumber = tradeItemStartRow + 4;
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Merge();
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Value = "Generated on " +
-                                                                              DateTime.Now.ToString(
-                                                                                  "dd/MM/yyyy HH:ss") + " by " +
-                                                                              HttpContext.Current.User.Identity.Name;
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Italic = true;
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Size = 10;
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Color = Color.LightSlateGray;
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Alignment.Horizontal =
-                    SpreadsheetHorizontalAlignment.Right;
-
-
-                workbook.Calculate();
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
             }
             finally
             {
@@ -258,7 +224,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             return workbook;
         }
-        
+
         private void Content_TradeItems(IWorkbook workbook, Worksheet sheet, List<ISSD_TradeSettlement> trades, int tradeItemStartRow, out int currentRowIndex)
         {
             // equity
@@ -380,7 +346,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                 // Insert a table in the worksheet.
                 var tableRange = "A" + headerStartRow + ":F" + tradeItemStartRow;
-                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int> { 2,3 }, new List<int> { 4 }, new List<int> { 5 });
+                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int> { 2, 3 }, new List<int> { 4 }, new List<int> { 5 });
 
                 tradeItemStartRow += 3;
             }
@@ -437,7 +403,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                 // Insert a table in the worksheet.
                 var tableRange = "A" + headerStartRow + ":D" + tradeItemStartRow;
-                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int> { 2 }, new List<int> {  }, new List<int> { 3 });
+                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int> { 2 }, new List<int> { }, new List<int> { 3 });
 
                 tradeItemStartRow += 3;
             }
@@ -542,7 +508,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                 // Insert a table in the worksheet.
                 var tableRange = "A" + headerStartRow + ":C" + tradeItemStartRow;
-                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int>{1}, new List<int> { }, new List<int> { 2 });
+                Table table = CommonTradeTableStyle(workbook, sheet, tableRange, new List<int> { 1 }, new List<int> { }, new List<int> { 2 });
 
                 tradeItemStartRow += 3;
             }
@@ -649,7 +615,7 @@ namespace xDC_Web.Extension.DocGenerator
                 sheet["A" + workflowRowNumber].Font.Bold = true;
                 workflowRowNumber += 2;
             }
-            
+
             var workflowPartA = formWorkflow.FirstOrDefault(x => x.FormType == Common.FormType.ISSD_TS_A);
             if (workflowPartA != null)
             {
@@ -712,12 +678,14 @@ namespace xDC_Web.Extension.DocGenerator
             sheet["A" + currentRowNumber + ":B" + currentRowNumber].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
             currentRowNumber += 1;
             sheet["A" + currentRowNumber].Value = "Approved Date";
-            sheet["B" + currentRowNumber].Value = (wfStatus == Common.FormStatus.Approved || wfStatus == Common.FormStatus.Rejected)? recordedDate?.ToString("dd/MM/yyyy hh:mm tt") : null;
+            sheet["B" + currentRowNumber].Value = (wfStatus == Common.FormStatus.Approved || wfStatus == Common.FormStatus.Rejected) ? recordedDate?.ToString("dd/MM/yyyy hh:mm tt") : null;
             sheet["B" + currentRowNumber].FillColor = _otherColor;
             sheet["A" + currentRowNumber + ":B" + currentRowNumber].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
             currentRowNumber += 2;
 
             nextRowNumber = currentRowNumber;
         }
+
+        #endregion
     }
 }

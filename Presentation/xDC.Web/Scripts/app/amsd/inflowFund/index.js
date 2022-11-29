@@ -28,8 +28,8 @@
             editPageRedirect: window.location.origin + "/amsd/inflowfund/edit/",
             viewPageRedirect: window.location.origin + "/amsd/inflowfund/view/",
 
-            printRequest: window.location.origin + "/amsd/inflowfund/Print",
-            printResponse: window.location.origin + "/amsd/inflowfund/Printed/",
+            printRequest: window.location.origin + "/api/amsd/inflowfund/GenFile",
+            printResponse: window.location.origin + "/amsd/inflowfund/Download/",
         };
         
         $ifFormGrid = $("#amsdGrid").dxDataGrid({

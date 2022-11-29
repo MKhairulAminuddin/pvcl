@@ -10,6 +10,7 @@ using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services;
+using xDC.Services.FileGenerator;
 using xDC.Services.Form;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
@@ -29,14 +30,16 @@ namespace xDC_Web.Controllers.Mvc
         #region Fields
 
         private readonly ITsFormService _tsFormService;
+        private readonly IGenFile_TsForm _tsFormGen;
 
         #endregion
 
         #region Ctor
 
-        public IssdController(ITsFormService tsFormService)
+        public IssdController(ITsFormService tsFormService, IGenFile_TsForm tsFormGen)
         {
             _tsFormService = tsFormService;
+            _tsFormGen = tsFormGen;
         }
 
         #endregion
@@ -169,28 +172,24 @@ namespace xDC_Web.Controllers.Mvc
         public ActionResult ViewPrinted(string id)
         {
             var genFileName = HttpUtility.HtmlDecode(id);
+            var fileStream = _tsFormGen.GenFile(genFileName);
 
-            var fileStream = new DocGeneratorBase().GetFile(genFileName);
-
-            if (fileStream != null)
-            {
-                var fileName = Common.GetFileName(fileStream);
-                Response.AddHeader("Content-Disposition", "attachment; filename=" + fileName);
-
-                if (Common.GetFileExt(fileStream) == ".xlsx")
-                {
-                    return File(fileStream, Common.ConvertIndexToContentType(4));
-                }
-                else
-                {
-                    return File(fileStream, Common.ConvertIndexToContentType(11));
-                }
-
-            }
-            else
+            if (fileStream == null)
             {
                 TempData["ErrorMessage"] = "Generated file not found... sorry...";
                 return View("Error");
+            }
+
+            var newFileName = Common.GetFileName(fileStream);
+            Response.AddHeader("Content-Disposition", "attachment; filename=" + newFileName);
+
+            if (Common.GetFileExt(fileStream) == ".xlsx")
+            {
+                return File(fileStream, Common.ConvertIndexToContentType(4));
+            }
+            else
+            {
+                return File(fileStream, Common.ConvertIndexToContentType(11));
             }
         }
 

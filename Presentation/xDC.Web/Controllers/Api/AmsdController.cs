@@ -24,6 +24,8 @@ using xDC.Domain.Form;
 using xDC.Services.Audit;
 using xDC.Domain.Web.AMSD.InflowFundForm;
 using xDC.Domain.WebApi.Forms.InflowFund;
+using xDC.Domain.WebApi.Forms.TradeSettlement;
+using xDC.Services.FileGenerator;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -34,14 +36,16 @@ namespace xDC_Web.Controllers.Api
         #region Fields
 
         private readonly IIfFormService _ifFormService;
+        private readonly IGenFile_IfForm _ifFormGen;
 
         #endregion
 
         #region Ctor
 
-        public AmsdController(IIfFormService ifFormService)
+        public AmsdController(IIfFormService ifFormService, IGenFile_IfForm ifFormGen)
         {
             _ifFormService = ifFormService;
+            _ifFormGen = ifFormGen;
         }
 
         #endregion
@@ -123,6 +127,18 @@ namespace xDC_Web.Controllers.Api
             if (form < 1) return Request.CreateResponse(HttpStatusCode.BadRequest, "Error in approving the form! Contact system admin for more details");
 
             return Request.CreateResponse(HttpStatusCode.Accepted, form);
+        }
+
+        [Route("InflowFund/GenFile")]
+        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Download)]
+        [HttpPost]
+        public HttpResponseMessage InflowFund_GenFile([FromBody] IfForm_PrintReq req)
+        {
+            var generatedDocId = _ifFormGen.GenId_IfForm(req.formId, User.Identity.Name, req.isExportAsExcel);
+
+            if (string.IsNullOrEmpty(generatedDocId)) return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
+
+            return Request.CreateResponse(HttpStatusCode.Created, generatedDocId);
         }
 
         #endregion

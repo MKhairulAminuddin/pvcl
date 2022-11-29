@@ -31,8 +31,8 @@
             approvalRequest: window.location.origin + "/api/amsd/InflowFund/Approval",
             approvalResponse: window.location.origin + "/amsd/inflowfund/view/",
 
-            printRequest: window.location.origin + "/amsd/inflowfund/Print",
-            printResponse: window.location.origin + "/amsd/inflowfund/Printed/",
+            printRequest: window.location.origin + "/api/amsd/inflowfund/GenFile",
+            printResponse: window.location.origin + "/amsd/inflowfund/Download/",
 
             editDraftUrl: window.location.origin + "/amsd/inflowfund/Edit/",
         };

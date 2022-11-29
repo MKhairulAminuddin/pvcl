@@ -2,11 +2,13 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Web;
 using System.Web.Mvc;
 using xDC.Domain.Web.AMSD.InflowFundForm;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services;
+using xDC.Services.FileGenerator;
 using xDC.Services.Form;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
@@ -25,14 +27,16 @@ namespace xDC_Web.Controllers.Mvc
         #region Fields
 
         private readonly IIfFormService _ifFormService;
+        private readonly IGenFile_IfForm _ifFormGen;
 
         #endregion
 
         #region Ctor
 
-        public AmsdController(IIfFormService ifFormService)
+        public AmsdController(IIfFormService ifFormService, IGenFile_IfForm ifFormGen)
         {
             _ifFormService = ifFormService;
+            _ifFormGen = ifFormGen;
         }
 
         #endregion
@@ -99,31 +103,12 @@ namespace xDC_Web.Controllers.Mvc
             return View("InflowFund/View", form);
         }
 
-        #endregion
-
-        #region Print Form
-
+        [Route("InflowFund/Download/{id}")]
         [KflowAuthorize(Common.PermissionKey.AMSD_InflowFundForm_Download)]
-        [HttpPost]
-        [Route("InflowFund/Print")]
-        public ActionResult Print(string id, bool isExportAsExcel)
+        public ActionResult InflowFund_Download(string id)
         {
-            var formId = Convert.ToInt32(id);
-
-            var generatedDocumentId = new InflowFundsFormDoc().GenerateExcelFile(formId, isExportAsExcel);
-
-            if (string.IsNullOrEmpty(generatedDocumentId)) 
-                return HttpNotFound();
-
-            return Content(generatedDocumentId);
-        }
-
-        [KflowAuthorize(Common.PermissionKey.AMSD_InflowFundForm_Download)]
-        [HttpGet]
-        [Route("InflowFund/Printed/{id}")]
-        public ActionResult Printed(string id)
-        {
-            var fileStream = new DocGeneratorBase().GetFile(id);
+            var generatedFileId = HttpUtility.HtmlDecode(id);
+            var fileStream = _ifFormGen.GenFile(generatedFileId);
 
             if (fileStream == null)
             {
@@ -131,8 +116,8 @@ namespace xDC_Web.Controllers.Mvc
                 return View("Error");
             }
 
-            var fileName = Common.GetFileName(fileStream);
-            Response.AddHeader("Content-Disposition", "attachment; filename=" + fileName);
+            var newFileName = Common.GetFileName(fileStream);
+            Response.AddHeader("Content-Disposition", "attachment; filename=" + newFileName);
 
             if (Common.GetFileExt(fileStream) == ".xlsx")
             {
