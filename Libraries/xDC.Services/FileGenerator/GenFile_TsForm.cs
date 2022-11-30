@@ -44,17 +44,17 @@ namespace xDC.Services.FileGenerator
 
         #region Methods
 
-        public string GenId_TsForm(int formId, bool isExportAsExcel)
+        public string GenId_TsForm(int formId, string currentUser, bool isExportAsExcel)
         {
-            IWorkbook workbook = GenDoc_Ts(formId);
+            IWorkbook workbook = GenDoc_Ts(formId, currentUser);
             if (workbook == null) return null;
 
             return SaveAndGenDocId(workbook, Common.DownloadedFileName.ISSD_TS_Consolidated, isExportAsExcel);
         }
 
-        public string GenId_ConsolidatedTsForm(DateTime settlementDate, string currency, bool isExportAsExcel)
+        public string GenId_ConsolidatedTsForm(DateTime settlementDate, string currency, string currentUser, bool isExportAsExcel)
         {
-            IWorkbook workbook = GenDoc_TsConsolidated(settlementDate, currency.ToUpper());
+            IWorkbook workbook = GenDoc_TsConsolidated(settlementDate, currency.ToUpper(), currentUser);
             if (workbook == null) return null;
 
             return SaveAndGenDocId(workbook, Common.DownloadedFileName.ISSD_TS_Consolidated, isExportAsExcel);
@@ -64,7 +64,7 @@ namespace xDC.Services.FileGenerator
 
         #region Private Methods
 
-        private IWorkbook GenDoc_Ts(int formId)
+        private IWorkbook GenDoc_Ts(int formId, string currentUser)
         {
             IWorkbook workbook = new Workbook();
             workbook.Options.Culture = new CultureInfo("en-US");
@@ -103,7 +103,7 @@ namespace xDC.Services.FileGenerator
 
                     var footerRowNumber = tradeItemStartRow + 4;
                     sheet["A" + footerRowNumber + ":J" + footerRowNumber].Merge();
-                    sheet["A" + footerRowNumber + ":J" + footerRowNumber].Value = "Generated on " + DateTime.Now.ToString("dd/MM/yyyy HH:ss") + " by " + HttpContext.Current.User.Identity.Name;
+                    sheet["A" + footerRowNumber + ":J" + footerRowNumber].Value = "Generated on " + DateTime.Now.ToString("dd/MM/yyyy HH:ss") + " by " + currentUser;
                     sheet["A" + footerRowNumber + ":J" + footerRowNumber].Font.Italic = true;
                     sheet["A" + footerRowNumber + ":J" + footerRowNumber].Font.Size = 10;
                     sheet["A" + footerRowNumber + ":J" + footerRowNumber].Font.Color = Color.LightSlateGray;
@@ -126,7 +126,7 @@ namespace xDC.Services.FileGenerator
             return workbook;
         }
 
-        private IWorkbook GenDoc_TsConsolidated(DateTime settlementDate, string currency)
+        private IWorkbook GenDoc_TsConsolidated(DateTime settlementDate, string currency, string currentUser)
         {
             IWorkbook workbook = new Workbook();
             workbook.Options.Culture = new CultureInfo("en-US");
@@ -202,7 +202,7 @@ namespace xDC.Services.FileGenerator
                     sheet["A" + footerRowNumber + ":G" + footerRowNumber].Value = "Generated on " +
                                                                                   DateTime.Now.ToString(
                                                                                       "dd/MM/yyyy HH:ss") + " by " +
-                                                                                  HttpContext.Current.User.Identity.Name;
+                                                                                  currentUser;
                     sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Italic = true;
                     sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Size = 10;
                     sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Color = Color.LightSlateGray;

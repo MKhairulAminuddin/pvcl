@@ -9,8 +9,8 @@ namespace xDC.Services.FileGenerator
 {
     public interface IGenFile_TsForm
     {
-        string GenId_TsForm(int formId, bool isExportAsExcel);
-        string GenId_ConsolidatedTsForm(DateTime settlementDate, string currency, bool isExportAsExcel);
+        string GenId_TsForm(int formId, string currentUser, bool isExportAsExcel);
+        string GenId_ConsolidatedTsForm(DateTime settlementDate, string currency, string currentUser, bool isExportAsExcel);
         FileStream GenFile(string generatedFilename);
 
     }

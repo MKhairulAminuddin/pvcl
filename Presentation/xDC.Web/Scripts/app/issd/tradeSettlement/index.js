@@ -73,7 +73,7 @@
 
             printPart: window.location.origin + "/api/issd/ts/generatePart",
             printConsolidated: window.location.origin + "/api/issd/ts/generateConsolidated",
-            viewPrinted: window.location.origin + "/issd/ViewPrinted/",
+            viewPrinted: window.location.origin + "/issd/TradeSettlement/Download/",
             viewConsolidated: window.location.origin + "/issd/TradeSettlement/ConsolidatedView/",
             viewNew: window.location.origin + "/issd/TradeSettlement/New/",
             viewEdit: window.location.origin + "/issd/TradeSettlement/Edit/",

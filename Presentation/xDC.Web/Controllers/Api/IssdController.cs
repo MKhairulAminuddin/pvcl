@@ -37,7 +37,6 @@ namespace xDC_Web.Controllers.Api
         #region Fields
 
         private readonly ITsFormService _tsFormService;
-        private readonly IGenFile_TsForm _tsFormGen;
 
         #endregion
 
@@ -46,7 +45,6 @@ namespace xDC_Web.Controllers.Api
         public IssdController(ITsFormService tsFormService, IGenFile_TsForm tsFormGen)
         {
             _tsFormService = tsFormService;
-            _tsFormGen = tsFormGen;
         }
 
         #endregion
@@ -61,7 +59,7 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                var TsHomeGrid1Data = TsFormService.GetTsHomeGrid1(User.Identity.Name);
+                var TsHomeGrid1Data = _tsFormService.GetTsHomeGrid1(User.Identity.Name);
 
                 if (TsHomeGrid1Data != null)
                 {
@@ -83,24 +81,10 @@ namespace xDC_Web.Controllers.Api
         [Route("ts/home/retractForm")]
         public HttpResponseMessage TsHomeRetractForm(RetractFormVM req)
         {
-            try
-            {
-                var retractFormStatus = FormService.RetractFormSubmission(req.FormId, User.Identity.Name, FormType.ISSD_TS);
+            var retractFormStatus = _tsFormService.WithdrawForm(req.FormId, User.Identity.Name, FormType.AMSD_IF);
+            if (!retractFormStatus) return Request.CreateResponse(HttpStatusCode.BadRequest, "Unable to rectract submitted form. Please check with system admin.");
 
-                if (retractFormStatus)
-                {
-                    return Request.CreateResponse(HttpStatusCode.Created);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid form ID");
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-
+            return Request.CreateResponse(HttpStatusCode.Created);
         }
 
         [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_View)]
@@ -110,7 +94,7 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                var TsHomeGrid2Data = TsFormService.GetTsHomeGrid2(User.Identity.Name);
+                var TsHomeGrid2Data = _tsFormService.GetTsHomeGrid2(User.Identity.Name);
 
                 if (TsHomeGrid2Data != null)
                 {
@@ -133,23 +117,15 @@ namespace xDC_Web.Controllers.Api
         [Route("ts/approvedTrades/{settlementDateEpoch}/{currency}")]
         public HttpResponseMessage TsConsolidatedPage(long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
         {
-            try
-            {
-                var consolidatedPageData = TsFormService.GetConsolidatedPage(settlementDateEpoch, currency);
+            var consolidatedPageData = _tsFormService.GetConsolidatedPage(settlementDateEpoch, currency);
 
-                if (consolidatedPageData != null)
-                {
-                    return Request.CreateResponse(DataSourceLoader.Load(consolidatedPageData, loadOptions));
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Error. Please check logs.");
-                }
-            }
-            catch (Exception ex)
+            if (consolidatedPageData != null)
             {
-                Logger.LogError(ex);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+                return Request.CreateResponse(DataSourceLoader.Load(consolidatedPageData, loadOptions));
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Error. Please check logs.");
             }
         }
 
@@ -166,7 +142,7 @@ namespace xDC_Web.Controllers.Api
 
                     if (tradeCategory != null)
                     {
-                        var result = TsFormService.GetTsItemsGrid(formId, instrumentType);
+                        var result = _tsFormService.GetTsItemsGrid(formId, instrumentType);
 
                         return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                     }
@@ -194,7 +170,7 @@ namespace xDC_Web.Controllers.Api
         public HttpResponseMessage GenerateConsolidated([FromBody] TsGenerateFileRequest req)
         {
             var settlementDateParsed = ConvertEpochToDateTime(req.settlementDate);
-            var generatedDoc = _tsFormGen.GenId_ConsolidatedTsForm(settlementDateParsed.Value.Date, req.currency, req.isExportAsExcel);
+            var generatedDoc = _tsFormService.GenExportConsolidatedFormId(settlementDateParsed.Value.Date, req.currency, User.Identity.Name, req.isExportAsExcel);
 
             if (string.IsNullOrEmpty(generatedDoc)) return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
 
@@ -206,7 +182,7 @@ namespace xDC_Web.Controllers.Api
         [HttpPost]
         public HttpResponseMessage GeneratePart([FromBody] TsGenerateFileRequest req)
         {
-            var generatedDoc = _tsFormGen.GenId_TsForm(req.formId, req.isExportAsExcel);
+            var generatedDoc = _tsFormService.GenExportFormId(req.formId, User.Identity.Name, req.isExportAsExcel);
             if (string.IsNullOrEmpty(generatedDoc)) return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
 
             return Request.CreateResponse(HttpStatusCode.Created, generatedDoc);
@@ -294,26 +270,17 @@ namespace xDC_Web.Controllers.Api
         [Route("TradeSettlement")]
         public HttpResponseMessage TS_DeleteForm(FormDataCollection input)
         {
-            try
-            {
-                var key = Convert.ToInt32(input.Get("id"));
-                var deleteFormResult = _tsFormService.DeleteForm(key, User.Identity.Name);
+            var key = Convert.ToInt32(input.Get("id"));
+            var deleteFormResult = _tsFormService.DeleteForm(key, User.Identity.Name);
 
-                if (deleteFormResult)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Failed to delete the form. Please check system logs for details.");
-                }
-            }
-            catch (Exception ex)
+            if (deleteFormResult)
             {
-                Logger.LogError(ex);
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex);
+                return Request.CreateResponse(HttpStatusCode.OK);
             }
-
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Failed to delete the form. Please check system logs for details.");
+            }
         }
 
         #endregion
@@ -324,21 +291,11 @@ namespace xDC_Web.Controllers.Api
         [Route("GetBalanceConsolidated/{settlementDateEpoch}/{currency}")]
         public HttpResponseMessage GetBalanceConsolidated(long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
         {
-            try
-            {
-                var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
-                var settlementDateOnly = settlementDate.Value.Date;
+            var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+            var settlementDateOnly = settlementDate.Value.Date;
 
-                using (var db = new kashflowDBEntities())
-                {
-                    var result = TsFormService.GetOpeningBalance(db, settlementDateOnly, currency);
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
+            var result = _tsFormService.GetOpeningBalance(settlementDateOnly, currency);
+            return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
         }
 
         #endregion
@@ -439,64 +396,55 @@ namespace xDC_Web.Controllers.Api
         [Route("ts/EdwAvailability/{part}/{settlementDateEpoch}/{currency}")]
         public HttpResponseMessage TS_EdwAvailability(string part, long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
         {
-            try
+            using (var db = new kashflowDBEntities())
             {
-                using (var db = new kashflowDBEntities())
+                var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
+
+                var instrumentTypes = new List<string>();
+                if (part == "a")
                 {
-                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
-
-                    var instrumentTypes = new List<string>();
-                    if (part == "a")
-                    {
-                        instrumentTypes.Add(Common.TsItemCategory.Equity);
-                    }
-                    if (part == "b")
-                    {
-                        instrumentTypes.Add(Common.TsItemCategory.Bond);
-                        instrumentTypes.Add(Common.TsItemCategory.Cp);
-                        instrumentTypes.Add(Common.TsItemCategory.NotesPapers);
-                        instrumentTypes.Add(Common.TsItemCategory.Coupon);
-                    }
-                    if (part == "c")
-                    {
-                        instrumentTypes.Add(Common.TsItemCategory.Repo);
-                    }
-
-
-                    var trades = db.EDW_TradeItem
-                        .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate)
-                                    && x.Currency == currency
-                                    && instrumentTypes.Contains(x.InstrumentType))
-                        .GroupBy(x => x.InstrumentType)
-                        .Select(x => new
-                        {
-                            name = x.Key,
-                            count = x.Count()
-                        })
-                        .ToList();
-
-                    var result = new List<TsEdwAvailability>();
-                    if (trades.Count > 0)
-                    {
-                        foreach (var trade in trades)
-                        {
-                            result.Add(new TsEdwAvailability
-                            {
-                                Name = trade.name + " " + currency,
-                                Numbers = trade.count,
-                                CategoryType = Common.TsReverseInstrumentTypeMapping(trade.name)
-                            });
-                        }
-                    }
-
-                    return Request.CreateResponse(HttpStatusCode.OK, result);
+                    instrumentTypes.Add(Common.TsItemCategory.Equity);
+                }
+                if (part == "b")
+                {
+                    instrumentTypes.Add(Common.TsItemCategory.Bond);
+                    instrumentTypes.Add(Common.TsItemCategory.Cp);
+                    instrumentTypes.Add(Common.TsItemCategory.NotesPapers);
+                    instrumentTypes.Add(Common.TsItemCategory.Coupon);
+                }
+                if (part == "c")
+                {
+                    instrumentTypes.Add(Common.TsItemCategory.Repo);
                 }
 
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+
+                var trades = db.EDW_TradeItem
+                    .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate)
+                                && x.Currency == currency
+                                && instrumentTypes.Contains(x.InstrumentType))
+                    .GroupBy(x => x.InstrumentType)
+                    .Select(x => new
+                    {
+                        name = x.Key,
+                        count = x.Count()
+                    })
+                    .ToList();
+
+                var result = new List<TsEdwAvailability>();
+                if (trades.Count > 0)
+                {
+                    foreach (var trade in trades)
+                    {
+                        result.Add(new TsEdwAvailability
+                        {
+                            Name = trade.name + " " + currency,
+                            Numbers = trade.count,
+                            CategoryType = Common.TsReverseInstrumentTypeMapping(trade.name)
+                        });
+                    }
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, result);
             }
         }
 

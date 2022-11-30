@@ -19,9 +19,10 @@ namespace xDC.Services.Notification
 
         #region Ctor
 
-        public NotificationService(IEmailNotification emailNotify)
+        public NotificationService(IEmailNotification emailNotify, IInAppNotification inAppNotify)
         {
             _emailNotify = emailNotify;
+            _inAppNotify = inAppNotify;
         }
 
         #endregion
@@ -35,7 +36,7 @@ namespace xDC.Services.Notification
         }
         public void NotifyApprover(int formId, string formType, string preparer, string approver, string notes)
         {
-            _emailNotify.ApprovalSubmission(formId, formType, approver, notes);
+            _emailNotify.FormSubmission(formId, formType, approver, notes);
             _inAppNotify.ApprovalSubmission(formId, formType, preparer, approver);
         }
 

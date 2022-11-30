@@ -1,15 +1,13 @@
-﻿using MimeKit;
+﻿using MailKit.Net.Smtp;
+using MimeKit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
-using MailKit.Net.Smtp;
-using MimeKit;
-using static xDC.Utils.Common;
 using xDC.Utils;
+using static xDC.Utils.Common;
 
 namespace xDC.Services.Notification
 {
@@ -31,7 +29,9 @@ namespace xDC.Services.Notification
 
         #endregion
 
-        public void ApprovalSubmission(int formId, string formType, string approvedBy, string notes)
+        #region Methods
+
+        public void FormSubmission(int formId, string formType, string approvedBy, string notes)
         {
             try
             {
@@ -41,7 +41,7 @@ namespace xDC.Services.Notification
 
                     if (approver != null)
                     {
-                        var message = ComposeSubmitForApprovalMail(formId, formType, approver.DisplayName, approver.Email, notes);
+                        var message = Compose_SubmitForApprovalMail(formId, formType, approver.DisplayName, approver.Email, notes);
                         SendEmail(message);
                     }
                     else
@@ -67,8 +67,41 @@ namespace xDC.Services.Notification
 
                     if (preparer != null)
                     {
-                        var message = ComposeApprovalFeedbackMail(formId, formType, formStatus, preparer.DisplayName, preparer.Email, notes);
+                        var message = Compose_ApprovalFeedbackMail(formId, formType, formStatus, preparer.DisplayName, preparer.Email, notes);
                         SendEmail(message);
+
+                        #region IF Form Additional Notification
+
+                        if (formType == FormType.AMSD_IF && formStatus == FormStatus.Approved)
+                        {
+                            Notify_IFForm_ToFID_OnApproved(formId);
+                        }
+
+                        #endregion
+
+                        #region TS Form Additional Notification
+
+                        if (formType == FormType.ISSD_TS_E && formStatus == FormStatus.Approved)
+                        {
+                            Notify_TSForm_PartE_PE(formId);
+                        }
+
+                        if (formType == FormType.ISSD_TS_H && formStatus == FormStatus.Approved)
+                        {
+                            Notify_TSForm_PartH_Loan(formId);
+                            Notify_TSForm_PartH_Property(formId);
+                        }
+
+                        #endregion
+
+                        #region T Form Additional Notification
+
+                        if (formType == FormType.FID_TREASURY && formStatus == FormStatus.Approved)
+                        {
+                            Notify_TForm_ToISSD_OnApproved();
+                        }
+
+                        #endregion
                     }
                     else
                     {
@@ -83,6 +116,11 @@ namespace xDC.Services.Notification
             }
         }
 
+        #endregion
+
+
+
+        #region Private Methods
 
         private void SendEmail(MimeMessage message)
         {
@@ -150,7 +188,7 @@ namespace xDC.Services.Notification
             }
         }
 
-        private MimeMessage ComposeSubmitForApprovalMail(int formId, string formType, string approverName, string approverMail, string notes)
+        private MimeMessage Compose_SubmitForApprovalMail(int formId, string formType, string approverName, string approverMail, string notes)
         {
             using (var db = new kashflowDBEntities())
             {
@@ -181,7 +219,7 @@ namespace xDC.Services.Notification
 
                     if (formType == Common.FormType.FID_TREASURY)
                     {
-                        StrContent = StrContent.Replace("[DataTable]", TreasuryTable(formId));
+                        StrContent = StrContent.Replace("[DataTable]", Compose_TreasuryTable(formId));
 
                         var isNotifyCcEnabled = EnableNotification(EmailNotiKey.Enable_FID_T_Submitted_Cc);
                         if (isNotifyCcEnabled)
@@ -191,11 +229,11 @@ namespace xDC.Services.Notification
                     }
                     else if (Common.IsTsFormType(formType))
                     {
-                        StrContent = StrContent.Replace("[DataTable]", TsTable(formId));
+                        StrContent = StrContent.Replace("[DataTable]", Compose_TsTable(formId));
                     }
                     else if (formType == Common.FormType.AMSD_IF)
                     {
-                        StrContent = StrContent.Replace("[DataTable]", InflowFundTable(formId));
+                        StrContent = StrContent.Replace("[DataTable]", Compose_InflowFundTable(formId));
                     }
                     else
                     {
@@ -213,7 +251,7 @@ namespace xDC.Services.Notification
                 return message;
             }
         }
-        private MimeMessage ComposeApprovalFeedbackMail(int formId, string formType, string formStatus, string preparerName, string preparerMail, string notes)
+        private MimeMessage Compose_ApprovalFeedbackMail(int formId, string formType, string formStatus, string preparerName, string preparerMail, string notes)
         {
             using (var db = new kashflowDBEntities())
             {
@@ -256,7 +294,7 @@ namespace xDC.Services.Notification
 
                     if (formType == Common.FormType.FID_TREASURY)
                     {
-                        StrContent = StrContent.Replace("[DataTable]", TreasuryTable(formId));
+                        StrContent = StrContent.Replace("[DataTable]", Compose_TreasuryTable(formId));
 
                         if (formStatus == FormStatus.Approved)
                         {
@@ -269,7 +307,7 @@ namespace xDC.Services.Notification
                     }
                     else if (Common.IsTsFormType(formType))
                     {
-                        StrContent = StrContent.Replace("[DataTable]", TsTable(formId));
+                        StrContent = StrContent.Replace("[DataTable]", Compose_TsTable(formId));
 
                         if (formStatus == FormStatus.Approved)
                         {
@@ -282,7 +320,7 @@ namespace xDC.Services.Notification
                     }
                     else if (formType == Common.FormType.AMSD_IF)
                     {
-                        StrContent = StrContent.Replace("[DataTable]", InflowFundTable(formId));
+                        StrContent = StrContent.Replace("[DataTable]", Compose_InflowFundTable(formId));
                     }
                     else
                     {
@@ -301,8 +339,7 @@ namespace xDC.Services.Notification
                 return message;
             }
         }
-
-        private string TreasuryTable(int formId)
+        private string Compose_TreasuryTable(int formId)
         {
             using (var db = new kashflowDBEntities())
             {
@@ -524,8 +561,7 @@ namespace xDC.Services.Notification
                 return bodyBuilder.ToString();
             }
         }
-
-        private string TsTable(int formId)
+        private string Compose_TsTable(int formId)
         {
             using (var db = new kashflowDBEntities())
             {
@@ -1035,13 +1071,10 @@ namespace xDC.Services.Notification
                 return bodyBuilder.ToString();
             }
         }
-
-        private string TsOthersTable(int formId, string othersType)
+        private string Compose_TsOthersTable(int formId, string othersType)
         {
             using (var db = new kashflowDBEntities())
             {
-                var theForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
-
                 var tsTradeItems = db.ISSD_TradeSettlement
                     .Where(x => x.FormId == formId && x.InstrumentType == TsItemCategory.Others)
                     .ToList();
@@ -1091,15 +1124,11 @@ namespace xDC.Services.Notification
                 }
             }
         }
-
-        private string InflowFundTable(int formId)
+        private string Compose_InflowFundTable(int formId)
         {
             using (var db = new kashflowDBEntities())
             {
-                var theForm = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
-
                 var bodyBuilder = new StringBuilder();
-
                 var sb = new StringBuilder();
 
                 var formItems = db.AMSD_IF_Item
@@ -1119,7 +1148,6 @@ namespace xDC.Services.Notification
                         }
 
                         var counter = 1;
-
                         foreach (var item in formItems)
                         {
                             using (var row = table.AddRow())
@@ -1129,17 +1157,296 @@ namespace xDC.Services.Notification
                                 row.AddCell(item.Bank);
                                 row.AddCell(item.Amount.ToString("N"));
                             }
-
                             counter++;
                         }
                     }
                 }
 
                 bodyBuilder.Append(sb);
-
                 return bodyBuilder.ToString();
             }
         }
 
+
+        #endregion
+
+        #region Private Methods - IF Form Specific Notification
+
+        public void Notify_IFForm_ToFID_OnApproved(int formId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
+                    var enableNotify = EnableNotification(EmailNotiKey.Enable_FID_IF_Approved);
+
+                    if (form != null && enableNotify)
+                    {
+                        var bodyBuilder = new StringBuilder();
+                        var root = AppDomain.CurrentDomain.BaseDirectory;
+                        using (var reader = new System.IO.StreamReader(root + EmailTemplatePath.IF_NotifyFID_OnApproved))
+                        {
+                            string readFile = reader.ReadToEnd();
+                            string StrContent = string.Empty;
+                            StrContent = readFile;
+                            StrContent = StrContent.Replace("[DataTable]", Compose_InflowFundTable(form.Id));
+                            bodyBuilder.Append(StrContent);
+                        }
+
+                        var message = new MimeMessage()
+                        {
+                            Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                            Subject = $"{SubjectAppend} New AMSD Inflow Fund Form Approved",
+                            Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                            {
+                                Text = bodyBuilder.ToString()
+                            },
+                        };
+                        message.To.AddRange(ReceipientsFromConfig(EmailNotiKey.FID_IF_Approved));
+
+                        SendEmail(message);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+            }
+        }
+
+        #endregion
+
+        #region Private Methods - TS Form Specific Notification
+
+        private void Notify_TSForm_PartE_PE(int formId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId && x.FormType == Common.FormType.ISSD_TS_E);
+                    if (form != null)
+                    {
+                        var isNotifyEnabled = EnableNotification(EmailNotiKey.Enable_ISSD_TS_PeEmail);
+                        var isNotifyCcEnabled = EnableNotification(EmailNotiKey.Enable_ISSD_TS_PeEmail_Cc);
+
+                        if (isNotifyEnabled)
+                        {
+                            var bodyBuilder = new StringBuilder();
+                            var root = AppDomain.CurrentDomain.BaseDirectory;
+                            using (var reader = new System.IO.StreamReader(root + EmailTemplatePath.TS_PartE_PE))
+                            {
+                                string readFile = reader.ReadToEnd();
+                                string StrContent = string.Empty;
+                                StrContent = readFile;
+                                StrContent = StrContent.Replace("[FormType]", form.FormType);
+                                StrContent = StrContent.Replace("[FormCurrency]", form.Currency);
+                                StrContent = StrContent.Replace("[SettlementDate]", form.SettlementDate?.ToString("dd/MM/yyyy"));
+                                StrContent = StrContent.Replace("[DataTable]", Compose_TsTable(formId));
+                                bodyBuilder.Append(StrContent);
+                            }
+
+                            var message = new MimeMessage()
+                            {
+                                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                                Subject = SubjectAppend + Common.MailSubjectWithDate(Config.NotificationTsPeEmailSubject),
+                                Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                                {
+                                    Text = bodyBuilder.ToString()
+                                }
+                            };
+
+                            message.To.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_TS_PeEmail));
+
+                            if (isNotifyCcEnabled)
+                            {
+                                message.Cc.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_TS_PeEmail_Cc));
+                            }
+
+                            SendEmail(message);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+            }
+        }
+
+        private void Notify_TSForm_PartH_Loan(int formId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var isNotifyEnabled = EnableNotification(EmailNotiKey.Enable_ISSD_TS_LoanEmail);
+                    var isNotifyCcEnabled = EnableNotification(EmailNotiKey.Enable_ISSD_TS_LoanEmail_Cc);
+
+                    if (isNotifyEnabled)
+                    {
+                        var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId && x.FormType == Common.FormType.ISSD_TS_H);
+                        var isItemExists = db.ISSD_TradeSettlement.Any(x => x.FormId == formId && x.OthersType == TsOthersTypeItem.Loan);
+
+                        if (form != null)
+                        {
+                            if (isItemExists)
+                            {
+                                var bodyBuilder = new StringBuilder();
+                                var root = AppDomain.CurrentDomain.BaseDirectory;
+                                using (var reader = new System.IO.StreamReader(root + EmailTemplatePath.TS_PartH_Loan))
+                                {
+                                    string readFile = reader.ReadToEnd();
+                                    string StrContent = string.Empty;
+                                    StrContent = readFile;
+                                    StrContent = StrContent.Replace("[FormType]", form.FormType);
+                                    StrContent = StrContent.Replace("[FormCurrency]", form.Currency);
+                                    StrContent = StrContent.Replace("[SettlementDate]", form.SettlementDate?.ToString("dd/MM/yyyy"));
+                                    StrContent = StrContent.Replace("[DataTable]", Compose_TsOthersTable(formId, TsOthersTypeItem.Loan));
+                                    bodyBuilder.Append(StrContent);
+                                }
+
+                                var message = new MimeMessage()
+                                {
+                                    Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                                    Subject = SubjectAppend + Common.MailSubjectWithDate(Config.NotificationTsLoanEmailSubject),
+                                    Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                                    {
+                                        Text = bodyBuilder.ToString()
+                                    }
+                                };
+
+                                message.To.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_TS_LoanEmail));
+
+                                if (isNotifyCcEnabled)
+                                {
+                                    message.Cc.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_TS_LoanEmail_Cc));
+                                }
+
+                                SendEmail(message);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+            }
+        }
+
+        private void Notify_TSForm_PartH_Property(int formId)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var isNotifyEnabled = EnableNotification(EmailNotiKey.Enable_ISSD_TS_PropertyEmail);
+                    var isNotifyCcEnabled = EnableNotification(EmailNotiKey.Enable_ISSD_TS_PropertyEmail_Cc);
+
+                    if (isNotifyEnabled)
+                    {
+                        var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId && x.FormType == Common.FormType.ISSD_TS_H);
+                        var isItemExists = db.ISSD_TradeSettlement.Any(x => x.FormId == formId && x.OthersType == TsOthersTypeItem.Property);
+
+                        if (form != null)
+                        {
+                            if (isItemExists)
+                            {
+                                var bodyBuilder = new StringBuilder();
+                                var root = AppDomain.CurrentDomain.BaseDirectory;
+                                using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/TSForm_PartE_PE.html"))
+                                {
+                                    string readFile = reader.ReadToEnd();
+                                    string StrContent = string.Empty;
+                                    StrContent = readFile;
+                                    StrContent = StrContent.Replace("[FormType]", form.FormType);
+                                    StrContent = StrContent.Replace("[FormCurrency]", form.Currency);
+                                    StrContent = StrContent.Replace("[SettlementDate]", form.SettlementDate?.ToString("dd/MM/yyyy"));
+                                    StrContent = StrContent.Replace("[DataTable]", Compose_TsOthersTable(formId, TsOthersTypeItem.Property));
+                                    bodyBuilder.Append(StrContent);
+                                }
+
+                                var message = new MimeMessage()
+                                {
+                                    Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                                    Subject = SubjectAppend + Common.MailSubjectWithDate(Config.NotificationTsPropertyEmailSubject),
+                                    Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                                    {
+                                        Text = bodyBuilder.ToString()
+                                    }
+                                };
+
+                                message.To.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_TS_LoanEmail));
+
+                                if (isNotifyCcEnabled)
+                                {
+                                    message.Cc.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_TS_LoanEmail_Cc));
+                                }
+
+                                SendEmail(message);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+            }
+        }
+
+        #endregion
+
+        #region Private Methods - Treasury Form Specific Notification
+
+        public void Notify_TForm_ToISSD_OnApproved()
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var isNotifyEnabled = EnableNotification(EmailNotiKey.Enable_ISSD_T_Approval);
+
+                    if (isNotifyEnabled)
+                    {
+                        var message = new MimeMessage()
+                        {
+                            Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                            Subject = $"{SubjectAppend}{Config.NotiTreasuryIssdEmailSubject}"
+                        };
+
+                        message.To.AddRange(ReceipientsFromConfig(EmailNotiKey.ISSD_T_Approval));
+
+                        var bodyBuilder = new StringBuilder();
+                        var root = AppDomain.CurrentDomain.BaseDirectory;
+                        using (var reader = new System.IO.StreamReader(root + EmailTemplatePath.T_NotifyISSD_OnApproved))
+                        {
+
+                            string readFile = reader.ReadToEnd();
+                            string StrContent = string.Empty;
+                            StrContent = readFile;
+                            //Assing the field values in the template
+                            StrContent = StrContent.Replace("[Message]", "FID has approved a Cash flow.");
+                            bodyBuilder.Append(StrContent);
+                        }
+
+                        message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                        {
+                            Text = bodyBuilder.ToString()
+                        };
+
+                        SendEmail(message);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+            }
+        }
+
+        #endregion
     }
 }

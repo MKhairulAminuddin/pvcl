@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Asn1.Ocsp;
+﻿using MimeKit;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Ocsp;
 using System;
 using System.Collections.Generic;
@@ -30,16 +31,18 @@ namespace xDC.Services.Form
 
         private readonly IAuditService _auditService;
         private readonly IXDcLogger _logger;
+        private readonly IEmailNotification _emailNotification;
 
         #endregion
 
         #region Ctor
 
-        public IfFormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService) 
+        public IfFormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService, IEmailNotification emailNotification)
             : base(wfService, notifyService, logger, auditService)
         {
             _auditService = auditService;
             _logger = logger;
+            _emailNotification = emailNotification;
         }
 
         #endregion
@@ -545,7 +548,5 @@ namespace xDC.Services.Form
         }
 
         #endregion
-
-
     }
 }

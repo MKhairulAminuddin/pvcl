@@ -127,6 +127,22 @@ namespace xDC.Utils
             public const string FID_TenAmDealCutOff = "~/App_Data/10am Deal Cut Off.xltx";
         }
 
+        public static class EmailTemplatePath
+        {
+            public const string FormSubmission = "/App_Data/EmailTemplates/SubmitForApproval.html";
+            public const string ApprovalFeedback = "/App_Data/EmailTemplates/ApprovalStatus.html";
+
+            public const string TS_PartE_PE = "/App_Data/EmailTemplates/TSForm_PartE_PE.html";
+            public const string TS_PartH_Loan = "/App_Data/EmailTemplates/TSForm_PartE_PE.html";
+            public const string TS_PartH_Property = "/App_Data/EmailTemplates/TSForm_PartE_PE.html";
+
+            public const string IF_NotifyFID_OnApproved = "/App_Data/EmailTemplates/IFForm_Approved.html";
+
+            public const string T_NotifyISSD_OnApproved = "/App_Data/EmailTemplates/Treasury_approved_toISSD.html";
+
+
+        }
+
         public static class DownloadedFileName
         {
             public const string AMSD_IF = "AMSD Inflow Fund Form - ";

@@ -30,16 +30,14 @@ namespace xDC_Web.Controllers.Mvc
         #region Fields
 
         private readonly ITsFormService _tsFormService;
-        private readonly IGenFile_TsForm _tsFormGen;
 
         #endregion
 
         #region Ctor
 
-        public IssdController(ITsFormService tsFormService, IGenFile_TsForm tsFormGen)
+        public IssdController(ITsFormService tsFormService)
         {
             _tsFormService = tsFormService;
-            _tsFormGen = tsFormGen;
         }
 
         #endregion
@@ -167,12 +165,12 @@ namespace xDC_Web.Controllers.Mvc
 
         #region View Generated File
 
-        [Route("ViewPrinted/{id}")]
+        [Route("TradeSettlement/Download/{id}")]
         [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Download)]
         public ActionResult ViewPrinted(string id)
         {
-            var genFileName = HttpUtility.HtmlDecode(id);
-            var fileStream = _tsFormGen.GenFile(genFileName);
+            var generatedFileId = HttpUtility.HtmlDecode(id);
+            var fileStream = _tsFormService.GetGeneratedForm(generatedFileId);
 
             if (fileStream == null)
             {

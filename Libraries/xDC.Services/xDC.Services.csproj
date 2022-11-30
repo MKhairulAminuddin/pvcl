@@ -104,7 +104,6 @@
     <Compile Include="Audit\AuditService.cs" />
     <Compile Include="AuthService.cs" />
     <Compile Include="FcaTaggingFormService.cs" />
-    <Compile Include="EmailNotificationService.cs" />
     <Compile Include="Notification\EmailNotification.cs" />
     <Compile Include="Notification\IEmailNotification.cs" />
     <Compile Include="Notification\IInAppNotification.cs" />
@@ -114,7 +113,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SettingService.cs" />
     <Compile Include="TrackerService.cs" />
-    <Compile Include="WorkflowService.cs" />
     <Compile Include="Workflow\IWorkflowService.cs" />
     <Compile Include="Workflow\WorkflowService.cs" />
   </ItemGroup>

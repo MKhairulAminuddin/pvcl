@@ -8,7 +8,7 @@
     }
 
     _ts.mvc = {
-        printed: window.location.origin + "/issd/ViewPrinted/",
+        printed: window.location.origin + "/issd/TradeSettlement/Download/",
         print: window.location.origin + "/issd/Print"
     };
 
@@ -299,7 +299,7 @@
                     data: request,
                     dataType: "text",
                     success: function (data) {
-                        var url = "/issd/ViewPrinted/" + data;
+                        var url = "/issd/TradeSettlement/Download/" + data;
                         window.location = url;
                     },
                     fail: function (jqXHR, textStatus, errorThrown) {
@@ -323,7 +323,7 @@
                     data: request,
                     dataType: "text",
                     success: function (data) {
-                        var url = "/issd/ViewPrinted/" + data;
+                        var url = "/issd/TradeSettlement/Download/" + data;
                         window.location = url;
                     },
                     fail: function (jqXHR, textStatus, errorThrown) {

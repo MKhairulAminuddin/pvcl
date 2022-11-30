@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -18,6 +19,7 @@ using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services.Audit;
+using xDC.Services.FileGenerator;
 using xDC.Services.Notification;
 using xDC.Services.Workflow;
 using xDC.Utils;
@@ -35,17 +37,19 @@ namespace xDC.Services.Form
         private readonly IAuditService _auditService;
         private readonly IXDcLogger _logger;
         private readonly IWorkflowService _wfService;
+        private readonly IGenFile_TsForm _genFile;
 
         #endregion
 
         #region Ctor
 
-        public TsFormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService) 
+        public TsFormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService, IGenFile_TsForm genFile)
             : base(wfService, notifyService, logger, auditService)
         {
             _wfService = wfService;
             _auditService = auditService;
             _logger = logger;
+            _genFile = genFile;
         }
 
         #endregion
@@ -87,7 +91,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
@@ -142,7 +146,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
@@ -176,10 +180,10 @@ namespace xDC.Services.Form
                             ApprovedBy = item.ApprovedBy,
                             ApprovedDate = item.ApprovedDate,
 
-                            EnableEdit = FormService.EnableEdit(item.FormStatus, item.PreparedBy, item.ApprovedBy, currentUser),
-                            EnableDelete = FormService.EnableDelete(item.FormStatus, item.PreparedBy, item.ApprovedBy, currentUser),
-                            EnablePrint = FormService.EnablePrint(currentUser, item.FormStatus, PermissionKey.ISSD_TradeSettlementForm_Download),
-                            EnableRetractSubmission = FormService.EnableRetractSubmission(currentUser, item.PreparedBy, item.FormStatus, PermissionKey.ISSD_TradeSettlementForm_Edit),
+                            EnableEdit = EnableEdit(item.FormStatus, currentUser, PermissionKey.ISSD_TradeSettlementForm_Edit),
+                            EnableDelete = EnableDelete(item.FormStatus, item.ApprovedBy, currentUser, PermissionKey.ISSD_TradeSettlementForm_Edit),
+                            EnablePrint = EnablePrint(currentUser, item.FormStatus, PermissionKey.ISSD_TradeSettlementForm_Download),
+                            EnableRetractSubmission = EnableFormWithdrawal(currentUser, item.PreparedBy, item.FormStatus, PermissionKey.ISSD_TradeSettlementForm_Edit),
 
                             IsRejected = currentUser == item.PreparedBy && item.FormStatus == FormStatus.Rejected,
                             IsPendingMyApproval = currentUser == item.ApprovedBy && item.FormStatus == FormStatus.PendingApproval,
@@ -192,7 +196,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
                 return null;
             }
         }
@@ -222,7 +226,7 @@ namespace xDC.Services.Form
                             FormDate = item.SettlementDate,
                             Currency = item.Currency,
                             ApprovedDate = item.ApprovedDate,
-                            EnablePrint = FormService.EnablePrint(currentUser, FormStatus.Approved, PermissionKey.ISSD_TradeSettlementForm_Download)
+                            EnablePrint = EnablePrint(currentUser, FormStatus.Approved, PermissionKey.ISSD_TradeSettlementForm_Download)
                         });
                     }
 
@@ -231,7 +235,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
                 return null;
             }
         }
@@ -256,7 +260,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
                 return null;
             }
         }
@@ -370,7 +374,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
                 return false;
             }
         }
@@ -398,7 +402,7 @@ namespace xDC.Services.Form
 
                     if (req.Approver != null && form.FormStatus == FormStatus.Draft)
                     {
-                        AuditService.FA_AssignApprover(form.Id, form.FormType, form.SettlementDate, currentUser,
+                        _auditService.FA_AssignApprover(form.Id, form.FormType, form.SettlementDate, currentUser,
                             form.ApprovedBy, req.Approver);
 
                         form.ApprovedBy = req.Approver;
@@ -422,7 +426,7 @@ namespace xDC.Services.Form
                             {
                                 foreach (var item in removedItems)
                                 {
-                                    AuditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         item.InstrumentCode);
                                 }
                                 db.ISSD_TradeSettlement.RemoveRange(removedItems);
@@ -436,7 +440,7 @@ namespace xDC.Services.Form
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.InstrumentCode, item.InstrumentCode, "Equity - Instrument Code");
 
                                     foundItem.InstrumentCode = item.InstrumentCode;
@@ -444,7 +448,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.StockCode != item.StockCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.StockCode, item.StockCode, "Equity - Stock Code");
 
                                     foundItem.StockCode = item.StockCode;
@@ -452,7 +456,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.Maturity != item.Maturity)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.Maturity.ToString(), item.Maturity.ToString(), "Equity - Maturity (+)");
 
                                     foundItem.Maturity = item.Maturity;
@@ -460,7 +464,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountPlus != item.AmountPlus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Equity - Amount (+)");
 
                                     foundItem.AmountPlus = item.AmountPlus;
@@ -468,7 +472,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountMinus != item.AmountMinus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "Equity - Amount (-)");
 
                                     foundItem.AmountMinus = item.AmountMinus;
@@ -476,7 +480,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.Remarks != item.Remarks)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.Remarks, item.Remarks, "Equity - Remarks");
 
                                     foundItem.Remarks = item.Remarks;
@@ -491,7 +495,7 @@ namespace xDC.Services.Form
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Equity, req.Currency, currentUser));
 
-                                AuditService.FA_AddRow(form.Id, form.FormType,
+                                _auditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
                                     $" Equity: {item.InstrumentCode}, {item.StockCode}, {item.Maturity}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
                             }
@@ -511,7 +515,7 @@ namespace xDC.Services.Form
                             {
                                 foreach (var item in removedItems)
                                 {
-                                    AuditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         item.InstrumentCode);
                                 }
                                 db.ISSD_TradeSettlement.RemoveRange(removedItems);
@@ -525,7 +529,7 @@ namespace xDC.Services.Form
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.InstrumentCode, item.InstrumentCode, "BOND - Instrument Code");
 
                                     foundItem.InstrumentCode = item.InstrumentCode;
@@ -533,7 +537,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.StockCode != item.StockCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.StockCode, item.StockCode, "BOND - Stock Code");
 
                                     foundItem.StockCode = item.StockCode;
@@ -541,7 +545,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.Maturity != item.Maturity)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.Maturity.ToString(), item.Maturity.ToString(), "BOND - Maturity (+)");
 
                                     foundItem.Maturity = item.Maturity;
@@ -549,7 +553,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountPlus != item.AmountPlus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "BOND - Amount (+)");
 
                                     foundItem.AmountPlus = item.AmountPlus;
@@ -557,7 +561,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountMinus != item.AmountMinus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "BOND - Amount (-)");
 
                                     foundItem.AmountMinus = item.AmountMinus;
@@ -565,7 +569,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.BondType != item.BondType)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.BondType, item.BondType, "BOND - Bond Type");
 
                                     foundItem.BondType = item.BondType;
@@ -573,7 +577,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.Remarks != item.Remarks)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.Remarks, item.Remarks, "BOND - Remarks");
 
                                     foundItem.Remarks = item.Remarks;
@@ -588,7 +592,7 @@ namespace xDC.Services.Form
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Bond, req.Currency, currentUser));
 
-                                AuditService.FA_AddRow(form.Id, form.FormType,
+                                _auditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
                                     $" BOND: {item.InstrumentCode}, {item.StockCode}, {item.Maturity}, {item.AmountPlus}, {item.AmountMinus}, {item.BondType}, {item.Remarks}");
                             }
@@ -608,7 +612,7 @@ namespace xDC.Services.Form
                             {
                                 foreach (var item in removedItems)
                                 {
-                                    AuditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         item.InstrumentCode);
                                 }
                                 db.ISSD_TradeSettlement.RemoveRange(removedItems);
@@ -622,7 +626,7 @@ namespace xDC.Services.Form
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.InstrumentCode, item.InstrumentCode, "CP - Instrument Code");
 
                                     foundItem.InstrumentCode = item.InstrumentCode;
@@ -630,7 +634,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.StockCode != item.StockCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.StockCode, item.StockCode, "CP - Stock Code");
 
                                     foundItem.StockCode = item.StockCode;
@@ -638,7 +642,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.Maturity != item.Maturity)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.Maturity.ToString(), item.Maturity.ToString(), "CP - Maturity (+)");
 
                                     foundItem.Maturity = item.Maturity;
@@ -646,7 +650,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountPlus != item.AmountPlus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "CP - Amount (+)");
 
                                     foundItem.AmountPlus = item.AmountPlus;
@@ -654,7 +658,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountMinus != item.AmountMinus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "CP - Amount (-)");
 
                                     foundItem.AmountMinus = item.AmountMinus;
@@ -662,7 +666,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.Remarks != item.Remarks)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.Remarks, item.Remarks, "CP - Remarks");
 
                                     foundItem.Remarks = item.Remarks;
@@ -677,7 +681,7 @@ namespace xDC.Services.Form
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Cp, req.Currency, currentUser));
 
-                                AuditService.FA_AddRow(form.Id, form.FormType,
+                                _auditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
                                     $" CP: {item.InstrumentCode}, {item.StockCode}, {item.Maturity}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
                             }
@@ -697,7 +701,7 @@ namespace xDC.Services.Form
                             {
                                 foreach (var item in removedItems)
                                 {
-                                    AuditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         item.InstrumentCode);
                                 }
                                 db.ISSD_TradeSettlement.RemoveRange(removedItems);
@@ -711,7 +715,7 @@ namespace xDC.Services.Form
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.InstrumentCode, item.InstrumentCode, "Notes & Paper - Instrument Code");
 
                                     foundItem.InstrumentCode = item.InstrumentCode;
@@ -719,7 +723,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.StockCode != item.StockCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.StockCode, item.StockCode, "Notes & Paper - Stock Code");
 
                                     foundItem.StockCode = item.StockCode;
@@ -727,7 +731,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.Maturity != item.Maturity)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.Maturity.ToString(), item.Maturity.ToString(), "Notes & Paper - Maturity (+)");
 
                                     foundItem.Maturity = item.Maturity;
@@ -735,7 +739,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountPlus != item.AmountPlus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Notes & Paper - Amount (+)");
 
                                     foundItem.AmountPlus = item.AmountPlus;
@@ -743,7 +747,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountMinus != item.AmountMinus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "Notes & Paper - Amount (-)");
 
                                     foundItem.AmountMinus = item.AmountMinus;
@@ -751,7 +755,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.Remarks != item.Remarks)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.Remarks, item.Remarks, "Notes & Paper - Remarks");
 
                                     foundItem.Remarks = item.Remarks;
@@ -766,7 +770,7 @@ namespace xDC.Services.Form
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.NotesPapers, req.Currency, currentUser));
 
-                                AuditService.FA_AddRow(form.Id, form.FormType,
+                                _auditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
                                     $" Notes & Paper: {item.InstrumentCode}, {item.StockCode}, {item.Maturity}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
                             }
@@ -786,7 +790,7 @@ namespace xDC.Services.Form
                             {
                                 foreach (var item in removedItems)
                                 {
-                                    AuditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         item.InstrumentCode);
                                 }
                                 db.ISSD_TradeSettlement.RemoveRange(removedItems);
@@ -800,7 +804,7 @@ namespace xDC.Services.Form
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.InstrumentCode, item.InstrumentCode, "REPO - Instrument Code");
 
                                     foundItem.InstrumentCode = item.InstrumentCode;
@@ -808,7 +812,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.StockCode != item.StockCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.StockCode, item.StockCode, "REPO - Stock Code");
 
                                     foundItem.StockCode = item.StockCode;
@@ -816,7 +820,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.FirstLeg != item.FirstLeg)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.FirstLeg.ToString(), item.FirstLeg.ToString(), "REPO - First Leg");
 
                                     foundItem.FirstLeg = item.FirstLeg;
@@ -824,7 +828,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.SecondLeg != item.SecondLeg)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.SecondLeg.ToString(), item.SecondLeg.ToString(), "REPO - Second Leg");
 
                                     foundItem.SecondLeg = item.SecondLeg;
@@ -832,7 +836,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.Remarks != item.Remarks)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.Remarks, item.Remarks, "REPO - Remarks");
 
                                     foundItem.Remarks = item.Remarks;
@@ -847,7 +851,7 @@ namespace xDC.Services.Form
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Repo, req.Currency, currentUser));
 
-                                AuditService.FA_AddRow(form.Id, form.FormType,
+                                _auditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
                                     $" REPO: {item.InstrumentCode}, {item.StockCode}, {item.FirstLeg}, {item.SecondLeg}, {item.Remarks}");
                             }
@@ -867,7 +871,7 @@ namespace xDC.Services.Form
                             {
                                 foreach (var item in removedItems)
                                 {
-                                    AuditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         item.InstrumentCode);
                                 }
                                 db.ISSD_TradeSettlement.RemoveRange(removedItems);
@@ -881,7 +885,7 @@ namespace xDC.Services.Form
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.InstrumentCode, item.InstrumentCode, "Coupon - Instrument Code");
 
                                     foundItem.InstrumentCode = item.InstrumentCode;
@@ -889,7 +893,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.StockCode != item.StockCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.StockCode, item.StockCode, "Coupon - Stock Code");
 
                                     foundItem.StockCode = item.StockCode;
@@ -897,7 +901,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountPlus != item.AmountPlus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Coupon - Amount (+)");
 
                                     foundItem.AmountPlus = item.AmountPlus;
@@ -905,7 +909,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.Remarks != item.Remarks)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.Remarks, item.Remarks, "Coupon - Remarks");
 
                                     foundItem.Remarks = item.Remarks;
@@ -913,7 +917,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.CouponType != item.CouponType)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.CouponType, item.CouponType, "Coupon - Coupon Type");
 
                                     foundItem.CouponType = item.CouponType;
@@ -928,7 +932,7 @@ namespace xDC.Services.Form
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Coupon, req.Currency, currentUser));
 
-                                AuditService.FA_AddRow(form.Id, form.FormType,
+                                _auditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
                                     $" Coupon: {item.InstrumentCode}, {item.StockCode}, {item.AmountPlus}, {item.Remarks}, {item.CouponType}");
                             }
@@ -948,7 +952,7 @@ namespace xDC.Services.Form
                             {
                                 foreach (var item in removedItems)
                                 {
-                                    AuditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         item.InstrumentCode);
                                 }
                                 db.ISSD_TradeSettlement.RemoveRange(removedItems);
@@ -962,7 +966,7 @@ namespace xDC.Services.Form
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.InstrumentCode, item.InstrumentCode, "MTM - Payment/Receipt");
 
                                     foundItem.InstrumentCode = item.InstrumentCode;
@@ -970,7 +974,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountPlus != item.AmountPlus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "MTM - Amount (+)");
 
                                     foundItem.AmountPlus = item.AmountPlus;
@@ -978,7 +982,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountMinus != item.AmountMinus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "MTM - Amount (-)");
 
                                     foundItem.AmountMinus = item.AmountMinus;
@@ -986,7 +990,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.Remarks != item.Remarks)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.Remarks, item.Remarks, "MTM - Remarks");
 
                                     foundItem.Remarks = item.Remarks;
@@ -1001,7 +1005,7 @@ namespace xDC.Services.Form
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Mtm, req.Currency, currentUser));
 
-                                AuditService.FA_AddRow(form.Id, form.FormType,
+                                _auditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
                                     $" MTM: {item.InstrumentCode}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
                             }
@@ -1021,7 +1025,7 @@ namespace xDC.Services.Form
                             {
                                 foreach (var item in removedItems)
                                 {
-                                    AuditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         item.InstrumentCode);
                                 }
                                 db.ISSD_TradeSettlement.RemoveRange(removedItems);
@@ -1035,7 +1039,7 @@ namespace xDC.Services.Form
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.InstrumentCode, item.InstrumentCode, "FX - Instrument Code");
 
                                     foundItem.InstrumentCode = item.InstrumentCode;
@@ -1043,7 +1047,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountPlus != item.AmountPlus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "FX - Amount (+)");
 
                                     foundItem.AmountPlus = item.AmountPlus;
@@ -1051,7 +1055,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountMinus != item.AmountMinus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "FX - Amount (-)");
 
                                     foundItem.AmountMinus = item.AmountMinus;
@@ -1059,7 +1063,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.Remarks != item.Remarks)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.Remarks, item.Remarks, "FX - Remarks");
 
                                     foundItem.Remarks = item.Remarks;
@@ -1074,7 +1078,7 @@ namespace xDC.Services.Form
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Fx, req.Currency, currentUser));
 
-                                AuditService.FA_AddRow(form.Id, form.FormType,
+                                _auditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
                                     $" FX: {item.InstrumentCode}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
                             }
@@ -1094,7 +1098,7 @@ namespace xDC.Services.Form
                             {
                                 foreach (var item in removedItems)
                                 {
-                                    AuditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         item.InstrumentCode);
                                 }
                                 db.ISSD_TradeSettlement.RemoveRange(removedItems);
@@ -1108,7 +1112,7 @@ namespace xDC.Services.Form
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.InstrumentCode, item.InstrumentCode, "ALTID - Instrument Code");
 
                                     foundItem.InstrumentCode = item.InstrumentCode;
@@ -1116,7 +1120,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountPlus != item.AmountPlus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "ALTID - Amount (+)");
 
                                     foundItem.AmountPlus = item.AmountPlus;
@@ -1124,7 +1128,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountMinus != item.AmountMinus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "ALTID - Amount (-)");
 
                                     foundItem.AmountMinus = item.AmountMinus;
@@ -1132,7 +1136,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.Remarks != item.Remarks)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.Remarks, item.Remarks, "ALTID - Remarks");
 
                                     foundItem.Remarks = item.Remarks;
@@ -1147,7 +1151,7 @@ namespace xDC.Services.Form
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Altid, req.Currency, currentUser));
 
-                                AuditService.FA_AddRow(form.Id, form.FormType,
+                                _auditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
                                     $" ALTID: {item.InstrumentCode}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
                             }
@@ -1167,7 +1171,7 @@ namespace xDC.Services.Form
                             {
                                 foreach (var item in removedItems)
                                 {
-                                    AuditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         item.InstrumentCode);
                                 }
                                 db.ISSD_TradeSettlement.RemoveRange(removedItems);
@@ -1181,7 +1185,7 @@ namespace xDC.Services.Form
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.InstrumentCode, item.InstrumentCode, "Contribution - Instrument Code");
 
                                     foundItem.InstrumentCode = item.InstrumentCode;
@@ -1189,7 +1193,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountPlus != item.AmountPlus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Contribution - Amount (+)");
 
                                     foundItem.AmountPlus = item.AmountPlus;
@@ -1197,7 +1201,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.Remarks != item.Remarks)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.Remarks, item.Remarks, "Contribution - Remarks");
 
                                     foundItem.Remarks = item.Remarks;
@@ -1213,7 +1217,7 @@ namespace xDC.Services.Form
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Cn, req.Currency, currentUser));
 
-                                AuditService.FA_AddRow(form.Id, form.FormType,
+                                _auditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
                                     $" Contribution: {item.InstrumentCode}, {item.AmountPlus}, {item.Remarks}");
                             }
@@ -1233,7 +1237,7 @@ namespace xDC.Services.Form
                             {
                                 foreach (var item in removedItems)
                                 {
-                                    AuditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         item.InstrumentCode);
                                 }
                                 db.ISSD_TradeSettlement.RemoveRange(removedItems);
@@ -1247,7 +1251,7 @@ namespace xDC.Services.Form
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.InstrumentCode, item.InstrumentCode, "Fees - Instrument Code");
 
                                     foundItem.InstrumentCode = item.InstrumentCode;
@@ -1255,7 +1259,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountPlus != item.AmountPlus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Fees - Amount (+)");
 
                                     foundItem.AmountPlus = item.AmountPlus;
@@ -1263,7 +1267,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountMinus != item.AmountMinus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "Fees - Amount (-)");
 
                                     foundItem.AmountMinus = item.AmountMinus;
@@ -1271,7 +1275,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.Remarks != item.Remarks)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.Remarks, item.Remarks, "Fees - Remarks");
 
                                     foundItem.Remarks = item.Remarks;
@@ -1286,7 +1290,7 @@ namespace xDC.Services.Form
                             {
                                 db.ISSD_TradeSettlement.Add(NewTsObjMapping(item, req.Id, TsItemCategory.Fees, req.Currency, currentUser));
 
-                                AuditService.FA_AddRow(form.Id, form.FormType,
+                                _auditService.FA_AddRow(form.Id, form.FormType,
                                     form.SettlementDate, currentUser,
                                     $" Fees: {item.InstrumentCode}, {item.AmountPlus}, {item.AmountMinus}, {item.Remarks}");
                             }
@@ -1306,7 +1310,7 @@ namespace xDC.Services.Form
                             {
                                 foreach (var item in removedItems)
                                 {
-                                    AuditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_RemoveRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         item.InstrumentCode);
                                 }
                                 db.ISSD_TradeSettlement.RemoveRange(removedItems);
@@ -1320,7 +1324,7 @@ namespace xDC.Services.Form
                             {
                                 if (foundItem.InstrumentCode != item.InstrumentCode)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.InstrumentCode, item.InstrumentCode, "Others - Instrument Code");
 
                                     foundItem.InstrumentCode = item.InstrumentCode;
@@ -1328,7 +1332,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountPlus != item.AmountPlus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountPlus.ToString(), item.AmountPlus.ToString(), "Others - Amount (+)");
 
                                     foundItem.AmountPlus = item.AmountPlus;
@@ -1336,7 +1340,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.AmountMinus != item.AmountMinus)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.AmountMinus.ToString(), item.AmountMinus.ToString(), "Others - Amount (-)");
 
                                     foundItem.AmountMinus = item.AmountMinus;
@@ -1344,7 +1348,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.Remarks != item.Remarks)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.Remarks, item.Remarks, "Others - Remarks");
 
                                     foundItem.Remarks = item.Remarks;
@@ -1352,7 +1356,7 @@ namespace xDC.Services.Form
 
                                 if (foundItem.OthersType != item.OthersType)
                                 {
-                                    AuditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
                                         foundItem.OthersType, item.OthersType, "Others - Others Type");
 
                                     foundItem.OthersType = item.OthersType;
@@ -1387,7 +1391,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
                 return false;
             }
         }
@@ -1424,7 +1428,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return false;
             }
         }
@@ -1448,19 +1452,7 @@ namespace xDC.Services.Form
 
                             if (approvalSaved > 0)
                             {
-                                this.ApprovalResponse(form.Id, form.FormType, form.PreparedBy, form.ApprovedBy, req.ApprovalNote, form.FormStatus);
-
-                                // TODO: refactore notification
-                                if (form.FormType == FormType.ISSD_TS_E && form.FormStatus == FormStatus.Approved)
-                                {
-                                    EmailNotificationService.TSForm_PartE_PE(form.Id);
-                                }
-
-                                if (form.FormType == FormType.ISSD_TS_H && form.FormStatus == FormStatus.Approved)
-                                {
-                                    EmailNotificationService.TSForm_PartH_Loan(form.Id);
-                                    EmailNotificationService.TSForm_PartH_Property(form.Id);
-                                }
+                                ApprovalResponse(form.Id, form.FormType, form.SettlementDate, form.PreparedBy, form.ApprovedBy, req.ApprovalNote, form.FormStatus);
 
                                 return true;
                             }
@@ -1471,7 +1463,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
                 return false;
             }
         }
@@ -1499,7 +1491,7 @@ namespace xDC.Services.Form
                         OpeningBalance = new List<TsOpeningBalance>()
                     };
 
-                    var ob = GetOpeningBalance(db, settlementDateOnly, currency);
+                    var ob = GetOpeningBalance(settlementDateOnly, currency);
                     consolidatedForm.OpeningBalance.AddRange(ob);
 
                     var totalOb = consolidatedForm.OpeningBalance.Sum(x => x.Amount);
@@ -1629,6 +1621,12 @@ namespace xDC.Services.Form
             return form;
         }
 
+        public bool WithdrawForm(int formId, string performedBy, string formType)
+        {
+            var withdrawFormStatus = this.RetractFormSubmission(formId, performedBy, formType);
+            return withdrawFormStatus;
+        }
+
         #endregion
 
         public List<ISSD_TradeSettlement> GetTradeSettlement(kashflowDBEntities db, DateTime settlementDate, string currency)
@@ -1655,30 +1653,41 @@ namespace xDC.Services.Form
             return trades;
         }
 
-        public List<TsOpeningBalance> GetOpeningBalance(kashflowDBEntities db, DateTime settlementDate, string currency)
+        public List<TsOpeningBalance> GetOpeningBalance(DateTime settlementDate, string currency)
         {
-            var result = new List<TsOpeningBalance>();
-
-            var ob = db.EDW_BankBalance
-                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate) 
-                            && x.Currency == currency)
-                .GroupBy(x => new { x.SettlementDate, x.InstrumentType })
-                .Select(x => new
-                {
-                    account = x.Key.InstrumentType,
-                    total = x.Sum(y => y.Amount ?? 0)
-                });
-
-            foreach (var item in ob)
+            try
             {
-                result.Add(new TsOpeningBalance()
+                using (var db = new kashflowDBEntities())
                 {
-                    Account = item.account,
-                    Amount = item.total
-                });
-            }
+                    var result = new List<TsOpeningBalance>();
 
-            return result;
+                    var ob = db.EDW_BankBalance
+                        .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate)
+                                    && x.Currency == currency)
+                        .GroupBy(x => new { x.SettlementDate, x.InstrumentType })
+                        .Select(x => new
+                        {
+                            account = x.Key.InstrumentType,
+                            total = x.Sum(y => y.Amount ?? 0)
+                        });
+
+                    foreach (var item in ob)
+                    {
+                        result.Add(new TsOpeningBalance()
+                        {
+                            Account = item.account,
+                            Amount = item.total
+                        });
+                    }
+
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return null;
+            }
         }
 
         public TS_TotalFlow GetTotalFlow(kashflowDBEntities db, List<int> formId, DateTime settlementDate, string currency)
@@ -1796,7 +1805,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
@@ -1843,9 +1852,24 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
+        }
+
+        public string GenExportFormId(int formId, string currentUser, bool isExportToExcel)
+        {
+            return _genFile.GenId_TsForm(formId, currentUser, isExportToExcel);
+        }
+
+        public string GenExportConsolidatedFormId(DateTime settlementDate, string currency, string currentUser, bool isExportToExcel)
+        {
+            return _genFile.GenId_ConsolidatedTsForm(settlementDate, currency, currentUser, isExportToExcel);
+        }
+
+        public FileStream GetGeneratedForm(string generatedFileId)
+        {
+            return _genFile.GenFile(generatedFileId);
         }
 
         #region Private Functions

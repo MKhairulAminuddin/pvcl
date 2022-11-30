@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Utils;
 using static xDC.Utils.Common;
 
 namespace xDC.Services.Workflow
@@ -164,6 +165,36 @@ namespace xDC.Services.Workflow
             {
                 _logger.LogError(ex);
                 return null;
+            }
+        }
+
+        public string LatestApprovalNotes(int formId, string formType)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var formWf = db.Form_Workflow
+                            .OrderByDescending(x => x.RecordedDate)
+                            .FirstOrDefault(x =>
+                                x.FormId == formId && x.FormType == formType &&
+                                (x.WorkflowStatus == Common.FormStatus.Approved ||
+                                 x.WorkflowStatus == Common.FormStatus.Rejected));
+
+                    if (formWf != null)
+                    {
+                        return formWf.WorkflowNotes;
+                    }
+                    else
+                    {
+                        return string.Empty;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+                return string.Empty;
             }
         }
     }

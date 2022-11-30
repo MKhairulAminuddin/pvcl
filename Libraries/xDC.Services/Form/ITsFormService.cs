@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace xDC.Services.Form
         List<ISSD_TradeSettlement> GetTsItemsGrid(int formId, string instrumentType);
 
         List<ISSD_TradeSettlement> GetTradeSettlement(kashflowDBEntities db, DateTime settlementDate, string currency);
-        List<TsOpeningBalance> GetOpeningBalance(kashflowDBEntities db, DateTime settlementDate, string currency);
+        List<TsOpeningBalance> GetOpeningBalance(DateTime settlementDate, string currency);
         TS_TotalFlow GetTotalFlow(kashflowDBEntities db, List<int> formId, DateTime settlementDate, string currency);
 
         // TODO: Refactor this
@@ -39,5 +40,11 @@ namespace xDC.Services.Form
         TsForm ViewForm(int formId, string currentUser);
         TsForm ViewEditForm(int formId, string currentUser);
         TsForm ViewNewForm(string formType, string currentUser);
+
+        bool WithdrawForm(int formId, string performedBy, string formType);
+
+        string GenExportFormId(int formId, string currentUser, bool isExportToExcel);
+        string GenExportConsolidatedFormId(DateTime settlementDate, string currency, string currentUser, bool isExportToExcel);
+        FileStream GetGeneratedForm(string generatedFileId);
     }
 }

@@ -11,6 +11,7 @@ using xDC.Logging;
 using xDC.Services.Audit;
 using xDC.Services.FileGenerator;
 using xDC.Services.Notification;
+using xDC.Services.Workflow;
 using static xDC.Utils.Common;
 
 namespace xDC.Services.Form
@@ -21,6 +22,7 @@ namespace xDC.Services.Form
 
         private readonly IXDcLogger _logger;
         private readonly IGenFile_TreasuryForm _genFile;
+        private readonly IWorkflowService _wfService;
 
         #endregion
 
@@ -31,6 +33,7 @@ namespace xDC.Services.Form
         {
             _logger = logger;
             _genFile = genFile;
+            _wfService = wfService;
         }
 
         #endregion
@@ -148,7 +151,7 @@ namespace xDC.Services.Form
                             PreparedDate = form.PreparedDate,
                             ApprovedBy = form.ApprovedBy,
                             ApprovedDate = form.ApprovedDate,
-                            ApprovalNotes = WorkflowService.GetApprovalNotes(form.Id, form.FormType),
+                            ApprovalNotes = _wfService.LatestApprovalNotes(form.Id, form.FormType),
 
                             EnableApproveRejectBtn = this.EnableFormApproval(currentUser, form.ApprovedBy, form.FormStatus, db),
                             EnableReassign = this.EnableReassignApprover(form.FormStatus, form.ApprovedBy, currentUser, PermissionKey.FID_TreasuryForm_Edit),
@@ -221,7 +224,6 @@ namespace xDC.Services.Form
         public FileStream GetGeneratedForm(string generatedFileId)
         {
             return _genFile.GenFile(generatedFileId);
-
         }
 
 

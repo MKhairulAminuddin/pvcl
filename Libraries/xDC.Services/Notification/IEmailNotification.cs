@@ -8,7 +8,7 @@ namespace xDC.Services.Notification
 {
     public interface IEmailNotification
     {
-        void ApprovalSubmission(int formId, string formType, string approvedBy, string notes);
+        void FormSubmission(int formId, string formType, string approvedBy, string notes);
         void ApprovalResponse(int formId, string formType, string formStatus, string formPreparer, string notes);
     }
 }

@@ -9,7 +9,7 @@ using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.ViewModels.Fid.Treasury;
 
-namespace xDC_Web.Controllers
+namespace xDC_Web.Controllers.Mvc
 {
     [Authorize]
     [KflowAuthorize(Common.PermissionKey.FID)]
@@ -125,60 +125,33 @@ namespace xDC_Web.Controllers
         [Route("Treasury/Edit/{id}")]
         public ActionResult TreasuryEdit(int id)
         {
-            try
+            var formModel = _tFormService.GetEditPageData(id, User.Identity.Name);
+            if (formModel != null)
             {
-                using (var db = new kashflowDBEntities())
-                {
-                    var formModel = TreasuryFormService.GetEditPageData(id, User.Identity.Name);
-                    if (formModel != null)
-                    {
-                        return View("Treasury/Edit", formModel);
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = "Form Not found";
-                        return View("Error");
-                    }
-                }
+                return View("Treasury/Edit", formModel);
             }
-            catch (Exception ex)
+            else
             {
-                Logger.LogError(ex);
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = "Form Not found";
                 return View("Error");
             }
-            
         }
 
         [KflowAuthorize(Common.PermissionKey.FID_TreasuryForm_View)]
         [Route("Treasury/View/{id}")]
         public ActionResult TreasuryView(int id)
         {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var formModel = TreasuryFormService.GetViewPageData(id, User.Identity.Name);
+            var data = _tFormService.GetViewPageData(id, User.Identity.Name);
 
-                    if (formModel != null)
-                    {
-                        return View("Treasury/View", formModel);
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = "Form Not found";
-                        return View("Error");
-                    }
-                }
-                
-            }
-            catch (Exception ex)
+            if (data != null)
             {
-                Logger.LogError(ex);
-                TempData["ErrorMessage"] = "Hmmm... Something went wrong here...";
+                return View("Treasury/View", data);
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Form Not found";
                 return View("Error");
             }
-            
         }
 
         [Route("Treasury/Download/{id}")]
