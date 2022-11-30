@@ -1,118 +1,122 @@
 ﻿using DevExpress.Spreadsheet;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Web;
+using xDC.Domain.Form;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services.Form;
+using xDC.Services.Workflow;
 using xDC.Utils;
 
-namespace xDC_Web.Extension.DocGenerator
+namespace xDC.Services.FileGenerator
 {
-    public class TreasuryFormDoc : DocGeneratorBase
+    public class GenFile_TreasuryForm : FileGenerator, IGenFile_TreasuryForm
     {
+        #region Fields
+
         private Color _tableHeaderPrimaryColor = System.Drawing.ColorTranslator.FromHtml("#5b8efb");
         private Color _inflowColor = System.Drawing.ColorTranslator.FromHtml("#3498DB");
         private Color _outFlowColor = System.Drawing.ColorTranslator.FromHtml("#E67E22");
 
-        public string GenerateFile(int formId, bool isExportAsExcel)
+        private readonly IIfFormService _ifFormService;
+        private readonly IXDcLogger _logger;
+        private readonly IWorkflowService _wfService;
+
+        #endregion
+
+        #region Ctor
+
+        public GenFile_TreasuryForm(IIfFormService ifFormService, IXDcLogger logger, IWorkflowService wfService)
         {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
-
-                    if (form != null)
-                    {
-                        var deposits = db.FID_Treasury_Deposit.Where(x => x.FormId == formId).ToList();
-                        var mmis = db.FID_Treasury_MMI.Where(x => x.FormId == formId).ToList();
-                        
-                        var workflow = db.Form_Workflow
-                            .Where(x => x.FormId == form.Id && (x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected))
-                            .OrderByDescending(x => x.RecordedDate)
-                            .FirstOrDefault();
-                        
-                        IWorkbook workbook = GenerateDocument(form, deposits, mmis, workflow);
-                        var randomFileName = Common.DownloadedFileName.FID_Treasury + DateTime.Now.ToString("yyyyMMddHHmmss");
-
-                        if (isExportAsExcel)
-                        {
-                            var documentFormat = DocumentFormat.Xlsx;
-                            var tempFolder = Common.GetSystemTempFilePath(randomFileName + ".xlsx");
-                            workbook.SaveDocument(tempFolder, documentFormat);
-                        }
-                        else
-                        {
-                            var tempFolder = Common.GetSystemTempFilePath(randomFileName + ".pdf");
-                            workbook.ExportToPdf(tempFolder);
-                        }
-
-                        return randomFileName;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return null;
-            }
+            _ifFormService = ifFormService;
+            _logger = logger;
+            _wfService = wfService;
         }
-        
-        private IWorkbook GenerateDocument(FID_Treasury form, List<FID_Treasury_Deposit> depo, List<FID_Treasury_MMI> mmi, Form_Workflow workflow)
+
+        #endregion
+
+        #region Methods
+
+        public string GenId_TreasuryForm(int formId, string currentUser, bool isExportAsExcel)
+        {    
+            IWorkbook workbook = GenDoc_TreasuryForm(formId, currentUser);
+            if (workbook == null) return null;
+
+            return SaveAndGenDocId(workbook, Common.DownloadedFileName.FID_Treasury, isExportAsExcel);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private IWorkbook GenDoc_TreasuryForm(int formId, string currentUser)
         {
             IWorkbook workbook = new Workbook();
             workbook.Options.Culture = new CultureInfo("en-US");
             workbook.LoadDocument(MapPath(Common.ExcelTemplateLocation.FID_Treasury));
 
-            workbook.BeginUpdate();
             try
             {
-                var sheet = workbook.Worksheets[0];
-                
-                if (form.ValueDate != null)
-                    sheet["B2"].Value = form.ValueDate.Value.ToString("dd/MM/yyyy");
-                sheet["B3"].Value = form.Currency;
+                workbook.BeginUpdate();
 
-                sheet["N2"].Value = form.FormStatus;
-                sheet["N3"].Value = form.PreparedBy;
-                sheet["N4"].Value = form.PreparedDate?.ToString("dd/MM/yyyy hh:mm tt");
-                sheet["N5"].Value = form.ApprovedBy;
-                sheet["N6"].Value = form.ApprovedDate?.ToString("dd/MM/yyyy hh:mm tt");
-                sheet["N7"].Value = workflow?.WorkflowNotes;
-                
-                int row = 9;
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
+                    if (form == null) return null;
 
-                Content_MainTable(workbook, sheet,
-                    depo.Where(x => x.CashflowType == Common.Cashflow.Inflow).ToList(),
-                    mmi.Where(x => x.CashflowType == Common.Cashflow.Inflow).ToList(), Common.Cashflow.Inflow, row,
-                    out row);
+                    var deposits = db.FID_Treasury_Deposit.Where(x => x.FormId == formId).ToList();
+                    var mmis = db.FID_Treasury_MMI.Where(x => x.FormId == formId).ToList();
 
-                Content_MainTable(workbook, sheet,
-                    depo.Where(x => x.CashflowType == Common.Cashflow.Outflow).ToList(),
-                    mmi.Where(x => x.CashflowType == Common.Cashflow.Outflow).ToList(), Common.Cashflow.Outflow, row,
-                    out row);
-                
-                var footerRowNumber = row + 4;
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Merge();
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Value = "Generated on " + DateTime.Now.ToString("dd/MM/yyyy HH:ss") + " by "+ HttpContext.Current.User.Identity.Name;
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Italic = true;
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Size = 10;
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Color = Color.LightSlateGray;
-                sheet["A" + footerRowNumber + ":G" + footerRowNumber].Alignment.Horizontal =
-                    SpreadsheetHorizontalAlignment.Right;
-                
-                workbook.Calculate();
+                    var wfLatest = _wfService.Info(form.Id, form.FormType)
+                        .Where(x => x.WorkflowStatus == Common.FormStatus.Approved || x.WorkflowStatus == Common.FormStatus.Rejected)
+                        .FirstOrDefault();
+
+
+
+                    var sheet = workbook.Worksheets[0];
+
+                    if (form.ValueDate != null)
+                        sheet["B2"].Value = form.ValueDate.Value.ToString("dd/MM/yyyy");
+                    sheet["B3"].Value = form.Currency;
+
+                    sheet["N2"].Value = form.FormStatus;
+                    sheet["N3"].Value = form.PreparedBy;
+                    sheet["N4"].Value = form.PreparedDate?.ToString("dd/MM/yyyy hh:mm tt");
+                    sheet["N5"].Value = form.ApprovedBy;
+                    sheet["N6"].Value = form.ApprovedDate?.ToString("dd/MM/yyyy hh:mm tt");
+                    sheet["N7"].Value = wfLatest?.WorkflowNotes;
+
+                    int row = 9;
+
+                    Content_MainTable(workbook, sheet,
+                        deposits.Where(x => x.CashflowType == Common.Cashflow.Inflow).ToList(),
+                        mmis.Where(x => x.CashflowType == Common.Cashflow.Inflow).ToList(), Common.Cashflow.Inflow, row,
+                        out row);
+
+                    Content_MainTable(workbook, sheet,
+                        deposits.Where(x => x.CashflowType == Common.Cashflow.Outflow).ToList(),
+                        mmis.Where(x => x.CashflowType == Common.Cashflow.Outflow).ToList(), Common.Cashflow.Outflow, row,
+                        out row);
+
+                    var footerRowNumber = row + 4;
+                    sheet["A" + footerRowNumber + ":G" + footerRowNumber].Merge();
+                    sheet["A" + footerRowNumber + ":G" + footerRowNumber].Value = "Generated on " + DateTime.Now.ToString("dd/MM/yyyy HH:ss") + " by " + HttpContext.Current.User.Identity.Name;
+                    sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Italic = true;
+                    sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Size = 10;
+                    sheet["A" + footerRowNumber + ":G" + footerRowNumber].Font.Color = Color.LightSlateGray;
+                    sheet["A" + footerRowNumber + ":G" + footerRowNumber].Alignment.Horizontal =
+                        SpreadsheetHorizontalAlignment.Right;
+
+                    workbook.Calculate();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
             }
             finally
             {
@@ -121,7 +125,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             return workbook;
         }
-        
+
         private void Content_MainTable(IWorkbook workbook, Worksheet sheet, List<FID_Treasury_Deposit> depositItems, List<FID_Treasury_MMI> mmiItems, string cashflowType, int row, out int currentRowIndex)
         {
             var depo = depositItems.Where(x => x.CashflowType == cashflowType).ToList();
@@ -201,20 +205,20 @@ namespace xDC_Web.Extension.DocGenerator
                 table.ShowTotals = true;
                 table.HeaderRowRange.FillColor = cashflowType == Common.Cashflow.Inflow ? _inflowColor : _outFlowColor;
 
-                
+
                 table.Columns[6].TotalRowFunction = TotalRowFunction.Sum;
                 table.Columns[6].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                 table.Columns[9].TotalRowFunction = TotalRowFunction.Sum;
                 table.Columns[9].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
                 table.Columns[10].TotalRowFunction = TotalRowFunction.Sum;
                 table.Columns[10].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";
-                
+
                 table.DataRange.Alignment.Vertical = SpreadsheetVerticalAlignment.Top;
                 table.HeaderRowRange.Alignment.WrapText = true;
 
                 row += 4;
             }
-            
+
             if (mmi.Any())
             {
                 sheet["A" + row].Value = "Money Market Instruments";
@@ -296,9 +300,11 @@ namespace xDC_Web.Extension.DocGenerator
 
                 row += 4;
             }
-            
+
             currentRowIndex = row;
         }
-        
+
+
+        #endregion
     }
 }

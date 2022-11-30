@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,5 +20,9 @@ namespace xDC.Services.Form
         List<EDW_FID_List> List_Issuer(kashflowDBEntities db);
         List<string> List_FcaBankAccount(kashflowDBEntities db);
         List<EDW_FID_List> List_CounterParty(kashflowDBEntities db);
+
+
+        string GenExportFormId(int formId, string currentUser, bool isExportToExcel);
+        FileStream GetGeneratedForm(string generatedFileId);
     }
 }

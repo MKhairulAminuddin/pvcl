@@ -1,31 +1,18 @@
 ﻿using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web.Http;
-using xDC_Web.Models;
-using System.Data.Entity;
 using System.Net.Http.Formatting;
-using DevExpress.Utils;
-using Newtonsoft.Json;
-using xDC.Utils;
-using xDC.Infrastructure.Application;
-using xDC.Logging;
-using xDC.Services;
-using xDC_Web.ViewModels.Amsd;
-using xDC_Web.ViewModels;
-using static xDC.Utils.Common;
-using xDC_Web.Extension.CustomAttribute;
-using xDC.Services.Form;
-using xDC.Domain.Form;
-using xDC.Services.Audit;
+using System.Web.Http;
 using xDC.Domain.Web.AMSD.InflowFundForm;
 using xDC.Domain.WebApi.Forms.InflowFund;
-using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Services.FileGenerator;
+using xDC.Services.Form;
+using xDC_Web.Extension.CustomAttribute;
+using xDC_Web.ViewModels;
+using static xDC.Utils.Common;
 
 namespace xDC_Web.Controllers.Api
 {

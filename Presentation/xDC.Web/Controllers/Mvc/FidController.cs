@@ -1,21 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.IO;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using xDC.Domain.ISSD_TS;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services;
 using xDC.Services.Form;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
-using xDC_Web.Extension.DocGenerator;
-using xDC_Web.Extension.MailMerge;
-using xDC_Web.ViewModels.Fid;
-using xDC_Web.ViewModels.Fid.DealCutOff;
 using xDC_Web.ViewModels.Fid.Treasury;
 
 namespace xDC_Web.Controllers
@@ -25,6 +16,22 @@ namespace xDC_Web.Controllers
     [RoutePrefix("fid")]
     public class FidController : Controller
     {
+        #region Fields
+
+        private readonly ITreasuryFormService _tFormService;
+
+        #endregion
+
+        #region Ctor
+
+        public FidController(ITreasuryFormService treasuryFormService)
+        {
+            _tFormService = treasuryFormService;
+        }
+
+        #endregion
+
+
         public ActionResult Index()
         {
             return View();
@@ -174,68 +181,29 @@ namespace xDC_Web.Controllers
             
         }
 
-        [HttpPost]
-        [Route("Treasury/Print")]
-        [KflowAuthorize(Common.PermissionKey.FID_TreasuryForm_Download)]
-        public ActionResult Print(string id, bool isExportAsExcel)
-        {
-            try
-            {
-                var formId = Convert.ToInt32(id);
-
-                var generatedDocumentFile = new TreasuryFormDoc().GenerateFile(formId, isExportAsExcel);
-
-                if (!string.IsNullOrEmpty(generatedDocumentFile))
-                {
-                    return Content(generatedDocumentFile);
-                }
-                else
-                {
-                    return HttpNotFound();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return HttpNotFound();
-            }
-        }
-
-        [Route("Treasury/Printed/{id}")]
+        [Route("Treasury/Download/{id}")]
         [KflowAuthorize(Common.PermissionKey.FID_TreasuryForm_Download)]
         public ActionResult ViewPrinted(string id)
         {
-            try
+            var generatedFileId = HttpUtility.HtmlDecode(id);
+            var fileStream = _tFormService.GetGeneratedForm(generatedFileId);
+
+            if (fileStream == null)
             {
-                var fileStream = new DocGeneratorBase().GetFile(id);
-
-                if (fileStream != null)
-                {
-                    var fileName = Common.GetFileName(fileStream);
-                    Response.AddHeader("Content-Disposition", "attachment; filename=" + fileName);
-
-                    if (Common.GetFileExt(fileStream) == ".xlsx")
-                    {
-                        return File(fileStream, Common.ConvertIndexToContentType(4));
-                    }
-                    else
-                    {
-                        return File(fileStream, Common.ConvertIndexToContentType(11));
-                    }
-
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "Generated file not found... sorry...";
-                    return View("Error");
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = "Generated file not found... sorry...";
                 return View("Error");
+            }
+
+            var newFileName = Common.GetFileName(fileStream);
+            Response.AddHeader("Content-Disposition", "attachment; filename=" + newFileName);
+
+            if (Common.GetFileExt(fileStream) == ".xlsx")
+            {
+                return File(fileStream, Common.ConvertIndexToContentType(4));
+            }
+            else
+            {
+                return File(fileStream, Common.ConvertIndexToContentType(11));
             }
         }
 

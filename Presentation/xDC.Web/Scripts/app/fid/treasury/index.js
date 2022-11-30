@@ -17,8 +17,8 @@
             $retractFormAssignedApprover = $("#retractFormAssignedApprover");
 
         var referenceUrl = {
-            printRequest: window.location.origin + "/fid/Treasury/Print",
-            printResponse: window.location.origin + "/fid/Treasury/Printed/",
+            printRequest: window.location.origin + "/api/fid/Treasury/GenFile",
+            printResponse: window.location.origin + "/fid/Treasury/Download/",
 
             loadGrid: window.location.origin + "/api/fid/treasury",
 

@@ -707,7 +707,7 @@
     <Compile Include="Controllers\AuditController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
-    <Compile Include="Controllers\FidController.cs" />
+    <Compile Include="Controllers\Mvc\FidController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Mvc\IssdController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -720,7 +720,6 @@
     <Compile Include="Extension\DocGenerator\TenAmDealCutOffDoc.cs" />
     <Compile Include="Extension\DocGenerator\DealCutOffForm_MYR.cs" />
     <Compile Include="Extension\DocGenerator\DocGeneratorBase.cs" />
-    <Compile Include="Extension\DocGenerator\TreasuryFormDoc.cs" />
     <Compile Include="Extension\HandleAntiForgeryError.cs" />
     <Compile Include="Extension\MailGenerator\BaseGenerator.cs" />
     <Compile Include="Extension\MailGenerator\CnEmailGenerator.cs" />

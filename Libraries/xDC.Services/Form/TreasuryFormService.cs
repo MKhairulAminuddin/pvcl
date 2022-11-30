@@ -1,28 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using xDC.Domain.Web.AMSD.InflowFundForm;
 using xDC.Domain.Web.FID.TreasuryForm;
 using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Domain.WebApi.Forms;
-using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
+using xDC.Services.Audit;
+using xDC.Services.FileGenerator;
 using xDC.Services.Notification;
-using xDC.Utils;
 using static xDC.Utils.Common;
 
 namespace xDC.Services.Form
 {
     public class TreasuryFormService : FormService, ITreasuryFormService
     {
+        #region Fields
+
+        private readonly IXDcLogger _logger;
+        private readonly IGenFile_TreasuryForm _genFile;
+
+        #endregion
+
         #region Ctor
 
-        public TreasuryFormService(Workflow.IWorkflowService wfService, INotificationService notifyService) : base(wfService, notifyService)
+        public TreasuryFormService(Workflow.IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService, IGenFile_TreasuryForm genFile)
+            : base(wfService, notifyService, logger, auditService)
         {
+            _logger = logger;
+            _genFile = genFile;
         }
 
         #endregion
@@ -70,7 +78,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
                 return null;
             }
         }
@@ -115,7 +123,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
@@ -157,7 +165,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
@@ -197,14 +205,26 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
 
         #endregion
 
-        
+
+        public string GenExportFormId(int formId, string currentUser, bool isExportToExcel)
+        {
+            return _genFile.GenId_TreasuryForm(formId, currentUser, isExportToExcel);
+        }
+
+        public FileStream GetGeneratedForm(string generatedFileId)
+        {
+            return _genFile.GenFile(generatedFileId);
+
+        }
+
+
         public List<EDW_FID_List> List_Issuer(kashflowDBEntities db)
         {
             // check for same date and same currency exist

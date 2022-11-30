@@ -39,8 +39,8 @@
             postNewFormRequest: window.location.origin + "/api/fid/Treasury/New",
             postNewFormResponse: window.location.origin + "/fid/Treasury",
 
-            printRequest: window.location.origin + "/fid/Treasury/Print",
-            printResponse: window.location.origin + "/fid/Treasury/Printed/",
+            printRequest: window.location.origin + "/api/fid/Treasury/GenFile",
+            printResponse: window.location.origin + "/fid/Treasury/Download/",
 
             editForm: window.location.origin + "/fid/Treasury/Edit/"
         };

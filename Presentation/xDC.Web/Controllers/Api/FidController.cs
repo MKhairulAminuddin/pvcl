@@ -1,4 +1,7 @@
-﻿using System;
+﻿using DevExtreme.AspNet.Data;
+using DevExtreme.AspNet.Mvc;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -6,11 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http;
-using DevExpress.Web.Data;
-using DevExtreme.AspNet.Data;
-using DevExtreme.AspNet.Mvc;
-using Newtonsoft.Json;
-using xDC.Domain.WebApi.Forms.InflowFund;
+using xDC.Domain.WebApi.Forms.Treasury;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services;
@@ -20,7 +19,6 @@ using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.Models;
 using xDC_Web.ViewModels;
-using xDC_Web.ViewModels.Fid;
 using xDC_Web.ViewModels.Fid.Treasury;
 using static xDC.Utils.Common;
 using TreasuryFormVM = xDC_Web.Models.TreasuryFormVM;
@@ -34,7 +32,7 @@ namespace xDC_Web.Controllers.Api
     {
         #region Fields
 
-        private readonly ITreasuryFormService _treasuryFormService;
+        private readonly ITreasuryFormService _tFormService;
 
         #endregion
 
@@ -42,7 +40,7 @@ namespace xDC_Web.Controllers.Api
 
         public FidController(ITreasuryFormService treasuryFormService)
         {
-            _treasuryFormService = treasuryFormService;
+            _tFormService = treasuryFormService;
         }
 
         #endregion
@@ -156,7 +154,7 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                var TreasuryHomeGrid1Data = _treasuryFormService.GetTsHomeGrid1(User.Identity.Name);
+                var TreasuryHomeGrid1Data = _tFormService.GetTsHomeGrid1(User.Identity.Name);
 
                 if (TreasuryHomeGrid1Data != null)
                 {
@@ -1474,6 +1472,18 @@ namespace xDC_Web.Controllers.Api
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
 
+        }
+
+        [HttpPost]
+        [Route("Treasury/GenFile")]
+        [KflowApiAuthorize(Common.PermissionKey.FID_TreasuryForm_Download)]
+        public HttpResponseMessage Treasury_GenFile([FromBody] TreasuryForm_PrintReq req)
+        {
+            var generatedDocId = _tFormService.GenExportFormId(req.formId, User.Identity.Name, req.isExportAsExcel);
+
+            if (string.IsNullOrEmpty(generatedDocId)) return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
+
+            return Request.CreateResponse(HttpStatusCode.Created, generatedDocId);
         }
 
         #endregion
