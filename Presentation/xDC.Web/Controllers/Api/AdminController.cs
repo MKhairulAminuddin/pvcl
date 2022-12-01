@@ -22,6 +22,7 @@ using xDC.Logging;
 using xDC.Domain.WebApi.Administration;
 using static xDC.Utils.Common;
 using xDC_Web.Extension.CustomAttribute;
+using xDC.Services.Membership;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -29,96 +30,52 @@ namespace xDC_Web.Controllers.Api
     [RoutePrefix("api/admin")]
     public class AdminController : ApiController
     {
+        #region Fields
+
+        private readonly IUserManagementService _userMgmtService;
+
+        #endregion
+
+        #region Ctor
+
+        public AdminController(IUserManagementService userMgmtService)
+        {
+            _userMgmtService = userMgmtService;
+        }
+
+        #endregion
+
         #region User Management
-        
+
 
         [HttpGet]
         [Route("GetUsers")]
         [KflowApiAuthorize(PermissionKey.Administration_UserManagement)]
         public HttpResponseMessage GetUsers(DataSourceLoadOptions loadOptions)
         {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    db.Configuration.LazyLoadingEnabled = false;
-                    db.Configuration.ProxyCreationEnabled = false;
-                    var result = db.AspNetUsers.Include(x => x.AspNetRoles).Select(y => new
-                    {
-                        UserName = y.UserName,
-                        Locked = !y.Locked,
-                        Email = y.Email,
-                        TelephoneNumber = y.TelephoneNumber,
-                        Title = y.Title,
-                        Department = y.Department,
-                        RoleName = y.AspNetRoles.Select(z => z.Name).FirstOrDefault(),
-                        CreatedDate = y.CreatedDate,
-                        LastLogin = y.LastLogin
-                    }).ToList();
-
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                }
-                
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
-            
+            return Request.CreateResponse(DataSourceLoader.Load(_userMgmtService.GetUsersWithRole(), loadOptions));
         }
-        
         
         [HttpPost]
         [Route("InsertUser")]
         [KflowApiAuthorize(PermissionKey.Administration_UserManagement)]
         public HttpResponseMessage InsertUser(FormDataCollection form)
         {
-            try
-            {
-                var key = form.Get("key");
-                var values = form.Get("values");
-                var userVm = new UserVM();
-                JsonConvert.PopulateObject(values, userVm);
+            var values = form.Get("values");
+            var userVm = new UserVM();
+            JsonConvert.PopulateObject(values, userVm);
                 
 
-                var isUserExist = new AuthService().IsUserExist(userVm.UserName);
-                var isUserExistInAd = new AuthService().IsUserExistInAd(userVm.UserName);
+            var isUserExist = _userMgmtService.IsUserExist(userVm.UserName);
+            if (!isUserExist) return Request.CreateResponse(HttpStatusCode.BadRequest, "User already exist!");
 
-                if (!isUserExist && isUserExistInAd)
-                {
-                    var getUserInfoFromAd = new AuthService().GetUserFromAd(userVm.UserName);
+            var isUserExistInAd = _userMgmtService.IsUserExistInAd(userVm.UserName);
+            if (isUserExistInAd) return Request.CreateResponse(HttpStatusCode.BadRequest, "User not exist in KWAP AD!");
 
-                    using (var db = new kashflowDBEntities())
-                    {
-                        var newUser = new AspNetUsers()
-                        {
-                            UserName = userVm.UserName,
-                            Email = getUserInfoFromAd.Email,
-                            Department = getUserInfoFromAd.Department,
-                            Title = getUserInfoFromAd.Title,
-                            TelephoneNumber = getUserInfoFromAd.TelNo,
-                            FullName = getUserInfoFromAd.DisplayName,
-                            CreatedDate = DateTime.Now,
-                            Locked = userVm.Locked != null ? (bool)userVm.Locked : false
-                        };
+            var result = _userMgmtService.InsertUser(userVm.UserName, userVm.RoleName, userVm.Locked, User.Identity.Name);
+            if (!result) return Request.CreateResponse(HttpStatusCode.BadRequest, "System failed to create new user!");
 
-                        var result = new AuthService().InsertUser(newUser, userVm.RoleName, User.Identity.Name);
-                        
-                        db.SaveChanges();
-
-                        return Request.CreateResponse(HttpStatusCode.Created, userVm);
-                    }
-                    
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "User already exist!");
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
+            return Request.CreateResponse(HttpStatusCode.Created, userVm);
         }
 
         [HttpPut]
@@ -126,44 +83,18 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.Administration_UserManagement)]
         public HttpResponseMessage UpdateUser(FormDataCollection form)
         {
-            try
-            {
-                var key = form.Get("key");
-                var values = form.Get("values");
-                var userVm = new UserVM();
-                JsonConvert.PopulateObject(values, userVm);
+            var userName = form.Get("key");
+            var values = form.Get("values");
+            var userVm = new UserVM();
+            JsonConvert.PopulateObject(values, userVm);
 
-                var isUserExist = new AuthService().GetUser(key);
+            var isUserExist = _userMgmtService.IsUserExist(userName);
+            if (!isUserExist) return Request.CreateResponse(HttpStatusCode.BadRequest, "User not found");
 
-                if (isUserExist != null)
-                {
-                    if (userVm.UserName != null)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Editing username is not allowed as username treated as primary key. Kindly create new record instead.");
-                    }
-                    
-                    var result = new AuthService().UpdateUser(key, userVm.RoleName, !userVm.Locked, User.Identity.Name);
+            var result = _userMgmtService.UpdateUser(userName, userVm.RoleName, !userVm.Locked, User.Identity.Name);
+            if (!result) return Request.CreateResponse(HttpStatusCode.BadRequest, "System failed to update user profile");
 
-                    if (result)
-                    {
-                        return Request.CreateResponse(HttpStatusCode.OK);
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.BadRequest, "Update failed");
-                    }
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "User not found");
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-
+            return Request.CreateResponse(HttpStatusCode.OK);
         }
 
         [HttpDelete]
@@ -171,32 +102,14 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.Administration_UserManagement)]
         public HttpResponseMessage DeleteUser(FormDataCollection form)
         {
-            try
-            {
-                var key = form.Get("key");
-                var isUserExist = new AuthService().IsUserExist(key);
+            var key = form.Get("key");
 
-                if (!isUserExist)
-                {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "User not exist!");
-                }
+            var isUserExist = _userMgmtService.IsUserExist(key);
+            if (!isUserExist) return Request.CreateResponse(HttpStatusCode.BadRequest, "User not exist!");
 
-                var result = new AuthService().DeleteUser(key, User.Identity.Name);
-
-                if (result)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Delete user failed!");
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
+            var result = _userMgmtService.DeleteUser(key, User.Identity.Name);
+            if (!result) return Request.CreateResponse(HttpStatusCode.BadRequest, "Delete user failed!");
+            return Request.CreateResponse(HttpStatusCode.OK);
         }
 
 

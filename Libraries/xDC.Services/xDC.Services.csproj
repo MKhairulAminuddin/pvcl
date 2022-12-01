@@ -104,6 +104,8 @@
     <Compile Include="Audit\AuditService.cs" />
     <Compile Include="AuthService.cs" />
     <Compile Include="FcaTaggingFormService.cs" />
+    <Compile Include="Membership\IUserManagementService.cs" />
+    <Compile Include="Membership\UserManagementService.cs" />
     <Compile Include="Notification\EmailNotification.cs" />
     <Compile Include="Notification\IEmailNotification.cs" />
     <Compile Include="Notification\IInAppNotification.cs" />

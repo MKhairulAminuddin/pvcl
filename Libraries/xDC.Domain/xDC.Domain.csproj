@@ -65,6 +65,7 @@
     <Compile Include="WebApi\Administration\RoleReq.cs" />
     <Compile Include="WebApi\Administration\UpdatePremissionReq.cs" />
     <Compile Include="WebApi\Administration\RolesRes.cs" />
+    <Compile Include="WebApi\Administration\UserWithRoleRes.cs" />
     <Compile Include="WebApi\Audit\AuditReq.cs" />
     <Compile Include="WebApi\Forms\InflowFund\IfForm_PrintReq.cs" />
     <Compile Include="WebApi\Forms\InflowFund\IfHomeGrid1.cs" />
