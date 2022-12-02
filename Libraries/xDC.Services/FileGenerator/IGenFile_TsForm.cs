@@ -13,5 +13,7 @@ namespace xDC.Services.FileGenerator
         string GenId_ConsolidatedTsForm(DateTime settlementDate, string currency, string currentUser, bool isExportAsExcel);
         FileStream GenFile(string generatedFilename);
 
+        string Gen_CnEmailFile(int formId, string senderEmail);
+
     }
 }

@@ -1902,6 +1902,11 @@ namespace xDC.Services.Form
             return _genFile.GenId_ConsolidatedTsForm(settlementDate, currency, currentUser, isExportToExcel);
         }
 
+        public string GenCnMailId(int formId, string senderEmail)
+        {
+            return _genFile.Gen_CnEmailFile(formId, senderEmail);
+        }
+
         public FileStream GetGeneratedForm(string generatedFileId)
         {
             return _genFile.GenFile(generatedFileId);

@@ -10,6 +10,7 @@ using xDC.Domain.WebApi.Audit;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Utils;
+using static xDC.Utils.Common;
 
 namespace xDC.Services.Audit
 {
@@ -30,6 +31,28 @@ namespace xDC.Services.Audit
 
         #endregion
 
+        #region User Access Audit
+
+        public IQueryable<Audit_UserAccess> Get_UAA()
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.Audit_UserAccess.AsQueryable();
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return null;
+            }
+        }
+
+
+        #endregion
+
         #region Audit form
 
         private void FA_Add(Audit_Form obj)
@@ -45,6 +68,26 @@ namespace xDC.Services.Audit
             catch (Exception ex)
             {
                 _logger.LogError(ex);
+            }
+        }
+
+        public IQueryable<Audit_Form> FA(DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.Audit_Form
+                         .Where(x =>
+                            (DbFunctions.TruncateTime(x.ModifiedOn) >= DbFunctions.TruncateTime(fromDate) &&
+                             DbFunctions.TruncateTime(x.ModifiedOn) <= DbFunctions.TruncateTime(toDate)));
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return null;
             }
         }
 
@@ -231,44 +274,21 @@ namespace xDC.Services.Audit
 
         #endregion
 
-
         #region User Management Audit
 
-        public List<Audit_UserManagement> Get_UMA(out bool status, AuditReq req = null)
+        public IQueryable<Audit_UserManagement> Get_UMA()
         {
-            status = false;
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
                     var result = db.Audit_UserManagement.AsQueryable();
-
-                    if (req != null)
-                    {
-                        if (req.FromDateUnix != 0 && req.FromDateUnix != 0)
-                        {
-                            var fromDate = Common.ConvertEpochToDateTime(req.FromDateUnix);
-                            var toDate = Common.ConvertEpochToDateTime(req.ToDateUnix);
-
-                            result = result.Where(x => DbFunctions.TruncateTime(x.RecordedDate) >= DbFunctions.TruncateTime(fromDate) &&
-                                                DbFunctions.TruncateTime(x.RecordedDate) <= DbFunctions.TruncateTime(toDate));
-                        }
-
-                        if (req.UserId != null)
-                        {
-                            result = result.Where(x => x.UserAccount == req.UserId);
-                        }
-                    }
-
-                    status = true;
-                    return result.ToList();
+                    return result;
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-
-                status = false;
                 return null;
             }
         }
@@ -302,41 +322,19 @@ namespace xDC.Services.Audit
 
         #region Role Management Audit
 
-        public List<Audit_RoleManagement> Get_RMA(out bool status, AuditReq req = null)
+        public IQueryable<Audit_RoleManagement> Get_RMA()
         {
-            status = false;
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
                     var result = db.Audit_RoleManagement.AsQueryable();
-
-                    if (req != null)
-                    {
-                        if (req.FromDateUnix != 0 && req.FromDateUnix != 0)
-                        {
-                            var fromDate = Common.ConvertEpochToDateTime(req.FromDateUnix);
-                            var toDate = Common.ConvertEpochToDateTime(req.ToDateUnix);
-
-                            result = result.Where(x => DbFunctions.TruncateTime(x.RecordedDate) >= DbFunctions.TruncateTime(fromDate) &&
-                                                DbFunctions.TruncateTime(x.RecordedDate) <= DbFunctions.TruncateTime(toDate));
-                        }
-
-                        if (req.UserId != null)
-                        {
-                            result = result.Where(x => x.Role == req.RoleName);
-                        }
-                    }
-
-                    status = true;
-                    return result.ToList();
+                    return result;
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-
-                status = false;
                 return null;
             }
         }

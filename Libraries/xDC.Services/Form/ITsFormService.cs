@@ -44,6 +44,7 @@ namespace xDC.Services.Form
         bool WithdrawForm(int formId, string performedBy, string formType);
         bool ReassignApproverForm(int formId, string newApprover, string currentUser);
 
+        string GenCnMailId(int formId, string senderEmail);
         string GenExportFormId(int formId, string currentUser, bool isExportToExcel);
         string GenExportConsolidatedFormId(DateTime settlementDate, string currency, string currentUser, bool isExportToExcel);
         FileStream GetGeneratedForm(string generatedFileId);

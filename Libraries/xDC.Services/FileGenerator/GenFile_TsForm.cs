@@ -1,4 +1,5 @@
 ﻿using DevExpress.Spreadsheet;
+using MimeKit;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -6,6 +7,8 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
+using System.Text;
 using System.Web;
 using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Infrastructure.Application;
@@ -58,6 +61,47 @@ namespace xDC.Services.FileGenerator
             if (workbook == null) return null;
 
             return SaveAndGenDocId(workbook, Common.DownloadedFileName.ISSD_TS_Consolidated, isExportAsExcel);
+        }
+
+        public string Gen_CnEmailFile(int formId, string senderEmail)
+        {
+            try
+            {
+                var fileName = "TradeSettlement_CN_TRX_" + DateTime.Now.ToString("yyyyMMddhhss");
+                var mailMessage = new MailMessage();
+
+                var recipients = ReceipientsFromConfig(Common.EmailNotiKey.ISSD_TS_CnEmail);
+                foreach (var recipient in recipients)
+                {
+                    mailMessage.To.Add(recipient.Address);
+                }
+
+                var ccsEnabled = EnableNotification(Common.EmailNotiKey.Enable_ISSD_TS_CnEmail_Cc);
+                var ccs = ReceipientsFromConfig(Common.EmailNotiKey.ISSD_TS_CnEmail_Cc);
+                if (ccsEnabled && ccs.Any())
+                {
+                    foreach (var cc in ccs)
+                    {
+                        mailMessage.CC.Add(cc.Address);
+                    }
+                }
+
+                mailMessage.From = new MailAddress(senderEmail);
+                mailMessage.Headers.Add("X-Unsent", "1");
+                mailMessage.Subject = Common.MailSubjectWithDate(Config.NotificationTsCnEmailSubject);
+
+                mailMessage.Body = CnMailBody(formId);
+                mailMessage.IsBodyHtml = true;
+
+                SaveEmlFile(fileName, mailMessage);
+
+                return fileName;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
         }
 
         #endregion
@@ -684,6 +728,135 @@ namespace xDC.Services.FileGenerator
             currentRowNumber += 2;
 
             nextRowNumber = currentRowNumber;
+        }
+
+        private string CnMailBody(int formId)
+        {
+            try
+            {
+                var mailBody = string.Empty;
+
+                using (var db = new kashflowDBEntities())
+                {
+                    var cnForm = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
+
+                    if (cnForm != null)
+                    {
+                        var cnItems = db.ISSD_TradeSettlement.Where(x => x.FormId == cnForm.Id);
+
+                        var pageUrl = string.Format("{0}" + Common.Email_FormUrlMap(cnForm.FormType) + "{1}", Config.EmailApplicationUrl, formId);
+
+                        var bodyBuilder = new StringBuilder();
+                        bodyBuilder.Append("<p>Dear All, </p>");
+                        bodyBuilder.AppendLine(string.Format("<p>Contribution Credited item in  <a href='" + pageUrl +
+                                                             "'>#" + cnForm.Id + "</a> form has been " +
+                                                             cnForm.FormStatus + " by " + cnForm.ApprovedBy));
+
+                        using (var table = new Common.Table(bodyBuilder))
+                        {
+                            using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                            {
+                                row.AddCell("#");
+                                row.AddCell("Contribution Credited");
+                                row.AddCell("Amount (+)");
+                                row.AddCell("Remarks");
+                            }
+
+                            var count = 0;
+                            foreach (var item in cnItems)
+                            {
+                                count += 1;
+
+                                using (var row = table.AddRow())
+                                {
+                                    row.AddCell(count.ToString());
+                                    row.AddCell(item.InstrumentCode);
+                                    row.AddCell(item.AmountPlus.ToString("N"));
+                                    row.AddCell(item.Remarks);
+                                }
+                            }
+                        }
+
+                        mailBody = bodyBuilder.ToString();
+                        return mailBody;
+                    }
+                    else
+                    {
+                        _logger.LogError("CN Form not found. ID:" + formId);
+                        return mailBody;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+                return string.Empty;
+            }
+        }
+        private void SaveEmlFile(string filename, MailMessage message)
+        {
+            using (var client = new SmtpClient())
+            {
+                // create a temp folder to hold just this .eml file so that we can find it easily.
+                var tempFolder = Path.Combine(Config.TempFolderPath, filename);
+
+                if (!Directory.Exists(tempFolder))
+                {
+                    Directory.CreateDirectory(tempFolder);
+                }
+
+                client.UseDefaultCredentials = true;
+                client.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
+                client.PickupDirectoryLocation = tempFolder;
+                client.Send(message);
+            }
+        }
+
+        private bool EnableNotification(string configKey)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var configValue = db.Config_Application.FirstOrDefault(x => x.Key == configKey);
+                if (configValue != null)
+                {
+                    var conversionStatus = bool.TryParse(configValue.Value, out bool enableNotify);
+
+                    if (conversionStatus)
+                    {
+                        return enableNotify;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        private List<MailboxAddress> ReceipientsFromConfig(string configKey)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var configValue = db.Config_Application.FirstOrDefault(x => x.Key == configKey);
+                if (configValue != null)
+                {
+                    var emailAddresses = configValue.Value.Split(',').ToList();
+                    var mailboxAddress = new List<MailboxAddress>();
+                    foreach (var email in emailAddresses)
+                    {
+                        mailboxAddress.Add(MailboxAddress.Parse(email));
+                    }
+                    return mailboxAddress;
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
         #endregion

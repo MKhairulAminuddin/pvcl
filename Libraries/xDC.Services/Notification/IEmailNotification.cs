@@ -10,5 +10,6 @@ namespace xDC.Services.Notification
     {
         void FormSubmission(int formId, string formType, string approvedBy, string notes);
         void ApprovalResponse(int formId, string formType, string formStatus, string formPreparer, string notes);
+        void TestSendEmail(string recipientEmail);
     }
 }

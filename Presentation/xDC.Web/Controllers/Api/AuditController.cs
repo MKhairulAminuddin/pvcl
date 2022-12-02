@@ -1,22 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Web.Http;
-using DevExpress.Data.ODataLinq.Helpers;
-using DevExpress.Office.Crypto;
+﻿
 using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
-using Newtonsoft.Json;
+using System;
+using System.Data.Entity;
+using System.Linq;
+using System.Net.Http;
+using System.Web.Http;
 using xDC.Domain.WebApi.Audit;
-using xDC.Infrastructure.Application;
 using xDC.Services.Audit;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
-using xDC_Web.Models;
 using static xDC.Utils.Common;
 
 namespace xDC_Web.Controllers.Api
@@ -25,66 +18,56 @@ namespace xDC_Web.Controllers.Api
     [RoutePrefix("api/audit")]
     public class AuditController : ApiController
     {
+        #region Fields
+        private readonly IAuditService _auditService;
+
+        #endregion
+
+        #region Ctor
+
+        public AuditController(IAuditService auditService)
+        {
+            _auditService = auditService;
+        }
+
+        #endregion
+
         [HttpGet]
         [Route("auditForm/{fromDateEpoch}/{toDateEpoch}/{formId}/{formType}/{userId}/{actionType}")]
         [KflowApiAuthorize(PermissionKey.AuditTrail_FormAudit)]
         public HttpResponseMessage AuditForm(long fromDateEpoch, long toDateEpoch, string formId, string formType, string userId, string actionType, DataSourceLoadOptions loadOptions)
         {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                   var fromDate = Common.ConvertEpochToDateTime(fromDateEpoch);
-                   var toDate = Common.ConvertEpochToDateTime(toDateEpoch);
-                   var formIdInt = 0;
-                   Int32.TryParse(formId, out formIdInt);
-                    formType = formType == "null" ? null : formType;
-                    userId = userId == "null" ? null : userId;
-                    actionType = actionType == "null" ? null : actionType;
+            var fromDate = Common.ConvertEpochToDateTime(fromDateEpoch);
+            var toDate = Common.ConvertEpochToDateTime(toDateEpoch);
+            var formIdInt = 0;
+            Int32.TryParse(formId, out formIdInt);
+            formType = formType == "null" ? null : formType;
+            userId = userId == "null" ? null : userId;
+            actionType = actionType == "null" ? null : actionType;
 
-                    var result = db.Audit_Form
-                         .Where(x => 
-                            (DbFunctions.TruncateTime(x.ModifiedOn) >= DbFunctions.TruncateTime(fromDate) &&
-                             DbFunctions.TruncateTime(x.ModifiedOn) <= DbFunctions.TruncateTime(toDate)) &&
+            var result = _auditService.FA(fromDate.Value, toDate.Value)
+                            .Where(x => 
+                                (formIdInt == 0 || x.FormId == formIdInt) &&
+                                (string.IsNullOrEmpty(formType) || x.FormType == formType) &&
+                                (string.IsNullOrEmpty(userId) || x.ModifiedBy == userId) &&
+                                (string.IsNullOrEmpty(actionType) || x.ActionType == actionType))
+                            .ToList();
 
-                             (formIdInt == 0 || x.FormId == formIdInt) &&
-                             (string.IsNullOrEmpty(formType) || x.FormType == formType) &&
-                             (string.IsNullOrEmpty(userId) || x.ModifiedBy == userId) &&
-                             (string.IsNullOrEmpty(actionType) || x.ActionType == actionType))
-                         .ToList();
-
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
-            }
-
+            return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
         }
 
-        #region User Access Log
+        #region User Access Audit
 
         [HttpGet]
         [Route("UserAccess")]
         [KflowApiAuthorize(PermissionKey.AuditTrail_UserAccessAudit)]
         public HttpResponseMessage GetUserAccessLog(DataSourceLoadOptions loadOptions)
         {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var result = db.Audit_UserAccess.OrderByDescending(x => x.RecordedDate).ToList();
-
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
-
+            var past30Days = DateTime.Now.AddDays(-30);
+            var result = _auditService.Get_UAA()
+                .Where(x => DbFunctions.TruncateTime(x.RecordedDate) > past30Days)
+                .OrderByDescending(x => x.RecordedDate).ToList();
+            return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
         }
 
         [HttpPost]
@@ -92,34 +75,25 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.AuditTrail_UserAccessAudit)]
         public HttpResponseMessage GetUserAccessAudit([FromBody] AuditReq req, DataSourceLoadOptions loadOptions)
         {
-            try
+            var fromDate = xDC.Utils.Common.ConvertEpochToDateTime(req.FromDateUnix);
+            var toDate = xDC.Utils.Common.ConvertEpochToDateTime(req.ToDateUnix);
+
+            var result = _auditService.Get_UAA();
+
+            if (fromDate != null && toDate != null)
             {
-                using (var db = new kashflowDBEntities())
-                {
-                    var fromDate = xDC.Utils.Common.ConvertEpochToDateTime(req.FromDateUnix);
-                    var toDate = xDC.Utils.Common.ConvertEpochToDateTime(req.ToDateUnix);
-
-                    var result = db.Audit_UserAccess
-                        .Where(x => 
-                            DbFunctions.TruncateTime(x.RecordedDate) >= DbFunctions.TruncateTime(fromDate) && 
-                            DbFunctions.TruncateTime(x.RecordedDate) <= DbFunctions.TruncateTime(toDate))
-                        .OrderByDescending(x => x.RecordedDate)
-                        .ToList();
-
-                    if (req.UserId != null)
-                    {
-                        result.Where(x => x.UserName == req.UserId);
-                    }
-
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                result.Where(x => DbFunctions.TruncateTime(x.RecordedDate) >= fromDate &&
+                                    DbFunctions.TruncateTime(x.RecordedDate) <= toDate);
             }
 
+            if (req.UserId != null)
+            {
+                result.Where(x => x.UserName == req.UserId);
+            }
+
+            result.OrderByDescending(x => x.RecordedDate);
+
+            return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
         }
 
         #endregion
@@ -131,26 +105,9 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.AuditTrail_UserManagementAudit)]
         public HttpResponseMessage GetUserManagementAudit(DataSourceLoadOptions loadOptions)
         {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var result = AuditService.Get_UMA(out bool requestStatus);
-                    if (requestStatus)
-                    {
-                        return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
-
+            var past30Days = DateTime.Now.AddDays(-30);
+            var result = _auditService.Get_UMA().Where(x => DbFunctions.TruncateTime(x.RecordedDate) > past30Days);
+            return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
         }
 
         [HttpPost]
@@ -158,27 +115,23 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.AuditTrail_UserManagementAudit)]
         public HttpResponseMessage GetUserManagementAuditFiltered([FromBody] AuditReq req,DataSourceLoadOptions loadOptions)
         {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var result = AuditService.Get_UMA(out bool requestStatus, req);
-                    if (requestStatus)
-                    {
-                        return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
-                    }
-                }
+            var fromDate = Common.ConvertEpochToDateTime(req.FromDateUnix);
+            var toDate = Common.ConvertEpochToDateTime(req.ToDateUnix);
 
-            }
-            catch (Exception ex)
+            var result = _auditService.Get_UMA();
+
+            if (fromDate != null && toDate != null)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                result.Where(x => DbFunctions.TruncateTime(x.RecordedDate) >= fromDate &&
+                                    DbFunctions.TruncateTime(x.RecordedDate) <= toDate);
             }
 
+            if (!string.IsNullOrEmpty(req.UserId))
+            {
+                result.Where(x => x.UserAccount == req.UserId);
+            }
+
+            return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
         }
 
         #endregion
@@ -191,26 +144,10 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.AuditTrail_RoleManagementAudit)]
         public HttpResponseMessage GetRoleManagementAudit(DataSourceLoadOptions loadOptions)
         {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var result = AuditService.Get_RMA(out bool requestStatus);
-                    if (requestStatus)
-                    {
-                        return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
+            var past30Days = DateTime.Now.AddDays(-30);
+            var result = _auditService.Get_RMA().Where(x => DbFunctions.TruncateTime(x.RecordedDate) > past30Days);
 
+            return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
         }
 
         [HttpPost]
@@ -218,27 +155,23 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.AuditTrail_RoleManagementAudit)]
         public HttpResponseMessage GetRoleManagementAuditFiltered([FromBody] AuditReq req, DataSourceLoadOptions loadOptions)
         {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var result = AuditService.Get_RMA(out bool requestStatus, req);
-                    if (requestStatus)
-                    {
-                        return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
-                    }
-                    else
-                    {
-                        return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
-                    }
-                }
+            var fromDate = Common.ConvertEpochToDateTime(req.FromDateUnix);
+            var toDate = Common.ConvertEpochToDateTime(req.ToDateUnix);
 
-            }
-            catch (Exception ex)
+            var result = _auditService.Get_RMA();
+
+            if (fromDate != null && toDate != null)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                result.Where(x => DbFunctions.TruncateTime(x.RecordedDate) >= fromDate &&
+                                    DbFunctions.TruncateTime(x.RecordedDate) <= toDate);
             }
 
+            if (!string.IsNullOrEmpty(req.RoleName))
+            {
+                result.Where(x => x.Role == req.RoleName);
+            }
+
+            return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
         }
 
 

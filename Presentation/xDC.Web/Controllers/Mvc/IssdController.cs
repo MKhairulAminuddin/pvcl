@@ -211,7 +211,7 @@ namespace xDC_Web.Controllers.Mvc
                 userEmail = findUser.Email;
             }
 
-            var referenceId = new CnEmailGenerator().GenerateMailFile(formId, userEmail);
+            var referenceId = _tsFormService.GenCnMailId(formId, userEmail);
 
             return Content(referenceId);
         }
@@ -221,7 +221,7 @@ namespace xDC_Web.Controllers.Mvc
         public ActionResult RetrieveCnEmail(string referenceId)
         {
             // stream out the contents - don't need to dispose because File() does it for you
-            var fileStream = new CnEmailGenerator().GetFile(referenceId);
+            var fileStream = _tsFormService.GetGeneratedForm(referenceId);
 
             if (fileStream != null)
             {

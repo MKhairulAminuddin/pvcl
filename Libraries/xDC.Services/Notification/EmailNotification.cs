@@ -31,6 +31,22 @@ namespace xDC.Services.Notification
 
         #region Methods
 
+        public void TestSendEmail(string recipientEmail)
+        {
+            var emailMsg = new MimeMessage()
+            {
+                Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                Subject = $"{SubjectAppend} Hej! Email Test",
+                Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                {
+                    Text = $"This just a test email. Kindly please ignore."
+                },
+                To = { new MailboxAddress("Test Receiver", recipientEmail) }
+            };
+
+            SendEmail(emailMsg);
+        }
+
         public void FormSubmission(int formId, string formType, string approvedBy, string notes)
         {
             try

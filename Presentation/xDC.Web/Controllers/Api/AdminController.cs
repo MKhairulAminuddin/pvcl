@@ -23,6 +23,7 @@ using xDC.Domain.WebApi.Administration;
 using static xDC.Utils.Common;
 using xDC_Web.Extension.CustomAttribute;
 using xDC.Services.Membership;
+using xDC.Services.Notification;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -34,15 +35,18 @@ namespace xDC_Web.Controllers.Api
 
         private readonly IUserManagementService _userMgmtService;
         private readonly IRoleManagementService _roleService;
+        private readonly IEmailNotification _emailService;
+
 
         #endregion
 
         #region Ctor
 
-        public AdminController(IUserManagementService userMgmtService, IRoleManagementService roleService)
+        public AdminController(IUserManagementService userMgmtService, IRoleManagementService roleService, IEmailNotification emailService)
         {
             _userMgmtService = userMgmtService;
             _roleService = roleService;
+            _emailService = emailService;
         }
 
         #endregion
@@ -266,24 +270,9 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.Administration_Utility)]
         public HttpResponseMessage TestEmail(FormDataCollection form)
         {
-            try
-            {
-                var recipient = form.Get("emailRecipient");
-
-                if (!string.IsNullOrEmpty(recipient))
-                {
-                    EmailNotificationService.TestSendEmail(recipient);
-                    return Request.CreateResponse(HttpStatusCode.OK, true);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, false);
-                }
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
+            var recipient = form.Get("emailRecipient");
+            _emailService.TestSendEmail(recipient);
+            return Request.CreateResponse(HttpStatusCode.OK, true);
         }
 
         #endregion
