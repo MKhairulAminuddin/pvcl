@@ -33,14 +33,16 @@ namespace xDC_Web.Controllers.Api
         #region Fields
 
         private readonly IUserManagementService _userMgmtService;
+        private readonly IRoleManagementService _roleService;
 
         #endregion
 
         #region Ctor
 
-        public AdminController(IUserManagementService userMgmtService)
+        public AdminController(IUserManagementService userMgmtService, IRoleManagementService roleService)
         {
             _userMgmtService = userMgmtService;
+            _roleService = roleService;
         }
 
         #endregion
@@ -122,7 +124,7 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.Administration_RolesManagement)]
         public HttpResponseMessage GetRoles(DataSourceLoadOptions loadOptions)
         {
-            var response = new AuthService().GetRoles(out bool statusRequest);
+            var response = _roleService.GetRoles(out bool statusRequest);
 
             if (statusRequest)
             {
@@ -146,7 +148,7 @@ namespace xDC_Web.Controllers.Api
                 var roleReq = new RoleReq();
                 JsonConvert.PopulateObject(values, roleReq);
 
-                var result = new AuthService().UpdateRoleName(key, roleReq.RoleName);
+                var result = _roleService.UpdateRoleName(key, roleReq.RoleName);
 
                 if (result)
                 {
@@ -173,7 +175,7 @@ namespace xDC_Web.Controllers.Api
             {
                 var key = int.Parse(form.Get("key"));
 
-                var result = new AuthService().DeleteRole(key, User.Identity.Name);
+                var result = _roleService.DeleteRole(key, User.Identity.Name);
 
                 if (result)
                 {
@@ -196,7 +198,7 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.Administration_RolesManagement)]
         public HttpResponseMessage GetPermissions(DataSourceLoadOptions loadOptions)
         {
-            var result = new AuthService().GetPermissions(out bool statusRequest);
+            var result = _roleService.GetPermissions(out bool statusRequest);
             if (statusRequest)
             {
                 return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
@@ -213,7 +215,7 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.Administration_RolesManagement)]
         public HttpResponseMessage GetRolePermissions(int roleId, DataSourceLoadOptions loadOptions)
         {
-            var result = new AuthService().GetRolePermissions(roleId, out bool statusRequest);
+            var result = _roleService.GetRolePermissions(roleId, out bool statusRequest);
             if (statusRequest)
             {
                 return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
@@ -230,7 +232,7 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.Administration_RolesManagement)]
         public HttpResponseMessage UpdateRolePermissions(int roleId,[FromBody] UpdatePremissionReq req)
         {
-            if (new AuthService().UpdateRolePermission(roleId, req, User.Identity.Name))
+            if (_roleService.UpdateRolePermission(roleId, req, User.Identity.Name))
             {
                 return Request.CreateResponse(HttpStatusCode.Created);
             }
@@ -245,7 +247,7 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.Administration_RolesManagement)]
         public HttpResponseMessage AddNewRole([FromBody] NewRoleReq req)
         {
-            if (new AuthService().AddNewRole(req.RoleName, req.Permissions, User.Identity.Name))
+            if (_roleService.AddNewRole(req.RoleName, req.Permissions, User.Identity.Name))
             {
                 return Request.CreateResponse(HttpStatusCode.Created);
             }

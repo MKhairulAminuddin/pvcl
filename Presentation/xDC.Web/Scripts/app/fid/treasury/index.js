@@ -25,7 +25,7 @@
             editPageRedirect: window.location.origin + "/fid/Treasury/Edit/",
             viewPageRedirect: window.location.origin + "/fid/Treasury/View/",
             deleteForm: window.location.origin + "/api/fid/Treasury/",
-            retractForm: window.location.origin + "/api/fid/Treasury/retractForm",
+            retractForm: window.location.origin + "/api/fid/Treasury/Retract",
         };
 
         $grid1 = $("#grid1").dxDataGrid({

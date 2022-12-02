@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http;
 using xDC.Domain.Web.AMSD.InflowFundForm;
+using xDC.Domain.WebApi.Forms;
 using xDC.Domain.WebApi.Forms.InflowFund;
 using xDC.Services.FileGenerator;
 using xDC.Services.Form;
@@ -23,16 +24,14 @@ namespace xDC_Web.Controllers.Api
         #region Fields
 
         private readonly IIfFormService _ifFormService;
-        private readonly IGenFile_IfForm _ifFormGen;
 
         #endregion
 
         #region Ctor
 
-        public AmsdController(IIfFormService ifFormService, IGenFile_IfForm ifFormGen)
+        public AmsdController(IIfFormService ifFormService)
         {
             _ifFormService = ifFormService;
-            _ifFormGen = ifFormGen;
         }
 
         #endregion
@@ -116,12 +115,23 @@ namespace xDC_Web.Controllers.Api
             return Request.CreateResponse(HttpStatusCode.Accepted, form);
         }
 
+        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
+        [HttpPost]
+        [Route("InflowFund/Reassign")]
+        public HttpResponseMessage Treasury_Reassign(ReassignNewApproverReq req)
+        {
+            var reassignApproverStatus = _ifFormService.ReassignApproverForm(req.formId, req.newApprover, User.Identity.Name);
+            if (!reassignApproverStatus) return Request.CreateResponse(HttpStatusCode.BadRequest, "Unable to reassign to new approver. Please check with system admin.");
+
+            return Request.CreateResponse(HttpStatusCode.Created);
+        }
+
         [Route("InflowFund/GenFile")]
         [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Download)]
         [HttpPost]
         public HttpResponseMessage InflowFund_GenFile([FromBody] IfForm_PrintReq req)
         {
-            var generatedDocId = _ifFormGen.GenId_IfForm(req.formId, User.Identity.Name, req.isExportAsExcel);
+            var generatedDocId = _ifFormService.GenExportFormId(req.formId, User.Identity.Name, req.isExportAsExcel);
 
             if (string.IsNullOrEmpty(generatedDocId)) return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error. Check application logs.");
 

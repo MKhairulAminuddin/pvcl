@@ -145,14 +145,14 @@ namespace xDC_Web.Controllers.Api
                         var inflowDeposit = db.FID_Treasury_Deposit
                             .Where(x => treasuryMyrFormIds.Contains(x.FormId)
                                         && x.PrincipalIntProfitReceivable > 0
-                                        && x.CashflowType == Common.Cashflow.Inflow)
+                                        && x.CashflowType == Cashflow.INFLOW.ToString())
                             .Select(l => l.PrincipalIntProfitReceivable)
                             .DefaultIfEmpty(0)
                             .Sum();
 
                         var inflowMmi = db.FID_Treasury_MMI
                             .Where(x => treasuryMyrFormIds.Contains(x.FormId)
-                                        && x.CashflowType == Common.Cashflow.Inflow
+                                        && x.CashflowType == Cashflow.INFLOW.ToString()
                                         && x.Proceeds > 0)
                             .Select(l => l.Proceeds)
                             .DefaultIfEmpty(0)
@@ -161,14 +161,14 @@ namespace xDC_Web.Controllers.Api
                         var outflowDeposit = db.FID_Treasury_Deposit
                             .Where(x => treasuryMyrFormIds.Contains(x.FormId)
                                         && x.Principal > 0
-                                        && x.CashflowType == Common.Cashflow.Outflow)
+                                        && x.CashflowType == Cashflow.OUTFLOW.ToString())
                             .Select(l => l.Principal)
                             .DefaultIfEmpty(0)
                             .Sum();
 
                         var outflowMmi = db.FID_Treasury_MMI
                             .Where(x => treasuryMyrFormIds.Contains(x.FormId)
-                                        && x.CashflowType == Common.Cashflow.Outflow
+                                        && x.CashflowType == Cashflow.OUTFLOW.ToString()
                                         && x.Proceeds > 0)
                             .Select(l => l.Proceeds)
                             .DefaultIfEmpty(0)
@@ -217,7 +217,7 @@ namespace xDC_Web.Controllers.Api
                             var inflowDeposit = db.FID_Treasury_Deposit
                                 .Where(x => treasuryFcyFormIds.Contains(x.FormId)
                                             && x.PrincipalIntProfitReceivable > 0
-                                            && x.CashflowType == Common.Cashflow.Inflow
+                                            && x.CashflowType == Cashflow.INFLOW.ToString()
                                             && x.FcaAccount == account.AccountName3)
                                 .Select(l => l.PrincipalIntProfitReceivable)
                                 .DefaultIfEmpty(0)
@@ -225,7 +225,7 @@ namespace xDC_Web.Controllers.Api
 
                             var inflowMmi = db.FID_Treasury_MMI
                                 .Where(x => treasuryFcyFormIds.Contains(x.FormId)
-                                            && x.CashflowType == Common.Cashflow.Inflow
+                                            && x.CashflowType == Cashflow.INFLOW.ToString()
                                             && x.Proceeds > 0
                                             && x.FcaAccount == account.AccountName3)
                                 .Select(l => l.Proceeds)
@@ -235,7 +235,7 @@ namespace xDC_Web.Controllers.Api
                             var outflowDeposit = db.FID_Treasury_Deposit
                                 .Where(x => treasuryFcyFormIds.Contains(x.FormId)
                                             && x.Principal > 0
-                                            && x.CashflowType == Common.Cashflow.Outflow
+                                            && x.CashflowType == Cashflow.OUTFLOW.ToString()
                                             && x.FcaAccount == account.AccountName3)
                                 .Select(l => l.Principal)
                                 .DefaultIfEmpty(0)
@@ -243,7 +243,7 @@ namespace xDC_Web.Controllers.Api
 
                             var outflowMmi = db.FID_Treasury_MMI
                                 .Where(x => treasuryFcyFormIds.Contains(x.FormId)
-                                            && x.CashflowType == Common.Cashflow.Outflow
+                                            && x.CashflowType == Cashflow.OUTFLOW.ToString()
                                             && x.Proceeds > 0
                                             && x.FcaAccount == account.AccountName3)
                                 .Select(l => l.Proceeds)

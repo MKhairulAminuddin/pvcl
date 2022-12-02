@@ -93,13 +93,13 @@ namespace xDC.Services.FileGenerator
                     int row = 9;
 
                     Content_MainTable(workbook, sheet,
-                        deposits.Where(x => x.CashflowType == Common.Cashflow.Inflow).ToList(),
-                        mmis.Where(x => x.CashflowType == Common.Cashflow.Inflow).ToList(), Common.Cashflow.Inflow, row,
+                        deposits.Where(x => x.CashflowType == Cashflow.INFLOW.ToString()).ToList(),
+                        mmis.Where(x => x.CashflowType == Cashflow.INFLOW.ToString()).ToList(), Cashflow.INFLOW.ToString(), row,
                         out row);
 
                     Content_MainTable(workbook, sheet,
-                        deposits.Where(x => x.CashflowType == Common.Cashflow.Outflow).ToList(),
-                        mmis.Where(x => x.CashflowType == Common.Cashflow.Outflow).ToList(), Common.Cashflow.Outflow, row,
+                        deposits.Where(x => x.CashflowType == Cashflow.OUTFLOW.ToString()).ToList(),
+                        mmis.Where(x => x.CashflowType == Cashflow.OUTFLOW.ToString()).ToList(), Cashflow.OUTFLOW.ToString(), row,
                         out row);
 
                     var footerRowNumber = row + 4;
@@ -145,7 +145,7 @@ namespace xDC.Services.FileGenerator
                 sheet["A" + row].Font.Bold = true;
                 sheet["A" + row].Font.Color = Color.White;
                 sheet["A" + row + ":B" + row].Merge();
-                sheet["A" + row + ":B" + row].FillColor = cashflowType == Common.Cashflow.Inflow ? _inflowColor : _outFlowColor;
+                sheet["A" + row + ":B" + row].FillColor = cashflowType == Cashflow.INFLOW.ToString() ? _inflowColor : _outFlowColor;
                 row += 2;
 
                 var rowNumberCount = 0;
@@ -203,7 +203,7 @@ namespace xDC.Services.FileGenerator
                 table.AutoFilter.Disable();
                 table.ShowTableStyleRowStripes = false;
                 table.ShowTotals = true;
-                table.HeaderRowRange.FillColor = cashflowType == Common.Cashflow.Inflow ? _inflowColor : _outFlowColor;
+                table.HeaderRowRange.FillColor = cashflowType == Cashflow.INFLOW.ToString() ? _inflowColor : _outFlowColor;
 
 
                 table.Columns[6].TotalRowFunction = TotalRowFunction.Sum;
@@ -225,7 +225,7 @@ namespace xDC.Services.FileGenerator
                 sheet["A" + row].Font.Bold = true;
                 sheet["A" + row].Font.Color = Color.White;
                 sheet["A" + row + ":B" + row].Merge();
-                sheet["A" + row + ":B" + row].FillColor = cashflowType == Common.Cashflow.Inflow ? _inflowColor : _outFlowColor;
+                sheet["A" + row + ":B" + row].FillColor = cashflowType == Cashflow.INFLOW.ToString() ? _inflowColor : _outFlowColor;
                 row += 2;
 
                 var rowNumberCount = 0;
@@ -286,7 +286,7 @@ namespace xDC.Services.FileGenerator
                 table.AutoFilter.Disable();
                 table.ShowTableStyleRowStripes = false;
                 table.ShowTotals = true;
-                table.HeaderRowRange.FillColor = cashflowType == Common.Cashflow.Inflow ? _inflowColor : _outFlowColor;
+                table.HeaderRowRange.FillColor = cashflowType == Cashflow.INFLOW.ToString() ? _inflowColor : _outFlowColor;
 
                 table.Columns[7].TotalRowFunction = TotalRowFunction.Sum;
                 table.Columns[7].Total.NumberFormat = "_(#,##0.00_);_((#,##0.00);_(\" - \"??_);_(@_)";

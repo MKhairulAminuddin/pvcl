@@ -12,26 +12,38 @@ namespace xDC_Web.Controllers
 {
 
     [Authorize]
-    public class HomeController : Controller {
+    public class HomeController : Controller 
+    {
+        private readonly IIfFormService _ifFormService;
+        private readonly ITsFormService _tsFormService;
+        private readonly ITreasuryFormService _tFormService;
+
+        public HomeController(ITreasuryFormService tFormService, IIfFormService ifFormService, ITsFormService tsFormService)
+        {
+            _tFormService = tFormService;
+            _ifFormService = ifFormService;
+            _tsFormService = tsFormService;
+        }
+
         public ActionResult Index() {
 
             var model = new HomeDashboard();
 
             if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.AMSD_InflowFundForm_Edit) || User.IsInRole("Power User"))
             {
-                model.IfFormSummary = IfFormService.IfFormSummaryList();
-                model.IfAmountSummary = IfFormService.IfAmountSummary();
+                model.IfFormSummary = _ifFormService.IfFormSummaryList();
+                model.IfAmountSummary = _ifFormService.IfAmountSummary();
             }
 
             if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.ISSD_TradeSettlementForm_Edit) || User.IsInRole("Power User"))
             {
-                model.TsOpeningBalanceSummary = TsFormService.OpeningBalanceSummary();
-                model.TsFormSummary = TsFormService.TsFormSummaryList();
+                model.TsOpeningBalanceSummary = _tsFormService.OpeningBalanceSummary();
+                model.TsFormSummary = _tsFormService.TsFormSummaryList();
             }
 
             if (MenuSecurity.IsAuthenticatedAndAllowed(Common.PermissionKey.FID_TreasuryForm_Edit) || User.IsInRole("Power User"))
             {
-                model.TreasuryFormSummary = TreasuryFormService.TreasuryFormSummaryList();
+                model.TreasuryFormSummary = _tFormService.TreasuryFormSummaryList();
             }
 
             return View(model);

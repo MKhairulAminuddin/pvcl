@@ -12,6 +12,7 @@ using xDC.Logging;
 using xDC.Services;
 using xDC.Services.FileGenerator;
 using xDC.Services.Form;
+using xDC.Services.Membership;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.Extension.DocGenerator;
@@ -30,14 +31,16 @@ namespace xDC_Web.Controllers.Mvc
         #region Fields
 
         private readonly ITsFormService _tsFormService;
+        private readonly IUserManagementService _userService;
 
         #endregion
 
         #region Ctor
 
-        public IssdController(ITsFormService tsFormService)
+        public IssdController(ITsFormService tsFormService, IUserManagementService userService)
         {
             _tsFormService = tsFormService;
+            _userService = userService;
         }
 
         #endregion
@@ -202,7 +205,7 @@ namespace xDC_Web.Controllers.Mvc
         {
             var userEmail = string.Empty;
 
-            var findUser = new AuthService().GetUser(User.Identity.Name);
+            var findUser = _userService.GetUser(User.Identity.Name);
             if (findUser != null)
             {
                 userEmail = findUser.Email;

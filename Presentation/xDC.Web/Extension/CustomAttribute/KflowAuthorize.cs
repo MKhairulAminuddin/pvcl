@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.ApplicationServices;
 using System.Web.Mvc;
 using xDC.Services;
+using xDC.Services.Membership;
 
 namespace xDC_Web.Extension.CustomAttribute
 {
     public class KflowAuthorize : AuthorizeAttribute
     {
         private readonly string _permissionName;
+        private static readonly IRoleManagementService _roleService;
 
         public KflowAuthorize(string PermissionName)
         {
@@ -21,7 +24,7 @@ namespace xDC_Web.Extension.CustomAttribute
             // If they are authorized, handle accordingly
             if (this.AuthorizeCore(filterContext.HttpContext))
             {
-                bool isAuthorized = new AuthService().IsUserHaveAccess(filterContext.HttpContext.User.Identity.Name, _permissionName);
+                bool isAuthorized = _roleService.IsUserHaveAccess(filterContext.HttpContext.User.Identity.Name, _permissionName);
 
                 if (!isAuthorized)
                 {

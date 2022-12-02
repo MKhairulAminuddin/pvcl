@@ -24,9 +24,10 @@ namespace xDC.Services.Membership
 
         #region Ctor
 
-        public UserManagementService(IXDcLogger logger)
+        public UserManagementService(IXDcLogger logger, IAuditService auditService)
         {
             _logger = logger;
+            _auditService = auditService;
         }
 
         #endregion

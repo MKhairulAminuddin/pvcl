@@ -10,16 +10,19 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using xDC.Services;
 using xDC_Web.Models;
 using xDC.Logging;
+using xDC.Services.Membership;
 
 namespace xDC_Web.Extension
 {
 	public class AdAuthentication
 	{
 		private readonly IAuthenticationManager _authManager;
+		private readonly IRoleManagementService _roleService;
 
-		public AdAuthentication(IAuthenticationManager authenticationManager)
+		public AdAuthentication(IAuthenticationManager authenticationManager, IRoleManagementService roleService)
 		{
 			this._authManager = authenticationManager;
+			_roleService = roleService;
 		}
 
 		public AuthenticationResult SignIn(LoginViewModel model)
@@ -106,7 +109,7 @@ namespace xDC_Web.Extension
 			}
 
 			// add your own claims if you need to add more information stored on the cookie
-			identity.AddClaim(new Claim(ClaimTypes.Role, new AuthService().GetUserRoles(userPrincipal.SamAccountName)));
+			identity.AddClaim(new Claim(ClaimTypes.Role, _roleService.GetUserRoles(userPrincipal.SamAccountName)));
 
 			return identity;
 		}

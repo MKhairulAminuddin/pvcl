@@ -20,6 +20,7 @@ using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services.Audit;
 using xDC.Services.FileGenerator;
+using xDC.Services.Membership;
 using xDC.Services.Notification;
 using xDC.Services.Workflow;
 using xDC.Utils;
@@ -38,18 +39,20 @@ namespace xDC.Services.Form
         private readonly IXDcLogger _logger;
         private readonly IWorkflowService _wfService;
         private readonly IGenFile_TsForm _genFile;
+        private readonly IRoleManagementService _roleService;
 
         #endregion
 
         #region Ctor
 
-        public TsFormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService, IGenFile_TsForm genFile)
-            : base(wfService, notifyService, logger, auditService)
+        public TsFormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService, IGenFile_TsForm genFile, IRoleManagementService roleService)
+            : base(wfService, notifyService, logger, auditService, roleService)
         {
             _wfService = wfService;
             _auditService = auditService;
             _logger = logger;
             _genFile = genFile;
+            _roleService = roleService;
         }
 
         #endregion
@@ -62,7 +65,7 @@ namespace xDC.Services.Form
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var enableCreateForm = new AuthService().IsUserHaveAccess(currentUser, PermissionKey.ISSD_TradeSettlementForm_Edit);
+                    var enableCreateForm = _roleService.IsUserHaveAccess(currentUser, PermissionKey.ISSD_TradeSettlementForm_Edit);
                     var today = DateTime.Now;
 
                     var model = new TsLandingPage()
@@ -1625,6 +1628,38 @@ namespace xDC.Services.Form
         {
             var withdrawFormStatus = this.RetractFormSubmission(formId, performedBy, formType);
             return withdrawFormStatus;
+        }
+
+        public bool ReassignApproverForm(int formId, string newApprover, string currentUser)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == formId);
+                    if (form == null) return false;
+
+                    var permittedApprover = db.Config_Approver
+                        .FirstOrDefault(x =>
+                            x.FormType == form.FormType && x.Username != currentUser && x.Username == newApprover);
+                    if (form == null) return false;
+
+                    var currentApprover = form.ApprovedBy;
+                    form.ApprovedBy = newApprover;
+                    form.ApprovedDate = null;
+
+                    var reassignStatus = db.SaveChanges();
+                    if (reassignStatus < 1) return false;
+
+                    ReassignApprover(formId, form.FormType, form.SettlementDate, currentUser, currentApprover, form.ApprovedBy);
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return false;
+            }
         }
 
         #endregion

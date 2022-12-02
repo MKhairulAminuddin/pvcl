@@ -42,6 +42,7 @@ namespace xDC.Services.Form
         TsForm ViewNewForm(string formType, string currentUser);
 
         bool WithdrawForm(int formId, string performedBy, string formType);
+        bool ReassignApproverForm(int formId, string newApprover, string currentUser);
 
         string GenExportFormId(int formId, string currentUser, bool isExportToExcel);
         string GenExportConsolidatedFormId(DateTime settlementDate, string currency, string currentUser, bool isExportToExcel);

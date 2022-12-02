@@ -26,7 +26,7 @@
 
             loadGrid: window.location.origin + "/api/amsd/InflowFund/Items/" + app.getUrlId(),
 
-            approvalReassign: window.location.origin + "/api/common/reassignApprover",
+            approvalReassign: window.location.origin + "/api/amsd/InflowFund/Reassign",
 
             approvalRequest: window.location.origin + "/api/amsd/InflowFund/Approval",
             approvalResponse: window.location.origin + "/amsd/inflowfund/view/",

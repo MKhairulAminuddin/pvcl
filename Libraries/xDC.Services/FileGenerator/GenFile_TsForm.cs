@@ -158,7 +158,7 @@ namespace xDC.Services.FileGenerator
                     }
 
                     var openingBalances = new List<TsOpeningBalance>();
-                    openingBalances = _tsFormService.GetOpeningBalance(db, settlementDate, currency);
+                    openingBalances = _tsFormService.GetOpeningBalance(settlementDate, currency);
 
 
 

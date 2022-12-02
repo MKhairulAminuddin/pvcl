@@ -446,13 +446,13 @@ namespace xDC_Web.Extension.DocGenerator
                     .ToList();
 
             var ifTotalPrincipal = db.FID_Treasury_Deposit
-                .Where(x => treasuryApprovedForms.Contains(x.FormId) && x.CashflowType == Common.Cashflow.Inflow)
+                .Where(x => treasuryApprovedForms.Contains(x.FormId) && x.CashflowType == Cashflow.INFLOW.ToString())
                 .Select(x => x.Principal)
                 .DefaultIfEmpty(0)
                 .Sum();
 
             var ifTotalInterest = db.FID_Treasury_Deposit
-                .Where(x => treasuryApprovedForms.Contains(x.FormId) && x.CashflowType == Common.Cashflow.Inflow)
+                .Where(x => treasuryApprovedForms.Contains(x.FormId) && x.CashflowType == Cashflow.INFLOW.ToString())
                 .Select(x => x.IntProfitReceivable)
                 .DefaultIfEmpty(0)
                 .Sum();
@@ -505,7 +505,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             var treasuryMmIf = db.FID_Treasury_MMI
                 .Where(x => treasuryApprovedForms.Contains(x.FormId)
-                            && x.CashflowType == Common.Cashflow.Inflow)
+                            && x.CashflowType == Cashflow.INFLOW.ToString())
                 .Select(x => x.Proceeds)
                 .DefaultIfEmpty(0)
                 .Sum();
@@ -552,7 +552,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             dataObj.OF_MM_NewPlacement = db.FID_Treasury_Deposit
                 .Where(x => treasuryApprovedForms.Contains(x.FormId)
-                            && x.CashflowType == Common.Cashflow.Outflow
+                            && x.CashflowType == Cashflow.OUTFLOW.ToString()
                             && x.Notes == "New")
                 .Select(x => x.Principal)
                 .DefaultIfEmpty(0)
@@ -560,7 +560,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             dataObj.OF_MM_Rollover = db.FID_Treasury_Deposit
                 .Where(x => treasuryApprovedForms.Contains(x.FormId)
-                            && x.CashflowType == Common.Cashflow.Outflow
+                            && x.CashflowType == Cashflow.OUTFLOW.ToString()
                             && x.Notes == "r/o p+i")
                 .Select(x => x.IntProfitReceivable)
                 .DefaultIfEmpty(0)
@@ -595,7 +595,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             var treasuryMmOf = db.FID_Treasury_MMI
                 .Where(x => treasuryApprovedForms.Contains(x.FormId)
-                            && x.CashflowType == Common.Cashflow.Outflow
+                            && x.CashflowType == Cashflow.OUTFLOW.ToString()
                             )
                 .Select(x => x.Proceeds)
                 .DefaultIfEmpty(0)
@@ -646,7 +646,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             var ifInflowItems = db.FID_Treasury_Deposit
                 .Where(x => treasuryApprovedForms.Contains(x.FormId)
-                            && x.CashflowType == Common.Cashflow.Inflow)
+                            && x.CashflowType == Cashflow.INFLOW.ToString())
                 .Select(x => new MYR_DealCutOffData_Mmi
                 {
                     Bank = x.Bank,
@@ -671,7 +671,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             var ofInflowRolloverItems = db.FID_Treasury_Deposit
                 .Where(x => treasuryApprovedForms.Contains(x.FormId)
-                            && x.CashflowType == Common.Cashflow.Outflow
+                            && x.CashflowType == Cashflow.OUTFLOW.ToString()
                             && x.Notes == "r/o P+I")
                 .Select(x => new MYR_DealCutOffData_Mmi
                 {
@@ -693,7 +693,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             var ofInflowNewPlacementItems = db.FID_Treasury_Deposit
                 .Where(x => treasuryApprovedForms.Contains(x.FormId)
-                            && x.CashflowType == Common.Cashflow.Outflow
+                            && x.CashflowType == Cashflow.OUTFLOW.ToString()
                             && x.Notes == "New")
                 .Select(x => new MYR_DealCutOffData_Mmi
                 {
@@ -777,7 +777,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             var inflowCorpTreasuryItems = db.FID_Treasury_MMI
                 .Where(x => treasuryApprovedForms.Contains(x.FormId)
-                            && x.CashflowType == Common.Cashflow.Inflow)
+                            && x.CashflowType == Cashflow.INFLOW.ToString())
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item1
                 {
                     Bank = x.Issuer,
@@ -875,7 +875,7 @@ namespace xDC_Web.Extension.DocGenerator
             // Sales - from FID Treasury IF MMI tab
             var othersTab_of_pds_item = db.FID_Treasury_MMI
                 .Where(x => treasuryApprovedForms.Contains(x.FormId)
-                            && x.CashflowType == Common.Cashflow.Outflow
+                            && x.CashflowType == Cashflow.OUTFLOW.ToString()
                             )
                 .Select(x => new MYR_DealCutOffData_OthersTab_Item1
                 {

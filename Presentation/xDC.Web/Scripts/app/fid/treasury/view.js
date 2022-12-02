@@ -34,7 +34,7 @@
             approvalRequest: window.location.origin + "/api/fid/Treasury/Approval",
             approvalResponse: window.location.origin + "/fid/Treasury/view/",
 
-            reassignApprover: window.location.origin + "/api/common/reassignApprover",
+            reassignApprover: window.location.origin + "/api/fid/Treasury/Reassign",
             
             postNewFormRequest: window.location.origin + "/api/fid/Treasury/New",
             postNewFormResponse: window.location.origin + "/fid/Treasury",

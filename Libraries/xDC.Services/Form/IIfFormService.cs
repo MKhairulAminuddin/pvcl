@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using xDC.Domain.Web.AMSD.InflowFundForm;
 using xDC.Domain.WebApi.Forms.InflowFund;
@@ -47,5 +48,9 @@ namespace xDC.Services.Form
         /// <param name="formType"></param>
         /// <returns>Status of the form withdrawal. Either true or false. </returns>
         bool WithdrawForm(int formId, string performedBy, string formType);
+        bool ReassignApproverForm(int formId, string newApprover, string currentUser);
+
+        string GenExportFormId(int formId, string currentUser, bool isExportToExcel);
+        FileStream GetGeneratedForm(string generatedFileId);
     }
 }

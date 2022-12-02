@@ -9,6 +9,12 @@ using System.Web;
 
 namespace xDC.Utils
 {
+    public enum Cashflow
+    {
+        INFLOW,
+        OUTFLOW
+    }
+
     public static class Common
     {
         public static class TsItemCategory
@@ -99,12 +105,6 @@ namespace xDC.Utils
         {
             public const string GOV = "GOV";
             public const string CORP = "CORP";
-        }
-
-        public static class Cashflow
-        {
-            public const string Inflow = "INFLOW";
-            public const string Outflow = "OUTFLOW";
         }
 
         public static class TsEmailNotificationType

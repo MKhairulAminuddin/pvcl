@@ -349,19 +349,19 @@ namespace xDC.Services.Notification
                 var sb = new StringBuilder();
 
                 var treasuryDepositInflow = db.FID_Treasury_Deposit
-                    .Where(x => x.FormId == formId && x.CashflowType == Common.Cashflow.Inflow)
+                    .Where(x => x.FormId == formId && x.CashflowType == Cashflow.INFLOW.ToString())
                     .ToList();
 
                 var treasuryMmiInflow = db.FID_Treasury_MMI
-                    .Where(x => x.FormId == formId && x.CashflowType == Common.Cashflow.Inflow)
+                    .Where(x => x.FormId == formId && x.CashflowType == Cashflow.INFLOW.ToString())
                     .ToList();
 
                 var treasuryDepositOutflow = db.FID_Treasury_Deposit
-                    .Where(x => x.FormId == formId && x.CashflowType == Common.Cashflow.Outflow)
+                    .Where(x => x.FormId == formId && x.CashflowType == Cashflow.OUTFLOW.ToString())
                     .ToList();
 
                 var treasuryMmiOutflow = db.FID_Treasury_MMI
-                    .Where(x => x.FormId == formId && x.CashflowType == Common.Cashflow.Outflow)
+                    .Where(x => x.FormId == formId && x.CashflowType == Cashflow.OUTFLOW.ToString())
                     .ToList();
 
                 if (treasuryDepositInflow.Any())

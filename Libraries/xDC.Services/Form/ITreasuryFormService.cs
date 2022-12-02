@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using xDC.Domain.Web.FID.TreasuryForm;
 using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Domain.WebApi.Forms;
+using xDC.Domain.WebApi.Forms.Treasury;
 using xDC.Infrastructure.Application;
+using xDC.Utils;
 
 namespace xDC.Services.Form
 {
@@ -17,12 +16,31 @@ namespace xDC.Services.Form
         TreasuryFormPage GetViewPageData(int formId, string currentUser);
         TreasuryFormPage GetEditPageData(int formId, string currentUser);
         List<TreasuryFormSummary> TreasuryFormSummaryList(long submissionDateEpoch = 0);
-        List<EDW_FID_List> List_Issuer(kashflowDBEntities db);
-        List<string> List_FcaBankAccount(kashflowDBEntities db);
-        List<EDW_FID_List> List_CounterParty(kashflowDBEntities db);
+        List<EDW_FID_List> List_Issuer();
+        List<string> List_FcaBankAccount();
+        List<EDW_FID_List> List_CounterParty();
 
+        List<TDeposit> DepositFromEdw(DateTime tradeDate, string currency);
+        List<TMmi> MmiFromEdw(DateTime tradeDate, string currency);
 
         string GenExportFormId(int formId, string currentUser, bool isExportToExcel);
         FileStream GetGeneratedForm(string generatedFileId);
+
+        #region Form Action
+        int CreateForm(TForm input, string currentUser);
+        int EditForm(int formId, TForm input, string currentUser);
+        int DeleteForm(int formId, string currentUser);
+        int ApproveForm(TreasuryFormApprovingReq input, string currentUser);
+        bool WithdrawForm(int formId, string performedBy, string formType);
+        bool ReassignApproverForm(int formId, string newApprover, string currentUser);
+
+        #endregion
+
+        #region Grid
+
+        List<FID_Treasury_Deposit> GetDepositGrid(int formId, Cashflow cashflow);
+        List<FID_Treasury_MMI> GetMmiGrid(int formId, Cashflow cashflow);
+
+        #endregion
     }
 }

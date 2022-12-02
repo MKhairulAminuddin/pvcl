@@ -69,6 +69,7 @@
     <Compile Include="WebApi\Audit\AuditReq.cs" />
     <Compile Include="WebApi\Forms\InflowFund\IfForm_PrintReq.cs" />
     <Compile Include="WebApi\Forms\InflowFund\IfHomeGrid1.cs" />
+    <Compile Include="WebApi\Forms\ReassignNewApproverReq.cs" />
     <Compile Include="WebApi\Forms\TradeSettlement\TsCreateNewFormRequest.cs" />
     <Compile Include="WebApi\Forms\TradeSettlement\TsFormApprovalRequest.cs" />
     <Compile Include="WebApi\Forms\TradeSettlement\TsGenerateFileRequest.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="WebApi\Forms\TradeSettlement\TsHomeGrid2.cs" />
     <Compile Include="WebApi\Forms\TradeSettlement\TsTradeItem.cs" />
     <Compile Include="WebApi\Forms\TreasuryHomeGrid1.cs" />
+    <Compile Include="WebApi\Forms\Treasury\TreasuryFormApprovingReq.cs" />
     <Compile Include="WebApi\Forms\Treasury\TreasuryForm_PrintReq.cs" />
     <Compile Include="WebApi\Form_FcaTagging\DetailRes.cs" />
     <Compile Include="WebApi\Form_FcaTagging\FcaBankAccountRes.cs" />
@@ -88,6 +90,10 @@
     <Compile Include="Web\AMSD\InflowFundForm\InflowFundFormsLandingPage.cs" />
     <Compile Include="Web\AMSD\InflowFundForm\InflowFundForm.cs" />
     <Compile Include="Web\FID\FcaTaggingForm\FcaAccountAssignmentFormVM.cs" />
+    <Compile Include="Web\FID\TreasuryForm\TDeposit.cs" />
+    <Compile Include="Web\FID\TreasuryForm\TForm.cs" />
+    <Compile Include="Web\FID\TreasuryForm\TFormEdit.cs" />
+    <Compile Include="Web\FID\TreasuryForm\TMmi.cs" />
     <Compile Include="Web\FID\TreasuryForm\TreasuryFormPage.cs" />
     <Compile Include="Web\FID\TreasuryForm\TreasuryFormSummary.cs" />
     <Compile Include="Web\HOME\HomeDashboard.cs" />

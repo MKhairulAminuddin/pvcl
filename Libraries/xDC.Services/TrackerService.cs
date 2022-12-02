@@ -10,6 +10,8 @@ namespace xDC.Services
 {
     public static class TrackerService
     {
+        private static readonly IXDcLogger _logger;
+
         public static void TrackUserLogin(string username, string ipadress, string browser)
         {
             try
@@ -29,7 +31,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
             }
         }
     }

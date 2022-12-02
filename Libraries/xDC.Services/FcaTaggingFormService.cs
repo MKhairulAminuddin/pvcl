@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Asn1.Ocsp;
+﻿using DevExpress.Xpo.Logger;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -21,6 +22,15 @@ namespace xDC.Services
 {
     public class FcaTaggingFormService
     {
+        private readonly IXDcLogger _logger;
+        private readonly ITreasuryFormService _tFormService;
+
+        public FcaTaggingFormService(IXDcLogger logger, ITreasuryFormService tFormService)
+        {
+            _logger = logger;
+            _tFormService = tFormService;
+        }
+
         public List<SummaryRes> DxGrid_GetSummaryForIssdView(out bool reqStatus)
         {
             try
@@ -85,7 +95,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 reqStatus = false;
                 return null;
             }
@@ -164,7 +174,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 reqStatus = false;
                 return null;
             }
@@ -234,7 +244,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 reqStatus = false;
                 return null;
             }
@@ -317,7 +327,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 reqStatus = false;
                 return null;
             }
@@ -361,7 +371,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 reqStatus = false;
                 return null;
             }
@@ -373,7 +383,7 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = TreasuryFormService.List_FcaBankAccount(db);
+                    var result = _tFormService.List_FcaBankAccount();
 
                     result.Add("RENTAS");
                     result.Add("MMA");
@@ -384,7 +394,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 reqStatus = false;
                 return null;
             }
@@ -430,7 +440,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 reqStatus = false;
                 return null;
             }

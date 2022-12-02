@@ -1,9 +1,11 @@
-﻿using MimeKit;
+﻿using DevExpress.Xpo.Logger;
+using MimeKit;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -17,6 +19,8 @@ using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services.Audit;
+using xDC.Services.FileGenerator;
+using xDC.Services.Membership;
 using xDC.Services.Notification;
 using xDC.Services.Workflow;
 using xDC.Utils;
@@ -32,17 +36,21 @@ namespace xDC.Services.Form
         private readonly IAuditService _auditService;
         private readonly IXDcLogger _logger;
         private readonly IEmailNotification _emailNotification;
+        private readonly IRoleManagementService _roleService;
+        private readonly IGenFile_IfForm _genFile;
 
         #endregion
 
         #region Ctor
 
-        public IfFormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService, IEmailNotification emailNotification)
-            : base(wfService, notifyService, logger, auditService)
+        public IfFormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService, IRoleManagementService roleService, IEmailNotification emailNotification, IGenFile_IfForm genFile)
+            : base(wfService, notifyService, logger, auditService, roleService)
         {
             _auditService = auditService;
             _logger = logger;
             _emailNotification = emailNotification;
+            _roleService = roleService;
+            _genFile = genFile;
         }
 
         #endregion
@@ -55,7 +63,7 @@ namespace xDC.Services.Form
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var enableCreateForm = new AuthService().IsUserHaveAccess(currentUser, PermissionKey.AMSD_InflowFundForm_Edit);
+                    var enableCreateForm = _roleService.IsUserHaveAccess(currentUser, PermissionKey.AMSD_InflowFundForm_Edit);
                     var today = DateTime.Now;
 
                     var model = new LandingPage()
@@ -129,7 +137,7 @@ namespace xDC.Services.Form
                             
                             EnableDraftButton = form.FormStatus == FormStatus.Draft,
                             EnableEditDraftBtn = form.FormStatus == FormStatus.Draft && form.PreparedBy == currentUser,
-                            EnableSaveAdminChanges = new AuthService().IsUserHaveAccess(currentUser, PermissionKey.AMSD_InflowFundForm_PowerUser) && form.FormStatus == FormStatus.Approved,
+                            EnableSaveAdminChanges = _roleService.IsUserHaveAccess(currentUser, PermissionKey.AMSD_InflowFundForm_PowerUser) && form.FormStatus == FormStatus.Approved,
 
                             EnableApproveRejectBtn = form.ApprovedBy == currentUser && form.FormStatus == FormStatus.PendingApproval
                         };
@@ -547,6 +555,50 @@ namespace xDC.Services.Form
             return withdraFormStatus;
         }
 
+        public bool ReassignApproverForm(int formId, string newApprover, string currentUser)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var form = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
+                    if (form == null) return false;
+
+                    var permittedApprover = db.Config_Approver
+                        .FirstOrDefault(x =>
+                            x.FormType == form.FormType && x.Username != currentUser && x.Username == newApprover);
+                    if (form == null) return false;
+
+                    var currentApprover = form.ApprovedBy;
+                    form.ApprovedBy = newApprover;
+                    form.ApprovedDate = null;
+
+                    var reassignStatus = db.SaveChanges();
+                    if (reassignStatus < 1) return false;
+
+                    ReassignApprover(formId, form.FormType, form.FormDate, currentUser, currentApprover, form.ApprovedBy);
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return false;
+            }
+        }
+
+        public string GenExportFormId(int formId, string currentUser, bool isExportToExcel)
+        {
+            return _genFile.GenId_IfForm(formId, currentUser, isExportToExcel);
+        }
+
+        public FileStream GetGeneratedForm(string generatedFileId)
+        {
+            return _genFile.GenFile(generatedFileId);
+        }
+
         #endregion
+
+
     }
 }

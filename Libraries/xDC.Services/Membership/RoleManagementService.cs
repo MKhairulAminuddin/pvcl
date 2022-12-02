@@ -8,12 +8,28 @@ using xDC.Logging;
 using xDC.Services.Audit;
 using xDC.Utils;
 
-namespace xDC.Services
+namespace xDC.Services.Membership
 {
-    public class AuthService
+    public class RoleManagementService : IRoleManagementService
     {
-        #region User Management
+        #region Fields
 
+        private readonly IXDcLogger _logger;
+        private readonly IAuditService _auditService;
+
+        #endregion
+
+        #region Ctor
+
+        public RoleManagementService(IXDcLogger logger, IAuditService auditService)
+        {
+            _logger = logger;
+            _auditService = auditService;
+        }
+
+        #endregion
+
+        #region Methods
 
         public string GetUserRoles(string username)
         {
@@ -35,66 +51,10 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return "Anonymous";
             }
 
-        }
-
-        public AspNetUsers GetUser(string username)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var user = db.AspNetUsers.Include(y => y.AspNetRoles).FirstOrDefault(x => x.UserName == username);
-
-                    if (user != null)
-                    {
-                        return user;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return null;
-            }
-        }
-
-
-
-        #endregion
-
-        #region Role Management
-
-        public AspNetRoles GetRole(string roleName)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var getRole = db.AspNetRoles.FirstOrDefault(x => x.Name == roleName);
-
-                    if (getRole != null)
-                    {
-                        return getRole;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return null;
-            }
         }
 
         public List<RolesRes> GetRoles(out bool status)
@@ -115,7 +75,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
 
                 status = false;
                 return new List<RolesRes>();
@@ -128,7 +88,7 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    
+
 
                     var permissions = db.AspNetPermission.ToList();
                     var permissionTreeView = new List<PermissionsRes>();
@@ -156,7 +116,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
 
                 status = false;
                 return new List<PermissionsRes>();
@@ -217,7 +177,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
 
                 status = false;
                 return new List<RolePermissionsRes>();
@@ -242,7 +202,7 @@ namespace xDC.Services
                                 foreach (var permission in permissionToDelete.ToList())
                                 {
                                     rolePermissions.AspNetPermission.Remove(permission);
-                                    AuditService.Capture_RMA(Common.RoleManagementActionType.DeletePermission, $"Deleted {permission.PermissionName} permission from role {rolePermissions.Name}", rolePermissions.Name, performedBy);
+                                    _auditService.Capture_RMA(Common.RoleManagementActionType.DeletePermission, $"Deleted {permission.PermissionName} permission from role {rolePermissions.Name}", rolePermissions.Name, performedBy);
                                 }
                                 db.SaveChanges();
                             }
@@ -280,7 +240,7 @@ namespace xDC.Services
                             foreach (var item in allNewPermission)
                             {
                                 rolePermissions.AspNetPermission.Add(item);
-                                AuditService.Capture_RMA(Common.RoleManagementActionType.AddPermission, $"Added {item.PermissionName} permission from role {rolePermissions.Name}", rolePermissions.Name, performedBy);
+                                _auditService.Capture_RMA(Common.RoleManagementActionType.AddPermission, $"Added {item.PermissionName} permission from role {rolePermissions.Name}", rolePermissions.Name, performedBy);
 
                             }
 
@@ -299,7 +259,7 @@ namespace xDC.Services
                                 foreach (var permission in permissionToDelete.ToList())
                                 {
                                     rolePermissions.AspNetPermission.Remove(permission);
-                                    AuditService.Capture_RMA(Common.RoleManagementActionType.DeletePermission, $"Deleted {permission.PermissionName} permission from role {rolePermissions.Name}", rolePermissions.Name, performedBy);
+                                    _auditService.Capture_RMA(Common.RoleManagementActionType.DeletePermission, $"Deleted {permission.PermissionName} permission from role {rolePermissions.Name}", rolePermissions.Name, performedBy);
 
                                 }
                                 db.SaveChanges();
@@ -311,7 +271,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return false;
             }
         }
@@ -328,7 +288,7 @@ namespace xDC.Services
                         var newRole = new AspNetRoles() { Name = newRoleName };
                         var addNewRole = db.AspNetRoles.Add(newRole);
                         db.SaveChanges();
-                        AuditService.Capture_RMA(Common.RoleManagementActionType.Add, $"Added new role {newRole.Name}", newRole.Name, performedBy);
+                        _auditService.Capture_RMA(Common.RoleManagementActionType.Add, $"Added new role {newRole.Name}", newRole.Name, performedBy);
 
 
                         int addRoleId = newRole.Id;
@@ -345,7 +305,7 @@ namespace xDC.Services
                                         if (newAssignedPermission != null)
                                         {
                                             addNewRole.AspNetPermission.Add(newAssignedPermission);
-                                            AuditService.Capture_RMA(Common.RoleManagementActionType.AddPermission, $"Added {newAssignedPermission.PermissionName} permission to role {newRole.Name}", newRole.Name, performedBy);
+                                            _auditService.Capture_RMA(Common.RoleManagementActionType.AddPermission, $"Added {newAssignedPermission.PermissionName} permission to role {newRole.Name}", newRole.Name, performedBy);
                                         }
                                     }
 
@@ -355,7 +315,7 @@ namespace xDC.Services
                                         if (parentPermission != null)
                                         {
                                             addNewRole.AspNetPermission.Add(parentPermission);
-                                            AuditService.Capture_RMA(Common.RoleManagementActionType.AddPermission, $"Added {parentPermission.PermissionName} permission to role {newRole.Name}", newRole.Name, performedBy);
+                                            _auditService.Capture_RMA(Common.RoleManagementActionType.AddPermission, $"Added {parentPermission.PermissionName} permission to role {newRole.Name}", newRole.Name, performedBy);
                                         }
                                     }
 
@@ -363,7 +323,7 @@ namespace xDC.Services
                                 }
                             }
                         }
-                        
+
                         return true;
                     }
                     else
@@ -371,12 +331,12 @@ namespace xDC.Services
                         return false;
                     }
 
-                    
+
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return false;
             }
         }
@@ -388,7 +348,7 @@ namespace xDC.Services
                 using (var db = new kashflowDBEntities())
                 {
                     var selectedRole = db.AspNetRoles.FirstOrDefault(x => x.Id == roleId);
-                    if (selectedRole!=null)
+                    if (selectedRole != null)
                     {
                         selectedRole.Name = newRoleName;
                         db.SaveChanges();
@@ -399,7 +359,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
 
                 return false;
             }
@@ -412,11 +372,11 @@ namespace xDC.Services
                 using (var db = new kashflowDBEntities())
                 {
                     var selectedRole = db.AspNetRoles.FirstOrDefault(x => x.Id == roleId);
-                    var isAdminRole = IsAdminRole(roleId);
+                    var isAdminRole = db.AspNetRoles.FirstOrDefault(x => x.Id == roleId)?.Name == "Administrator";
 
                     if (selectedRole != null && !isAdminRole)
                     {
-                        AuditService.Capture_RMA(Common.RoleManagementActionType.Delete, $"Deleted role {selectedRole.Name}", selectedRole.Name, performedBy);
+                        _auditService.Capture_RMA(Common.RoleManagementActionType.Delete, $"Deleted role {selectedRole.Name}", selectedRole.Name, performedBy);
 
                         db.AspNetRoles.Remove(selectedRole);
                         db.SaveChanges();
@@ -427,15 +387,11 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
+                _logger.LogError(ex.Message);
 
                 return false;
             }
         }
-
-        #endregion
-
-        #region Access Permission
 
         public bool IsUserHaveAccess(string userName, string permissionName)
         {
@@ -450,7 +406,7 @@ namespace xDC.Services
                         var userRoles = theUser.AspNetRoles;
                         if (userRoles != null)
                         {
-                            
+
                             foreach (var rolePermissions in userRoles)
                             {
                                 if (rolePermissions.AspNetPermission.Any(x => x.PermissionName == permissionName))
@@ -466,66 +422,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.Message);
-                return false;
-            }
-        }
-
-        public bool IsRoleHaveAccess(string roleName, string permissionName)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var theRole = db.AspNetRoles.FirstOrDefault(x => x.Name == roleName);
-                    var permitted = false;
-
-                    if (theRole != null)
-                    {
-                        foreach (var rolePermissions in theRole.AspNetPermission)
-                        {
-                            if (rolePermissions.PermissionName == permissionName)
-                            {
-                                permitted = true;
-                            }
-                        }
-                    }
-
-                    return permitted;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex.Message);
-                return false;
-            }
-        }
-
-        #endregion
-
-
-        #region Private Functions
-
-        private bool IsAdminRole(int roleId)
-        {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var selectedRole = db.AspNetRoles.FirstOrDefault(x => x.Id == roleId);
-                    if (selectedRole != null)
-                    {
-                        db.AspNetRoles.Remove(selectedRole);
-                        db.SaveChanges();
-                    }
-
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex.Message);
-
+                _logger.LogError(ex.Message);
                 return false;
             }
         }

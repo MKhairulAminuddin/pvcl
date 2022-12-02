@@ -14,6 +14,8 @@ namespace xDC.Services
 {
     public static class SettingService
     {
+        private static readonly IXDcLogger _logger;
+
         public static EmailConfigSetting EmailConfiguration()
         {
             try
@@ -100,7 +102,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
@@ -158,7 +160,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return false;
             }
         }

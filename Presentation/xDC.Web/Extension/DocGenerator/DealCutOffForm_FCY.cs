@@ -557,7 +557,7 @@ namespace xDC_Web.Extension.DocGenerator
                         if (treasuryFormIds.Any())
                         {
                             var IF_DepositMaturity = db.FID_Treasury_Deposit
-                                .Where(x => x.CashflowType == Common.Cashflow.Inflow
+                                .Where(x => x.CashflowType == Cashflow.INFLOW.ToString()
                                             && treasuryFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
                                 .Select(x => x.PrincipalIntProfitReceivable)
@@ -565,7 +565,7 @@ namespace xDC_Web.Extension.DocGenerator
                                 .Sum();
 
                             var IF_MoneyMarket = db.FID_Treasury_MMI
-                                .Where(x => x.CashflowType == Common.Cashflow.Inflow
+                                .Where(x => x.CashflowType == Cashflow.INFLOW.ToString()
                                             && treasuryFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
                                 .Select(x => x.Proceeds)
@@ -573,14 +573,14 @@ namespace xDC_Web.Extension.DocGenerator
                                 .Sum();
 
                             var OF_RolloverNewPlacement = db.FID_Treasury_Deposit
-                                .Where(x => x.CashflowType == Common.Cashflow.Outflow
+                                .Where(x => x.CashflowType == Cashflow.OUTFLOW.ToString()
                                             && treasuryFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
                                 .Select(x => x.Principal)
                                 .DefaultIfEmpty(0)
                                 .Sum();
                             var OF_MoneyMarket = db.FID_Treasury_MMI
-                                .Where(x => x.CashflowType == Common.Cashflow.Inflow
+                                .Where(x => x.CashflowType == Cashflow.INFLOW.ToString()
                                             && treasuryFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
                                 .Select(x => x.Proceeds)
@@ -671,7 +671,7 @@ namespace xDC_Web.Extension.DocGenerator
                         if (treasuryFormIds.Any())
                         {
                             var IF_DepositMaturity = db.FID_Treasury_Deposit
-                                .Where(x => x.CashflowType == Common.Cashflow.Inflow
+                                .Where(x => x.CashflowType == Cashflow.INFLOW.ToString()
                                             && treasuryFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
                                 .ToList();
@@ -704,7 +704,7 @@ namespace xDC_Web.Extension.DocGenerator
                             }
 
                             var IF_MoneyMarket = db.FID_Treasury_MMI
-                                .Where(x => x.CashflowType == Common.Cashflow.Inflow
+                                .Where(x => x.CashflowType == Cashflow.INFLOW.ToString()
                                             && treasuryFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
                                 .ToList();
@@ -735,7 +735,7 @@ namespace xDC_Web.Extension.DocGenerator
                             }
 
                             var OF_RolloverNewPlacement = db.FID_Treasury_Deposit
-                                .Where(x => x.CashflowType == Common.Cashflow.Outflow
+                                .Where(x => x.CashflowType == Cashflow.OUTFLOW.ToString()
                                             && treasuryFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
                                 .ToList();
@@ -768,7 +768,7 @@ namespace xDC_Web.Extension.DocGenerator
                             }
 
                             var OF_MoneyMarket = db.FID_Treasury_MMI
-                                .Where(x => x.CashflowType == Common.Cashflow.Outflow
+                                .Where(x => x.CashflowType == Cashflow.OUTFLOW.ToString()
                                             && treasuryFormIds.Contains(x.FormId)
                                             && availableAccount3.Contains(x.FcaAccount))
                                 .ToList();

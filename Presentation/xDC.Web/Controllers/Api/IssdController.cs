@@ -13,6 +13,7 @@ using DevExtreme.AspNet.Data;
 using DevExtreme.AspNet.Mvc;
 using Newtonsoft.Json;
 using xDC.Domain.Web.ISSD.TradeSettlementForm;
+using xDC.Domain.WebApi.Forms;
 using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
@@ -263,6 +264,17 @@ namespace xDC_Web.Controllers.Api
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
+        }
+
+        [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_Edit)]
+        [HttpPost]
+        [Route("ts/Reassign")]
+        public HttpResponseMessage Treasury_Reassign(ReassignNewApproverReq req)
+        {
+            var reassignApproverStatus = _tsFormService.ReassignApproverForm(req.formId, req.newApprover, User.Identity.Name);
+            if (!reassignApproverStatus) return Request.CreateResponse(HttpStatusCode.BadRequest, "Unable to reassign to new approver. Please check with system admin.");
+
+            return Request.CreateResponse(HttpStatusCode.Created);
         }
 
         [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_Edit)]

@@ -20,7 +20,7 @@
             return window.location.origin + "/api/common/FormAuditTrail/" + formTypeId +"/" + _getIdFromQueryString;
         },
         loadApprover: window.location.origin + "/api/common/GetTradeSettlementApprover",
-        reassignApprover: window.location.origin + "/api/common/reassignApprover",
+        reassignApprover: window.location.origin + "/api/issd/ts/Reassign",
         loadCurrencies: window.location.origin + "/api/common/GetTradeSettlementCurrencies",
         loadTradeItemEdw: function(instrumentType, settlementDate, currency) {
             return window.location.origin +

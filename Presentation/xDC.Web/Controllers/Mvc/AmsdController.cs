@@ -27,16 +27,14 @@ namespace xDC_Web.Controllers.Mvc
         #region Fields
 
         private readonly IIfFormService _ifFormService;
-        private readonly IGenFile_IfForm _ifFormGen;
 
         #endregion
 
         #region Ctor
 
-        public AmsdController(IIfFormService ifFormService, IGenFile_IfForm ifFormGen)
+        public AmsdController(IIfFormService ifFormService)
         {
             _ifFormService = ifFormService;
-            _ifFormGen = ifFormGen;
         }
 
         #endregion
@@ -108,7 +106,7 @@ namespace xDC_Web.Controllers.Mvc
         public ActionResult InflowFund_Download(string id)
         {
             var generatedFileId = HttpUtility.HtmlDecode(id);
-            var fileStream = _ifFormGen.GenFile(generatedFileId);
+            var fileStream = _ifFormService.GetGeneratedForm(generatedFileId);
 
             if (fileStream == null)
             {

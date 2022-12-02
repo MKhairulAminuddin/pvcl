@@ -8,6 +8,7 @@ using xDC.Domain.Form;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services.Audit;
+using xDC.Services.Membership;
 using xDC.Services.Notification;
 using xDC.Services.Workflow;
 using xDC.Utils;
@@ -23,17 +24,19 @@ namespace xDC.Services.Form
         private readonly INotificationService _notifyService;
         private readonly IAuditService _auditService;
         private readonly IXDcLogger _logger;
+        private readonly IRoleManagementService _roleService;
 
         #endregion
 
         #region Ctor
 
-        public FormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService)
+        public FormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService, IRoleManagementService roleService)
         {
             _wfService = wfService;
             _notifyService = notifyService;
             _logger = logger;
             _auditService = auditService;
+            _roleService = roleService;
         }
 
         #endregion
@@ -52,7 +55,7 @@ namespace xDC.Services.Form
         public bool EnableEdit(string formStatus, string currentUser, string permissionKey)
         {
             var isPendingApproval = formStatus == FormStatus.PendingApproval;
-            var isAllowedToEdit = new AuthService().IsUserHaveAccess(currentUser, permissionKey);
+            var isAllowedToEdit = _roleService.IsUserHaveAccess(currentUser, permissionKey);
 
             return !isPendingApproval && isAllowedToEdit;
         }
@@ -61,14 +64,14 @@ namespace xDC.Services.Form
         {
             var isPendingApproval = formStatus == FormStatus.PendingApproval;
             var isFormApprover = formApprover == currentUser;
-            var isUserHavePermission = new AuthService().IsUserHaveAccess(currentUser, permissionKey);
+            var isUserHavePermission = _roleService.IsUserHaveAccess(currentUser, permissionKey);
 
             return !isPendingApproval && !isFormApprover && isUserHavePermission;
         }
 
         public bool EnablePrint(string currentUser, string formStatus, string permissionKey)
         {
-            var isDownloadAllowed = new AuthService().IsUserHaveAccess(currentUser, permissionKey);
+            var isDownloadAllowed = _roleService.IsUserHaveAccess(currentUser, permissionKey);
             var isDraft = formStatus == FormStatus.Draft;
 
             return isDownloadAllowed && !isDraft;
@@ -78,7 +81,7 @@ namespace xDC.Services.Form
         {
             var isFormPendingApproval = formStatus == FormStatus.PendingApproval;
             var isNotCurrentFormApprover = formApprover != currentUser;
-            var isAllowedToEdit = new AuthService().IsUserHaveAccess(currentUser, permissionKey);
+            var isAllowedToEdit = _roleService.IsUserHaveAccess(currentUser, permissionKey);
 
             return isFormPendingApproval && isNotCurrentFormApprover && isAllowedToEdit;
         }
@@ -86,7 +89,7 @@ namespace xDC.Services.Form
         public bool EnableResubmission(string formStatus, string formApprover, string currentUser, string permissionKey)
         {
             var isFormAllowedForResubmission = (formStatus == FormStatus.Approved || formStatus == FormStatus.Rejected);
-            var isAllowedToEdit = new AuthService().IsUserHaveAccess(currentUser, permissionKey);
+            var isAllowedToEdit = _roleService.IsUserHaveAccess(currentUser, permissionKey);
 
             return isFormAllowedForResubmission && isAllowedToEdit;
         }
@@ -94,14 +97,14 @@ namespace xDC.Services.Form
         public bool EnableApprovalSubmission(string formStatus, string approver, string currentUser, string permissionKey)
         {
             var formIsInDraftAndAllowedForSubmission = (formStatus == FormStatus.Draft || formStatus == null) && string.IsNullOrEmpty(approver);
-            var isAllowedToEdit = new AuthService().IsUserHaveAccess(currentUser, permissionKey);
+            var isAllowedToEdit = _roleService.IsUserHaveAccess(currentUser, permissionKey);
 
             return formIsInDraftAndAllowedForSubmission && isAllowedToEdit;
         }
 
         public bool EnableFormWithdrawal(string currentUser, string formPreparedBy, string formStatus, string permissionKey)
         {
-            var haveEditPermission = new AuthService().IsUserHaveAccess(currentUser, permissionKey);
+            var haveEditPermission = _roleService.IsUserHaveAccess(currentUser, permissionKey);
             var isPendingApproval = formStatus == FormStatus.PendingApproval || formStatus == FormStatus.Approved || formStatus == FormStatus.Rejected;
             var isPreparedByMe = currentUser == formPreparedBy;
 
@@ -233,6 +236,13 @@ namespace xDC.Services.Form
                 _logger.LogError(ex.Message);
                 return false;
             }
+        }
+
+        public void ReassignApprover(int formId, string formType, DateTime? formDate, string currentUser, string currentApprover, string newApprover)
+        {
+            _auditService.FA_ReassignApprover(formId, formType, formDate, currentUser, currentApprover, newApprover);
+            _notifyService.NotifyApprover(formId, formType, currentUser, newApprover, "Reassign approver");
+            _wfService.Reassign(formId, formType, currentUser, newApprover);
         }
     }
 }
