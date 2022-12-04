@@ -29,7 +29,7 @@ namespace xDC.Services.FileGenerator
 
         #region Ctor
 
-        public GenFile_TreasuryForm(IXDcLogger logger, IWorkflowService wfService)
+        public GenFile_TreasuryForm(IXDcLogger logger, IWorkflowService wfService) : base(logger)
         {
             _logger = logger;
             _wfService = wfService;

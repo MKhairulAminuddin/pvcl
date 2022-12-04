@@ -67,21 +67,19 @@ namespace xDC_Web.Controllers.Mvc
         [KflowAuthorize(Common.PermissionKey.Report_DCO_MYR)]
         public ActionResult DealCutOffMyr_ViewPrinted(string id)
         {
-            
-            var fileStream = _genDcoMyrReport.GenFile(id);
+            var outputFile = _genDcoMyrReport.GenFile(id);
 
-            if (fileStream != null)
+            if (outputFile != null)
             {
-                var fileName = Common.GetFileName(fileStream);
-                Response.AddHeader("Content-Disposition", "attachment; filename=" + fileName);
+                Response.AddHeader("Content-Disposition", "attachment; filename=" + outputFile.FileName);
 
-                if (Common.GetFileExt(fileStream) == ".xlsx")
+                if (outputFile.FileExt == ".xlsx")
                 {
-                    return File(fileStream, Common.ConvertIndexToContentType(4));
+                    return File(outputFile.FileBytes, Common.ConvertIndexToContentType(4));
                 }
                 else
                 {
-                    return File(fileStream, Common.ConvertIndexToContentType(11));
+                    return File(outputFile.FileBytes, Common.ConvertIndexToContentType(11));
                 }
 
             }
@@ -152,20 +150,19 @@ namespace xDC_Web.Controllers.Mvc
         [KflowAuthorize(Common.PermissionKey.Report_DCO_FCY)]
         public ActionResult DealCutOffFcy_ViewPrinted(string id)
         {
-            var fileStream = _genDcoFcyReport.GenFile(id);
+            var outputFile = _genDcoFcyReport.GenFile(id);
 
-            if (fileStream != null)
+            if (outputFile != null)
             {
-                var fileName = Common.GetFileName(fileStream);
-                Response.AddHeader("Content-Disposition", "attachment; filename=" + fileName);
+                Response.AddHeader("Content-Disposition", "attachment; filename=" + outputFile.FileName);
 
-                if (Common.GetFileExt(fileStream) == ".xlsx")
+                if (outputFile.FileExt == ".xlsx")
                 {
-                    return File(fileStream, Common.ConvertIndexToContentType(4));
+                    return File(outputFile.FileBytes, Common.ConvertIndexToContentType(4));
                 }
                 else
                 {
-                    return File(fileStream, Common.ConvertIndexToContentType(11));
+                    return File(outputFile.FileBytes, Common.ConvertIndexToContentType(11));
                 }
 
             }
@@ -236,20 +233,19 @@ namespace xDC_Web.Controllers.Mvc
         [KflowAuthorize(Common.PermissionKey.Report_DCO_10am)]
         public ActionResult TenAmDealCutOff_ViewPrinted(string id)
         {
-            var fileStream = _gen10amDcoReport.GenFile(id);
+            var outputFile = _gen10amDcoReport.GenFile(id);
 
-            if (fileStream != null)
+            if (outputFile != null)
             {
-                var fileName = Common.GetFileName(fileStream);
-                Response.AddHeader("Content-Disposition", "attachment; filename=" + fileName);
+                Response.AddHeader("Content-Disposition", "attachment; filename=" + outputFile.FileName);
 
-                if (Common.GetFileExt(fileStream) == ".xlsx")
+                if (outputFile.FileExt == ".xlsx")
                 {
-                    return File(fileStream, Common.ConvertIndexToContentType(4));
+                    return File(outputFile.FileBytes, Common.ConvertIndexToContentType(4));
                 }
                 else
                 {
-                    return File(fileStream, Common.ConvertIndexToContentType(11));
+                    return File(outputFile.FileBytes, Common.ConvertIndexToContentType(11));
                 }
 
             }

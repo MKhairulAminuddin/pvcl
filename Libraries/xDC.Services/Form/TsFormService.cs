@@ -14,6 +14,7 @@ using System.Web.Security;
 using System.Xml.Linq;
 using xDC.Domain.ISSD_TS;
 using xDC.Domain.Web;
+using xDC.Domain.Web.Application;
 using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
@@ -1907,7 +1908,7 @@ namespace xDC.Services.Form
             return _genFile.Gen_CnEmailFile(formId, senderEmail);
         }
 
-        public FileStream GetGeneratedForm(string generatedFileId)
+        public ExportedFile GetGeneratedForm(string generatedFileId)
         {
             return _genFile.GenFile(generatedFileId);
         }

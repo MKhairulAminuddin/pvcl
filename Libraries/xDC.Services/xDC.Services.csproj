@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application\ISettingService.cs" />
+    <Compile Include="Application\ITrackerService.cs" />
     <Compile Include="Audit\IAuditService.cs" />
     <Compile Include="FileGenerator\GenFile_10amDealCutOffReport.cs" />
     <Compile Include="FileGenerator\GenFile_DealCutOffFcyReport.cs" />
@@ -126,7 +127,7 @@
     <Compile Include="Notification\NotificationService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Application\SettingService.cs" />
-    <Compile Include="TrackerService.cs" />
+    <Compile Include="Application\TrackerService.cs" />
     <Compile Include="Workflow\IWorkflowService.cs" />
     <Compile Include="Workflow\WorkflowService.cs" />
   </ItemGroup>

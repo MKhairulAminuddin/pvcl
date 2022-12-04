@@ -29,7 +29,7 @@ namespace xDC.Services.FileGenerator
 
         #region Ctor
 
-        public GenFile_DealCutOffMyrReport(IXDcLogger logger, ITsFormService tsFormService)
+        public GenFile_DealCutOffMyrReport(IXDcLogger logger, ITsFormService tsFormService) : base(logger)
         {
             _logger = logger;
             _tsFormService = tsFormService;

@@ -6,13 +6,18 @@ using System.Threading.Tasks;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 
-namespace xDC.Services
+namespace xDC.Services.Application
 {
-    public static class TrackerService
+    public class TrackerService : ITrackerService
     {
-        private static readonly IXDcLogger _logger;
+        private readonly IXDcLogger _logger;
 
-        public static void TrackUserLogin(string username, string ipadress, string browser)
+        public TrackerService(IXDcLogger logger)
+        {
+            _logger = logger;
+        }
+
+        public void TrackUserLogin(string username, string ipadress, string browser)
         {
             try
             {

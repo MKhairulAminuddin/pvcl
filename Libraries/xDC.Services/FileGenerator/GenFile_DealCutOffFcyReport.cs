@@ -27,7 +27,7 @@ namespace xDC.Services.FileGenerator
 
         #region Ctor
 
-        public GenFile_DealCutOffFcyReport(IXDcLogger logger)
+        public GenFile_DealCutOffFcyReport(IXDcLogger logger) : base(logger)
         {
             _logger = logger;
         }

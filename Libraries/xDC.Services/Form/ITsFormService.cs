@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using xDC.Domain.ISSD_TS;
+using xDC.Domain.Web.Application;
 using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
@@ -47,6 +48,6 @@ namespace xDC.Services.Form
         string GenCnMailId(int formId, string senderEmail);
         string GenExportFormId(int formId, string currentUser, bool isExportToExcel);
         string GenExportConsolidatedFormId(DateTime settlementDate, string currency, string currentUser, bool isExportToExcel);
-        FileStream GetGeneratedForm(string generatedFileId);
+        ExportedFile GetGeneratedForm(string generatedFileId);
     }
 }

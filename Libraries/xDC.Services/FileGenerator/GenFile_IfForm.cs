@@ -28,7 +28,7 @@ namespace xDC.Services.FileGenerator
 
         #region Ctor
 
-        public GenFile_IfForm(IWorkflowService wfService, IXDcLogger logger)
+        public GenFile_IfForm(IWorkflowService wfService, IXDcLogger logger) : base(logger)
         {
             _wfService = wfService;
             _logger = logger;

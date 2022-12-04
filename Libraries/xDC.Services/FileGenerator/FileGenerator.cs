@@ -4,23 +4,52 @@ using xDC.Utils;
 using DevExpress.Spreadsheet;
 using DevExpress.ClipboardSource.SpreadsheetML;
 using System;
+using xDC.Logging;
+using xDC.Domain.Web.Application;
 
 namespace xDC.Services.FileGenerator
 {
     public class FileGenerator
     {
-        public FileStream GenFile(string generatedFileName)
-        {
-            var tempFolder = Config.TempFolderPath;
+        private readonly IXDcLogger _logger;
 
-            var filePath = Directory.GetFiles(tempFolder, generatedFileName + "*").SingleOrDefault();
-            if (!string.IsNullOrEmpty(filePath))
+        public FileGenerator(IXDcLogger logger)
+        {
+            _logger = logger;
+        }
+
+        public ExportedFile GenFile(string generatedFileName)
+        {
+            try
             {
-                var fs = new FileStream(filePath, FileMode.Open);
-                return fs;
+                var outputFile = new ExportedFile();
+                var tempFolder = Config.TempFolderPath;
+                generatedFileName = generatedFileName.Replace("\"", "");
+
+                var filePath = Directory.GetFiles(tempFolder, generatedFileName + "*").SingleOrDefault();
+                if (!string.IsNullOrEmpty(filePath))
+                {
+                    using (var fileStream = new FileStream(filePath, FileMode.Open))
+                    {
+                        using (var stream = new MemoryStream())
+                        {
+                            fileStream.CopyTo(stream);
+                            outputFile.FileBytes = stream.ToArray();
+                        }
+                        outputFile.FileName = Common.GetFileName(fileStream);
+                        outputFile.FileExt = Common.GetFileExt(fileStream);
+                    }
+
+                    return outputFile;
+                }
+                else
+                {
+                    return null;
+                }
             }
-            else
+            catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 return null;
             }
         }

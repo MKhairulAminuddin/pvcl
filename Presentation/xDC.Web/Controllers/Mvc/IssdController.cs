@@ -157,25 +157,26 @@ namespace xDC_Web.Controllers.Mvc
         [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Download)]
         public ActionResult ViewPrinted(string id)
         {
-            var generatedFileId = HttpUtility.HtmlDecode(id);
-            var fileStream = _tsFormService.GetGeneratedForm(generatedFileId);
+            var outputFile = _tsFormService.GetGeneratedForm(id);
 
-            if (fileStream == null)
+            if (outputFile != null)
             {
-                TempData["ErrorMessage"] = "Generated file not found... sorry...";
-                return View("Error");
-            }
+                Response.AddHeader("Content-Disposition", "attachment; filename=" + outputFile.FileName);
 
-            var newFileName = Common.GetFileName(fileStream);
-            Response.AddHeader("Content-Disposition", "attachment; filename=" + newFileName);
+                if (outputFile.FileExt == ".xlsx")
+                {
+                    return File(outputFile.FileBytes, Common.ConvertIndexToContentType(4));
+                }
+                else
+                {
+                    return File(outputFile.FileBytes, Common.ConvertIndexToContentType(11));
+                }
 
-            if (Common.GetFileExt(fileStream) == ".xlsx")
-            {
-                return File(fileStream, Common.ConvertIndexToContentType(4));
             }
             else
             {
-                return File(fileStream, Common.ConvertIndexToContentType(11));
+                TempData["ErrorMessage"] = "Generated file not found... sorry...";
+                return View("Error");
             }
         }
 
@@ -206,13 +207,13 @@ namespace xDC_Web.Controllers.Mvc
         public ActionResult RetrieveCnEmail(string referenceId)
         {
             // stream out the contents - don't need to dispose because File() does it for you
-            var fileStream = _tsFormService.GetGeneratedForm(referenceId);
+            var file = _tsFormService.GetGeneratedForm(referenceId);
 
-            if (fileStream != null)
+            if (file != null)
             {
                 var responseHeaderValue = $"attachment; filename=Query Email - {DateTime.Now:ddMMyyyyhhmm}.eml";
                 Response.AddHeader("Content-Disposition", responseHeaderValue);
-                return File(fileStream, "application/vnd.ms-outlook");
+                return File(file.FileBytes, "application/vnd.ms-outlook");
             }
             else
             {

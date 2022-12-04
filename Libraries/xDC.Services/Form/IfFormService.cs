@@ -14,6 +14,7 @@ using System.Web.Security;
 using xDC.Domain.Form;
 using xDC.Domain.Web;
 using xDC.Domain.Web.AMSD.InflowFundForm;
+using xDC.Domain.Web.Application;
 using xDC.Domain.WebApi.Forms.InflowFund;
 using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
@@ -358,7 +359,13 @@ namespace xDC.Services.Form
                     db.AMSD_IF_Item.AddRange(ifFormItems);
                     var createdFormItems = db.SaveChanges();
 
-
+                    if (createdFormItems < 1)
+                    {
+                        // remove back since not success create form items
+                        db.AMSD_IF.Remove(ifForm);
+                        db.SaveChanges();
+                        return 0;
+                    }
 
                     if (ifForm.FormStatus == FormStatus.PendingApproval)
                     {
@@ -592,7 +599,7 @@ namespace xDC.Services.Form
             return _genFile.GenId_IfForm(formId, currentUser, isExportToExcel);
         }
 
-        public FileStream GetGeneratedForm(string generatedFileId)
+        public ExportedFile GetGeneratedForm(string generatedFileId)
         {
             return _genFile.GenFile(generatedFileId);
         }

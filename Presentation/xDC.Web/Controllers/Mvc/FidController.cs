@@ -150,25 +150,26 @@ namespace xDC_Web.Controllers.Mvc
         [KflowAuthorize(Common.PermissionKey.FID_TreasuryForm_Download)]
         public ActionResult ViewPrinted(string id)
         {
-            var generatedFileId = HttpUtility.HtmlDecode(id);
-            var fileStream = _tFormService.GetGeneratedForm(generatedFileId);
+            var outputFile = _tFormService.GetGeneratedForm(id);
 
-            if (fileStream == null)
+            if (outputFile != null)
             {
-                TempData["ErrorMessage"] = "Generated file not found... sorry...";
-                return View("Error");
-            }
+                Response.AddHeader("Content-Disposition", "attachment; filename=" + outputFile.FileName);
 
-            var newFileName = Common.GetFileName(fileStream);
-            Response.AddHeader("Content-Disposition", "attachment; filename=" + newFileName);
+                if (outputFile.FileExt == ".xlsx")
+                {
+                    return File(outputFile.FileBytes, Common.ConvertIndexToContentType(4));
+                }
+                else
+                {
+                    return File(outputFile.FileBytes, Common.ConvertIndexToContentType(11));
+                }
 
-            if (Common.GetFileExt(fileStream) == ".xlsx")
-            {
-                return File(fileStream, Common.ConvertIndexToContentType(4));
             }
             else
             {
-                return File(fileStream, Common.ConvertIndexToContentType(11));
+                TempData["ErrorMessage"] = "Generated file not found... sorry...";
+                return View("Error");
             }
         }
 

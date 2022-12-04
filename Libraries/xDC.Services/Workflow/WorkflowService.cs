@@ -151,14 +151,14 @@ namespace xDC.Services.Workflow
             }
         }
 
-        public IQueryable<Form_Workflow> Info(int formId, string formType)
+        public List<Form_Workflow> Info(int formId, string formType)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
                     var wfList = db.Form_Workflow.Where(x => x.FormId == formId && x.FormType == formType).OrderByDescending(x => x.RecordedDate);
-                    return wfList;
+                    return wfList.ToList();
                 }
             }
             catch (Exception ex)

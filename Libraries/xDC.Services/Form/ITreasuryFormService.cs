@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using xDC.Domain.Web.Application;
 using xDC.Domain.Web.FID.TreasuryForm;
 using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Domain.WebApi.Forms;
@@ -24,7 +25,7 @@ namespace xDC.Services.Form
         List<TMmi> MmiFromEdw(DateTime tradeDate, string currency);
 
         string GenExportFormId(int formId, string currentUser, bool isExportToExcel);
-        FileStream GetGeneratedForm(string generatedFileId);
+        ExportedFile GetGeneratedForm(string generatedFileId);
 
         #region Form Action
         int CreateForm(TForm input, string currentUser);

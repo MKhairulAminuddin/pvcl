@@ -35,6 +35,7 @@ namespace xDC_Web
             container.Register<IAuditService, AuditService>();
             container.Register<IWorkflowService, WorkflowService>();
             container.Register<IXDcLogger, Logger>();
+            container.Register<ITrackerService, TrackerService>();
 
             container.Register<IIfFormService, IfFormService>();
             container.Register<ITsFormService, TsFormService>();

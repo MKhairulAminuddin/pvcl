@@ -238,7 +238,7 @@
                 app.toast("Generating...");
 
                 var data = {
-                    id: app.getUrlId(),
+                    formId: app.getUrlId(),
                     isExportAsExcel: (e.itemData.id == 1)
                 };
 

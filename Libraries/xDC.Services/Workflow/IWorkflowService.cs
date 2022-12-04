@@ -13,7 +13,7 @@ namespace xDC.Services.Workflow
         bool Approval(int formId, string formType, string preparer, string approver, string notes, string formStatus);
         void Reassign(int formId, string formType, string preparer, string newApprover);
         void Withdraw(int formId, string formType);
-        IQueryable<Form_Workflow> Info(int formId, string formType);
+        List<Form_Workflow> Info(int formId, string formType);
         string LatestApprovalNotes(int formId, string formType);
     }
 }

@@ -30,7 +30,7 @@ namespace xDC.Services.FileGenerator
 
         #region Ctor
 
-        public GenFile_10amDealCutOffReport(IXDcLogger logger)
+        public GenFile_10amDealCutOffReport(IXDcLogger logger) : base(logger)
         {
             _logger = logger;
         }

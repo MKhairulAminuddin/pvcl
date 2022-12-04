@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using xDC.Domain.Web.Application;
 
 namespace xDC.Services.FileGenerator
 {
@@ -12,6 +13,6 @@ namespace xDC.Services.FileGenerator
     {
         IWorkbook GenerateWorkbook(DateTime? selectedDate, bool viewApproved);
         string GenerateFile(DateTime selectedDate, bool isExportAsExcel, bool viewApproved);
-        FileStream GenFile(string generatedFileName);
+        ExportedFile GenFile(string generatedFileName);
     }
 }

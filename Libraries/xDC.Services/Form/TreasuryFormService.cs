@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Xml.Linq;
+using xDC.Domain.Web.Application;
 using xDC.Domain.Web.FID.TreasuryForm;
 using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Domain.WebApi.Forms;
@@ -1258,7 +1259,7 @@ namespace xDC.Services.Form
             return _genFile.GenId_TreasuryForm(formId, currentUser, isExportToExcel);
         }
 
-        public FileStream GetGeneratedForm(string generatedFileId)
+        public ExportedFile GetGeneratedForm(string generatedFileId)
         {
             return _genFile.GenFile(generatedFileId);
         }

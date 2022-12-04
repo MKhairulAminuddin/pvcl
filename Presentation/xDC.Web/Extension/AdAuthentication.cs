@@ -7,12 +7,12 @@ using Microsoft.Owin.Security;
 using System.DirectoryServices.AccountManagement;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using xDC.Services;
 using xDC_Web.Models;
 using xDC.Logging;
 using xDC.Services.Membership;
 using SimpleInjector;
 using xDC.Services.Form;
+using xDC.Services.Application;
 
 namespace xDC_Web.Extension
 {
@@ -20,6 +20,7 @@ namespace xDC_Web.Extension
 	{
 		private readonly IAuthenticationManager _authManager;
 		private readonly IRoleManagementService _roleService = Startup.Container.GetInstance<IRoleManagementService>();
+		private readonly ITrackerService _trackerService = Startup.Container.GetInstance<ITrackerService>();
 
         public AdAuthentication(IAuthenticationManager authenticationManager)
 		{
@@ -87,7 +88,7 @@ namespace xDC_Web.Extension
 				_authManager.SignOut(xDcAuth.ApplicationCookie);
 				_authManager.SignIn(new AuthenticationProperties() { IsPersistent = false }, identity);
 
-				TrackerService.TrackUserLogin(model.Username, model.IpAddress, model.ClientBrowser);
+				_trackerService.TrackUserLogin(model.Username, model.IpAddress, model.ClientBrowser);
 
 				return new AuthenticationResult();
 			}

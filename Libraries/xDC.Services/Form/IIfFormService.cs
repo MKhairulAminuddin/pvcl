@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using xDC.Domain.Web.AMSD.InflowFundForm;
+using xDC.Domain.Web.Application;
 using xDC.Domain.WebApi.Forms.InflowFund;
 using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
@@ -51,6 +52,6 @@ namespace xDC.Services.Form
         bool ReassignApproverForm(int formId, string newApprover, string currentUser);
 
         string GenExportFormId(int formId, string currentUser, bool isExportToExcel);
-        FileStream GetGeneratedForm(string generatedFileId);
+        ExportedFile GetGeneratedForm(string generatedFileId);
     }
 }

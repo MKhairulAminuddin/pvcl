@@ -89,7 +89,7 @@
                 isSaveAsDraft: isDraft,
                 isSaveAdminEdit: isAdminEdit,
 
-                amsdInflowFunds: $inflowFundsGrid.getDataSource().items(),
+                ifItems: $inflowFundsGrid.getDataSource().items(),
                 approver: (isDraft) ? null : $approverDropdown.option("value"),
                 approvalNotes: (isDraft) ? null : $approvalNotes.option("value")
             };
