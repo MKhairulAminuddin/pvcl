@@ -8,7 +8,7 @@ using xDC.Services.Membership;
 using xDC_Web.Extension;
 using xDC_Web.Models;
 
-namespace xDC_Web.Controllers
+namespace xDC_Web.Controllers.Mvc
 {
     public class LoginController : Controller
     {

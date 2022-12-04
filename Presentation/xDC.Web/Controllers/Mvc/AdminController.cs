@@ -10,7 +10,7 @@ using xDC.Infrastructure.Application;
 using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.ViewModels.Admin;
 
-namespace xDC_Web.Controllers
+namespace xDC_Web.Controllers.Mvc
 {
     [Authorize]
     [KflowAuthorize(xDC.Utils.Common.PermissionKey.Administration)]
@@ -29,7 +29,7 @@ namespace xDC_Web.Controllers
                 {
                     model.TotalRegisteredUsers.Add(new UserManagementVMKeyValue()
                     {
-                        Key = (item.Key == true) ? "Inactive" : "Active",
+                        Key = item.Key == true ? "Inactive" : "Active",
                         Value = item.Count()
                     });
                 }
@@ -81,8 +81,8 @@ namespace xDC_Web.Controllers
                         DriveName = item.Name,
                         DriveTotalSize = xDC.Utils.Common.FormatBytes(item.TotalSize, true),
                         DriveTotalFreeSize = xDC.Utils.Common.FormatBytes(item.TotalFreeSpace, true),
-                        Percentage = $"{100 - ((item.AvailableFreeSpace / (float)item.TotalSize) * 100):0.00}%"
-                        
+                        Percentage = $"{100 - item.AvailableFreeSpace / (float)item.TotalSize * 100:0.00}%"
+
                     };
                     drives.Add(drive);
                 }
@@ -96,7 +96,7 @@ namespace xDC_Web.Controllers
                 ServiceAccountName = Environment.UserName,
                 OsVersion = Environment.OSVersion.ToString(),
                 OsName = new ComputerInfo().OSFullName,
-                UpTime = (Environment.TickCount / (1000 * 60 * 60)) + " Hours",
+                UpTime = Environment.TickCount / (1000 * 60 * 60) + " Hours",
                 ServerTime = DateTime.Now.ToLongDateString(),
                 IisVersion = Request.ServerVariables["SERVER_SOFTWARE"],
                 SslEnable = Request.ServerVariables["HTTPS"],

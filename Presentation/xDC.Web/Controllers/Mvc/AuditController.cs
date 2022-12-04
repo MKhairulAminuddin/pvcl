@@ -6,7 +6,7 @@ using System.Web.Mvc;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
 
-namespace xDC_Web.Controllers
+namespace xDC_Web.Controllers.Mvc
 {
     [Authorize]
     [KflowAuthorize(Common.PermissionKey.AuditTrail)]

@@ -8,7 +8,7 @@ using xDC.Services.Form;
 using xDC.Utils;
 using xDC_Web.Extension;
 
-namespace xDC_Web.Controllers
+namespace xDC_Web.Controllers.Mvc
 {
 
     [Authorize]

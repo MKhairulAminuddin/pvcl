@@ -695,11 +695,12 @@
     </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\DevExtremeBundleConfig.cs" />
+    <Compile Include="App_Start\ContainerJobActivator.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\Mvc\AdminController.cs" />
     <Compile Include="Controllers\Mvc\AmsdController.cs" />
     <Compile Include="Controllers\Api\AdminController.cs" />
     <Compile Include="Controllers\Api\AmsdController.cs" />
@@ -710,15 +711,15 @@
     <Compile Include="Controllers\Api\SettingController.cs" />
     <Compile Include="Controllers\Api\TenAmDealCutOffController.cs" />
     <Compile Include="Controllers\Api\UserController.cs" />
-    <Compile Include="Controllers\AuditController.cs" />
+    <Compile Include="Controllers\Mvc\AuditController.cs" />
     <Compile Include="Controllers\Mvc\BaseController.cs" />
     <Compile Include="Controllers\Mvc\FidController.cs" />
     <Compile Include="Controllers\Mvc\ReportController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\Mvc\HomeController.cs" />
     <Compile Include="Controllers\Mvc\IssdController.cs" />
-    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\Mvc\LoginController.cs" />
     <Compile Include="Controllers\Mvc\SettingController.cs" />
-    <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Controllers\Mvc\UserController.cs" />
     <Compile Include="Extension\AdAuthentication.cs" />
     <Compile Include="Extension\CustomAttribute\KflowApiAuthorize.cs" />
     <Compile Include="Extension\CustomAttribute\KflowAuthorize.cs" />
@@ -786,6 +787,10 @@
     <ProjectReference Include="..\..\Libraries\xDC.Services\xDC.Services.csproj">
       <Project>{2743cd31-64ae-483d-8b52-02ae6f2550dc}</Project>
       <Name>xDC.Services</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\xDC.TaskScheduler\xDC.TaskScheduler.csproj">
+      <Project>{ffcb45f5-7af2-435c-b05b-b79d036587b8}</Project>
+      <Name>xDC.TaskScheduler</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\xDC.Utils\xDC.Utils.csproj">
       <Project>{87fa4c9c-f3bf-4cd4-83f2-0be4d31674e5}</Project>

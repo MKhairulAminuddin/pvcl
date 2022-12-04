@@ -64,6 +64,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Seeds", "Seeds", "{9FF4F840
 		Database\Seeds\Seed_Enhancement_202211.sql = Database\Seeds\Seed_Enhancement_202211.sql
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xDC.TaskScheduler", "Libraries\xDC.TaskScheduler\xDC.TaskScheduler.csproj", "{FFCB45F5-7AF2-435C-B05B-B79D036587B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,12 @@ Global
 		{2743CD31-64AE-483D-8B52-02AE6F2550DC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2743CD31-64AE-483D-8B52-02AE6F2550DC}.UAT|Any CPU.ActiveCfg = UAT|Any CPU
 		{2743CD31-64AE-483D-8B52-02AE6F2550DC}.UAT|Any CPU.Build.0 = UAT|Any CPU
+		{FFCB45F5-7AF2-435C-B05B-B79D036587B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFCB45F5-7AF2-435C-B05B-B79D036587B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFCB45F5-7AF2-435C-B05B-B79D036587B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFCB45F5-7AF2-435C-B05B-B79D036587B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFCB45F5-7AF2-435C-B05B-B79D036587B8}.UAT|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFCB45F5-7AF2-435C-B05B-B79D036587B8}.UAT|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -120,6 +128,7 @@ Global
 		{2743CD31-64AE-483D-8B52-02AE6F2550DC} = {288D30C0-C4F9-4D78-BD96-15D52D9FEB14}
 		{D8DE35BD-BEF9-489C-9D91-6119E78743D6} = {7122A0F2-D963-4FF2-A899-44463EA526B5}
 		{9FF4F840-53F0-4A15-98A1-ED183CDC427D} = {7122A0F2-D963-4FF2-A899-44463EA526B5}
+		{FFCB45F5-7AF2-435C-B05B-B79D036587B8} = {288D30C0-C4F9-4D78-BD96-15D52D9FEB14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {34EB544F-2415-4B65-AE15-70E167AB330D}
