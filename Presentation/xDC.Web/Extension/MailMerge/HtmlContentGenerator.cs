@@ -30,9 +30,5 @@ namespace xDC_Web.Extension.MailMerge
                 ms.CopyTo(this.stream);
             }
         }
-        public void Generate(IWorkbook workbook)
-        {
-            Generate(workbook, 0);
-        }
     }
 }

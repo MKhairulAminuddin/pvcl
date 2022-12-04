@@ -1,55 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using DevExtreme.AspNet.Data;
+using DevExtreme.AspNet.Mvc;
+using Newtonsoft.Json;
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
-using System.Web;
 using System.Web.Http;
-using DevExtreme.AspNet.Data;
-using DevExtreme.AspNet.Mvc;
-using Newtonsoft.Json;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
-using Microsoft.Extensions.Logging;
-using xDC.Utils;
-using xDC_Web.ViewModels;
-using Org.BouncyCastle.Ocsp;
-using System.Security.Principal;
-using xDC.Domain.Web.Setting;
+using xDC.Services.Application;
+using xDC_Web.Extension.CustomAttribute;
+using static xDC.Utils.Common;
 
 namespace xDC_Web.Controllers.Api
 {
-    [Authorize]
+    [KflowApiAuthorize(PermissionKey.Settings)]
     [Route("api/setting/{action}", Name = "setting")]
     public class SettingController : ApiController
     {
+        #region Fields
+
+        private readonly ISettingService _settingService;
+
+        #endregion
+
+        #region Ctor
+
+        public SettingController(ISettingService settingService)
+        {
+            _settingService = settingService;
+        }
+
+        #endregion
+
 
         #region Dropdown Configuration
 
         [HttpGet]
         public HttpResponseMessage GetDropdownConfig(DataSourceLoadOptions loadOptions)
         {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var result = db.Config_Dropdown.ToList();
-
-                    return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
+            var result = _settingService.DropdownConfig();
+            return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
         }
 
 
         [HttpPut]
-
         public HttpResponseMessage UpdateDropdownConfig(FormDataCollection form)
         {
             try
@@ -95,31 +91,22 @@ namespace xDC_Web.Controllers.Api
         {
             try
             {
-                using (var db = new kashflowDBEntities())
-                {
-                    var values = form.Get("values");
+                var values = form.Get("values");
 
-                    var newRecord = new Config_Dropdown();
-                    JsonConvert.PopulateObject(values, newRecord);
+                var newRecord = new Config_Dropdown();
+                JsonConvert.PopulateObject(values, newRecord);
+                Validate(newRecord);
 
-                    newRecord.CreatedBy = User.Identity.Name;
-                    newRecord.CreatedDate = DateTime.Now;
+                if (!ModelState.IsValid)
+                    return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
 
-                    Validate(newRecord);
+                var saveStatus = _settingService.DropdownConfig_Add(newRecord, User.Identity.Name);
+                if (!saveStatus) return Request.CreateResponse(HttpStatusCode.BadRequest, "System unable to save record. Please check with system admin.");
 
-                    if (!ModelState.IsValid)
-                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
-
-
-                    db.Config_Dropdown.Add(newRecord);
-                    db.SaveChanges();
-
-                    return Request.CreateResponse(HttpStatusCode.Created, newRecord);
-                }
+                return Request.CreateResponse(HttpStatusCode.Created, newRecord);
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }

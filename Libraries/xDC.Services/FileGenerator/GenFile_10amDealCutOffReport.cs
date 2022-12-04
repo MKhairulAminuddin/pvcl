@@ -1,27 +1,44 @@
-﻿using System;
+﻿using DevExpress.Spreadsheet;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Web;
-using DevExpress.Spreadsheet;
-using DevExtreme.AspNet.Data;
+using System.Text;
+using System.Threading.Tasks;
+using xDC.Domain.Web.Reports;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services.Form;
 using xDC.Utils;
-using xDC_Web.ViewModels.Fid;
 
-namespace xDC_Web.Extension.DocGenerator
+namespace xDC.Services.FileGenerator
 {
-    public class TenAmDealCutOffDoc : DocGeneratorBase
+    public class GenFile_10amDealCutOffReport : FileGenerator, IGenFile_10amDealCutOffReport
     {
+        #region Fields
+
         private Color _tableHeaderPrimaryColor = System.Drawing.ColorTranslator.FromHtml("#5b8efb");
         private Color _inflowColor = System.Drawing.ColorTranslator.FromHtml("#3498DB");
         private Color _outFlowColor = System.Drawing.ColorTranslator.FromHtml("#E67E22");
         private Color _highlightColor = System.Drawing.ColorTranslator.FromHtml("#f1c40f");
+
+        private readonly IXDcLogger _logger;
+
+        #endregion
+
+        #region Ctor
+
+        public GenFile_10amDealCutOffReport(IXDcLogger logger)
+        {
+            _logger = logger;
+        }
+
+        #endregion
+
+
+        #region Methods
 
         public IWorkbook GenerateWorkbook(DateTime selectedDate, bool viewApproved)
         {
@@ -44,7 +61,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
@@ -72,12 +89,17 @@ namespace xDC_Web.Extension.DocGenerator
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
 
-        private IWorkbook GenerateDocument(IWorkbook workbook, List<TenAmCutOffItemVM> items, List<Audit_10AMDCO_ClosingBalance> closingBalanceItems, DateTime selectedDate, bool viewApproved)
+
+        #endregion
+
+        #region Private Methods
+
+        private IWorkbook GenerateDocument(IWorkbook workbook, List<TenAmDealCutOffItem> items, List<Audit_10AMDCO_ClosingBalance> closingBalanceItems, DateTime selectedDate, bool viewApproved)
         {
             workbook.BeginUpdate();
             try
@@ -122,7 +144,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                         currentIndex++;
                     }
-                    sheet["B" + startGroupIndex + ":B" + (currentIndex-1)].Merge();
+                    sheet["B" + startGroupIndex + ":B" + (currentIndex - 1)].Merge();
 
                     sheet.Rows[currentIndex - 1].Insert(InsertCellsMode.ShiftCellsDown);
                     sheet.Rows[currentIndex - 1].CopyFrom(sheet.Rows[startIndex - 1], PasteSpecial.All);
@@ -160,8 +182,8 @@ namespace xDC_Web.Extension.DocGenerator
                 {
                     if (currentIndexS2 != 6)
                     {
-                        sheet2.Rows[currentIndexS2-1].Insert(InsertCellsMode.ShiftCellsDown);
-                        sheet2.Rows[currentIndexS2-1].CopyFrom(sheet2.Rows[startIndexS2-1], PasteSpecial.All);
+                        sheet2.Rows[currentIndexS2 - 1].Insert(InsertCellsMode.ShiftCellsDown);
+                        sheet2.Rows[currentIndexS2 - 1].CopyFrom(sheet2.Rows[startIndexS2 - 1], PasteSpecial.All);
 
 
                         sheet2["B" + currentIndexS2 + ":I" + currentIndexS2].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
@@ -190,7 +212,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
             }
             finally
             {
@@ -200,14 +222,14 @@ namespace xDC_Web.Extension.DocGenerator
             return workbook;
         }
 
-        private List<TenAmCutOffItemVM> ConstructData(DateTime selectedDate, bool viewApproved)
+        private List<TenAmDealCutOffItem> ConstructData(DateTime selectedDate, bool viewApproved)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = new List<TenAmCutOffItemVM>();
-                    var resultRaw = new List<TenAmCutOffItemVM>();
+                    var result = new List<TenAmDealCutOffItem>();
+                    var resultRaw = new List<TenAmDealCutOffItem>();
 
                     var configAccount = db.Config_FcaBankAccount.Where(x => x.Currency != "MYR").ToList();
                     configAccount.Add(new Config_FcaBankAccount
@@ -229,7 +251,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     foreach (var account in configAccount)
                     {
-                        var item = new TenAmCutOffItemVM
+                        var item = new TenAmDealCutOffItem
                         {
                             Account = account.AccountName1,
                             Currency = account.Currency
@@ -285,7 +307,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     #region 2 - FID Treasury TRX (MYR)
 
-                    var fidTreasuryMyr = new TenAmCutOffItemVM
+                    var fidTreasuryMyr = new TenAmDealCutOffItem
                     {
                         Account = "RENTAS",
                         Currency = "MYR"
@@ -355,7 +377,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     foreach (var account in configAccount.Where(x => x.Currency != "MYR"))
                     {
-                        var fidTreasuryFcy = new TenAmCutOffItemVM
+                        var fidTreasuryFcy = new TenAmDealCutOffItem
                         {
                             Account = account.AccountName1,
                             Currency = account.Currency
@@ -456,7 +478,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                         foreach (var fund in inflowFunds)
                         {
-                            var inflowFundsFromAmsd = new TenAmCutOffItemVM()
+                            var inflowFundsFromAmsd = new TenAmDealCutOffItem()
                             {
                                 Account = fund.Bank,
                                 Currency = "MYR",
@@ -476,7 +498,7 @@ namespace xDC_Web.Extension.DocGenerator
                             x.Account,
                             x.Currency
                         })
-                        .Select(x => new TenAmCutOffItemVM
+                        .Select(x => new TenAmDealCutOffItem
                         {
                             Currency = x.Key.Currency,
                             Account = x.Key.Account,
@@ -507,7 +529,7 @@ namespace xDC_Web.Extension.DocGenerator
                         x.Account,
                         x.Currency
                     })
-                        .Select(x => new TenAmCutOffItemVM
+                        .Select(x => new TenAmDealCutOffItem
                         {
                             Id = $"{x.Key.Currency};{x.Key.Account}",
                             Currency = x.Key.Currency,
@@ -543,7 +565,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
@@ -566,10 +588,13 @@ namespace xDC_Web.Extension.DocGenerator
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
 
+
+        #endregion
     }
+
 }

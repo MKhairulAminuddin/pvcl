@@ -67,6 +67,9 @@
     <Reference Include="MimeKit, Version=2.13.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">
       <HintPath>..\..\packages\MimeKit.2.13.0\lib\net47\MimeKit.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -84,15 +87,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application\ISettingService.cs" />
     <Compile Include="Audit\IAuditService.cs" />
+    <Compile Include="FileGenerator\GenFile_10amDealCutOffReport.cs" />
+    <Compile Include="FileGenerator\GenFile_DealCutOffFcyReport.cs" />
+    <Compile Include="FileGenerator\GenFile_DealCutOffMyrReport.cs" />
     <Compile Include="FileGenerator\GenFile_TreasuryForm.cs" />
     <Compile Include="FileGenerator\FileGenerator.cs" />
     <Compile Include="FileGenerator\GenFile_IfForm.cs" />
     <Compile Include="FileGenerator\GenFile_TsForm.cs" />
     <Compile Include="FileGenerator\IFileGenerator.cs" />
+    <Compile Include="FileGenerator\IGenFile_10amDealCutOffReport.cs" />
+    <Compile Include="FileGenerator\IGenFile_DealCutOffFcyReport.cs" />
+    <Compile Include="FileGenerator\IGenFile_DealCutOffMyrReport.cs" />
     <Compile Include="FileGenerator\IGenFile_IfForm.cs" />
     <Compile Include="FileGenerator\IGenFile_TreasuryForm.cs" />
     <Compile Include="FileGenerator\IGenFile_TsForm.cs" />
+    <Compile Include="Form\IFcaTaggingFormService.cs" />
     <Compile Include="Form\IfFormService.cs" />
     <Compile Include="Form\FormService.cs" />
     <Compile Include="Form\IIfFormService.cs" />
@@ -102,7 +113,7 @@
     <Compile Include="Form\FcaTaggingSvc.cs" />
     <Compile Include="Form\TsFormService.cs" />
     <Compile Include="Audit\AuditService.cs" />
-    <Compile Include="FcaTaggingFormService.cs" />
+    <Compile Include="Form\FcaTaggingFormService.cs" />
     <Compile Include="Membership\IRoleManagementService.cs" />
     <Compile Include="Membership\IUserManagementService.cs" />
     <Compile Include="Membership\RoleManagementService.cs" />
@@ -114,7 +125,7 @@
     <Compile Include="Notification\INotificationService.cs" />
     <Compile Include="Notification\NotificationService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SettingService.cs" />
+    <Compile Include="Application\SettingService.cs" />
     <Compile Include="TrackerService.cs" />
     <Compile Include="Workflow\IWorkflowService.cs" />
     <Compile Include="Workflow\WorkflowService.cs" />

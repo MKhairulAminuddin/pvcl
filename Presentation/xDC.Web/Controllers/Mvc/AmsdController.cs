@@ -1,21 +1,10 @@
 ﻿using System;
-using System.Data.Entity;
-using System.Linq;
-using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using xDC.Domain.Web.AMSD.InflowFundForm;
-using xDC.Infrastructure.Application;
-using xDC.Logging;
-using xDC.Services;
-using xDC.Services.FileGenerator;
 using xDC.Services.Form;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
-using xDC_Web.Extension.DocGenerator;
-using xDC_Web.Models;
-using xDC_Web.Models.MailMerge;
-using xDC_Web.ViewModels;
 
 namespace xDC_Web.Controllers.Mvc
 {

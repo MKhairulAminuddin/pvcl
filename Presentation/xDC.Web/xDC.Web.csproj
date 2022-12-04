@@ -705,9 +705,9 @@
     <Compile Include="Controllers\Api\TenAmDealCutOffController.cs" />
     <Compile Include="Controllers\Api\UserController.cs" />
     <Compile Include="Controllers\AuditController.cs" />
-    <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\Mvc\BaseController.cs" />
     <Compile Include="Controllers\Mvc\FidController.cs" />
-    <Compile Include="Controllers\ReportController.cs" />
+    <Compile Include="Controllers\Mvc\ReportController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Mvc\IssdController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -716,10 +716,6 @@
     <Compile Include="Extension\AdAuthentication.cs" />
     <Compile Include="Extension\CustomAttribute\KflowApiAuthorize.cs" />
     <Compile Include="Extension\CustomAttribute\KflowAuthorize.cs" />
-    <Compile Include="Extension\DocGenerator\DealCutOffForm_FCY.cs" />
-    <Compile Include="Extension\DocGenerator\TenAmDealCutOffDoc.cs" />
-    <Compile Include="Extension\DocGenerator\DealCutOffForm_MYR.cs" />
-    <Compile Include="Extension\DocGenerator\DocGeneratorBase.cs" />
     <Compile Include="Extension\HandleAntiForgeryError.cs" />
     <Compile Include="Extension\MailMerge\HtmlContentGenerator.cs" />
     <Compile Include="Extension\MenuSecurity.cs" />

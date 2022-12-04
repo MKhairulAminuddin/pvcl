@@ -1,24 +1,40 @@
-﻿using System;
+﻿using DevExpress.Spreadsheet;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Web;
-using DevExpress.Spreadsheet;
+using System.Text;
+using System.Threading.Tasks;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
-using xDC.Services.Form;
 using xDC.Utils;
 
-namespace xDC_Web.Extension.DocGenerator
+namespace xDC.Services.FileGenerator
 {
-    public class DealCutOffForm_FCY : DocGeneratorBase
+    public class GenFile_DealCutOffFcyReport : FileGenerator, IGenFile_DealCutOffFcyReport
     {
+        #region Fields
+
         private Color _tableHeaderPrimaryColor = System.Drawing.ColorTranslator.FromHtml("#5b8efb");
         private Color _inflowColor = System.Drawing.ColorTranslator.FromHtml("#3498DB");
         private Color _outFlowColor = System.Drawing.ColorTranslator.FromHtml("#E67E22");
+
+        private readonly IXDcLogger _logger;
+
+        #endregion
+
+        #region Ctor
+
+        public GenFile_DealCutOffFcyReport(IXDcLogger logger)
+        {
+            _logger = logger;
+        }
+
+        #endregion
+
+        #region Methods
 
         public IWorkbook GenerateWorkbook(DateTime? selectedDate, bool viewApproved)
         {
@@ -40,7 +56,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
@@ -68,10 +84,14 @@ namespace xDC_Web.Extension.DocGenerator
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
+
+        #endregion
+
+        #region Private Methods
 
         private IWorkbook GenerateDocument(IWorkbook workbook, FCY_DealCutOffData dataItem, bool viewApproved)
         {
@@ -367,7 +387,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     currentSheet["B2"].Value = string.Format("FOREIGN CURRENCY TRANSACTIONS VIA {0} FOR VALUE DATE {1:dd/MM/yyyy}",
                         sheetName, dataItem.SelectedDate.Value);
-                    
+
                     var accounts = dataItem.Accounts.Where(x => x.Account == sheetName).ToList();
                     var IF_Deposit_items = new List<FCY_Item>();
                     var IF_MM_items = new List<FCY_Item>();
@@ -393,7 +413,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                     var IF_MM_items_startIndex = IF_Deposit_items_endIndex + 2;
                     var IF_MM_items_endIndex = IF_Deposit_items_endIndex + 5;
-                    
+
                     DetailsTab_Table1(IF_MM_items, IF_MM_items_startIndex, ref IF_MM_items_endIndex, ref currentSheet);
 
                     var IF_Others_items_startIndex = IF_MM_items_endIndex + 2;
@@ -460,14 +480,14 @@ namespace xDC_Web.Extension.DocGenerator
                     }
                 }
 
-                
-                
+
+
 
                 #endregion
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
             }
             finally
             {
@@ -479,472 +499,472 @@ namespace xDC_Web.Extension.DocGenerator
 
         private FCY_DealCutOffData ConstructData(kashflowDBEntities db, DateTime? selectedDate, bool viewApproved)
         {
-                var accounts = db.Config_FcaBankAccount
-                    .Where(x => x.Currency != "MYR")
-                    .Select(x => x.AccountName1)
-                    .Distinct()
-                    .ToList();
+            var accounts = db.Config_FcaBankAccount
+                .Where(x => x.Currency != "MYR")
+                .Select(x => x.AccountName1)
+                .Distinct()
+                .ToList();
 
-                var currencies = new List<string>()
+            var currencies = new List<string>()
                 {
                     "USD", "AUD", "GBP", "EUR"
                 };
 
-                var dataObj = new FCY_DealCutOffData()
-                {
-                    SelectedDate = selectedDate,
-                    Accounts = new List<FCY_DealCutOffData_Account>(),
-                    FormAudits  = new List<FCY_Form_Workflow>()
-                };
+            var dataObj = new FCY_DealCutOffData()
+            {
+                SelectedDate = selectedDate,
+                Accounts = new List<FCY_DealCutOffData_Account>(),
+                FormAudits = new List<FCY_Form_Workflow>()
+            };
 
-                foreach (var account in accounts)
+            foreach (var account in accounts)
+            {
+                foreach (var currency in currencies)
                 {
-                    foreach (var currency in currencies)
+                    dataObj.Accounts.Add(new FCY_DealCutOffData_Account()
                     {
-                        dataObj.Accounts.Add(new FCY_DealCutOffData_Account()
-                        {
-                            Account = account,
-                            Currency = currency
-                        });
-                    }
+                        Account = account,
+                        Currency = currency
+                    });
                 }
+            }
 
-                foreach (var item in dataObj.Accounts)
+            foreach (var item in dataObj.Accounts)
+            {
+                var availableAccount2 = db.Config_FcaBankAccount
+                    .Where(x => x.Currency == item.Currency && x.AccountName1 == item.Account)
+                    .Select(x => x.AccountName2)
+                    .ToList();
+
+                if (availableAccount2.Any())
                 {
-                    var availableAccount2 = db.Config_FcaBankAccount
-                        .Where(x => x.Currency == item.Currency && x.AccountName1 == item.Account)
-                        .Select(x => x.AccountName2)
-                        .ToList();
+                    var ob = db.EDW_BankBalance
+                        .AsNoTracking()
+                        .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
+                                    && x.Currency == item.Currency
+                                    && availableAccount2.Contains(x.InstrumentType))
+                        .Select(x => x.Amount ?? 0)
+                        .DefaultIfEmpty(0)
+                        .Sum();
 
-                    if (availableAccount2.Any())
-                    {
-                        var ob = db.EDW_BankBalance
-                            .AsNoTracking()
-                            .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
+                    item.Ob = ob;
+                }
+            }
+
+            foreach (var item in dataObj.Accounts)
+            {
+                var availableAccount3 = db.Config_FcaBankAccount
+                    .Where(x => x.Currency == item.Currency && x.AccountName1 == item.Account)
+                    .Select(x => x.AccountName3)
+                    .ToList();
+
+                if (availableAccount3.Any())
+                {
+                    var treasuryFormIds = (viewApproved) ?
+                        db.FID_Treasury
+                            .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
                                         && x.Currency == item.Currency
-                                        && availableAccount2.Contains(x.InstrumentType))
-                            .Select(x => x.Amount ?? 0)
+                                        && x.FormStatus == Common.FormStatus.Approved)
+                            .Select(x => x.Id)
+                            .ToList() :
+                        db.FID_Treasury
+                            .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
+                                        && x.Currency == item.Currency
+                                        && x.FormStatus != Common.FormStatus.Rejected)
+                            .Select(x => x.Id)
+                            .ToList();
+
+                    if (treasuryFormIds.Any())
+                    {
+                        var IF_DepositMaturity = db.FID_Treasury_Deposit
+                            .Where(x => x.CashflowType == Cashflow.INFLOW.ToString()
+                                        && treasuryFormIds.Contains(x.FormId)
+                                        && availableAccount3.Contains(x.FcaAccount))
+                            .Select(x => x.PrincipalIntProfitReceivable)
                             .DefaultIfEmpty(0)
                             .Sum();
 
-                        item.Ob = ob;
+                        var IF_MoneyMarket = db.FID_Treasury_MMI
+                            .Where(x => x.CashflowType == Cashflow.INFLOW.ToString()
+                                        && treasuryFormIds.Contains(x.FormId)
+                                        && availableAccount3.Contains(x.FcaAccount))
+                            .Select(x => x.Proceeds)
+                            .DefaultIfEmpty(0)
+                            .Sum();
+
+                        var OF_RolloverNewPlacement = db.FID_Treasury_Deposit
+                            .Where(x => x.CashflowType == Cashflow.OUTFLOW.ToString()
+                                        && treasuryFormIds.Contains(x.FormId)
+                                        && availableAccount3.Contains(x.FcaAccount))
+                            .Select(x => x.Principal)
+                            .DefaultIfEmpty(0)
+                            .Sum();
+                        var OF_MoneyMarket = db.FID_Treasury_MMI
+                            .Where(x => x.CashflowType == Cashflow.INFLOW.ToString()
+                                        && treasuryFormIds.Contains(x.FormId)
+                                        && availableAccount3.Contains(x.FcaAccount))
+                            .Select(x => x.Proceeds)
+                            .DefaultIfEmpty(0)
+                            .Sum();
+
+                        item.IF_DepositMaturity = IF_DepositMaturity;
+                        item.IF_MoneyMarket = IF_MoneyMarket;
+                        item.OF_DepositPlacementRollover = OF_RolloverNewPlacement;
+                        item.OF_MoneyMarket = OF_MoneyMarket;
                     }
                 }
+            }
 
-                foreach (var item in dataObj.Accounts)
+            foreach (var item in dataObj.Accounts)
+            {
+                var availableAccount3 = db.Config_FcaBankAccount
+                    .Where(x => x.Currency == item.Currency && x.AccountName1 == item.Account)
+                    .Select(x => x.AccountName3)
+                    .ToList();
+
+                if (availableAccount3.Any())
                 {
-                    var availableAccount3 = db.Config_FcaBankAccount
-                        .Where(x => x.Currency == item.Currency && x.AccountName1 == item.Account)
-                        .Select(x => x.AccountName3)
-                        .ToList();
+                    var tsFormIds = (viewApproved)
+                        ? db.ISSD_FormHeader
+                            .Where(x => DbFunctions.TruncateTime(x.SettlementDate) ==
+                                        DbFunctions.TruncateTime(selectedDate)
+                                        && x.Currency == item.Currency
+                                        && x.FormStatus == Common.FormStatus.Approved)
+                            .Select(x => x.Id)
+                            .ToList()
+                        : db.ISSD_FormHeader
+                            .Where(x => DbFunctions.TruncateTime(x.SettlementDate) ==
+                                        DbFunctions.TruncateTime(selectedDate)
+                                        && x.Currency == item.Currency
+                                        && x.FormStatus != Common.FormStatus.Rejected)
+                            .Select(x => x.Id)
+                            .ToList();
 
-                    if (availableAccount3.Any())
+                    if (tsFormIds.Any())
                     {
-                        var treasuryFormIds = (viewApproved)?
-                            db.FID_Treasury
-                                .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
-                                            && x.Currency == item.Currency
-                                            && x.FormStatus == Common.FormStatus.Approved)
-                                .Select(x => x.Id)
-                                .ToList():
-                            db.FID_Treasury
-                                .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
-                                            && x.Currency == item.Currency
-                                            && x.FormStatus != Common.FormStatus.Rejected)
-                                .Select(x => x.Id)
-                                .ToList();
+                        var IF_Others = db.ISSD_TradeSettlement
+                            .Where(x => tsFormIds.Contains(x.FormId)
+                                        && availableAccount3.Contains(x.InflowTo))
+                            .Select(x => x.InflowAmount)
+                            .DefaultIfEmpty(0)
+                            .Sum();
 
-                        if (treasuryFormIds.Any())
-                        {
-                            var IF_DepositMaturity = db.FID_Treasury_Deposit
-                                .Where(x => x.CashflowType == Cashflow.INFLOW.ToString()
-                                            && treasuryFormIds.Contains(x.FormId)
-                                            && availableAccount3.Contains(x.FcaAccount))
-                                .Select(x => x.PrincipalIntProfitReceivable)
-                                .DefaultIfEmpty(0)
-                                .Sum();
+                        var OF_Others = db.ISSD_TradeSettlement
+                            .Where(x => tsFormIds.Contains(x.FormId)
+                                        && availableAccount3.Contains(x.OutflowFrom))
+                            .Select(x => x.OutflowAmount)
+                            .DefaultIfEmpty(0)
+                            .Sum();
 
-                            var IF_MoneyMarket = db.FID_Treasury_MMI
-                                .Where(x => x.CashflowType == Cashflow.INFLOW.ToString()
-                                            && treasuryFormIds.Contains(x.FormId)
-                                            && availableAccount3.Contains(x.FcaAccount))
-                                .Select(x => x.Proceeds)
-                                .DefaultIfEmpty(0)
-                                .Sum();
-
-                            var OF_RolloverNewPlacement = db.FID_Treasury_Deposit
-                                .Where(x => x.CashflowType == Cashflow.OUTFLOW.ToString()
-                                            && treasuryFormIds.Contains(x.FormId)
-                                            && availableAccount3.Contains(x.FcaAccount))
-                                .Select(x => x.Principal)
-                                .DefaultIfEmpty(0)
-                                .Sum();
-                            var OF_MoneyMarket = db.FID_Treasury_MMI
-                                .Where(x => x.CashflowType == Cashflow.INFLOW.ToString()
-                                            && treasuryFormIds.Contains(x.FormId)
-                                            && availableAccount3.Contains(x.FcaAccount))
-                                .Select(x => x.Proceeds)
-                                .DefaultIfEmpty(0)
-                                .Sum();
-
-                            item.IF_DepositMaturity = IF_DepositMaturity;
-                            item.IF_MoneyMarket = IF_MoneyMarket;
-                            item.OF_DepositPlacementRollover = OF_RolloverNewPlacement;
-                            item.OF_MoneyMarket = OF_MoneyMarket;
-                        }
+                        item.IF_Others = IF_Others;
+                        item.OF_Others = OF_Others;
                     }
                 }
+            }
 
-                foreach (var item in dataObj.Accounts)
+            #region Sheet Others - Details
+
+            foreach (var item in dataObj.Accounts)
+            {
+                var availableAccount3 = db.Config_FcaBankAccount
+                    .Where(x => x.Currency == item.Currency
+                                && x.AccountName1 == item.Account)
+                    .Select(x => x.AccountName3)
+                    .ToList();
+
+                if (availableAccount3.Any())
                 {
-                    var availableAccount3 = db.Config_FcaBankAccount
-                        .Where(x => x.Currency == item.Currency && x.AccountName1 == item.Account)
-                        .Select(x => x.AccountName3)
-                        .ToList();
+                    var treasuryFormIds = (viewApproved) ?
+                        db.FID_Treasury
+                            .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
+                                        && x.Currency == item.Currency
+                                        && x.FormStatus == Common.FormStatus.Approved)
+                            .Select(x => x.Id)
+                            .ToList() :
+                        db.FID_Treasury
+                            .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
+                                        && x.Currency == item.Currency
+                                        && x.FormStatus != Common.FormStatus.Rejected)
+                            .Select(x => x.Id)
+                            .ToList();
 
-                    if (availableAccount3.Any())
+                    if (treasuryFormIds.Any())
                     {
-                        var tsFormIds = (viewApproved)
-                            ? db.ISSD_FormHeader
-                                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) ==
-                                            DbFunctions.TruncateTime(selectedDate)
-                                            && x.Currency == item.Currency
-                                            && x.FormStatus == Common.FormStatus.Approved)
-                                .Select(x => x.Id)
-                                .ToList()
-                            : db.ISSD_FormHeader
-                                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) ==
-                                            DbFunctions.TruncateTime(selectedDate)
-                                            && x.Currency == item.Currency
-                                            && x.FormStatus != Common.FormStatus.Rejected)
-                                .Select(x => x.Id)
-                                .ToList();
+                        var IF_DepositMaturity = db.FID_Treasury_Deposit
+                            .Where(x => x.CashflowType == Cashflow.INFLOW.ToString()
+                                        && treasuryFormIds.Contains(x.FormId)
+                                        && availableAccount3.Contains(x.FcaAccount))
+                            .ToList();
 
-                        if (tsFormIds.Any())
+                        if (IF_DepositMaturity.Any())
                         {
-                            var IF_Others = db.ISSD_TradeSettlement
-                                .Where(x => tsFormIds.Contains(x.FormId)
-                                            && availableAccount3.Contains(x.InflowTo))
-                                .Select(x => x.InflowAmount)
-                                .DefaultIfEmpty(0)
-                                .Sum();
+                            item.Details_IF_Deposit_Maturity = new List<FCY_Item>();
 
-                            var OF_Others = db.ISSD_TradeSettlement
-                                .Where(x => tsFormIds.Contains(x.FormId)
-                                            && availableAccount3.Contains(x.OutflowFrom))
-                                .Select(x => x.OutflowAmount)
-                                .DefaultIfEmpty(0)
-                                .Sum();
+                            foreach (var i in IF_DepositMaturity)
+                            {
+                                item.Details_IF_Deposit_Maturity.Add(new FCY_Item
+                                {
+                                    Item = i.Bank,
+                                    Currency = item.Currency,
+                                    TradeDate = i.TradeDate.Value,
+                                    MaturityDate = i.MaturityDate.Value,
+                                    ValueDate = i.ValueDate.Value,
+                                    Amount = i.Principal,
+                                    Tenor = i.Tenor.Value,
+                                    Rate = i.RatePercent,
+                                    Interest = i.IntProfitReceivable,
+                                    Principal_Interest = i.PrincipalIntProfitReceivable,
+                                    InstrumentType = i.AssetType,
+                                    Notes = i.Notes,
+                                    Fca = i.FcaAccount,
+                                    ContactPerson = i.ContactPerson,
+                                    Dealer = i.Dealer
+                                });
+                            }
+                        }
 
-                            item.IF_Others = IF_Others;
-                            item.OF_Others = OF_Others;
+                        var IF_MoneyMarket = db.FID_Treasury_MMI
+                            .Where(x => x.CashflowType == Cashflow.INFLOW.ToString()
+                                        && treasuryFormIds.Contains(x.FormId)
+                                        && availableAccount3.Contains(x.FcaAccount))
+                            .ToList();
+
+                        if (IF_MoneyMarket.Any())
+                        {
+                            item.Details_IF_MM = new List<FCY_Item>();
+
+                            foreach (var i in IF_MoneyMarket)
+                            {
+                                item.Details_IF_MM.Add(new FCY_Item
+                                {
+                                    Item = i.CounterParty,
+                                    Currency = item.Currency,
+                                    TradeDate = i.TradeDate.Value,
+                                    MaturityDate = i.MaturityDate.Value,
+                                    ValueDate = i.ValueDate.Value,
+                                    Amount = i.Proceeds,
+                                    Tenor = i.HoldingDayTenor.Value,
+                                    Rate = i.SellPurchaseRateYield,
+                                    Interest = i.IntDividendReceivable,
+                                    Principal_Interest = i.IntDividendReceivable,
+                                    InstrumentType = i.ProductType,
+                                    Fca = i.FcaAccount,
+                                    ContactPerson = i.Dealer
+                                });
+                            }
+                        }
+
+                        var OF_RolloverNewPlacement = db.FID_Treasury_Deposit
+                            .Where(x => x.CashflowType == Cashflow.OUTFLOW.ToString()
+                                        && treasuryFormIds.Contains(x.FormId)
+                                        && availableAccount3.Contains(x.FcaAccount))
+                            .ToList();
+
+                        if (OF_RolloverNewPlacement.Any())
+                        {
+                            item.Details_OF_Deposit_Maturity = new List<FCY_Item>();
+
+                            foreach (var i in OF_RolloverNewPlacement)
+                            {
+                                item.Details_OF_Deposit_Maturity.Add(new FCY_Item
+                                {
+                                    Item = i.Bank,
+                                    Currency = item.Currency,
+                                    TradeDate = i.TradeDate.Value,
+                                    MaturityDate = i.MaturityDate.Value,
+                                    ValueDate = i.ValueDate.Value,
+                                    Amount = i.Principal,
+                                    Tenor = i.Tenor.Value,
+                                    Rate = i.RatePercent,
+                                    Interest = i.IntProfitReceivable,
+                                    Principal_Interest = i.PrincipalIntProfitReceivable,
+                                    InstrumentType = i.AssetType,
+                                    Notes = i.Notes,
+                                    Fca = i.FcaAccount,
+                                    ContactPerson = i.ContactPerson,
+                                    Dealer = i.Dealer
+                                });
+                            }
+                        }
+
+                        var OF_MoneyMarket = db.FID_Treasury_MMI
+                            .Where(x => x.CashflowType == Cashflow.OUTFLOW.ToString()
+                                        && treasuryFormIds.Contains(x.FormId)
+                                        && availableAccount3.Contains(x.FcaAccount))
+                            .ToList();
+
+                        if (OF_MoneyMarket.Any())
+                        {
+                            item.Details_OF_MM = new List<FCY_Item>();
+
+                            foreach (var i in OF_MoneyMarket)
+                            {
+                                item.Details_OF_MM.Add(new FCY_Item
+                                {
+                                    Item = i.CounterParty,
+                                    Currency = item.Currency,
+                                    TradeDate = i.TradeDate.Value,
+                                    MaturityDate = i.MaturityDate.Value,
+                                    ValueDate = i.ValueDate.Value,
+                                    Amount = i.Proceeds,
+                                    Tenor = i.HoldingDayTenor.Value,
+                                    Rate = i.SellPurchaseRateYield,
+                                    Interest = i.IntDividendReceivable,
+                                    Principal_Interest = i.IntDividendReceivable,
+                                    InstrumentType = i.ProductType,
+                                    Fca = i.FcaAccount,
+                                    Dealer = i.Dealer
+                                });
+                            }
                         }
                     }
-                }
 
-                #region Sheet Others - Details
+                    #region Others Portion
 
-                foreach (var item in dataObj.Accounts)
-                {
-                    var availableAccount3 = db.Config_FcaBankAccount
-                        .Where(x => x.Currency == item.Currency 
-                                    && x.AccountName1 == item.Account)
-                        .Select(x => x.AccountName3)
-                        .ToList();
+                    var tsFormIds = (viewApproved) ?
+                        db.ISSD_FormHeader
+                            .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
+                                        && x.Currency == item.Currency
+                                        && x.FormStatus == Common.FormStatus.Approved)
+                            .Select(x => x.Id)
+                            .ToList() :
+                        db.ISSD_FormHeader
+                            .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
+                                        && x.Currency == item.Currency
+                                        && x.FormStatus != Common.FormStatus.Rejected)
+                            .Select(x => x.Id)
+                            .ToList();
 
-                    if (availableAccount3.Any())
+                    if (tsFormIds.Any())
                     {
-                        var treasuryFormIds = (viewApproved)?
-                            db.FID_Treasury
-                                .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
-                                            && x.Currency == item.Currency
-                                            && x.FormStatus == Common.FormStatus.Approved)
-                                .Select(x => x.Id)
-                                .ToList():
-                            db.FID_Treasury
-                                .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
-                                            && x.Currency == item.Currency
-                                            && x.FormStatus != Common.FormStatus.Rejected)
-                                .Select(x => x.Id)
-                                .ToList();
+                        var IF_Others = db.ISSD_TradeSettlement
+                            .Where(x => x.InflowAmount > 0
+                                        && tsFormIds.Contains(x.FormId)
+                                        && availableAccount3.Contains(x.InflowTo))
+                            .ToList();
 
-                        if (treasuryFormIds.Any())
+                        if (IF_Others.Any())
                         {
-                            var IF_DepositMaturity = db.FID_Treasury_Deposit
-                                .Where(x => x.CashflowType == Cashflow.INFLOW.ToString()
-                                            && treasuryFormIds.Contains(x.FormId)
-                                            && availableAccount3.Contains(x.FcaAccount))
-                                .ToList();
+                            item.Details_IF_Others = new List<FCY_ItemOthers>();
 
-                            if (IF_DepositMaturity.Any())
+                            foreach (var i in IF_Others)
                             {
-                                item.Details_IF_Deposit_Maturity = new List<FCY_Item>();
-
-                                foreach (var i in IF_DepositMaturity)
+                                item.Details_IF_Others.Add(new FCY_ItemOthers
                                 {
-                                    item.Details_IF_Deposit_Maturity.Add(new FCY_Item
-                                    {
-                                        Item = i.Bank,
-                                        Currency = item.Currency,
-                                        TradeDate = i.TradeDate.Value,
-                                        MaturityDate = i.MaturityDate.Value,
-                                        ValueDate = i.ValueDate.Value,
-                                        Amount = i.Principal,
-                                        Tenor = i.Tenor.Value,
-                                        Rate = i.RatePercent,
-                                        Interest = i.IntProfitReceivable,
-                                        Principal_Interest = i.PrincipalIntProfitReceivable,
-                                        InstrumentType = i.AssetType,
-                                        Notes = i.Notes,
-                                        Fca = i.FcaAccount,
-                                        ContactPerson = i.ContactPerson,
-                                        Dealer = i.Dealer
-                                    });
-                                }
-                            }
-
-                            var IF_MoneyMarket = db.FID_Treasury_MMI
-                                .Where(x => x.CashflowType == Cashflow.INFLOW.ToString()
-                                            && treasuryFormIds.Contains(x.FormId)
-                                            && availableAccount3.Contains(x.FcaAccount))
-                                .ToList();
-
-                            if (IF_MoneyMarket.Any())
-                            {
-                                item.Details_IF_MM = new List<FCY_Item>();
-
-                                foreach (var i in IF_MoneyMarket)
-                                {
-                                    item.Details_IF_MM.Add(new FCY_Item
-                                    {
-                                        Item = i.CounterParty,
-                                        Currency = item.Currency,
-                                        TradeDate = i.TradeDate.Value,
-                                        MaturityDate = i.MaturityDate.Value,
-                                        ValueDate = i.ValueDate.Value,
-                                        Amount = i.Proceeds,
-                                        Tenor = i.HoldingDayTenor.Value,
-                                        Rate = i.SellPurchaseRateYield,
-                                        Interest = i.IntDividendReceivable,
-                                        Principal_Interest = i.IntDividendReceivable,
-                                        InstrumentType = i.ProductType,
-                                        Fca = i.FcaAccount,
-                                        ContactPerson = i.Dealer
-                                    });
-                                }
-                            }
-
-                            var OF_RolloverNewPlacement = db.FID_Treasury_Deposit
-                                .Where(x => x.CashflowType == Cashflow.OUTFLOW.ToString()
-                                            && treasuryFormIds.Contains(x.FormId)
-                                            && availableAccount3.Contains(x.FcaAccount))
-                                .ToList();
-
-                            if (OF_RolloverNewPlacement.Any())
-                            {
-                                item.Details_OF_Deposit_Maturity = new List<FCY_Item>();
-
-                                foreach (var i in OF_RolloverNewPlacement)
-                                {
-                                    item.Details_OF_Deposit_Maturity.Add(new FCY_Item
-                                    {
-                                        Item = i.Bank,
-                                        Currency = item.Currency,
-                                        TradeDate = i.TradeDate.Value,
-                                        MaturityDate = i.MaturityDate.Value,
-                                        ValueDate = i.ValueDate.Value,
-                                        Amount = i.Principal,
-                                        Tenor = i.Tenor.Value,
-                                        Rate = i.RatePercent,
-                                        Interest = i.IntProfitReceivable,
-                                        Principal_Interest = i.PrincipalIntProfitReceivable,
-                                        InstrumentType = i.AssetType,
-                                        Notes = i.Notes,
-                                        Fca = i.FcaAccount,
-                                        ContactPerson = i.ContactPerson,
-                                        Dealer = i.Dealer
-                                    });
-                                }
-                            }
-
-                            var OF_MoneyMarket = db.FID_Treasury_MMI
-                                .Where(x => x.CashflowType == Cashflow.OUTFLOW.ToString()
-                                            && treasuryFormIds.Contains(x.FormId)
-                                            && availableAccount3.Contains(x.FcaAccount))
-                                .ToList();
-
-                            if (OF_MoneyMarket.Any())
-                            {
-                                item.Details_OF_MM = new List<FCY_Item>();
-
-                                foreach (var i in OF_MoneyMarket)
-                                {
-                                    item.Details_OF_MM.Add(new FCY_Item
-                                    {
-                                        Item = i.CounterParty,
-                                        Currency = item.Currency,
-                                        TradeDate = i.TradeDate.Value,
-                                        MaturityDate = i.MaturityDate.Value,
-                                        ValueDate = i.ValueDate.Value,
-                                        Amount = i.Proceeds,
-                                        Tenor = i.HoldingDayTenor.Value,
-                                        Rate = i.SellPurchaseRateYield,
-                                        Interest = i.IntDividendReceivable,
-                                        Principal_Interest = i.IntDividendReceivable,
-                                        InstrumentType = i.ProductType,
-                                        Fca = i.FcaAccount,
-                                        Dealer = i.Dealer
-                                    });
-                                }
+                                    Item = i.InstrumentCode,
+                                    Currency = item.Currency,
+                                    Notes = i.InstrumentType,
+                                    Fca = i.InflowTo,
+                                    Amount = i.InflowAmount
+                                });
                             }
                         }
 
-                        #region Others Portion
+                        var OF_Others = db.ISSD_TradeSettlement
+                            .Where(x => x.OutflowAmount > 0
+                                        && tsFormIds.Contains(x.FormId)
+                                        && availableAccount3.Contains(x.OutflowFrom))
+                            .ToList();
 
-                        var tsFormIds = (viewApproved)?
-                            db.ISSD_FormHeader
-                                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
-                                            && x.Currency == item.Currency
-                                            && x.FormStatus == Common.FormStatus.Approved)
-                                .Select(x => x.Id)
-                                .ToList():
-                            db.ISSD_FormHeader
-                                .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(selectedDate)
-                                            && x.Currency == item.Currency
-                                            && x.FormStatus != Common.FormStatus.Rejected)
-                                .Select(x => x.Id)
-                                .ToList();
-
-                        if (tsFormIds.Any())
+                        if (OF_Others.Any())
                         {
-                            var IF_Others = db.ISSD_TradeSettlement
-                                .Where(x => x.InflowAmount > 0
-                                            && tsFormIds.Contains(x.FormId)
-                                            && availableAccount3.Contains(x.InflowTo))
-                                .ToList();
+                            item.Details_OF_Others = new List<FCY_ItemOthers>();
 
-                            if (IF_Others.Any())
+                            foreach (var i in OF_Others)
                             {
-                                item.Details_IF_Others = new List<FCY_ItemOthers>();
-
-                                foreach (var i in IF_Others)
+                                item.Details_OF_Others.Add(new FCY_ItemOthers
                                 {
-                                    item.Details_IF_Others.Add(new FCY_ItemOthers
-                                    {
-                                        Item = i.InstrumentCode,
-                                        Currency = item.Currency,
-                                        Notes = i.InstrumentType,
-                                        Fca = i.InflowTo,
-                                        Amount = i.InflowAmount
-                                    });
-                                }
-                            }
-
-                            var OF_Others = db.ISSD_TradeSettlement
-                                .Where(x => x.OutflowAmount > 0
-                                            && tsFormIds.Contains(x.FormId)
-                                            && availableAccount3.Contains(x.OutflowFrom))
-                                .ToList();
-
-                            if (OF_Others.Any())
-                            {
-                                item.Details_OF_Others = new List<FCY_ItemOthers>();
-
-                                foreach (var i in OF_Others)
-                                {
-                                    item.Details_OF_Others.Add(new FCY_ItemOthers
-                                    {
-                                        Item = i.InstrumentCode,
-                                        Currency = item.Currency,
-                                        Notes = i.InstrumentType,
-                                        Fca = i.OutflowFrom,
-                                        Amount = i.OutflowAmount
-                                    });
-                                }
+                                    Item = i.InstrumentCode,
+                                    Currency = item.Currency,
+                                    Notes = i.InstrumentType,
+                                    Fca = i.OutflowFrom,
+                                    Amount = i.OutflowAmount
+                                });
                             }
                         }
-
-                        #endregion
                     }
+
+                    #endregion
                 }
+            }
 
             #endregion
 
-                #region Sheet 7 - Audit Listing
+            #region Sheet 7 - Audit Listing
 
-                foreach (var item in dataObj.Accounts.Select(x => x.Currency).Distinct())
+            foreach (var item in dataObj.Accounts.Select(x => x.Currency).Distinct())
+            {
+                var treasuryIds = (viewApproved) ?
+                        db.FID_Treasury
+                            .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
+                                        && x.Currency == item
+                                        && x.FormStatus == Common.FormStatus.Approved)
+                            .Select(x => x.Id)
+                            .ToList() :
+                        db.FID_Treasury
+                            .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
+                                        && x.Currency == item
+                                        && x.FormStatus != Common.FormStatus.Rejected)
+                            .Select(x => x.Id)
+                            .ToList();
+                var wfListTreasury = db.Form_Workflow.Where(x => x.FormType == Common.FormType.FID_TREASURY && treasuryIds.Contains(x.FormId)).ToList();
+
+                var tsIds = (viewApproved)
+                           ? db.ISSD_FormHeader
+                               .Where(x => DbFunctions.TruncateTime(x.SettlementDate) ==
+                                           DbFunctions.TruncateTime(selectedDate)
+                                           && x.Currency == item
+                                           && x.FormStatus == Common.FormStatus.Approved)
+                               .Select(x => x.Id)
+                               .ToList()
+                           : db.ISSD_FormHeader
+                               .Where(x => DbFunctions.TruncateTime(x.SettlementDate) ==
+                                           DbFunctions.TruncateTime(selectedDate)
+                                           && x.Currency == item
+                                           && x.FormStatus != Common.FormStatus.Rejected)
+                               .Select(x => x.Id)
+                               .ToList();
+                var wfListTs = db.Form_Workflow.Where(x => x.FormType.Contains("Settlement") && tsIds.Contains(x.FormId)).ToList();
+
+                if (wfListTs.Any())
                 {
-                    var treasuryIds = (viewApproved) ?
-                            db.FID_Treasury
-                                .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
-                                            && x.Currency == item
-                                            && x.FormStatus == Common.FormStatus.Approved)
-                                .Select(x => x.Id)
-                                .ToList() :
-                            db.FID_Treasury
-                                .Where(x => DbFunctions.TruncateTime(x.ValueDate) == DbFunctions.TruncateTime(selectedDate)
-                                            && x.Currency == item
-                                            && x.FormStatus != Common.FormStatus.Rejected)
-                                .Select(x => x.Id)
-                                .ToList();
-                    var wfListTreasury = db.Form_Workflow.Where(x => x.FormType == Common.FormType.FID_TREASURY && treasuryIds.Contains(x.FormId)).ToList();
-
-                    var tsIds = (viewApproved)
-                               ? db.ISSD_FormHeader
-                                   .Where(x => DbFunctions.TruncateTime(x.SettlementDate) ==
-                                               DbFunctions.TruncateTime(selectedDate)
-                                               && x.Currency == item
-                                               && x.FormStatus == Common.FormStatus.Approved)
-                                   .Select(x => x.Id)
-                                   .ToList()
-                               : db.ISSD_FormHeader
-                                   .Where(x => DbFunctions.TruncateTime(x.SettlementDate) ==
-                                               DbFunctions.TruncateTime(selectedDate)
-                                               && x.Currency == item
-                                               && x.FormStatus != Common.FormStatus.Rejected)
-                                   .Select(x => x.Id)
-                                   .ToList();
-                    var wfListTs = db.Form_Workflow.Where(x => x.FormType.Contains("Settlement") && tsIds.Contains(x.FormId)).ToList();
-
-                    if (wfListTs.Any())
+                    foreach (var wf in wfListTs)
                     {
-                        foreach (var wf in wfListTs)
+                        dataObj.FormAudits.Add(new FCY_Form_Workflow()
                         {
-                            dataObj.FormAudits.Add(new FCY_Form_Workflow() 
-                            {
-                                FormId = wf.FormId,
-                                Currency = item, 
-                                FormType = wf.FormType,
-                                RecordedDate = wf.RecordedDate,
-                                RequestBy = wf.RequestBy,
-                                RequestTo = wf.RequestTo,
-                                WorkflowNotes = wf.WorkflowNotes,
-                                WorkflowStatus = wf.WorkflowStatus
-                            });
-                        }
-                    }
-                    if (wfListTreasury.Any())
-                    {
-                        foreach (var wf in wfListTreasury)
-                        {
-                            dataObj.FormAudits.Add(new FCY_Form_Workflow()
-                            {
-                                FormId = wf.FormId,
-                                Currency = item,
-                                FormType = wf.FormType,
-                                RecordedDate = wf.RecordedDate,
-                                RequestBy = wf.RequestBy,
-                                RequestTo = wf.RequestTo,
-                                WorkflowNotes = wf.WorkflowNotes,
-                                WorkflowStatus = wf.WorkflowStatus
-                            });
-                        }
+                            FormId = wf.FormId,
+                            Currency = item,
+                            FormType = wf.FormType,
+                            RecordedDate = wf.RecordedDate,
+                            RequestBy = wf.RequestBy,
+                            RequestTo = wf.RequestTo,
+                            WorkflowNotes = wf.WorkflowNotes,
+                            WorkflowStatus = wf.WorkflowStatus
+                        });
                     }
                 }
+                if (wfListTreasury.Any())
+                {
+                    foreach (var wf in wfListTreasury)
+                    {
+                        dataObj.FormAudits.Add(new FCY_Form_Workflow()
+                        {
+                            FormId = wf.FormId,
+                            Currency = item,
+                            FormType = wf.FormType,
+                            RecordedDate = wf.RecordedDate,
+                            RequestBy = wf.RequestBy,
+                            RequestTo = wf.RequestTo,
+                            WorkflowNotes = wf.WorkflowNotes,
+                            WorkflowStatus = wf.WorkflowStatus
+                        });
+                    }
+                }
+            }
 
-                
 
-                #endregion
+
+            #endregion
 
 
             return dataObj;
@@ -986,14 +1006,14 @@ namespace xDC_Web.Extension.DocGenerator
 
                     currentIndex++;
                 }
-                
+
                 sheet["I" + currentIndex].Formula = "=SUM($I$" + startIndex + ":$I$" + (currentIndex - 1) + ")";
                 if (isDepositTable)
                 {
                     sheet["L" + currentIndex].Formula = "=SUM($L$" + startIndex + ":$L$" + (currentIndex - 1) + ")";
                 }
                 sheet["M" + currentIndex].Formula = "=SUM($M$" + startIndex + ":$M$" + (currentIndex - 1) + ")";
-                
+
                 endIndex = currentIndex;
             }
         }
@@ -1022,10 +1042,13 @@ namespace xDC_Web.Extension.DocGenerator
                 }
 
                 sheet["F" + currentIndex].Formula = "=SUM($F$" + startIndex + ":$F$" + (currentIndex - 1) + ")";
-                
+
                 endIndex = currentIndex;
             }
         }
+
+        #endregion
+
     }
 
     public class FCY_DealCutOffData
@@ -1043,7 +1066,7 @@ namespace xDC_Web.Extension.DocGenerator
         public double Ob { get; set; }
         public double IF_DepositMaturity { get; set; }
         public double IF_MoneyMarket { get; set; }
-        public double IF_Others{ get; set; }
+        public double IF_Others { get; set; }
         public double OF_DepositPlacementRollover { get; set; }
         public double OF_MoneyMarket { get; set; }
         public double OF_Others { get; set; }
@@ -1057,7 +1080,7 @@ namespace xDC_Web.Extension.DocGenerator
         public List<FCY_Item> Details_OF_MM { get; set; }
         public List<FCY_ItemOthers> Details_OF_Others { get; set; }
 
-        
+
 
         public FCY_DealCutOffData_Account()
         {

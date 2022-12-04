@@ -1,22 +1,112 @@
-﻿using Org.BouncyCastle.Asn1.Ocsp;
+﻿using DevExpress.Emf;
+using DevExpress.XtraPrinting.Native.WebClientUIControl;
+using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.ModelBinding;
+using System.Xml.Linq;
+using xDC.Domain.Form;
 using xDC.Domain.Web.Setting;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Utils;
 
-namespace xDC.Services
+namespace xDC.Services.Application
 {
-    public static class SettingService
+    public class SettingService : ISettingService
     {
-        private static readonly IXDcLogger _logger;
+        #region Fields
 
-        public static EmailConfigSetting EmailConfiguration()
+        private readonly IXDcLogger _logger;
+
+
+        #endregion
+
+        #region Ctor
+
+        public SettingService(IXDcLogger logger)
+        {
+            _logger = logger;
+        }
+
+        #endregion
+
+        #region Methods
+
+        #region Dropdown Setting
+
+        public IQueryable<Config_Dropdown> DropdownConfig()
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.Config_Dropdown.AsQueryable();
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+                return null;
+            }
+        }
+
+        public bool DropdownConfig_Add(Config_Dropdown item, string currentUser)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    item.CreatedBy = currentUser;
+                    item.CreatedDate = DateTime.Now;
+
+                    db.Config_Dropdown.Add(item);
+                    var saveStatus = db.SaveChanges();
+                    return saveStatus > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+                return false;
+            }
+        }
+
+        public bool DropdownConfig_Update(int itemId, string updatedItem, string currentUser)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var itemExistInDb = db.Config_Dropdown.FirstOrDefault(o => o.Id == itemId);
+                    if (itemExistInDb == null) return false;
+
+                    JsonConvert.PopulateObject(updatedItem, itemExistInDb);
+
+                    itemExistInDb.UpdatedBy = currentUser;
+                    itemExistInDb.UpdatedDate = DateTime.Now;
+
+
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Email Notification Setting
+        public EmailConfigSetting EmailConfiguration()
         {
             try
             {
@@ -107,7 +197,7 @@ namespace xDC.Services
             }
         }
 
-        public static bool EmailConfigurationUpdate(EmailConfigSetting req, string currentUser)
+        public bool EmailConfigurationUpdate(EmailConfigSetting req, string currentUser)
         {
             try
             {
@@ -165,7 +255,14 @@ namespace xDC.Services
             }
         }
 
-        private static Config_Application UpdateEnableEmailNotiConfigValue(Config_Application itemToUpdate, bool updatedValue, string updatedBy)
+        #endregion
+
+
+        #endregion
+
+        #region Private Methods
+
+        private Config_Application UpdateEnableEmailNotiConfigValue(Config_Application itemToUpdate, bool updatedValue, string updatedBy)
         {
             if (itemToUpdate != null)
             {
@@ -180,11 +277,11 @@ namespace xDC.Services
             }
         }
 
-        private static Config_Application UpdateEmailNotiConfigValue(Config_Application itemToUpdate, string updatedValue, string updatedBy)
+        private Config_Application UpdateEmailNotiConfigValue(Config_Application itemToUpdate, string updatedValue, string updatedBy)
         {
             if (itemToUpdate != null)
             {
-                var emailString = String.Join(",", updatedValue ?? null);
+                var emailString = string.Join(",", updatedValue ?? null);
                 if (itemToUpdate.Value != emailString)
                 {
                     itemToUpdate.Value = emailString;
@@ -198,6 +295,10 @@ namespace xDC.Services
                 return itemToUpdate;
             }
         }
+
+
+        #endregion
+
 
     }
 }

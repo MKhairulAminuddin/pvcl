@@ -1,31 +1,22 @@
-﻿using System;
+﻿using DevExtreme.AspNet.Data;
+using DevExtreme.AspNet.Mvc;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
-using System.Net.Http.Headers;
 using System.Web.Http;
-using DevExpress.XtraRichEdit.Fields;
-using DevExtreme.AspNet.Data;
-using DevExtreme.AspNet.Mvc;
-using Newtonsoft.Json;
-using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Domain.WebApi.Forms;
 using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
-using xDC.Logging;
-using xDC.Services;
 using xDC.Services.FileGenerator;
 using xDC.Services.Form;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
-using xDC_Web.Extension.DocGenerator;
-using xDC_Web.Models;
 using xDC_Web.ViewModels;
-using xDC_Web.ViewModels.Fid;
 using xDC_Web.ViewModels.Iisd;
 using static xDC.Utils.Common;
 
@@ -38,14 +29,17 @@ namespace xDC_Web.Controllers.Api
         #region Fields
 
         private readonly ITsFormService _tsFormService;
+        private readonly IFcaTaggingFormService _fcaTaggingFormService;
+
 
         #endregion
 
         #region Ctor
 
-        public IssdController(ITsFormService tsFormService, IGenFile_TsForm tsFormGen)
+        public IssdController(ITsFormService tsFormService, IGenFile_TsForm tsFormGen, IFcaTaggingFormService fcaTaggingFormService)
         {
             _tsFormService = tsFormService;
+            _fcaTaggingFormService = fcaTaggingFormService;
         }
 
         #endregion
@@ -641,7 +635,7 @@ namespace xDC_Web.Controllers.Api
         [Route("FcaTagging")]
         public HttpResponseMessage FcaTaggingSummaryList(DataSourceLoadOptions loadOptions)
         {
-            var response = new FcaTaggingFormService().DxGrid_GetSummaryForIssdView(out bool statusRequest);
+            var response = _fcaTaggingFormService.DxGrid_GetSummaryForIssdView(out bool statusRequest);
 
             if (statusRequest)
             {
@@ -657,7 +651,7 @@ namespace xDC_Web.Controllers.Api
         [Route("FcaTagging/AvailableTrades/{settlementDateEpoch}/{currency}")]
         public HttpResponseMessage FcaTagging_AvailableTrades(long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
         {
-            var response = new FcaTaggingFormService().DxGrid_GetDetailForIssdView(settlementDateEpoch, currency, out bool statusRequest);
+            var response = _fcaTaggingFormService.DxGrid_GetDetailForIssdView(settlementDateEpoch, currency, out bool statusRequest);
 
             if (statusRequest)
             {
@@ -673,7 +667,7 @@ namespace xDC_Web.Controllers.Api
         [Route("FcaTaggingGrid/TradeItem/{tradeType}/{settlementDateEpoch}/{currency}")]
         public HttpResponseMessage FcaTaggingGrid(string tradeType, long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
         {
-            var response = new FcaTaggingFormService().DxGrid_GetIndividualGridData(tradeType, settlementDateEpoch, currency, out bool statusRequest);
+            var response = _fcaTaggingFormService.DxGrid_GetIndividualGridData(tradeType, settlementDateEpoch, currency, out bool statusRequest);
 
             if (statusRequest)
             {
@@ -720,7 +714,7 @@ namespace xDC_Web.Controllers.Api
         [Route("FcaTagging/FcaAccount")]
         public HttpResponseMessage FcaTagging_FcaAccount(DataSourceLoadOptions loadOptions)
         {
-            var response = new FcaTaggingFormService().List_GetFcaBankAccount(out bool statusRequest);
+            var response = _fcaTaggingFormService.List_GetFcaBankAccount(out bool statusRequest);
 
             if (statusRequest)
             {

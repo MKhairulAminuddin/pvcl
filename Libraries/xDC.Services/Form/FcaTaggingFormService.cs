@@ -20,15 +20,13 @@ using xDC.Utils;
 
 namespace xDC.Services
 {
-    public class FcaTaggingFormService
+    public class FcaTaggingFormService : IFcaTaggingFormService
     {
         private readonly IXDcLogger _logger;
-        private readonly ITreasuryFormService _tFormService;
 
         public FcaTaggingFormService(IXDcLogger logger, ITreasuryFormService tFormService)
         {
             _logger = logger;
-            _tFormService = tFormService;
         }
 
         public List<SummaryRes> DxGrid_GetSummaryForIssdView(out bool reqStatus)
@@ -383,7 +381,7 @@ namespace xDC.Services
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = _tFormService.List_FcaBankAccount();
+                    var result = db.Config_FcaBankAccount.Select(x => x.AccountName3).ToList();
 
                     result.Add("RENTAS");
                     result.Add("MMA");

@@ -1,24 +1,43 @@
-﻿using System;
+﻿using DevExpress.Spreadsheet;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Web;
-using DevExpress.Spreadsheet;
+using System.Text;
+using System.Threading.Tasks;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services.Form;
 using xDC.Utils;
 
-namespace xDC_Web.Extension.DocGenerator
+namespace xDC.Services.FileGenerator
 {
-    public class DealCutOffForm_MYR : DocGeneratorBase
+    public class GenFile_DealCutOffMyrReport : FileGenerator, IGenFile_DealCutOffMyrReport
     {
+        #region Fields
+
         private Color _tableHeaderPrimaryColor = ColorTranslator.FromHtml("#5b8efb");
         private Color _inflowColor = ColorTranslator.FromHtml("#3498DB");
         private Color _outFlowColor = ColorTranslator.FromHtml("#E67E22");
+
+        private readonly IXDcLogger _logger;
+        private readonly ITsFormService _tsFormService;
+
+        #endregion
+
+        #region Ctor
+
+        public GenFile_DealCutOffMyrReport(IXDcLogger logger, ITsFormService tsFormService)
+        {
+            _logger = logger;
+            _tsFormService = tsFormService;
+        }
+
+        #endregion
+
+        #region Methods
 
         public IWorkbook GenerateWorkbook(DateTime? selectedDate, bool viewApproved)
         {
@@ -40,7 +59,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
@@ -68,10 +87,14 @@ namespace xDC_Web.Extension.DocGenerator
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return null;
             }
         }
+
+        #endregion
+
+        #region Private Methods
 
         private IWorkbook GenerateDocument(IWorkbook workbook, MYR_DealCutOffData dataItem, bool viewApproved)
         {
@@ -96,7 +119,7 @@ namespace xDC_Web.Extension.DocGenerator
                     : null;
 
                 #region Sheet 1 - Summary Cashflow
-                
+
                 #region IF: OB Rentas, MMA, RHB
 
                 sheet["J4"].Value = dataItem.RentasOb;
@@ -260,7 +283,7 @@ namespace xDC_Web.Extension.DocGenerator
 
                 MmiTab_Table(dataItem.SelectedDate.Value, dataItem.OF_MMI_NewPlacementItems, s2_newPlacement_startIndex, ref s2_newPlacement_endIndex, ref sheet2);
 
-                
+
                 workbook.Calculate();
 
                 #endregion
@@ -295,7 +318,7 @@ namespace xDC_Web.Extension.DocGenerator
                 var s3_equity_startIndex = s3_pds_endIndex + 2;
                 var s3_equity_endIndex = s3_pds_endIndex + 6;
 
-                sheet3["E"+ (s3_equity_startIndex+3)].Value = dataItem.IF_Equity;
+                sheet3["E" + (s3_equity_startIndex + 3)].Value = dataItem.IF_Equity;
 
                 var s3_others_startIndex = s3_equity_endIndex + 2;
                 var s3_others_endIndex = s3_equity_endIndex + 6;
@@ -321,7 +344,7 @@ namespace xDC_Web.Extension.DocGenerator
                 var s3_of_others_endIndex = s3_of_equity_endIndex + 6;
 
                 OthersTab_IfTable2(dataItem.OF_OthersTab_Others, s3_of_others_startIndex, ref s3_of_others_endIndex, ref sheet3);
-                
+
                 workbook.Calculate();
 
                 #endregion
@@ -333,11 +356,11 @@ namespace xDC_Web.Extension.DocGenerator
                 var auditStartIndex = 5;
                 foreach (var auditItem in dataItem.FormAudits.OrderBy(x => x.FormId).ThenBy(x => x.RecordedDate).ToList())
                 {
-                    sheet4["B"+ auditStartIndex].Value = auditItem.FormId;
-                    sheet4["C"+ auditStartIndex].Value = auditItem.FormType;
+                    sheet4["B" + auditStartIndex].Value = auditItem.FormId;
+                    sheet4["C" + auditStartIndex].Value = auditItem.FormType;
                     sheet4["D" + auditStartIndex].Value = auditItem.RecordedDate.HasValue ? auditItem.RecordedDate.Value.ToString("dd/MM/yyyy h:m tt") : "";
-                    sheet4["E"+ auditStartIndex].Value = dataItem.SelectedDate.HasValue ? dataItem.SelectedDate.Value.ToString("dd/MM/yyyy") : "";
-                    sheet4["F"+ auditStartIndex].Value = "MYR";
+                    sheet4["E" + auditStartIndex].Value = dataItem.SelectedDate.HasValue ? dataItem.SelectedDate.Value.ToString("dd/MM/yyyy") : "";
+                    sheet4["F" + auditStartIndex].Value = "MYR";
                     sheet4["G" + auditStartIndex].Value = auditItem.WorkflowStatus;
 
                     if (auditItem.WorkflowStatus == "Approved")
@@ -350,8 +373,8 @@ namespace xDC_Web.Extension.DocGenerator
                         sheet4["G" + auditStartIndex].FillColor = Color.Red;
                     }
 
-                    sheet4["H"+ auditStartIndex].Value = auditItem.RequestBy;
-                    sheet4["I"+ auditStartIndex].Value = auditItem.WorkflowNotes;
+                    sheet4["H" + auditStartIndex].Value = auditItem.RequestBy;
+                    sheet4["I" + auditStartIndex].Value = auditItem.WorkflowNotes;
 
                     sheet4["B" + auditStartIndex + ":I" + auditStartIndex].Borders.SetAllBorders(Color.Black, BorderLineStyle.Thin);
                     sheet4["I" + auditStartIndex].Alignment.WrapText = true;
@@ -364,7 +387,7 @@ namespace xDC_Web.Extension.DocGenerator
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
             }
             finally
             {
@@ -518,22 +541,22 @@ namespace xDC_Web.Extension.DocGenerator
 
             #region 4 - IF Equity
 
-            dataObj.IF_Equity = TsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Equity);
+            dataObj.IF_Equity = _tsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Equity);
 
             #endregion
 
             #region 5 - IF Others
-            
-            dataObj.IF_Others_NP = TsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.NotesPapers);
-            dataObj.IF_Others_Fees = TsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Fees);
-            dataObj.IF_Others_Mtm = TsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Mtm);
-            dataObj.IF_Others_Fx = TsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Fx);
-            dataObj.IF_Others_Cn = TsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Cn);
-            dataObj.IF_Others_Altid = TsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Altid);
-            dataObj.IF_Others_Others = TsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Others);
+
+            dataObj.IF_Others_NP = _tsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.NotesPapers);
+            dataObj.IF_Others_Fees = _tsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Fees);
+            dataObj.IF_Others_Mtm = _tsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Mtm);
+            dataObj.IF_Others_Fx = _tsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Fx);
+            dataObj.IF_Others_Cn = _tsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Cn);
+            dataObj.IF_Others_Altid = _tsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Altid);
+            dataObj.IF_Others_Others = _tsFormService.GetTotalInflowByCategory(db, tsFormIds, Common.TsItemCategory.Others);
 
             dataObj.IF_Others_Total = dataObj.IF_Others_NP + dataObj.IF_Others_Fees +
-                                           dataObj.IF_Others_Mtm + dataObj.IF_Others_Fx + 
+                                           dataObj.IF_Others_Mtm + dataObj.IF_Others_Fx +
                                            dataObj.IF_Others_Cn + dataObj.IF_Others_Altid +
                                            dataObj.IF_Others_Others;
 
@@ -609,22 +632,22 @@ namespace xDC_Web.Extension.DocGenerator
 
             #region 8 - OF Equity
 
-            dataObj.OF_Equity = TsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Equity);
+            dataObj.OF_Equity = _tsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Equity);
 
             #endregion
 
             #region OF Others
-            
-            dataObj.OF_Others_NP = TsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.NotesPapers);
-            dataObj.OF_Others_Fees = TsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Fees);
-            dataObj.OF_Others_Mtm = TsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Mtm);
-            dataObj.OF_Others_Fx = TsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Fx);
-            dataObj.OF_Others_Cn = TsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Cn);
-            dataObj.OF_Others_Altid = TsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Altid);
-            dataObj.OF_Others_Others = TsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Others);
+
+            dataObj.OF_Others_NP = _tsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.NotesPapers);
+            dataObj.OF_Others_Fees = _tsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Fees);
+            dataObj.OF_Others_Mtm = _tsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Mtm);
+            dataObj.OF_Others_Fx = _tsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Fx);
+            dataObj.OF_Others_Cn = _tsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Cn);
+            dataObj.OF_Others_Altid = _tsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Altid);
+            dataObj.OF_Others_Others = _tsFormService.GetTotalOutflowByCategory(db, tsFormIds, Common.TsItemCategory.Others);
 
             dataObj.OF_Others_Total = dataObj.OF_Others_NP + dataObj.OF_Others_Fees +
-                                      dataObj.OF_Others_Mtm + dataObj.OF_Others_Fx + 
+                                      dataObj.OF_Others_Mtm + dataObj.OF_Others_Fx +
                                       dataObj.OF_Others_Cn + dataObj.OF_Others_Altid +
                                       dataObj.OF_Others_Others;
 
@@ -719,7 +742,7 @@ namespace xDC_Web.Extension.DocGenerator
             #region Sheet 3 - Others
 
             #region Others Tab - IF - MGS & GII - Sales, maturity or coupon
-            
+
             var othersTab_if_mgs = new List<MYR_DealCutOffData_OthersTab_Item1>();
 
             var ifCoupon = db.ISSD_TradeSettlement
@@ -740,7 +763,7 @@ namespace xDC_Web.Extension.DocGenerator
                     Notes = x.InstrumentType
                 })
                 .ToList();
-            
+
             if (ifCoupon.Any())
             {
                 othersTab_if_mgs.AddRange(ifCoupon);
@@ -791,7 +814,7 @@ namespace xDC_Web.Extension.DocGenerator
                     Notes = x.ProductType
                 })
                 .ToList();
-            
+
             if (inflowCorpTreasuryItems.Any())
             {
                 othersTabInflowCorp.AddRange(inflowCorpTreasuryItems);
@@ -809,11 +832,11 @@ namespace xDC_Web.Extension.DocGenerator
             #region Others Tab - IF - Others
 
             var othersTab_if_others = new List<MYR_DealCutOffData_OthersTab_Item2>();
-            
+
             var othersTab_if_others_item = db.ISSD_TradeSettlement
                 .Where(x => tsFormIds.Contains(x.FormId)
-                            && (x.InstrumentType != Common.TsItemCategory.Coupon 
-                                && x.InstrumentType != Common.TsItemCategory.Equity 
+                            && (x.InstrumentType != Common.TsItemCategory.Coupon
+                                && x.InstrumentType != Common.TsItemCategory.Equity
                                 && x.InstrumentType != Common.TsItemCategory.Bond
                                 && x.InstrumentType != Common.TsItemCategory.Cp
                                 && x.InstrumentType != Common.TsItemCategory.Repo
@@ -858,7 +881,7 @@ namespace xDC_Web.Extension.DocGenerator
                     Notes = x.InstrumentType
                 })
                 .ToList();
-            
+
             if (othersTab_of_mgs_itemBond.Any())
             {
                 othersTab_of_mgs.AddRange(othersTab_of_mgs_itemBond);
@@ -930,12 +953,12 @@ namespace xDC_Web.Extension.DocGenerator
             #region Others Tab - OF - Others
 
             var othersTab_of_others = new List<MYR_DealCutOffData_OthersTab_Item2>();
-            
+
             var othersTab_of_others_item = db.ISSD_TradeSettlement
                 .Where(x => tsFormIds.Contains(x.FormId)
-                            && (x.InstrumentType != Common.TsItemCategory.Coupon 
-                                && x.InstrumentType != Common.TsItemCategory.Equity 
-                                && x.InstrumentType != Common.TsItemCategory.Bond 
+                            && (x.InstrumentType != Common.TsItemCategory.Coupon
+                                && x.InstrumentType != Common.TsItemCategory.Equity
+                                && x.InstrumentType != Common.TsItemCategory.Bond
                                 && x.InstrumentType != Common.TsItemCategory.Repo
                                 && x.InstrumentType != Common.TsItemCategory.Cp)
                             && x.OutflowAmount > 0)
@@ -982,7 +1005,7 @@ namespace xDC_Web.Extension.DocGenerator
 
             return dataObj;
 
-            
+
         }
 
         private void IterateFixedIncomeItem(double amount, string category, int startIndex, ref Worksheet sheet, ref int currentRowIndex)
@@ -991,8 +1014,8 @@ namespace xDC_Web.Extension.DocGenerator
             {
                 if (currentRowIndex != startIndex)
                 {
-                    sheet.Rows[currentRowIndex-1].Insert(InsertCellsMode.ShiftCellsDown);
-                    sheet.Rows[currentRowIndex-1].CopyFrom(sheet.Rows[startIndex - 1], PasteSpecial.All);
+                    sheet.Rows[currentRowIndex - 1].Insert(InsertCellsMode.ShiftCellsDown);
+                    sheet.Rows[currentRowIndex - 1].CopyFrom(sheet.Rows[startIndex - 1], PasteSpecial.All);
                 }
                 sheet["C" + currentRowIndex].Value = category;
                 sheet["E" + currentRowIndex].Value = amount;
@@ -1007,7 +1030,7 @@ namespace xDC_Web.Extension.DocGenerator
             if (items.Any())
             {
                 var currentIndex = startIndex += 3;
-                
+
                 foreach (var item in items)
                 {
                     if (currentIndex != startIndex)
@@ -1026,10 +1049,10 @@ namespace xDC_Web.Extension.DocGenerator
                     sheet["L" + currentIndex].Value = item.AssetType;
                     sheet["M" + currentIndex].Value = item.ContactPerson;
                     sheet["N" + currentIndex].Value = item.Notes;
-                    
+
                     currentIndex++;
                 }
-                
+
                 sheet["G" + currentIndex].Formula = "=SUM($G$" + startIndex + ":$G$" + (currentIndex - 1) + ")";
                 sheet["J" + currentIndex].Formula = "=SUM($J$" + startIndex + ":$J$" + (currentIndex - 1) + ")";
                 sheet["K" + currentIndex].Formula = "=SUM($K$" + startIndex + ":$K$" + (currentIndex - 1) + ")";
@@ -1104,8 +1127,10 @@ namespace xDC_Web.Extension.DocGenerator
                 endIndex = currentIndex;
             }
         }
-        
+
+        #endregion
     }
+
 
     public class MYR_DealCutOffData
     {
@@ -1120,7 +1145,7 @@ namespace xDC_Web.Extension.DocGenerator
         public double IF_FixedIncome_Mgs { get; set; }
         public double IF_FixedIncome_NonMgs { get; set; }
         public double IF_FixedIncome_Total { get; set; }
-        
+
 
         public double IF_Others_CP { get; set; }
         public double IF_Others_NP { get; set; }
@@ -1132,7 +1157,7 @@ namespace xDC_Web.Extension.DocGenerator
         public double IF_Others_Altid { get; set; }
         public double IF_Others_Others { get; set; }
         public double IF_Others_Total { get; set; }
-        
+
         public double IF_Equity { get; set; }
         public double IF_Net { get; set; }
 
@@ -1205,18 +1230,6 @@ namespace xDC_Web.Extension.DocGenerator
         public string ContactPerson { get; set; }
         public string Notes { get; set; }
         public string AssetType { get; set; }
-    }
-
-    public class FormAudit
-    {
-        public int FormId { get; set; }
-        public string FormType { get; set; }
-        public DateTime Datesubmitted { get; set; }
-        public DateTime FormDate { get; set; }
-        public string FormStatus { get; set; }
-        public string Currency { get; set; }
-        public string PreparerApprover { get; set; }
-        public string Remarks { get; set; }
     }
 
 }

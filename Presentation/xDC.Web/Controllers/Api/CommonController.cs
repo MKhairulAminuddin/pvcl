@@ -24,6 +24,21 @@ namespace xDC_Web.Controllers.Api
     [RoutePrefix("api/common")]
     public class CommonController : ApiController
     {
+        #region Fields
+
+        private readonly IXDcLogger _logger;
+
+        #endregion
+
+        #region Ctor
+
+        public CommonController(IXDcLogger logger)
+        {
+            _logger = logger;
+        }
+
+        #endregion
+
         #region Active Directory
 
         [HttpGet]
@@ -406,7 +421,7 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -429,7 +444,7 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -451,7 +466,7 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -481,7 +496,7 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -509,7 +524,7 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -601,7 +616,7 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -639,7 +654,7 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+                _logger.LogError(ex);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }

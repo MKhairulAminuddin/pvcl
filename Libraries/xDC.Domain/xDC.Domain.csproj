@@ -102,6 +102,7 @@
     <Compile Include="Web\ISSD\TradeSettlementForm\TsFormSummary.cs" />
     <Compile Include="Web\ISSD\TradeSettlementForm\TsLandingPage.cs" />
     <Compile Include="Web\ISSD\TradeSettlementForm\TsOpeningBalance.cs" />
+    <Compile Include="Web\Reports\TenAmDealCutOffItem.cs" />
     <Compile Include="Web\Setting\EmailConfigSetting.cs" />
   </ItemGroup>
   <ItemGroup>

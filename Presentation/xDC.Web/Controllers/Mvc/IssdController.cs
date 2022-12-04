@@ -1,24 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using xDC.Domain.ISSD_TS;
 using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Infrastructure.Application;
-using xDC.Logging;
 using xDC.Services;
-using xDC.Services.FileGenerator;
 using xDC.Services.Form;
 using xDC.Services.Membership;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
-using xDC_Web.Extension.DocGenerator;
-using xDC_Web.Extension.MailGenerator;
-using xDC_Web.Models;
-using xDC_Web.ViewModels;
 using xDC_Web.ViewModels.Fid;
 
 namespace xDC_Web.Controllers.Mvc
@@ -32,15 +24,18 @@ namespace xDC_Web.Controllers.Mvc
 
         private readonly ITsFormService _tsFormService;
         private readonly IUserManagementService _userService;
+        private readonly IFcaTaggingFormService _fcaTaggingFormService;
+
 
         #endregion
 
         #region Ctor
 
-        public IssdController(ITsFormService tsFormService, IUserManagementService userService)
+        public IssdController(ITsFormService tsFormService, IUserManagementService userService, IFcaTaggingFormService fcaTaggingFormService)
         {
             _tsFormService = tsFormService;
             _userService = userService;
+            _fcaTaggingFormService = fcaTaggingFormService;
         }
 
         #endregion
@@ -301,7 +296,7 @@ namespace xDC_Web.Controllers.Mvc
         {
             try
             {
-                var response = new FcaTaggingFormService().Page_FcaTaggingForm(settlementDateEpoch, currency, out bool reqStatus);
+                var response = _fcaTaggingFormService.Page_FcaTaggingForm(settlementDateEpoch, currency, out bool reqStatus);
 
                 if (reqStatus)
                 {

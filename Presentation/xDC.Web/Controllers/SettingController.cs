@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using xDC.Domain.Web.Setting;
-using xDC.Infrastructure.Application;
 using xDC.Logging;
-using xDC.Services;
-using xDC.Utils;
+using xDC.Services.Application;
 using xDC_Web.Extension.CustomAttribute;
-using xDC_Web.ViewModels;
 
 namespace xDC_Web.Controllers
 {

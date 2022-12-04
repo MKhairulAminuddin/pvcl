@@ -34,14 +34,16 @@ namespace xDC_Web.Controllers.Api
         #region Fields
 
         private readonly ITreasuryFormService _tFormService;
+        private readonly IFcaTaggingFormService _fcaTaggingFormService;
 
         #endregion
 
         #region Ctor
 
-        public FidController(ITreasuryFormService treasuryFormService)
+        public FidController(ITreasuryFormService treasuryFormService, IFcaTaggingFormService fcaTaggingFormService)
         {
             _tFormService = treasuryFormService;
+            _fcaTaggingFormService = fcaTaggingFormService;
         }
 
         #endregion
@@ -52,7 +54,7 @@ namespace xDC_Web.Controllers.Api
         [Route("FcaTagging")]
         public HttpResponseMessage FcaTaggingSummaryList(DataSourceLoadOptions loadOptions)
         {
-            var response = new FcaTaggingFormService().DxGrid_GetSummaryForFidView(out bool statusRequest);
+            var response = _fcaTaggingFormService.DxGrid_GetSummaryForFidView(out bool statusRequest);
 
             if (statusRequest)
             {
@@ -68,7 +70,7 @@ namespace xDC_Web.Controllers.Api
         [Route("FcaTagging/AvailableTrades/{settlementDateEpoch}/{currency}")]
         public HttpResponseMessage FcaTagging_AvailableTrades(long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
         {
-            var response = new FcaTaggingFormService().DxGrid_GetDetailForFidView(settlementDateEpoch, currency, out bool statusRequest);
+            var response = _fcaTaggingFormService.DxGrid_GetDetailForFidView(settlementDateEpoch, currency, out bool statusRequest);
 
             if (statusRequest)
             {
@@ -84,7 +86,7 @@ namespace xDC_Web.Controllers.Api
         [Route("FcaTaggingGrid/TradeItem/{tradeType}/{settlementDateEpoch}/{currency}")]
         public HttpResponseMessage TcaTaggingGrid(string tradeType, long settlementDateEpoch, string currency, DataSourceLoadOptions loadOptions)
         {
-            var response = new FcaTaggingFormService().DxGrid_GetIndividualGridData(tradeType, settlementDateEpoch, currency, out bool statusRequest);
+            var response = _fcaTaggingFormService.DxGrid_GetIndividualGridData(tradeType, settlementDateEpoch, currency, out bool statusRequest);
 
             if (statusRequest)
             {
@@ -131,7 +133,7 @@ namespace xDC_Web.Controllers.Api
         [Route("FcaTagging/FcaAccount")]
         public HttpResponseMessage FcaTagging_FcaAccount(DataSourceLoadOptions loadOptions)
         {
-            var response = new FcaTaggingFormService().List_GetFcaBankAccount(out bool statusRequest);
+            var response = _fcaTaggingFormService.List_GetFcaBankAccount(out bool statusRequest);
 
             if (statusRequest)
             {
@@ -203,6 +205,7 @@ namespace xDC_Web.Controllers.Api
         [Route("Treasury/EdwDataAvailability/{tradeDateEpoch}/{currency}")]
         public HttpResponseMessage Treasury_EdwDataAvailability(long tradeDateEpoch, string currency, DataSourceLoadOptions loadOptions)
         {
+            // TODO: !
             try
             {
                 using (var db = new kashflowDBEntities())
@@ -245,7 +248,6 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
         }
