@@ -10,6 +10,7 @@ using System.Web.Http;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Services.Application;
+using xDC.Services.Form;
 using xDC_Web.Extension.CustomAttribute;
 using static xDC.Utils.Common;
 
@@ -21,16 +22,7 @@ namespace xDC_Web.Controllers.Api
     {
         #region Fields
 
-        private readonly ISettingService _settingService;
-
-        #endregion
-
-        #region Ctor
-
-        public SettingController(ISettingService settingService)
-        {
-            _settingService = settingService;
-        }
+        private readonly ISettingService _settingService = Startup.Container.GetInstance<ISettingService>();
 
         #endregion
 
@@ -48,42 +40,13 @@ namespace xDC_Web.Controllers.Api
         [HttpPut]
         public HttpResponseMessage UpdateDropdownConfig(FormDataCollection form)
         {
-            try
-            {
-                using (var db = new kashflowDBEntities())
-                {
-                    var key = Convert.ToInt32(form.Get("key"));
-                    var values = form.Get("values");
-                    var existingRecord = db.Config_Dropdown.SingleOrDefault(o => o.Id == key);
-                    
-                    JsonConvert.PopulateObject(values, existingRecord);
+            var key = Convert.ToInt32(form.Get("key"));
+            var values = form.Get("values");
 
+            var updateDropdownStatus = _settingService.DropdownConfig_Update(key, values, User.Identity.Name);
+            if (!updateDropdownStatus) return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "System unable to update the setting. Please seek system admin.");
 
-                    if (existingRecord != null)
-                    {
-                        existingRecord.UpdatedBy = User.Identity.Name;
-                        existingRecord.UpdatedDate = DateTime.Now;
-                        
-                        Validate(existingRecord);
-
-                        if (!ModelState.IsValid)
-                            return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
-
-                        db.SaveChanges();
-
-                        return Request.CreateResponse(HttpStatusCode.OK);
-                    }
-                    else
-                    {
-                        return Request.CreateErrorResponse(HttpStatusCode.BadRequest, "Data not found");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
-            }
+            return Request.CreateResponse(HttpStatusCode.OK);
         }
 
         [HttpPost]
@@ -128,7 +91,6 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
 
@@ -152,7 +114,6 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -194,7 +155,6 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -228,7 +188,6 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -250,7 +209,6 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
 
@@ -274,7 +232,6 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -328,7 +285,6 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -383,7 +339,6 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }
@@ -405,16 +360,10 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
 
         }
-
-        #endregion
-
-        #region Notification
-
 
         #endregion
     }

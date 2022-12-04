@@ -15,8 +15,6 @@ namespace xDC_Web.Extension.SchedulerTask
         {
             try
             {
-                Logger.LogInfo("Fetch New Currency Started!");
-
                 using (var db = new kashflowDBEntities())
                 {
                     var currencyFromEdw = db.EDW_TradeItem.Select(x => x.Currency).Distinct().ToList();
@@ -40,11 +38,11 @@ namespace xDC_Web.Extension.SchedulerTask
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
+
             }
             finally
             {
-                Logger.LogInfo("Fetch New Currency Completed!");
+                
             }
         }
     }

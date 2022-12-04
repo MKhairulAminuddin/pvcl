@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Web.Http;
 using xDC.Domain.WebApi.Audit;
 using xDC.Services.Audit;
+using xDC.Services.Form;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
 using static xDC.Utils.Common;
@@ -19,16 +20,7 @@ namespace xDC_Web.Controllers.Api
     public class AuditController : ApiController
     {
         #region Fields
-        private readonly IAuditService _auditService;
-
-        #endregion
-
-        #region Ctor
-
-        public AuditController(IAuditService auditService)
-        {
-            _auditService = auditService;
-        }
+        private readonly IAuditService _auditService = Startup.Container.GetInstance<IAuditService>();
 
         #endregion
 

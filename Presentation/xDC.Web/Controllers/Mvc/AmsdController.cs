@@ -3,6 +3,7 @@ using System.Web;
 using System.Web.Mvc;
 using xDC.Domain.Web.AMSD.InflowFundForm;
 using xDC.Services.Form;
+using xDC.Services.Membership;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
 
@@ -15,16 +16,7 @@ namespace xDC_Web.Controllers.Mvc
     {
         #region Fields
 
-        private readonly IIfFormService _ifFormService;
-
-        #endregion
-
-        #region Ctor
-
-        public AmsdController(IIfFormService ifFormService)
-        {
-            _ifFormService = ifFormService;
-        }
+        private readonly IIfFormService _ifFormService = Startup.Container.GetInstance<IIfFormService>();
 
         #endregion
 

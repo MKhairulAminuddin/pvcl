@@ -6,7 +6,7 @@ namespace xDC_Web.Extension
 {
     public static class MenuSecurity
     {
-        private static readonly IRoleManagementService _roleService;
+        private static readonly IRoleManagementService _roleService = Startup.Container.GetInstance<IRoleManagementService>();
 
         public static bool IsAuthenticated()
         {

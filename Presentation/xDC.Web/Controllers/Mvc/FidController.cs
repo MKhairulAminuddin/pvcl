@@ -18,16 +18,8 @@ namespace xDC_Web.Controllers.Mvc
     {
         #region Fields
 
-        private readonly ITreasuryFormService _tFormService;
-
-        #endregion
-
-        #region Ctor
-
-        public FidController(ITreasuryFormService treasuryFormService)
-        {
-            _tFormService = treasuryFormService;
-        }
+        private readonly ITreasuryFormService _tFormService = Startup.Container.GetInstance<ITreasuryFormService>();
+        private readonly IFcaTaggingFormService _fcaTaggingService = Startup.Container.GetInstance<IFcaTaggingFormService>();
 
         #endregion
 
@@ -52,7 +44,7 @@ namespace xDC_Web.Controllers.Mvc
         {
             try
             {
-                var response = new FcaTaggingFormService().Page_FcaTaggingForm(settlementDateEpoch, currency, out bool reqStatus);
+                var response = _fcaTaggingService.Page_FcaTaggingForm(settlementDateEpoch, currency, out bool reqStatus);
 
                 if (reqStatus)
                 {
@@ -78,7 +70,7 @@ namespace xDC_Web.Controllers.Mvc
         {
             try
             {
-                var response = new FcaTaggingFormService().Page_FcaTaggingForm(settlementDateEpoch, currency, out bool reqStatus);
+                var response = _fcaTaggingService.Page_FcaTaggingForm(settlementDateEpoch, currency, out bool reqStatus);
 
                 if (reqStatus)
                 {

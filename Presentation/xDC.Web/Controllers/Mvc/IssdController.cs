@@ -22,23 +22,13 @@ namespace xDC_Web.Controllers.Mvc
     {
         #region Fields
 
-        private readonly ITsFormService _tsFormService;
-        private readonly IUserManagementService _userService;
-        private readonly IFcaTaggingFormService _fcaTaggingFormService;
+        private readonly ITsFormService _tsFormService = Startup.Container.GetInstance<ITsFormService>();
+        private readonly IUserManagementService _userService = Startup.Container.GetInstance<IUserManagementService>();
+        private readonly IFcaTaggingFormService _fcaTaggingFormService = Startup.Container.GetInstance<IFcaTaggingFormService>();
 
 
         #endregion
 
-        #region Ctor
-
-        public IssdController(ITsFormService tsFormService, IUserManagementService userService, IFcaTaggingFormService fcaTaggingFormService)
-        {
-            _tsFormService = tsFormService;
-            _userService = userService;
-            _fcaTaggingFormService = fcaTaggingFormService;
-        }
-
-        #endregion
 
         #region Trade Settlement Form
 

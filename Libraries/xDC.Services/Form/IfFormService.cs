@@ -214,13 +214,13 @@ namespace xDC.Services.Form
             }
         }
 
-        public IQueryable<AMSD_IF_Item> GetFormItems(int formId)
+        public List<AMSD_IF_Item> GetFormItems(int formId)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    return db.AMSD_IF_Item.Where(x => x.FormId == formId);
+                    return db.AMSD_IF_Item.Where(x => x.FormId == formId).ToList();
                 }
             }
             catch (Exception ex)

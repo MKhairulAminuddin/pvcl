@@ -14,7 +14,6 @@ namespace xDC_Web.Extension.SchedulerTask
         {
             try
             {
-                Logger.LogInfo("Sync AD Started!");
                 var adUserList = new List<AspNetActiveDirectoryUsers>();
 
                 using (var context = new PrincipalContext(ContextType.Domain))
@@ -72,13 +71,11 @@ namespace xDC_Web.Extension.SchedulerTask
                         db.Database.ExecuteSqlCommand("TRUNCATE TABLE [AspNetActiveDirectoryUsers]");
                         db.AspNetActiveDirectoryUsers.AddRange(adUserList);
                         db.SaveChanges();
-                        Logger.LogInfo("Sync AD Users Completed!");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
             }
 
         }
@@ -87,7 +84,6 @@ namespace xDC_Web.Extension.SchedulerTask
         {
             try
             {
-                Logger.LogInfo("Sync User Profile with AD Started!");
 
                 using (var db = new kashflowDBEntities())
                 {
@@ -106,12 +102,10 @@ namespace xDC_Web.Extension.SchedulerTask
                         }
                     }
 
-                    Logger.LogInfo("Sync User Profile with AD Completed!");
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
             }
         }
     }

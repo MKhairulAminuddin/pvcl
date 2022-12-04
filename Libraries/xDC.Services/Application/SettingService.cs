@@ -92,8 +92,9 @@ namespace xDC.Services.Application
                     itemExistInDb.UpdatedBy = currentUser;
                     itemExistInDb.UpdatedDate = DateTime.Now;
 
+                    var saveChanges = db.SaveChanges();
 
-                    db.SaveChanges();
+                    return saveChanges > 0;
                 }
             }
             catch (Exception ex)

@@ -3,14 +3,22 @@ using System.Web.Mvc;
 using xDC.Domain.Web.Setting;
 using xDC.Logging;
 using xDC.Services.Application;
+using xDC.Services.Membership;
 using xDC_Web.Extension.CustomAttribute;
 
-namespace xDC_Web.Controllers
+namespace xDC_Web.Controllers.Mvc
 {
     [Authorize]
     [KflowAuthorize(xDC.Utils.Common.PermissionKey.Settings)]
     public class SettingController : Controller
     {
+        #region Fields
+
+        private readonly ISettingService _settingService = Startup.Container.GetInstance<ISettingService>();
+
+        #endregion
+
+
         public ActionResult Index()
         {
             return View();
@@ -21,15 +29,14 @@ namespace xDC_Web.Controllers
         {
             try
             {
-                var model = SettingService.EmailConfiguration();
+                var model = _settingService.EmailConfiguration();
                 return View(model);
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return View("Error");
             }
-            
+
         }
 
         [KflowAuthorize(xDC.Utils.Common.PermissionKey.Settings_EmailNotification)]
@@ -41,7 +48,7 @@ namespace xDC_Web.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var SaveStatus = SettingService.EmailConfigurationUpdate(req, User.Identity.Name);
+                    var SaveStatus = _settingService.EmailConfigurationUpdate(req, User.Identity.Name);
                     return RedirectToAction("EmailNotiConfig");
                 }
                 else
@@ -51,7 +58,6 @@ namespace xDC_Web.Controllers
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return View("Error");
             }
 

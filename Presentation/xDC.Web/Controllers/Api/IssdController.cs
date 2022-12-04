@@ -28,21 +28,12 @@ namespace xDC_Web.Controllers.Api
     {
         #region Fields
 
-        private readonly ITsFormService _tsFormService;
-        private readonly IFcaTaggingFormService _fcaTaggingFormService;
+        private readonly ITsFormService _tsFormService = Startup.Container.GetInstance<ITsFormService>();
+        private readonly IFcaTaggingFormService _fcaTaggingFormService = Startup.Container.GetInstance<IFcaTaggingFormService>();
 
 
         #endregion
 
-        #region Ctor
-
-        public IssdController(ITsFormService tsFormService, IGenFile_TsForm tsFormGen, IFcaTaggingFormService fcaTaggingFormService)
-        {
-            _tsFormService = tsFormService;
-            _fcaTaggingFormService = fcaTaggingFormService;
-        }
-
-        #endregion
 
 
         #region TS Landing Page

@@ -23,16 +23,7 @@ namespace xDC_Web.Controllers.Api
     {
         #region Fields
 
-        private readonly IIfFormService _ifFormService;
-
-        #endregion
-
-        #region Ctor
-
-        public AmsdController(IIfFormService ifFormService)
-        {
-            _ifFormService = ifFormService;
-        }
+        private readonly IIfFormService _ifFormService = Startup.Container.GetInstance<IIfFormService>();
 
         #endregion
 

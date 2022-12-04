@@ -2,6 +2,7 @@
 using System.IO;
 using System.Web.Mvc;
 using xDC.Services.FileGenerator;
+using xDC.Services.Membership;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.Extension.MailMerge;
@@ -16,20 +17,9 @@ namespace xDC_Web.Controllers.Mvc
     {
         #region Fields
 
-        private readonly IGenFile_DealCutOffMyrReport _genDcoMyrReport;
-        private readonly IGenFile_DealCutOffFcyReport _genDcoFcyReport;
-        private readonly IGenFile_10amDealCutOffReport _gen10amDcoReport;
-
-        #endregion
-
-        #region Ctor
-
-        public ReportController(IGenFile_DealCutOffMyrReport genDcoMyrReport, IGenFile_DealCutOffFcyReport genDcoFcyReport, IGenFile_10amDealCutOffReport gen10amDcoReport)
-        {
-            _genDcoMyrReport = genDcoMyrReport;
-            _genDcoFcyReport = genDcoFcyReport;
-            _gen10amDcoReport = gen10amDcoReport;
-        }
+        private readonly IGenFile_DealCutOffMyrReport _genDcoMyrReport = Startup.Container.GetInstance<IGenFile_DealCutOffMyrReport>();
+        private readonly IGenFile_DealCutOffFcyReport _genDcoFcyReport = Startup.Container.GetInstance<IGenFile_DealCutOffFcyReport>();
+        private readonly IGenFile_10amDealCutOffReport _gen10amDcoReport = Startup.Container.GetInstance<IGenFile_10amDealCutOffReport>();
 
         #endregion
 

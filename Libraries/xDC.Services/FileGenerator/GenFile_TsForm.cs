@@ -29,17 +29,15 @@ namespace xDC.Services.FileGenerator
         private Color _otherColor = System.Drawing.ColorTranslator.FromHtml("#FFFDE7");
 
         private readonly IXDcLogger _logger;
-        private readonly ITsFormService _tsFormService;
         private readonly IWorkflowService _wfService;
 
         #endregion
 
         #region Ctor
 
-        public GenFile_TsForm(IXDcLogger logger, ITsFormService tsFormService, IWorkflowService wfService)
+        public GenFile_TsForm(IXDcLogger logger,  IWorkflowService wfService)
         {
             _logger = logger;
-            _tsFormService = tsFormService;
             _wfService = wfService;
         }
 
@@ -202,7 +200,7 @@ namespace xDC.Services.FileGenerator
                     }
 
                     var openingBalances = new List<TsOpeningBalance>();
-                    openingBalances = _tsFormService.GetOpeningBalance(settlementDate, currency);
+                    openingBalances = GetOpeningBalance(settlementDate, currency);
 
 
 
@@ -856,6 +854,43 @@ namespace xDC.Services.FileGenerator
                 {
                     return null;
                 }
+            }
+        }
+
+        private List<TsOpeningBalance> GetOpeningBalance(DateTime settlementDate, string currency)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = new List<TsOpeningBalance>();
+
+                    var ob = db.EDW_BankBalance
+                        .Where(x => DbFunctions.TruncateTime(x.SettlementDate) == DbFunctions.TruncateTime(settlementDate)
+                                    && x.Currency == currency)
+                        .GroupBy(x => new { x.SettlementDate, x.InstrumentType })
+                        .Select(x => new
+                        {
+                            account = x.Key.InstrumentType,
+                            total = x.Sum(y => y.Amount ?? 0)
+                        });
+
+                    foreach (var item in ob)
+                    {
+                        result.Add(new TsOpeningBalance()
+                        {
+                            Account = item.account,
+                            Amount = item.total
+                        });
+                    }
+
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return null;
             }
         }
 

@@ -49,7 +49,6 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
         }

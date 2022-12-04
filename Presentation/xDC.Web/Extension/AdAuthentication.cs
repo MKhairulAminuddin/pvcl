@@ -11,18 +11,19 @@ using xDC.Services;
 using xDC_Web.Models;
 using xDC.Logging;
 using xDC.Services.Membership;
+using SimpleInjector;
+using xDC.Services.Form;
 
 namespace xDC_Web.Extension
 {
 	public class AdAuthentication
 	{
 		private readonly IAuthenticationManager _authManager;
-		private readonly IRoleManagementService _roleService;
+		private readonly IRoleManagementService _roleService = Startup.Container.GetInstance<IRoleManagementService>();
 
-		public AdAuthentication(IAuthenticationManager authenticationManager, IRoleManagementService roleService)
+        public AdAuthentication(IAuthenticationManager authenticationManager)
 		{
-			this._authManager = authenticationManager;
-			_roleService = roleService;
+			_authManager = authenticationManager;
 		}
 
 		public AuthenticationResult SignIn(LoginViewModel model)

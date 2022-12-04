@@ -17,6 +17,7 @@ using xDC_Web.Models;
 using System.Data.Entity;
 using xDC_Web.ViewModels.DealCutOff;
 using xDC.Services.Audit;
+using xDC.Services.Form;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -26,18 +27,10 @@ namespace xDC_Web.Controllers.Api
     {
         #region Fields
 
-        private readonly IXDcLogger _logger;
+        private readonly IXDcLogger _logger = Startup.Container.GetInstance<IXDcLogger>();
 
         #endregion
 
-        #region Ctor
-
-        public CommonController(IXDcLogger logger)
-        {
-            _logger = logger;
-        }
-
-        #endregion
 
         #region Active Directory
 

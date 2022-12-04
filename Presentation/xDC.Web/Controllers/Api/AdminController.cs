@@ -24,6 +24,7 @@ using static xDC.Utils.Common;
 using xDC_Web.Extension.CustomAttribute;
 using xDC.Services.Membership;
 using xDC.Services.Notification;
+using xDC.Services.Form;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -33,21 +34,10 @@ namespace xDC_Web.Controllers.Api
     {
         #region Fields
 
-        private readonly IUserManagementService _userMgmtService;
-        private readonly IRoleManagementService _roleService;
-        private readonly IEmailNotification _emailService;
+        private readonly IUserManagementService _userMgmtService = Startup.Container.GetInstance<IUserManagementService>();
+        private readonly IRoleManagementService _roleService = Startup.Container.GetInstance<IRoleManagementService>();
+        private readonly IEmailNotification _emailService = Startup.Container.GetInstance<IEmailNotification>();
 
-
-        #endregion
-
-        #region Ctor
-
-        public AdminController(IUserManagementService userMgmtService, IRoleManagementService roleService, IEmailNotification emailService)
-        {
-            _userMgmtService = userMgmtService;
-            _roleService = roleService;
-            _emailService = emailService;
-        }
 
         #endregion
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.Owin.Security;
+using xDC.Services.Membership;
 using xDC_Web.Extension;
 using xDC_Web.Models;
 

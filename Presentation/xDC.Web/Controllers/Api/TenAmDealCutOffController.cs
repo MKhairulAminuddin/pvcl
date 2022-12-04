@@ -381,7 +381,6 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
             }
         }
@@ -460,7 +459,6 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message); 
             }
         }

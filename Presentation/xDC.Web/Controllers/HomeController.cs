@@ -14,16 +14,9 @@ namespace xDC_Web.Controllers
     [Authorize]
     public class HomeController : Controller 
     {
-        private readonly IIfFormService _ifFormService;
-        private readonly ITsFormService _tsFormService;
-        private readonly ITreasuryFormService _tFormService;
-
-        public HomeController(ITreasuryFormService tFormService, IIfFormService ifFormService, ITsFormService tsFormService)
-        {
-            _tFormService = tFormService;
-            _ifFormService = ifFormService;
-            _tsFormService = tsFormService;
-        }
+        private readonly IIfFormService _ifFormService = Startup.Container.GetInstance<IIfFormService>();
+        private readonly ITsFormService _tsFormService = Startup.Container.GetInstance<ITsFormService>();
+        private readonly ITreasuryFormService _tFormService = Startup.Container.GetInstance<ITreasuryFormService>();
 
         public ActionResult Index() {
 

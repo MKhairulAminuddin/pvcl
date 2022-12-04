@@ -22,7 +22,6 @@ namespace xDC.Services.FileGenerator
         private Color _inflowColor = System.Drawing.ColorTranslator.FromHtml("#3498DB");
         private Color _outFlowColor = System.Drawing.ColorTranslator.FromHtml("#E67E22");
 
-        private readonly IIfFormService _ifFormService;
         private readonly IXDcLogger _logger;
         private readonly IWorkflowService _wfService;
 
@@ -30,9 +29,8 @@ namespace xDC.Services.FileGenerator
 
         #region Ctor
 
-        public GenFile_TreasuryForm(IIfFormService ifFormService, IXDcLogger logger, IWorkflowService wfService)
+        public GenFile_TreasuryForm(IXDcLogger logger, IWorkflowService wfService)
         {
-            _ifFormService = ifFormService;
             _logger = logger;
             _wfService = wfService;
         }

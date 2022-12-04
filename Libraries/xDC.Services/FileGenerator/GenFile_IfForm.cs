@@ -21,7 +21,6 @@ namespace xDC.Services.FileGenerator
     {
         #region Fields
 
-        private readonly IIfFormService _ifFormService;
         private readonly IXDcLogger _logger;
         private readonly IWorkflowService _wfService;
 
@@ -29,10 +28,9 @@ namespace xDC.Services.FileGenerator
 
         #region Ctor
 
-        public GenFile_IfForm(IWorkflowService wfService, IIfFormService ifFormService, IXDcLogger logger)
+        public GenFile_IfForm(IWorkflowService wfService, IXDcLogger logger)
         {
             _wfService = wfService;
-            _ifFormService = ifFormService;
             _logger = logger;
         }
 

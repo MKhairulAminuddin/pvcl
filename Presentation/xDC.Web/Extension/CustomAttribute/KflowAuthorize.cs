@@ -12,7 +12,6 @@ namespace xDC_Web.Extension.CustomAttribute
     public class KflowAuthorize : AuthorizeAttribute
     {
         private readonly string _permissionName;
-        private static readonly IRoleManagementService _roleService;
 
         public KflowAuthorize(string PermissionName)
         {
@@ -24,6 +23,7 @@ namespace xDC_Web.Extension.CustomAttribute
             // If they are authorized, handle accordingly
             if (this.AuthorizeCore(filterContext.HttpContext))
             {
+                IRoleManagementService _roleService = Startup.Container.GetInstance<IRoleManagementService>();
                 bool isAuthorized = _roleService.IsUserHaveAccess(filterContext.HttpContext.User.Identity.Name, _permissionName);
 
                 if (!isAuthorized)

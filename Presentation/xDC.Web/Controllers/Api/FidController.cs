@@ -33,18 +33,8 @@ namespace xDC_Web.Controllers.Api
     {
         #region Fields
 
-        private readonly ITreasuryFormService _tFormService;
-        private readonly IFcaTaggingFormService _fcaTaggingFormService;
-
-        #endregion
-
-        #region Ctor
-
-        public FidController(ITreasuryFormService treasuryFormService, IFcaTaggingFormService fcaTaggingFormService)
-        {
-            _tFormService = treasuryFormService;
-            _fcaTaggingFormService = fcaTaggingFormService;
-        }
+        private readonly ITreasuryFormService _tFormService = Startup.Container.GetInstance<ITreasuryFormService>();
+        private readonly IFcaTaggingFormService _fcaTaggingFormService = Startup.Container.GetInstance<IFcaTaggingFormService>();
 
         #endregion
 

@@ -16,7 +16,6 @@ namespace xDC_Web.Extension.SchedulerTask
         {
             try
             {
-                Logger.LogInfo("Fetch Asset Type Started!");
 
                 using (var db = new kashflowDBEntities())
                 {
@@ -41,11 +40,9 @@ namespace xDC_Web.Extension.SchedulerTask
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
             }
             finally
             {
-                Logger.LogInfo("Fetch Asset Type Completed!");
             }
         }
     }

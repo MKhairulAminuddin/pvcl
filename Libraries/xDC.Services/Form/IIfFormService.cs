@@ -16,7 +16,7 @@ namespace xDC.Services.Form
         InflowFundForm EditFormPage(int formId, string currentUser);
 
         List<IfHomeGrid1> GetHomeGrid(string currentUser);
-        IQueryable<AMSD_IF_Item> GetFormItems(int formId);
+        List<AMSD_IF_Item> GetFormItems(int formId);
         
         List<IfFormSummaryList> IfFormSummaryList(long submissionDateEpoch = 0);
         List<IfAmountSummary> IfAmountSummary(long submissionDateepoch = 0);

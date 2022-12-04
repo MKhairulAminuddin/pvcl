@@ -44,18 +44,17 @@ namespace xDC_Web.Extension.SchedulerTask
 
                         if (issdTaggedItems.Any())
                         {
-                            EmailNotificationService.FcaBankTaggingToIssd(issdTaggedItems);
+                            // TODO: fix this
+                            //EmailNotificationService.FcaBankTaggingToIssd(issdTaggedItems);
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex);
             }
             finally
             {
-                //Logger.LogInfo("FCA Tagging Notification Completed!");
             }
         }
     }
