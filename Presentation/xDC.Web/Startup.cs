@@ -18,7 +18,6 @@ using xDC.Services.Workflow;
 using xDC.TaskScheduler;
 using xDC.Utils;
 using xDC_Web;
-using xDC_Web.Extension.SchedulerTask;
 
 [assembly: OwinStartup(typeof(Startup))]
 namespace xDC_Web
@@ -37,7 +36,6 @@ namespace xDC_Web
             container.Register<IWorkflowService, WorkflowService>();
             container.Register<IXDcLogger, Logger>();
             container.Register<ITrackerService, TrackerService>();
-            container.Register<IxDcTask, xDcTask>();
 
             container.Register<IIfFormService, IfFormService>();
             container.Register<ITsFormService, TsFormService>();
@@ -61,29 +59,19 @@ namespace xDC_Web
             Container = container;
             container.Verify();
 
-            GlobalConfiguration.Configuration.UseActivator()
-
-
-
             // Hangfire Setup
             app.UseHangfireAspNet(GetHangfireServers);
             app.UseHangfireDashboard();
 
             #if DEBUG
                         Console.WriteLine("Mode=Debug");
-#else
-                RecurringJob.AddOrUpdate("Sync AD", () => SyncActiveDirectory.Sync(),Cron.Weekly, TimeZoneInfo.Local);
-                RecurringJob.AddOrUpdate("Sync User Profile with AD", () => SyncActiveDirectory.SyncUserProfileWithAd(), Cron.Monthly, TimeZoneInfo.Local);
-            
-                RecurringJob.AddOrUpdate("ISSD TS - Currency", () => IssdTask.FetchNewCurrency(), Cron.Daily, TimeZoneInfo.Local);
-                RecurringJob.AddOrUpdate("FID Treasury - Asset Type", () => FidTask.FetchAssetType(), Cron.Daily, TimeZoneInfo.Local);
+            #else
+                RegisterTaskScheduler();
+            #endif
 
-                RecurringJob.AddOrUpdate("[Notification] FCA Tagging to ISSD", () => NotiTask.FcaTag(), Cron.Minutely, TimeZoneInfo.Local);
-#endif
 
-            RegisterTaskScheduler();
         }
-        
+
         private IEnumerable<IDisposable> GetHangfireServers()
         {
             GlobalConfiguration.Configuration
@@ -104,8 +92,13 @@ namespace xDC_Web
         
         private void RegisterTaskScheduler()
         {
-            IxDcTask _task = Container.GetInstance<IxDcTask>();
-            RecurringJob.AddOrUpdate("ISSD TS - Currency", () => _task.FetchNewCurrency(), Cron.Daily, TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate("Sync AD", () => new xDcTask().SyncKwapAdData(), Cron.Daily, TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate("Sync User Profile with AD", () => new xDcTask().SyncUserProfileWithAdData(), Cron.Weekly, TimeZoneInfo.Local);
+
+            RecurringJob.AddOrUpdate("ISSD TS - Currency", () => new xDcTask().TsForm_FetchNewCurrency(), Cron.Daily, TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate("FID Treasury - Asset Type", () => new xDcTask().TForm_FetchAssetType(), Cron.Daily, TimeZoneInfo.Local);
+
+            //RecurringJob.AddOrUpdate("[Notification] FCA Tagging to ISSD", () => new xDcTask().NotifyIssd_OnFcaTagged(), Cron.Minutely, TimeZoneInfo.Local);
         }
     }
 }

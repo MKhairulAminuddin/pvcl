@@ -4,9 +4,11 @@ using DevExtreme.AspNet.Mvc;
 using System;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using xDC.Domain.WebApi.Audit;
+using xDC.Logging;
 using xDC.Services.Audit;
 using xDC.Services.Form;
 using xDC.Utils;
@@ -20,7 +22,9 @@ namespace xDC_Web.Controllers.Api
     public class AuditController : ApiController
     {
         #region Fields
+
         private readonly IAuditService _auditService = Startup.Container.GetInstance<IAuditService>();
+        private readonly IXDcLogger _logger = Startup.Container.GetInstance<IXDcLogger>();
 
         #endregion
 
@@ -29,6 +33,7 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.AuditTrail_FormAudit)]
         public HttpResponseMessage AuditForm(long fromDateEpoch, long toDateEpoch, string formId, string formType, string userId, string actionType, DataSourceLoadOptions loadOptions)
         {
+
             var fromDate = Common.ConvertEpochToDateTime(fromDateEpoch);
             var toDate = Common.ConvertEpochToDateTime(toDateEpoch);
             var formIdInt = 0;
@@ -55,11 +60,20 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.AuditTrail_UserAccessAudit)]
         public HttpResponseMessage GetUserAccessLog(DataSourceLoadOptions loadOptions)
         {
-            var past30Days = DateTime.Now.AddDays(-30);
-            var result = _auditService.Get_UAA()
-                .Where(x => DbFunctions.TruncateTime(x.RecordedDate) > past30Days)
-                .OrderByDescending(x => x.RecordedDate).ToList();
-            return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+            try
+            {
+                var past30Days = DateTime.Now.AddDays(-30);
+                var result = _auditService.Get_UAA()
+                    .Where(x => x.RecordedDate.Value.Date > past30Days)
+                    .OrderByDescending(x => x.RecordedDate).ToList();
+
+                return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpPost]
@@ -74,8 +88,7 @@ namespace xDC_Web.Controllers.Api
 
             if (fromDate != null && toDate != null)
             {
-                result.Where(x => DbFunctions.TruncateTime(x.RecordedDate) >= fromDate &&
-                                    DbFunctions.TruncateTime(x.RecordedDate) <= toDate);
+                result.Where(x => x.RecordedDate.Value.Date >= fromDate && x.RecordedDate.Value.Date <= toDate);
             }
 
             if (req.UserId != null)
@@ -98,7 +111,7 @@ namespace xDC_Web.Controllers.Api
         public HttpResponseMessage GetUserManagementAudit(DataSourceLoadOptions loadOptions)
         {
             var past30Days = DateTime.Now.AddDays(-30);
-            var result = _auditService.Get_UMA().Where(x => DbFunctions.TruncateTime(x.RecordedDate) > past30Days);
+            var result = _auditService.Get_UMA().Where(x => x.RecordedDate.Date > past30Days);
             return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
         }
 
@@ -114,8 +127,7 @@ namespace xDC_Web.Controllers.Api
 
             if (fromDate != null && toDate != null)
             {
-                result.Where(x => DbFunctions.TruncateTime(x.RecordedDate) >= fromDate &&
-                                    DbFunctions.TruncateTime(x.RecordedDate) <= toDate);
+                result.Where(x => x.RecordedDate.Date >= fromDate && x.RecordedDate.Date <= toDate);
             }
 
             if (!string.IsNullOrEmpty(req.UserId))
@@ -136,10 +148,18 @@ namespace xDC_Web.Controllers.Api
         [KflowApiAuthorize(PermissionKey.AuditTrail_RoleManagementAudit)]
         public HttpResponseMessage GetRoleManagementAudit(DataSourceLoadOptions loadOptions)
         {
-            var past30Days = DateTime.Now.AddDays(-30);
-            var result = _auditService.Get_RMA().Where(x => DbFunctions.TruncateTime(x.RecordedDate) > past30Days);
+            try
+            {
+                var past30Days = DateTime.Now.AddDays(-30);
+                var result = _auditService.Get_RMA().Where(x => x.RecordedDate.Date > past30Days);
 
-            return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
+                return Request.CreateResponse(DataSourceLoader.Load(result.ToList(), loadOptions));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpPost]
@@ -154,8 +174,7 @@ namespace xDC_Web.Controllers.Api
 
             if (fromDate != null && toDate != null)
             {
-                result.Where(x => DbFunctions.TruncateTime(x.RecordedDate) >= fromDate &&
-                                    DbFunctions.TruncateTime(x.RecordedDate) <= toDate);
+                result.Where(x => x.RecordedDate.Date >= fromDate && x.RecordedDate.Date <= toDate);
             }
 
             if (!string.IsNullOrEmpty(req.RoleName))

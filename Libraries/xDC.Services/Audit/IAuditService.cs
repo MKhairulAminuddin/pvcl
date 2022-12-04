@@ -10,10 +10,10 @@ namespace xDC.Services.Audit
 {
     public interface IAuditService
     {
-        IQueryable<Audit_UserAccess> Get_UAA();
+        List<Audit_UserAccess> Get_UAA();
 
         // Form Audit
-        IQueryable<Audit_Form> FA(DateTime fromDate, DateTime toDate);
+        List<Audit_Form> FA(DateTime fromDate, DateTime toDate);
         void FA_Add(int formId, string formType, DateTime? formDate, string actionType, string modifiedBy, string remarks = null);
         void FA_EditRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueBefore, string valueAfter, string columnName);
         void FA_AddRow(int formId, string formType, DateTime? formDate, string modifiedBy, string valueAfter);
@@ -27,13 +27,13 @@ namespace xDC.Services.Audit
 
         // User Management Audit
 
-        IQueryable<Audit_UserManagement> Get_UMA();
+        List<Audit_UserManagement> Get_UMA();
         void Capture_UMA(string activityType, string remarks, string userAccount, string performedBy);
 
 
         // Role Management Audit
 
-        IQueryable<Audit_RoleManagement> Get_RMA();
+        List<Audit_RoleManagement> Get_RMA();
         void Capture_RMA(string activityType, string remarks, string role, string performedBy);
 
 

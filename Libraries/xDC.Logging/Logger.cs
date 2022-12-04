@@ -4,6 +4,8 @@ using System;
 using System.Data.SqlClient;
 using Serilog.Exceptions;
 using xDC.Utils;
+using System.Diagnostics;
+using Serilog.Formatting.Compact;
 
 namespace xDC.Logging
 {
@@ -17,13 +19,18 @@ namespace xDC.Logging
 
             _errorLogger = new LoggerConfiguration()
                 .Enrich.WithExceptionDetails()
-                .WriteTo.File(logPath, rollingInterval: RollingInterval.Day)
+                .WriteTo.File(new CompactJsonFormatter(), logPath, rollingInterval: RollingInterval.Day)
+                .WriteTo.Seq("http://localhost:5341")
                 .CreateLogger();
         }
 
         public void LogError(Exception error)
         {
-            _errorLogger.Error("{@error}", error);
+            if (error.InnerException != null)
+            {
+                _errorLogger.Error("{@error}", error.InnerException.Message);
+            }
+            _errorLogger.Error("{@error}", error.Message);
         }
 
         public void LogError(string error)

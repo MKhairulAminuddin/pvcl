@@ -10,7 +10,7 @@ namespace xDC.Services.Application
 {
     public interface ISettingService
     {
-        IQueryable<Config_Dropdown> DropdownConfig();
+        List<Config_Dropdown> DropdownConfig();
         bool DropdownConfig_Add(Config_Dropdown item, string currentUser);
         bool DropdownConfig_Update(int itemId, string updatedItem, string currentUser);
 

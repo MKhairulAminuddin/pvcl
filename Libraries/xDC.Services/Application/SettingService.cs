@@ -1,16 +1,7 @@
-﻿using DevExpress.Emf;
-using DevExpress.XtraPrinting.Native.WebClientUIControl;
-using Newtonsoft.Json;
-using Org.BouncyCastle.Asn1.Ocsp;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.ModelBinding;
-using System.Xml.Linq;
-using xDC.Domain.Form;
 using xDC.Domain.Web.Setting;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
@@ -40,13 +31,13 @@ namespace xDC.Services.Application
 
         #region Dropdown Setting
 
-        public IQueryable<Config_Dropdown> DropdownConfig()
+        public List<Config_Dropdown> DropdownConfig()
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.Config_Dropdown.AsQueryable();
+                    var result = db.Config_Dropdown.ToList();
                     return result;
                 }
             }

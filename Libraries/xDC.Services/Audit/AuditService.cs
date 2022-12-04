@@ -33,13 +33,13 @@ namespace xDC.Services.Audit
 
         #region User Access Audit
 
-        public IQueryable<Audit_UserAccess> Get_UAA()
+        public List<Audit_UserAccess> Get_UAA()
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.Audit_UserAccess.AsQueryable();
+                    var result = db.Audit_UserAccess.ToList();
                     return result;
                 }
             }
@@ -71,7 +71,7 @@ namespace xDC.Services.Audit
             }
         }
 
-        public IQueryable<Audit_Form> FA(DateTime fromDate, DateTime toDate)
+        public List<Audit_Form> FA(DateTime fromDate, DateTime toDate)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace xDC.Services.Audit
                     var result = db.Audit_Form
                          .Where(x =>
                             (DbFunctions.TruncateTime(x.ModifiedOn) >= DbFunctions.TruncateTime(fromDate) &&
-                             DbFunctions.TruncateTime(x.ModifiedOn) <= DbFunctions.TruncateTime(toDate)));
+                             DbFunctions.TruncateTime(x.ModifiedOn) <= DbFunctions.TruncateTime(toDate))).ToList();
                     return result;
                 }
             }
@@ -276,13 +276,13 @@ namespace xDC.Services.Audit
 
         #region User Management Audit
 
-        public IQueryable<Audit_UserManagement> Get_UMA()
+        public List<Audit_UserManagement> Get_UMA()
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.Audit_UserManagement.AsQueryable();
+                    var result = db.Audit_UserManagement.ToList();
                     return result;
                 }
             }
@@ -322,13 +322,13 @@ namespace xDC.Services.Audit
 
         #region Role Management Audit
 
-        public IQueryable<Audit_RoleManagement> Get_RMA()
+        public List<Audit_RoleManagement> Get_RMA()
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var result = db.Audit_RoleManagement.AsQueryable();
+                    var result = db.Audit_RoleManagement.ToList();
                     return result;
                 }
             }

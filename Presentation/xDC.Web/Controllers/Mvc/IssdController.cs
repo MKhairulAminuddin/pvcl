@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using xDC.Domain.Web.ISSD.TradeSettlementForm;
 using xDC.Infrastructure.Application;
+using xDC.Logging;
 using xDC.Services;
 using xDC.Services.Form;
 using xDC.Services.Membership;
@@ -25,6 +26,7 @@ namespace xDC_Web.Controllers.Mvc
         private readonly ITsFormService _tsFormService = Startup.Container.GetInstance<ITsFormService>();
         private readonly IUserManagementService _userService = Startup.Container.GetInstance<IUserManagementService>();
         private readonly IFcaTaggingFormService _fcaTaggingFormService = Startup.Container.GetInstance<IFcaTaggingFormService>();
+        private readonly IXDcLogger _logger = Startup.Container.GetInstance<IXDcLogger>();
 
 
         #endregion
@@ -36,55 +38,75 @@ namespace xDC_Web.Controllers.Mvc
         [Route("TradeSettlement")]
         public ActionResult TsLandingPage()
         {
-            var landingPageData = _tsFormService.GetLandingPageData(User.Identity.Name);
-
-            if (landingPageData == null)
+            try
             {
-                TempData["ErrorMessage"] = "Internal Server Error";
-                return View("Error");
-            }
+                var landingPageData = _tsFormService.GetLandingPageData(User.Identity.Name);
 
-            return View("TradeSettlement/Index", landingPageData);
+                if (landingPageData == null)
+                {
+                    TempData["ErrorMessage"] = "Internal Server Error";
+                    return View("Error");
+                }
+
+                return View("TradeSettlement/Index", landingPageData);
+            }
+            catch (Exception ex)
+            {
+                return xDcErrorPage(ex);
+            }
         }
 
         [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
         [Route("TradeSettlement/ConsolidatedView/")]
         public ActionResult TsForm_ConsolidatedView(string settlementDateEpoch, string currency)
         {
-            var consolidateFormView = _tsFormService.ViewConsolidatedForm(settlementDateEpoch, currency);
-            if (consolidateFormView == null) return View("Error");
+            try
+            {
+                var consolidateFormView = _tsFormService.ViewConsolidatedForm(settlementDateEpoch, currency);
+                if (consolidateFormView == null) return View("Error");
 
-            return View("TradeSettlement/View", consolidateFormView);
+                return View("TradeSettlement/View", consolidateFormView);
+            }
+            catch (Exception ex)
+            {
+                return xDcErrorPage(ex);
+            }
         }
 
         [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
         [Route("TradeSettlement/View/{formId}")]
         public ActionResult TsForm_View(int formId)
         {
-            var form = _tsFormService.ViewForm(formId, User.Identity.Name);
-            if (form == null) return View("Error");
-
-            switch (form.FormType)
+            try
             {
-                case Common.FormType.ISSD_TS_A:
-                    return View("TradeSettlement/PartA/View", form);
-                case Common.FormType.ISSD_TS_B:
-                    return View("TradeSettlement/PartB/View", form);
-                case Common.FormType.ISSD_TS_C:
-                    return View("TradeSettlement/PartC/View", form);
-                case Common.FormType.ISSD_TS_D:
-                    return View("TradeSettlement/PartD/View", form);
-                case Common.FormType.ISSD_TS_E:
-                    return View("TradeSettlement/PartE/View", form);
-                case Common.FormType.ISSD_TS_F:
-                    return View("TradeSettlement/PartF/View", form);
-                case Common.FormType.ISSD_TS_G:
-                    return View("TradeSettlement/PartG/View", form);
-                case Common.FormType.ISSD_TS_H:
-                    return View("TradeSettlement/PartH/View", form);
-                default:
-                    TempData["ErrorMessage"] = "Form Not found";
-                    return View("Error");
+                var form = _tsFormService.ViewForm(formId, User.Identity.Name);
+                if (form == null) return View("Error");
+
+                switch (form.FormType)
+                {
+                    case Common.FormType.ISSD_TS_A:
+                        return View("TradeSettlement/PartA/View", form);
+                    case Common.FormType.ISSD_TS_B:
+                        return View("TradeSettlement/PartB/View", form);
+                    case Common.FormType.ISSD_TS_C:
+                        return View("TradeSettlement/PartC/View", form);
+                    case Common.FormType.ISSD_TS_D:
+                        return View("TradeSettlement/PartD/View", form);
+                    case Common.FormType.ISSD_TS_E:
+                        return View("TradeSettlement/PartE/View", form);
+                    case Common.FormType.ISSD_TS_F:
+                        return View("TradeSettlement/PartF/View", form);
+                    case Common.FormType.ISSD_TS_G:
+                        return View("TradeSettlement/PartG/View", form);
+                    case Common.FormType.ISSD_TS_H:
+                        return View("TradeSettlement/PartH/View", form);
+                    default:
+                        throw new Exception();
+                }
+            }
+            catch (Exception ex)
+            {
+                return xDcErrorPage(ex);
             }
         }
 
@@ -92,30 +114,36 @@ namespace xDC_Web.Controllers.Mvc
         [Route("TradeSettlement/Edit/{formId}")]
         public ActionResult TsForm_EditView(int formId)
         {
-            var form = _tsFormService.ViewEditForm(formId, User.Identity.Name);
-            if (form == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
-            switch (form.FormType)
+            try
             {
-                case Common.FormType.ISSD_TS_A:
-                    return View("TradeSettlement/PartA/Edit", form);
-                case Common.FormType.ISSD_TS_B:
-                    return View("TradeSettlement/PartB/Edit", form);
-                case Common.FormType.ISSD_TS_C:
-                    return View("TradeSettlement/PartC/Edit", form);
-                case Common.FormType.ISSD_TS_D:
-                    return View("TradeSettlement/PartD/Edit", form);
-                case Common.FormType.ISSD_TS_E:
-                    return View("TradeSettlement/PartE/Edit", form);
-                case Common.FormType.ISSD_TS_F:
-                    return View("TradeSettlement/PartF/Edit", form);
-                case Common.FormType.ISSD_TS_G:
-                    return View("TradeSettlement/PartG/Edit", form);
-                case Common.FormType.ISSD_TS_H:
-                    return View("TradeSettlement/PartH/Edit", form);
-                default:
-                    TempData["ErrorMessage"] = "Form Not found";
-                    return View("Error");
+                var form = _tsFormService.ViewEditForm(formId, User.Identity.Name);
+                if (form == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+                switch (form.FormType)
+                {
+                    case Common.FormType.ISSD_TS_A:
+                        return View("TradeSettlement/PartA/Edit", form);
+                    case Common.FormType.ISSD_TS_B:
+                        return View("TradeSettlement/PartB/Edit", form);
+                    case Common.FormType.ISSD_TS_C:
+                        return View("TradeSettlement/PartC/Edit", form);
+                    case Common.FormType.ISSD_TS_D:
+                        return View("TradeSettlement/PartD/Edit", form);
+                    case Common.FormType.ISSD_TS_E:
+                        return View("TradeSettlement/PartE/Edit", form);
+                    case Common.FormType.ISSD_TS_F:
+                        return View("TradeSettlement/PartF/Edit", form);
+                    case Common.FormType.ISSD_TS_G:
+                        return View("TradeSettlement/PartG/Edit", form);
+                    case Common.FormType.ISSD_TS_H:
+                        return View("TradeSettlement/PartH/Edit", form);
+                    default:
+                        throw new Exception();
+                }
+            }
+            catch (Exception ex)
+            {
+                return xDcErrorPage(ex);
             }
         }
 
@@ -123,32 +151,39 @@ namespace xDC_Web.Controllers.Mvc
         [Route("TradeSettlement/New/{formTypeId}")]
         public ActionResult TsForm_NewView(int formTypeId)
         {
-            var formType = Common.FormTypeMapping(formTypeId);
-            var form = _tsFormService.ViewNewForm(formType, User.Identity.Name);
-            if (form == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
-            switch (form.FormType)
+            try
             {
-                case Common.FormType.ISSD_TS_A:
-                    return View("TradeSettlement/PartA/New", form);
-                case Common.FormType.ISSD_TS_B:
-                    return View("TradeSettlement/PartB/New", form);
-                case Common.FormType.ISSD_TS_C:
-                    return View("TradeSettlement/PartC/New", form);
-                case Common.FormType.ISSD_TS_D:
-                    return View("TradeSettlement/PartD/New", form);
-                case Common.FormType.ISSD_TS_E:
-                    return View("TradeSettlement/PartE/New", form);
-                case Common.FormType.ISSD_TS_F:
-                    return View("TradeSettlement/PartF/New", form);
-                case Common.FormType.ISSD_TS_G:
-                    return View("TradeSettlement/PartG/New", form);
-                case Common.FormType.ISSD_TS_H:
-                    return View("TradeSettlement/PartH/New", form);
-                default:
-                    TempData["ErrorMessage"] = "Form Not found";
-                    return View("Error");
+                var formType = Common.FormTypeMapping(formTypeId);
+                var form = _tsFormService.ViewNewForm(formType, User.Identity.Name);
+                if (form == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+                switch (form.FormType)
+                {
+                    case Common.FormType.ISSD_TS_A:
+                        return View("TradeSettlement/PartA/New", form);
+                    case Common.FormType.ISSD_TS_B:
+                        return View("TradeSettlement/PartB/New", form);
+                    case Common.FormType.ISSD_TS_C:
+                        return View("TradeSettlement/PartC/New", form);
+                    case Common.FormType.ISSD_TS_D:
+                        return View("TradeSettlement/PartD/New", form);
+                    case Common.FormType.ISSD_TS_E:
+                        return View("TradeSettlement/PartE/New", form);
+                    case Common.FormType.ISSD_TS_F:
+                        return View("TradeSettlement/PartF/New", form);
+                    case Common.FormType.ISSD_TS_G:
+                        return View("TradeSettlement/PartG/New", form);
+                    case Common.FormType.ISSD_TS_H:
+                        return View("TradeSettlement/PartH/New", form);
+                    default:
+                        throw new Exception();
+                }
             }
+            catch (Exception ex)
+            {
+                return xDcErrorPage(ex);
+            }
+            
         }
 
         #region View Generated File
@@ -157,26 +192,32 @@ namespace xDC_Web.Controllers.Mvc
         [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Download)]
         public ActionResult ViewPrinted(string id)
         {
-            var outputFile = _tsFormService.GetGeneratedForm(id);
-
-            if (outputFile != null)
+            try
             {
-                Response.AddHeader("Content-Disposition", "attachment; filename=" + outputFile.FileName);
+                var outputFile = _tsFormService.GetGeneratedForm(id);
 
-                if (outputFile.FileExt == ".xlsx")
+                if (outputFile != null)
                 {
-                    return File(outputFile.FileBytes, Common.ConvertIndexToContentType(4));
+                    Response.AddHeader("Content-Disposition", "attachment; filename=" + outputFile.FileName);
+
+                    if (outputFile.FileExt == ".xlsx")
+                    {
+                        return File(outputFile.FileBytes, Common.ConvertIndexToContentType(4));
+                    }
+                    else
+                    {
+                        return File(outputFile.FileBytes, Common.ConvertIndexToContentType(11));
+                    }
+
                 }
                 else
                 {
-                    return File(outputFile.FileBytes, Common.ConvertIndexToContentType(11));
+                    throw new Exception();
                 }
-
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Generated file not found... sorry...";
-                return View("Error");
+                return xDcErrorPage(ex, "Generated file not found... sorry...");
             }
         }
 

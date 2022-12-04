@@ -10,11 +10,12 @@ namespace xDC_Web.Controllers.Mvc
 {
     [Authorize]
     [KflowAuthorize(xDC.Utils.Common.PermissionKey.Settings)]
-    public class SettingController : Controller
+    public class SettingController : BaseController
     {
         #region Fields
 
         private readonly ISettingService _settingService = Startup.Container.GetInstance<ISettingService>();
+        private readonly IXDcLogger _logger = Startup.Container.GetInstance<IXDcLogger>();
 
         #endregion
 
@@ -34,7 +35,7 @@ namespace xDC_Web.Controllers.Mvc
             }
             catch (Exception ex)
             {
-                return View("Error");
+                return xDcErrorPage(ex);
             }
 
         }
@@ -58,7 +59,7 @@ namespace xDC_Web.Controllers.Mvc
             }
             catch (Exception ex)
             {
-                return View("Error");
+                return xDcErrorPage(ex);
             }
 
         }
