@@ -331,3 +331,7 @@ where Dealer is null
 update FID_Treasury_MMI set Dealer = ModifiedBy
 where Dealer is null
 
+
+-- fix blank trade date due to system bugs
+
+update FID_Treasury_MMI set TradeDate = ModifiedDate where TradeDate is null

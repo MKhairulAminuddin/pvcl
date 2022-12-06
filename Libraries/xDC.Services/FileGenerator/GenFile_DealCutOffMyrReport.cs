@@ -671,9 +671,11 @@ namespace xDC.Services.FileGenerator
                 .Select(x => new MYR_DealCutOffData_Mmi
                 {
                     Bank = x.Bank,
+                    TradeDate = x.TradeDate.Value,
                     MaturityDate = x.MaturityDate.Value,
                     ValueDate = x.ValueDate.Value,
                     Principal = x.Principal,
+                    Tenor = x.Tenor != null ? x.Tenor.Value : 0,
                     Interest = x.IntProfitReceivable,
                     PrincipalInterest = x.PrincipalIntProfitReceivable,
                     Rate = x.RatePercent,
@@ -697,9 +699,11 @@ namespace xDC.Services.FileGenerator
                 .Select(x => new MYR_DealCutOffData_Mmi
                 {
                     Bank = x.Bank,
+                    TradeDate = x.TradeDate.Value,
                     MaturityDate = x.MaturityDate.Value,
                     ValueDate = x.ValueDate.Value,
                     Principal = x.Principal,
+                    Tenor = x.Tenor != null ? x.Tenor.Value : 0,
                     Interest = x.IntProfitReceivable,
                     PrincipalInterest = x.PrincipalIntProfitReceivable,
                     Rate = x.RatePercent,
@@ -719,9 +723,11 @@ namespace xDC.Services.FileGenerator
                 .Select(x => new MYR_DealCutOffData_Mmi
                 {
                     Bank = x.Bank,
+                    TradeDate = x.TradeDate.Value,
                     MaturityDate = x.MaturityDate.Value,
                     ValueDate = x.ValueDate.Value,
                     Principal = x.Principal,
+                    Tenor = x.Tenor != null ? x.Tenor.Value : 0,
                     Interest = x.IntProfitReceivable,
                     PrincipalInterest = x.PrincipalIntProfitReceivable,
                     Rate = x.RatePercent,
@@ -1038,22 +1044,24 @@ namespace xDC.Services.FileGenerator
                     }
 
                     sheet["D" + currentIndex].Value = item.Bank;
-                    sheet["E" + currentIndex].Value = item.MaturityDate;
+                    sheet["E" + currentIndex].Value = item.TradeDate;
                     sheet["F" + currentIndex].Value = item.ValueDate;
-                    sheet["G" + currentIndex].Value = item.Principal;
-                    sheet["I" + currentIndex].Value = item.Rate;
-                    sheet["J" + currentIndex].Value = item.Interest;
-                    sheet["K" + currentIndex].Value = item.PrincipalInterest;
-                    sheet["L" + currentIndex].Value = item.AssetType;
-                    sheet["M" + currentIndex].Value = item.ContactPerson;
-                    sheet["N" + currentIndex].Value = item.Notes;
+                    sheet["G" + currentIndex].Value = item.MaturityDate;
+                    sheet["H" + currentIndex].Value = item.Principal;
+                    sheet["I" + currentIndex].Value = item.Tenor;
+                    sheet["J" + currentIndex].Value = item.Rate;
+                    sheet["K" + currentIndex].Value = item.Interest;
+                    sheet["L" + currentIndex].Value = item.PrincipalInterest;
+                    sheet["M" + currentIndex].Value = item.AssetType;
+                    sheet["N" + currentIndex].Value = item.ContactPerson;
+                    sheet["O" + currentIndex].Value = item.Notes;
 
                     currentIndex++;
                 }
 
-                sheet["G" + currentIndex].Formula = "=SUM($G$" + startIndex + ":$G$" + (currentIndex - 1) + ")";
-                sheet["J" + currentIndex].Formula = "=SUM($J$" + startIndex + ":$J$" + (currentIndex - 1) + ")";
+                sheet["H" + currentIndex].Formula = "=SUM($H$" + startIndex + ":$H$" + (currentIndex - 1) + ")";
                 sheet["K" + currentIndex].Formula = "=SUM($K$" + startIndex + ":$K$" + (currentIndex - 1) + ")";
+                sheet["L" + currentIndex].Formula = "=SUM($L$" + startIndex + ":$L$" + (currentIndex - 1) + ")";
 
                 endIndex = currentIndex;
             }
@@ -1220,6 +1228,7 @@ namespace xDC.Services.FileGenerator
         public string Bank { get; set; }
         public DateTime MaturityDate { get; set; }
         public DateTime ValueDate { get; set; }
+        public DateTime TradeDate { get; set; }
         public double Principal { get; set; }
         public int Tenor { get; set; }
         public double Rate { get; set; }

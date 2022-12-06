@@ -84,7 +84,7 @@
                 {
                     caption: "Actions",
                     type: "buttons",
-                    width: 110,
+                    width: 130,
                     buttons: [
                         {
                             hint: "Edit",
@@ -103,7 +103,7 @@
                             icon: "fa fa-trash-o",
                             cssClass: "dx-datagrid-command-btn text-red",
                             visible: function (e) {
-                                return (e.row.data.isDeleteAllowed);
+                                return (e.row.data.enableDelete);
                             },
                             onClick: function (e) {
                                 if (!confirm("Do you really want to delete this?")) {

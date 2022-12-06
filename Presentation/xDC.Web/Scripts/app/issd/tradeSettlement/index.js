@@ -140,7 +140,7 @@
                 {
                     caption: "Actions",
                     type: "buttons",
-                    width: 110,
+                    width: 130,
                     buttons: [
                         {
                             hint: "Edit",
@@ -452,7 +452,7 @@
                 {
                     caption: "Actions",
                     type: "buttons",
-                    width: 110,
+                    width: 130,
                     buttons: [
                         {
                             hint: "View Form",
