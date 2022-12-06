@@ -37,7 +37,7 @@ namespace xDC.Services.Form
         bool EditForm(TsCreateNewFormRequest req, string currentUser);
         bool DeleteForm(int formId, string currentUser);
         bool FormApproval(TsFormApprovalRequest req, string currentUser);
-        TsForm ViewConsolidatedForm(string settlementDateEpoch, string currency);
+        TsForm ViewConsolidatedForm(long settlementDateEpoch, string currency);
         TsForm ViewForm(int formId, string currentUser);
         TsForm ViewEditForm(int formId, string currentUser);
         TsForm ViewNewForm(string formType, string currentUser);

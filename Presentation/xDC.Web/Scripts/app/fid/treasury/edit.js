@@ -504,16 +504,6 @@
                         type: "fixedPoint",
                         precision: 2
                     },
-                    calculateCellValue: function (rowData) {
-                        var currency = $currencySelectBox.option("value");
-                        var principal = rowData.principal;
-                        var tenor = treasury.tenor(rowData.maturityDate, rowData.valueDate);
-                        var rate = rowData.ratePercent;
-
-                        rowData.intProfitReceivable = treasury.outflow_depoInt(currency, principal, tenor, rate);
-                        return Number(rowData.intProfitReceivable);
-                    },
-                    allowEditing: false,
                     width: 130
                 },
                 {
@@ -524,7 +514,6 @@
                         type: "fixedPoint",
                         precision: 2
                     },
-                    allowEditing: false,
                     width: 130
                 },
                 {
@@ -694,12 +683,12 @@
                     var dataStore = dataSource.store();
                     dataStore._array.forEach(function (i) {
                         if (!i.manualCalc_P_Plus_I) {
+                            i.intProfitReceivable = treasury.Calc_I(i.principal, $currencySelectBox.option("value"), i.maturityDate, i.valueDate, i.ratePercent);
                             i.principalIntProfitReceivable = treasury.Calc_P_Plus_I(i.principal, $currencySelectBox.option("value"), i.maturityDate, i.valueDate, i.ratePercent);
                         }
                     });
                     dataSource.reload();
                     e.component.refresh();
-
                 }
             }
         };

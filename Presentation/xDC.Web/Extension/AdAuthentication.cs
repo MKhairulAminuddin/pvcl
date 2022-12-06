@@ -1,24 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Web;
-using Microsoft.Owin.Security;
+﻿using Microsoft.Owin.Security;
+using System;
 using System.DirectoryServices.AccountManagement;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using xDC_Web.Models;
+using System.Security.Claims;
 using xDC.Logging;
-using xDC.Services.Membership;
-using SimpleInjector;
-using xDC.Services.Form;
 using xDC.Services.Application;
+using xDC.Services.Membership;
+using xDC_Web.Models;
 
 namespace xDC_Web.Extension
 {
 	public class AdAuthentication
 	{
 		private readonly IAuthenticationManager _authManager;
+		private readonly IUserManagementService _userService = Startup.Container.GetInstance<IUserManagementService>();
 		private readonly IRoleManagementService _roleService = Startup.Container.GetInstance<IRoleManagementService>();
 		private readonly ITrackerService _trackerService = Startup.Container.GetInstance<ITrackerService>();
 
@@ -45,8 +39,9 @@ namespace xDC_Web.Extension
 				var userPrincipal = new UserPrincipal(principalContext);
 				userPrincipal.SamAccountName = model.Username;
 
-				#if DEBUG
-				#else
+#if DEBUG
+#else
+
                 var searcher = new PrincipalSearcher(userPrincipal);
 				try
 				{
@@ -77,11 +72,11 @@ namespace xDC_Web.Extension
 					return new AuthenticationResult("Account Disabled. AD Level.");
 				}
 
-				if (!new AuthService().IsUserExist(model.Username))
+				if (!_userService.IsUserExist(model.Username))
 				{
 					return new AuthenticationResult("You did not have access into the system.");
 				}
-				#endif
+#endif
 
                 var identity = CreateIdentity(userPrincipal);
 

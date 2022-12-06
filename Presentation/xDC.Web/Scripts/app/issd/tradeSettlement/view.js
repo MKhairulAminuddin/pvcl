@@ -37,7 +37,7 @@
         var loadData = function () {
             return $.ajax({
                 dataType: "json",
-                url: ts.api.loadApprovedTrades(),
+                url: window.location.origin + "/api/issd/ts/approvedTrades/" + window.location.pathname.split("/").pop().pop() + "/" + window.location.pathname.split("/").pop(),
                 method: "get",
                 success: function (response) {
                     loadTabs(response);

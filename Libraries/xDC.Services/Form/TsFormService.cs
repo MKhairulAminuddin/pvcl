@@ -1470,13 +1470,13 @@ namespace xDC.Services.Form
             }
         }
 
-        public TsForm ViewConsolidatedForm(string settlementDateEpoch, string currency)
+        public TsForm ViewConsolidatedForm(long settlementDateEpoch, string currency)
         {
             try
             {
                 using (var db = new kashflowDBEntities())
                 {
-                    var settlementDate = Common.ConvertEpochToDateTime(Convert.ToInt64(settlementDateEpoch));
+                    var settlementDate = Common.ConvertEpochToDateTime(settlementDateEpoch);
                     var settlementDateOnly = settlementDate.Value.Date;
 
                     var form = db.ISSD_FormHeader.Where(x =>
