@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
 using xDC.Utils;
@@ -15,17 +16,12 @@ namespace xDC.Services.Notification
     {
         #region Fields
 
-        private readonly IXDcLogger _logger;
         private string SubjectAppend => !Config.IsLive ? "[UAT - Kashflow]" : "[Kashflow]";
 
         #endregion
 
         #region Ctor
 
-        public EmailNotification(IXDcLogger logger)
-        {
-            _logger = logger;
-        }
 
         #endregion
 
@@ -62,13 +58,13 @@ namespace xDC.Services.Notification
                     }
                     else
                     {
-                        _logger.LogError("SubmitForApproval Failed. Approver email not found in AD.");
+                        Logger.LogError("SubmitForApproval Failed. Approver email not found in AD.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
         }
 
@@ -121,14 +117,14 @@ namespace xDC.Services.Notification
                     }
                     else
                     {
-                        _logger.LogError("SendApprovalStatus email failed. Preparer info not found in AD.");
+                        Logger.LogError("SendApprovalStatus email failed. Preparer info not found in AD.");
                     }
 
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
         }
 
@@ -152,7 +148,7 @@ namespace xDC.Services.Notification
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
 
         }
@@ -218,7 +214,7 @@ namespace xDC.Services.Notification
                     }
                 };
 
-                var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}", Config.EmailApplicationUrl, formId);
+                var approvalPageUrl = string.Format("{0}" + Common.Email_FormUrlMap(formType) + "{1}", Utils.Common.GetSystemUrl(), formId);
 
                 var bodyBuilder = new StringBuilder();
                 var root = AppDomain.CurrentDomain.BaseDirectory;
@@ -281,7 +277,7 @@ namespace xDC.Services.Notification
                 }
                 };
 
-                var approvalPageUrl = $"{Config.EmailApplicationUrl}{Common.Email_FormUrlMap(formType)}{formId}";
+                var approvalPageUrl = $"{Utils.Common.GetSystemUrl()}{Common.Email_FormUrlMap(formType)}{formId}";
 
                 var bodyBuilder = new StringBuilder();
 
@@ -1227,7 +1223,7 @@ namespace xDC.Services.Notification
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
         }
 
@@ -1287,7 +1283,7 @@ namespace xDC.Services.Notification
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
         }
 
@@ -1348,7 +1344,7 @@ namespace xDC.Services.Notification
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
         }
 
@@ -1409,7 +1405,7 @@ namespace xDC.Services.Notification
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
         }
 
@@ -1459,7 +1455,7 @@ namespace xDC.Services.Notification
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
         }
 

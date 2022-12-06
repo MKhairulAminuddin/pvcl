@@ -35,7 +35,6 @@ namespace xDC.Services.Form
         #region Fields
 
         private readonly IAuditService _auditService;
-        private readonly IXDcLogger _logger;
         private readonly IEmailNotification _emailNotification;
         private readonly IRoleManagementService _roleService;
         private readonly IGenFile_IfForm _genFile;
@@ -44,11 +43,10 @@ namespace xDC.Services.Form
 
         #region Ctor
 
-        public IfFormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService, IRoleManagementService roleService, IEmailNotification emailNotification, IGenFile_IfForm genFile)
-            : base(wfService, notifyService, logger, auditService, roleService)
+        public IfFormService(IWorkflowService wfService, INotificationService notifyService, IAuditService auditService, IRoleManagementService roleService, IEmailNotification emailNotification, IGenFile_IfForm genFile)
+            : base(wfService, notifyService, auditService, roleService)
         {
             _auditService = auditService;
-            _logger = logger;
             _emailNotification = emailNotification;
             _roleService = roleService;
             _genFile = genFile;
@@ -92,7 +90,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return null;
             }
         }
@@ -153,7 +151,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return null;
             }
         }
@@ -210,7 +208,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return null;
             }
         }
@@ -226,7 +224,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return null;
             }
         }
@@ -269,7 +267,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return null;
             }
         }
@@ -306,7 +304,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return null;
             }
         }
@@ -377,7 +375,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return 0;
             }
         }
@@ -495,7 +493,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return 0;
             }
         }
@@ -525,7 +523,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return 0;
             }
         }
@@ -551,7 +549,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return 0;
             }
         }
@@ -589,7 +587,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return false;
             }
         }

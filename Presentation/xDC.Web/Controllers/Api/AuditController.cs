@@ -24,7 +24,6 @@ namespace xDC_Web.Controllers.Api
         #region Fields
 
         private readonly IAuditService _auditService = Startup.Container.GetInstance<IAuditService>();
-        private readonly IXDcLogger _logger = Startup.Container.GetInstance<IXDcLogger>();
 
         #endregion
 
@@ -71,7 +70,7 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError);
             }
         }
@@ -157,7 +156,7 @@ namespace xDC_Web.Controllers.Api
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return Request.CreateResponse(HttpStatusCode.InternalServerError);
             }
         }

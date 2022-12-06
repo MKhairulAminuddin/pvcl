@@ -9,11 +9,11 @@ using Serilog.Formatting.Compact;
 
 namespace xDC.Logging
 {
-    public class Logger: IXDcLogger
+    public static class Logger
     {
-        private readonly ILogger _errorLogger;
+        private static readonly ILogger _errorLogger;
 
-        public Logger()
+        static Logger()
         {
             var logPath = !string.IsNullOrEmpty(Config.LoggerFilePathFormat) ? Config.LoggerFilePathFormat : "~/log-.txt";
 
@@ -24,7 +24,7 @@ namespace xDC.Logging
                 .CreateLogger();
         }
 
-        public void LogError(Exception error)
+        public static void LogError(Exception error)
         {
             if (error.InnerException != null)
             {
@@ -33,12 +33,12 @@ namespace xDC.Logging
             _errorLogger.Error("{@error}", error.Message);
         }
 
-        public void LogError(string error)
+        public static void LogError(string error)
         {
             _errorLogger.Error("{@error}", error);
         }
 
-        public void LogInfo(string info)
+        public static void LogInfo(string info)
         {
             _errorLogger.Information("{@info}", info);
         }

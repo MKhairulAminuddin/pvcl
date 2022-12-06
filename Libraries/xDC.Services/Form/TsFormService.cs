@@ -37,7 +37,6 @@ namespace xDC.Services.Form
         #region Fields
 
         private readonly IAuditService _auditService;
-        private readonly IXDcLogger _logger;
         private readonly IWorkflowService _wfService;
         private readonly IGenFile_TsForm _genFile;
         private readonly IRoleManagementService _roleService;
@@ -46,12 +45,11 @@ namespace xDC.Services.Form
 
         #region Ctor
 
-        public TsFormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService, IGenFile_TsForm genFile, IRoleManagementService roleService)
-            : base(wfService, notifyService, logger, auditService, roleService)
+        public TsFormService(IWorkflowService wfService, INotificationService notifyService, IAuditService auditService, IGenFile_TsForm genFile, IRoleManagementService roleService)
+            : base(wfService, notifyService, auditService, roleService)
         {
             _wfService = wfService;
             _auditService = auditService;
-            _logger = logger;
             _genFile = genFile;
             _roleService = roleService;
         }
@@ -95,7 +93,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return null;
             }
         }
@@ -150,7 +148,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return null;
             }
         }
@@ -167,7 +165,7 @@ namespace xDC.Services.Form
                 {
                     var todayDate = DateTime.Now.Date;
 
-                    var tsForms = db.ISSD_FormHeader;
+                    var tsForms = db.ISSD_FormHeader.GroupBy(x => x.FormType).SelectMany(x => x.OrderByDescending(y => y.PreparedDate).Take(10)).ToList();
                     var resultVM = new List<TsHomeGrid1>();
 
                     foreach (var item in tsForms)
@@ -200,7 +198,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return null;
             }
         }
@@ -239,7 +237,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return null;
             }
         }
@@ -264,7 +262,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return null;
             }
         }
@@ -378,7 +376,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return false;
             }
         }
@@ -1395,7 +1393,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return false;
             }
         }
@@ -1432,7 +1430,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return false;
             }
         }
@@ -1467,7 +1465,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return false;
             }
         }
@@ -1508,7 +1506,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return null;
             }
         }
@@ -1556,7 +1554,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return null;
             }
         }
@@ -1606,7 +1604,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return null;
             }
         }
@@ -1658,7 +1656,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return false;
             }
         }
@@ -1721,7 +1719,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return null;
             }
         }
@@ -1841,7 +1839,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return null;
             }
         }
@@ -1888,7 +1886,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return null;
             }
         }

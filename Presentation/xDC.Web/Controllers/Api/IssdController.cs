@@ -67,10 +67,10 @@ namespace xDC_Web.Controllers.Api
         [Route("ts/home/retractForm")]
         public HttpResponseMessage TsHomeRetractForm(RetractFormVM req)
         {
-            var retractFormStatus = _tsFormService.WithdrawForm(req.FormId, User.Identity.Name, FormType.AMSD_IF);
+            var retractFormStatus = _tsFormService.WithdrawForm(req.FormId, User.Identity.Name, FormType.ISSD_TS);
             if (!retractFormStatus) return Request.CreateResponse(HttpStatusCode.BadRequest, "Unable to rectract submitted form. Please check with system admin.");
 
-            return Request.CreateResponse(HttpStatusCode.Created);
+            return Request.CreateResponse(HttpStatusCode.OK, req.FormId);
         }
 
         [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_View)]

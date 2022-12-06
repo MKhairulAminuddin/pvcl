@@ -104,7 +104,7 @@
 
                     var data = {
                         formId: app.getUrlId(),
-                        approver: $approverDropdown.option("value"),
+                        newApprover: $approverDropdown.option("value"),
                         formType: 2
                     };
 

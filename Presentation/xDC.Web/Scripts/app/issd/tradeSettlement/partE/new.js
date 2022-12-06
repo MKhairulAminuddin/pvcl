@@ -26,7 +26,7 @@
 
         var referenceUrl = {
             postNewFormRequest: window.location.origin + "/api/issd/ts/New",
-            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/PartE/View/",
+            postNewFormResponse: window.location.origin + "/issd/TradeSettlement/View/",
         };
         
         //#endregion

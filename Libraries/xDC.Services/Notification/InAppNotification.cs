@@ -13,16 +13,10 @@ namespace xDC.Services.Notification
     {
         #region Fields
 
-        private readonly IXDcLogger _logger;
 
         #endregion
 
         #region Ctor
-
-        public InAppNotification(IXDcLogger logger)
-        {
-            _logger = logger;
-        }
 
         #endregion
 
@@ -38,7 +32,7 @@ namespace xDC.Services.Notification
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
         }
 

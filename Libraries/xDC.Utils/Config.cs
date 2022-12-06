@@ -19,7 +19,6 @@ namespace xDC.Utils
         public static string SmtpSenderAccount => ConfigurationManager.AppSettings["Smtp.SenderAccount"];
         public static string SmtpSenderAccountName => ConfigurationManager.AppSettings["Smtp.SenderAccountName"];
 
-        public static string EmailApplicationUrl => ConfigurationManager.AppSettings["Email.ApplicationUrl"];
         public static bool IsLive => Convert.ToBoolean(ConfigurationManager.AppSettings["Environment.IsLive"]);
 
         public static string FormViewAllSubmittedData => ConfigurationManager.AppSettings["Form.DealCutOff.ViewAllSubmittedFormText"];

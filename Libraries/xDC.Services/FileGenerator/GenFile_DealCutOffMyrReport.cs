@@ -22,16 +22,14 @@ namespace xDC.Services.FileGenerator
         private Color _inflowColor = ColorTranslator.FromHtml("#3498DB");
         private Color _outFlowColor = ColorTranslator.FromHtml("#E67E22");
 
-        private readonly IXDcLogger _logger;
         private readonly ITsFormService _tsFormService;
 
         #endregion
 
         #region Ctor
 
-        public GenFile_DealCutOffMyrReport(IXDcLogger logger, ITsFormService tsFormService) : base(logger)
+        public GenFile_DealCutOffMyrReport(ITsFormService tsFormService) : base()
         {
-            _logger = logger;
             _tsFormService = tsFormService;
         }
 
@@ -59,7 +57,7 @@ namespace xDC.Services.FileGenerator
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return null;
             }
         }
@@ -87,7 +85,7 @@ namespace xDC.Services.FileGenerator
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return null;
             }
         }
@@ -387,7 +385,7 @@ namespace xDC.Services.FileGenerator
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
             finally
             {

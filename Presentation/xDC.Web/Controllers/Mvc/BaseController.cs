@@ -9,7 +9,6 @@ namespace xDC_Web.Controllers.Mvc
 {
     public class BaseController : Controller
     {
-        private readonly IXDcLogger _logger = Startup.Container.GetInstance<IXDcLogger>();
 
         protected ActionResult CreateFileStreamResult(Stream stream, string contentType, string fileExtension)
         {
@@ -43,7 +42,7 @@ namespace xDC_Web.Controllers.Mvc
 
         public ViewResult xDcErrorPage(Exception ex, string customErrorMessage = null)
         {
-            _logger.LogError(ex);
+            Logger.LogError(ex);
             TempData["ErrorMessage"] = (!string.IsNullOrEmpty(customErrorMessage)) ? customErrorMessage : ex.Message;
             return View("Error");
         }

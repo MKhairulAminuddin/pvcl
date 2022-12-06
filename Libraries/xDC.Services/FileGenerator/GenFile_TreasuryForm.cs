@@ -22,16 +22,14 @@ namespace xDC.Services.FileGenerator
         private Color _inflowColor = System.Drawing.ColorTranslator.FromHtml("#3498DB");
         private Color _outFlowColor = System.Drawing.ColorTranslator.FromHtml("#E67E22");
 
-        private readonly IXDcLogger _logger;
         private readonly IWorkflowService _wfService;
 
         #endregion
 
         #region Ctor
 
-        public GenFile_TreasuryForm(IXDcLogger logger, IWorkflowService wfService) : base(logger)
+        public GenFile_TreasuryForm(IWorkflowService wfService) : base()
         {
-            _logger = logger;
             _wfService = wfService;
         }
 
@@ -114,7 +112,7 @@ namespace xDC.Services.FileGenerator
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
             }
             finally
             {

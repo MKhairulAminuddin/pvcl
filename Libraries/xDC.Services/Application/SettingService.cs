@@ -13,17 +13,14 @@ namespace xDC.Services.Application
     {
         #region Fields
 
-        private readonly IXDcLogger _logger;
+        
 
 
         #endregion
 
         #region Ctor
 
-        public SettingService(IXDcLogger logger)
-        {
-            _logger = logger;
-        }
+        
 
         #endregion
 
@@ -43,7 +40,7 @@ namespace xDC.Services.Application
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return null;
             }
         }
@@ -64,7 +61,7 @@ namespace xDC.Services.Application
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return false;
             }
         }
@@ -90,7 +87,7 @@ namespace xDC.Services.Application
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return false;
             }
         }
@@ -184,7 +181,7 @@ namespace xDC.Services.Application
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return null;
             }
         }
@@ -242,7 +239,7 @@ namespace xDC.Services.Application
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return false;
             }
         }

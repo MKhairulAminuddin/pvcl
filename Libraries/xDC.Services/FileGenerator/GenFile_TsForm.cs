@@ -28,16 +28,14 @@ namespace xDC.Services.FileGenerator
         private Color _outFlowColor = System.Drawing.ColorTranslator.FromHtml("#FFEBEE");
         private Color _otherColor = System.Drawing.ColorTranslator.FromHtml("#FFFDE7");
 
-        private readonly IXDcLogger _logger;
         private readonly IWorkflowService _wfService;
 
         #endregion
 
         #region Ctor
 
-        public GenFile_TsForm(IXDcLogger logger,  IWorkflowService wfService) : base(logger)
+        public GenFile_TsForm(  IWorkflowService wfService) : base()
         {
-            _logger = logger;
             _wfService = wfService;
         }
 
@@ -158,7 +156,7 @@ namespace xDC.Services.FileGenerator
             }
             catch(Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
             finally
             {
@@ -257,7 +255,7 @@ namespace xDC.Services.FileGenerator
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
             finally
             {
@@ -742,7 +740,7 @@ namespace xDC.Services.FileGenerator
                     {
                         var cnItems = db.ISSD_TradeSettlement.Where(x => x.FormId == cnForm.Id);
 
-                        var pageUrl = string.Format("{0}" + Common.Email_FormUrlMap(cnForm.FormType) + "{1}", Config.EmailApplicationUrl, formId);
+                        var pageUrl = string.Format("{0}" + Common.Email_FormUrlMap(cnForm.FormType) + "{1}", Utils.Common.GetSystemUrl(), formId);
 
                         var bodyBuilder = new StringBuilder();
                         bodyBuilder.Append("<p>Dear All, </p>");
@@ -780,14 +778,14 @@ namespace xDC.Services.FileGenerator
                     }
                     else
                     {
-                        _logger.LogError("CN Form not found. ID:" + formId);
+                        Logger.LogError("CN Form not found. ID:" + formId);
                         return mailBody;
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return string.Empty;
             }
         }
@@ -889,7 +887,7 @@ namespace xDC.Services.FileGenerator
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return null;
             }
         }

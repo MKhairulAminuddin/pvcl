@@ -158,7 +158,7 @@
                                 app.toast("Generating...");
 
                                 var data = {
-                                    id: e.row.data.id,
+                                    formId: e.row.data.id,
                                     isExportAsExcel: true
                                 };
 
@@ -190,7 +190,7 @@
                                 app.toast("Generating...");
 
                                 var data = {
-                                    id: e.row.data.id,
+                                    formId: e.row.data.id,
                                     isExportAsExcel: false
                                 };
 

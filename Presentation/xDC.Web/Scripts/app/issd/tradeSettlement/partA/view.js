@@ -16,10 +16,10 @@
             $viewAuditTrailModal = $("#viewAuditTrailModal");
 
         var referenceUrl = {
-            adminEdit: window.location.origin + "/issd/TradeSettlement/PartA/Edit/",
+            adminEdit: window.location.origin + "/issd/TradeSettlement/Edit/",
 
             submitApprovalRequest: window.location.origin + "/api/issd/ts/Approval",
-            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartA/View/"
+            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/View/"
         };
 
         //#endregion
@@ -102,7 +102,7 @@
 
                     var data = {
                         formId: app.getUrlId(),
-                        approver: $approverDropdown.option("value"),
+                        newApprover: $approverDropdown.option("value"),
                         formType: 2
                     };
 

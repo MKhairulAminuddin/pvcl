@@ -6,12 +6,7 @@ namespace xDC.Services.Application
 {
     public class TrackerService : ITrackerService
     {
-        private readonly IXDcLogger _logger;
-
-        public TrackerService(IXDcLogger logger)
-        {
-            _logger = logger;
-        }
+        
 
         public void TrackUserLogin(string username, string ipadress, string browser)
         {
@@ -32,7 +27,7 @@ namespace xDC.Services.Application
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
         }
     }

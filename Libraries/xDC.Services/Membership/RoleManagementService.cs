@@ -14,16 +14,14 @@ namespace xDC.Services.Membership
     {
         #region Fields
 
-        private readonly IXDcLogger _logger;
         private readonly IAuditService _auditService;
 
         #endregion
 
         #region Ctor
 
-        public RoleManagementService(IXDcLogger logger, IAuditService auditService)
+        public RoleManagementService(IAuditService auditService)
         {
-            _logger = logger;
             _auditService = auditService;
         }
 
@@ -51,7 +49,7 @@ namespace xDC.Services.Membership
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return "Anonymous";
             }
 
@@ -75,7 +73,7 @@ namespace xDC.Services.Membership
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
 
                 status = false;
                 return new List<RolesRes>();
@@ -116,7 +114,7 @@ namespace xDC.Services.Membership
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
 
                 status = false;
                 return new List<PermissionsRes>();
@@ -177,7 +175,7 @@ namespace xDC.Services.Membership
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
 
                 status = false;
                 return new List<RolePermissionsRes>();
@@ -271,7 +269,7 @@ namespace xDC.Services.Membership
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return false;
             }
         }
@@ -336,7 +334,7 @@ namespace xDC.Services.Membership
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return false;
             }
         }
@@ -359,7 +357,7 @@ namespace xDC.Services.Membership
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
 
                 return false;
             }
@@ -387,7 +385,7 @@ namespace xDC.Services.Membership
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
 
                 return false;
             }
@@ -422,7 +420,7 @@ namespace xDC.Services.Membership
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return false;
             }
         }

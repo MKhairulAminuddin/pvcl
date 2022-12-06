@@ -171,6 +171,14 @@ var app = (function() {
         html += title + ' <span>' + message + '</span></div>';
         alertTag.html(html);
     }
+    _app.alertErrorJqXhr = function (jqXHR) {
+        var alertTag = $("#error_container");
+        var cls = 'alert-danger';
+        var html = '<div class="alert ' + cls + ' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
+        var title = "<i class='fa fa-ban' aria-hidden='true'></i>";
+        html += title + '<span>' + jqXHR.status + ' ' + jqXHR.statusText + ': ' + jqXHR.responseText + '</span></div>';
+        alertTag.html(html);
+    }
     _app.alertWarning = function (message, title) {
         var alertTag = $("#error_container");
         var cls = 'alert-warning';

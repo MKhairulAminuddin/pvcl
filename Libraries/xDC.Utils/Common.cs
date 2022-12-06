@@ -346,21 +346,14 @@ namespace xDC.Utils
                     return "../amsd/InflowFund/View/";
 
                 case FormType.ISSD_TS_A:
-                    return "../issd/TradeSettlement/PartA/View/";
                 case FormType.ISSD_TS_B:
-                    return "../issd/TradeSettlement/PartB/View/";
                 case FormType.ISSD_TS_C:
-                    return "../issd/TradeSettlement/PartC/View/";
                 case FormType.ISSD_TS_D:
-                    return "../issd/TradeSettlement/PartD/View/";
                 case FormType.ISSD_TS_E:
-                    return "../issd/TradeSettlement/PartE/View/";
                 case FormType.ISSD_TS_F:
-                    return "../issd/TradeSettlement/PartF/View/";
                 case FormType.ISSD_TS_G:
-                    return "../issd/TradeSettlement/PartG/View/";
                 case FormType.ISSD_TS_H:
-                    return "../issd/TradeSettlement/PartH/View/";
+                    return "../issd/TradeSettlement/View/";
 
                 case FormType.FID_TREASURY:
                     return "../fid/Treasury/View/";
@@ -382,21 +375,14 @@ namespace xDC.Utils
                 case FormType.AMSD_IF:
                     return "/amsd/InflowFund/View/";
                 case FormType.ISSD_TS_A:
-                    return "/issd/TradeSettlement/PartA/View/";
                 case FormType.ISSD_TS_B:
-                    return "/issd/TradeSettlement/PartB/View/";
                 case FormType.ISSD_TS_C:
-                    return "/issd/TradeSettlement/PartC/View/";
                 case FormType.ISSD_TS_D:
-                    return "/issd/TradeSettlement/PartD/View/";
                 case FormType.ISSD_TS_E:
-                    return "/issd/TradeSettlement/PartE/View/";
                 case FormType.ISSD_TS_F:
-                    return "/issd/TradeSettlement/PartF/View/";
                 case FormType.ISSD_TS_G:
-                    return "/issd/TradeSettlement/PartG/View/";
                 case FormType.ISSD_TS_H:
-                    return "/issd/TradeSettlement/PartH/View/";
+                    return "/issd/TradeSettlement/View/";
 
                 case FormType.FID_TREASURY:
                     return "/fid/Treasury/View/";
@@ -735,6 +721,18 @@ namespace xDC.Utils
             }
 
             return result;
+        }
+
+        public static string GetSystemUrl()
+        {
+            var url = HttpContext.Current.Request.Url;
+
+            #if DEBUG
+                        return $"{url.Scheme}://{url.Host}:{url.Port}";
+            #else
+                            return $"{url.Scheme}://{url.Host}";
+            #endif
+
         }
         #endregion
     }

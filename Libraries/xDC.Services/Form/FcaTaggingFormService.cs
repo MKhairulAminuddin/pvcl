@@ -22,13 +22,6 @@ namespace xDC.Services
 {
     public class FcaTaggingFormService : IFcaTaggingFormService
     {
-        private readonly IXDcLogger _logger;
-
-        public FcaTaggingFormService(IXDcLogger logger, ITreasuryFormService tFormService)
-        {
-            _logger = logger;
-        }
-
         public List<SummaryRes> DxGrid_GetSummaryForIssdView(out bool reqStatus)
         {
             try
@@ -93,7 +86,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 reqStatus = false;
                 return null;
             }
@@ -172,7 +165,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 reqStatus = false;
                 return null;
             }
@@ -242,7 +235,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 reqStatus = false;
                 return null;
             }
@@ -325,7 +318,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 reqStatus = false;
                 return null;
             }
@@ -369,7 +362,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 reqStatus = false;
                 return null;
             }
@@ -392,7 +385,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 reqStatus = false;
                 return null;
             }
@@ -438,7 +431,7 @@ namespace xDC.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 reqStatus = false;
                 return null;
             }

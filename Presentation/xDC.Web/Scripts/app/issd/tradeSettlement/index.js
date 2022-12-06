@@ -169,19 +169,20 @@
                                         id: e.row.data.id
                                     };
 
+                                    app.toast("Form delete...", "warning", 2000);
+
                                     $.ajax({
                                         type: "delete",
                                         url: window.location.origin + "/api/issd/TradeSettlement/",
                                         data: data,
                                         success: function (data) {
-                                            app.toast("Form delete...", "warning", 2000);
+                                            app.toast("Form deleted", "success", 2000);
 
                                             $issdGrid.refresh();
-                                            $consolidatedTradeSettlementGrid.refresh();
+                                            $grid2.refresh();
                                         },
-                                        fail: function (jqXHR, textStatus, errorThrown) {
-                                            app.alertError(textStatus + ": " + errorThrown);
-
+                                        error: function (jqXHR, textStatus, errorThrown) {
+                                            app.alertErrorJqXhr(jqXHR);
                                         }
                                     });
                                     e.event.preventDefault();
@@ -222,7 +223,8 @@
                                 return e.row.data.enablePrint;
                             },
                             onClick: function (e) {
-                                app.toast("Generating...");
+                                app.toast("Generating export file...");
+
                                 var data = {
                                     formId: e.row.data.id,
                                     isExportAsExcel: true
@@ -234,11 +236,13 @@
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
+                                        app.toast("File generated", "success", 3000);
+
                                         var url = referenceUrl.viewPrinted + JSON.parse(data);
                                         window.location = url;
                                     },
-                                    fail: function (jqXHR, textStatus, errorThrown) {
-                                        app.alertError(textStatus + ": " + errorThrown);
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        app.alertErrorJqXhr(jqXHR);
                                     },
                                     complete: function (data) {
 
@@ -255,7 +259,8 @@
                                 return e.row.data.enablePrint;
                             },
                             onClick: function (e) {
-                                app.toast("Generating...");
+                                app.toast("Generating export file...");
+
                                 var data = {
                                     formId: e.row.data.id,
                                     isExportAsExcel: false
@@ -267,11 +272,13 @@
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
+                                        app.toast("File generated", "success", 3000);
+
                                         var url = referenceUrl.viewPrinted + JSON.parse(data);
                                         window.location = url;
                                     },
-                                    fail: function (jqXHR, textStatus, errorThrown) {
-                                        app.alertError(textStatus + ": " + errorThrown);
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        app.alertErrorJqXhr(jqXHR);
                                     },
                                     complete: function (data) {
 
@@ -468,7 +475,8 @@
                                 return e.row.data.enablePrint;
                             },
                             onClick: function (e) {
-                                app.toast("Generating...");
+                                app.toast("Generating export file...");
+
                                 var data = {
                                     settlementDate: moment(e.row.data.formDate).unix(),
                                     currency: e.row.data.currency,
@@ -481,11 +489,13 @@
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
+                                        app.toast("File generated", "success", 3000);
+
                                         var url = referenceUrl.viewPrinted + JSON.parse(data);
                                         window.location = url;
                                     },
-                                    fail: function (jqXHR, textStatus, errorThrown) {
-                                        app.alertError(textStatus + ": " + errorThrown);
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        app.alertErrorJqXhr(jqXHR);
                                     },
                                     complete: function (data) {
 
@@ -502,7 +512,8 @@
                                 return e.row.data.enablePrint;
                             },
                             onClick: function (e) {
-                                app.toast("Generating...");
+                                app.toast("Generating export file...");
+
                                 var data = {
                                     settlementDate: moment(e.row.data.formDate).unix(),
                                     currency: e.row.data.currency,
@@ -515,11 +526,13 @@
                                     data: data,
                                     dataType: "text",
                                     success: function (data) {
+                                        app.toast("File generated", "success", 3000);
+
                                         var url = referenceUrl.viewPrinted + JSON.parse(data);
                                         window.location = url;
                                     },
-                                    fail: function (jqXHR, textStatus, errorThrown) {
-                                        app.alertError(textStatus + ": " + errorThrown);
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        app.alertErrorJqXhr(jqXHR);
                                     },
                                     complete: function (data) {
 
@@ -630,14 +643,13 @@
                     url: referenceUrl.retractForm,
                     method: 'post',
                     success: function (data) {
-                        app.alertSuccess("Form status retracted success");
-                    },
-                    fail: function (jqXHR, textStatus, errorThrown) {
-                        app.alertError(textStatus + ': ' + errorThrown);
-                    },
-                    complete: function (data) {
+                        app.toast("Form status retracted/withdrawal success", "success", 3000);
                         $retractSubmissionModal.modal('hide');
                         window.location.href = window.location.href;
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        app.alertErrorJqXhr(jqXHR);
+                        $retractSubmissionModal.modal('hide');
                     }
                 });
             }

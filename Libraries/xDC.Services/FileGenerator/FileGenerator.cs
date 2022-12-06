@@ -11,13 +11,6 @@ namespace xDC.Services.FileGenerator
 {
     public class FileGenerator
     {
-        private readonly IXDcLogger _logger;
-
-        public FileGenerator(IXDcLogger logger)
-        {
-            _logger = logger;
-        }
-
         public ExportedFile GenFile(string generatedFileName)
         {
             try
@@ -49,7 +42,7 @@ namespace xDC.Services.FileGenerator
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return null;
             }
         }

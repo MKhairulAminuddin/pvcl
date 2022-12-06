@@ -18,16 +18,10 @@ namespace xDC.Services.Audit
     {
         #region Fields
 
-        private readonly IXDcLogger _logger;
-
         #endregion
 
         #region Ctor
 
-        public AuditService(IXDcLogger logger)
-        {
-            _logger = logger;
-        }
 
         #endregion
 
@@ -45,7 +39,7 @@ namespace xDC.Services.Audit
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return null;
             }
         }
@@ -67,7 +61,7 @@ namespace xDC.Services.Audit
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
         }
 
@@ -86,7 +80,7 @@ namespace xDC.Services.Audit
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return null;
             }
         }
@@ -115,7 +109,7 @@ namespace xDC.Services.Audit
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
         }
 
@@ -288,7 +282,7 @@ namespace xDC.Services.Audit
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return null;
             }
         }
@@ -314,7 +308,7 @@ namespace xDC.Services.Audit
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
             }
         }
 
@@ -334,7 +328,7 @@ namespace xDC.Services.Audit
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return null;
             }
         }
@@ -360,7 +354,7 @@ namespace xDC.Services.Audit
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
             }
         }
 

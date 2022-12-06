@@ -21,7 +21,6 @@ namespace xDC.Services.Workflow
 
         #region Fields
 
-        private readonly IXDcLogger _logger;
 
 
         private readonly string Wf_PendingApproval = "Pending Approval";
@@ -33,11 +32,6 @@ namespace xDC.Services.Workflow
         #endregion
 
         #region Ctor
-
-        public WorkflowService(IXDcLogger logger)
-        {
-            _logger = logger;
-        }
 
         #endregion
 
@@ -65,7 +59,7 @@ namespace xDC.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return false;
             }
         }
@@ -96,7 +90,7 @@ namespace xDC.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return false;
             }
         }
@@ -123,7 +117,7 @@ namespace xDC.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
         }
 
@@ -147,7 +141,7 @@ namespace xDC.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
             }
         }
 
@@ -163,7 +157,7 @@ namespace xDC.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return null;
             }
         }
@@ -193,7 +187,7 @@ namespace xDC.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex);
+                Logger.LogError(ex);
                 return string.Empty;
             }
         }

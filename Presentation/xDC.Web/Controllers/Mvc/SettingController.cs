@@ -15,7 +15,6 @@ namespace xDC_Web.Controllers.Mvc
         #region Fields
 
         private readonly ISettingService _settingService = Startup.Container.GetInstance<ISettingService>();
-        private readonly IXDcLogger _logger = Startup.Container.GetInstance<IXDcLogger>();
 
         #endregion
 

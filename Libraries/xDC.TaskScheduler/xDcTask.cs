@@ -15,12 +15,6 @@ namespace xDC.TaskScheduler
 {
     public class xDcTask : IxDcTask
     {
-        private readonly IXDcLogger _logger;
-
-        public xDcTask()
-        {
-            _logger = new Logger();
-        }
 
         #region ISSD Related Task
 
@@ -28,7 +22,7 @@ namespace xDC.TaskScheduler
         {
             try
             {
-                _logger.LogInfo("Scheduler - TsForm_FetchNewCurrency started");
+                Logger.LogInfo("Scheduler - TsForm_FetchNewCurrency started");
 
                 using (var db = new kashflowDBEntities())
                 {
@@ -53,11 +47,11 @@ namespace xDC.TaskScheduler
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
             }
             finally
             {
-                _logger.LogInfo("Scheduler - TsForm_FetchNewCurrency ended");
+                Logger.LogInfo("Scheduler - TsForm_FetchNewCurrency ended");
             }
         }
 
@@ -65,7 +59,7 @@ namespace xDC.TaskScheduler
         {
             try
             {
-                _logger.LogInfo("Scheduler - NotifyIssd_OnFcaTagged Started!");
+                Logger.LogInfo("Scheduler - NotifyIssd_OnFcaTagged Started!");
 
                 using (var db = new kashflowDBEntities())
                 {
@@ -99,11 +93,11 @@ namespace xDC.TaskScheduler
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
             }
             finally
             {
-                _logger.LogInfo("Scheduler - NotifyIssd_OnFcaTagged ended");
+                Logger.LogInfo("Scheduler - NotifyIssd_OnFcaTagged ended");
             }
         }
 
@@ -115,7 +109,7 @@ namespace xDC.TaskScheduler
         {
             try
             {
-                _logger.LogInfo("Scheduler - TForm_FetchAssetType started");
+                Logger.LogInfo("Scheduler - TForm_FetchAssetType started");
 
                 using (var db = new kashflowDBEntities())
                 {
@@ -140,11 +134,11 @@ namespace xDC.TaskScheduler
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
             }
             finally
             {
-                _logger.LogInfo("Scheduler - TForm_FetchAssetType ended");
+                Logger.LogInfo("Scheduler - TForm_FetchAssetType ended");
             }
         }
 
@@ -157,7 +151,7 @@ namespace xDC.TaskScheduler
         {
             try
             {
-                _logger.LogInfo("Scheduler - SyncKwapAdData started");
+                Logger.LogInfo("Scheduler - SyncKwapAdData started");
 
                 var adUserList = new List<AspNetActiveDirectoryUsers>();
 
@@ -221,11 +215,11 @@ namespace xDC.TaskScheduler
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
             }
             finally
             {
-                _logger.LogInfo("Scheduler - SyncKwapAdData ended");
+                Logger.LogInfo("Scheduler - SyncKwapAdData ended");
             }
 
         }
@@ -234,7 +228,7 @@ namespace xDC.TaskScheduler
         {
             try
             {
-                _logger.LogInfo("Scheduler - SyncUserProfileWithAdData started");
+                Logger.LogInfo("Scheduler - SyncUserProfileWithAdData started");
 
                 using (var db = new kashflowDBEntities())
                 {
@@ -257,11 +251,11 @@ namespace xDC.TaskScheduler
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
             }
             finally
             {
-                _logger.LogInfo("Scheduler - SyncUserProfileWithAdData ended");
+                Logger.LogInfo("Scheduler - SyncUserProfileWithAdData ended");
             }
         }
 

@@ -26,7 +26,6 @@ namespace xDC_Web.Controllers.Mvc
         private readonly ITsFormService _tsFormService = Startup.Container.GetInstance<ITsFormService>();
         private readonly IUserManagementService _userService = Startup.Container.GetInstance<IUserManagementService>();
         private readonly IFcaTaggingFormService _fcaTaggingFormService = Startup.Container.GetInstance<IFcaTaggingFormService>();
-        private readonly IXDcLogger _logger = Startup.Container.GetInstance<IXDcLogger>();
 
 
         #endregion

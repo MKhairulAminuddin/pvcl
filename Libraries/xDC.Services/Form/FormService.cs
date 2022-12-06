@@ -23,18 +23,16 @@ namespace xDC.Services.Form
         private readonly IWorkflowService _wfService;
         private readonly INotificationService _notifyService;
         private readonly IAuditService _auditService;
-        private readonly IXDcLogger _logger;
         private readonly IRoleManagementService _roleService;
 
         #endregion
 
         #region Ctor
 
-        public FormService(IWorkflowService wfService, INotificationService notifyService, IXDcLogger logger, IAuditService auditService, IRoleManagementService roleService)
+        public FormService(IWorkflowService wfService, INotificationService notifyService, IAuditService auditService, IRoleManagementService roleService)
         {
             _wfService = wfService;
             _notifyService = notifyService;
-            _logger = logger;
             _auditService = auditService;
             _roleService = roleService;
         }
@@ -106,9 +104,9 @@ namespace xDC.Services.Form
         {
             var haveEditPermission = _roleService.IsUserHaveAccess(currentUser, permissionKey);
             var isPendingApproval = formStatus == FormStatus.PendingApproval || formStatus == FormStatus.Approved || formStatus == FormStatus.Rejected;
-            var isPreparedByMe = currentUser == formPreparedBy;
+            //var isPreparedByMe = currentUser == formPreparedBy;
 
-            return haveEditPermission && isPendingApproval && isPreparedByMe;
+            return haveEditPermission && isPendingApproval;
         }
 
         public bool EnableFormApproval(string currentUser, string assignedApprover, string formStatus, kashflowDBEntities db)
@@ -233,7 +231,7 @@ namespace xDC.Services.Form
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                Logger.LogError(ex.Message);
                 return false;
             }
         }

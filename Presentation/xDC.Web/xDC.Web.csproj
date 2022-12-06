@@ -769,7 +769,6 @@
     <Compile Include="ViewModels\Iisd\TS_ApprovedTradeVM.cs" />
     <Compile Include="ViewModels\RetractFormVM.cs" />
     <Compile Include="ViewModels\TenAmCutOff\UpdateClosingBalanceVM.cs" />
-    <Compile Include="ViewModels\TradeSettlementFormViewModel.cs" />
     <Compile Include="Models\TradeSettlementModel.cs" />
     <Compile Include="Models\UserVM.cs" />
     <Compile Include="Models\ViewFormHeaderModel.cs" />
