@@ -465,7 +465,7 @@ namespace xDC.Services.Form
                     {
                         var inflowDepositInGrid = input.InflowDeposit;
                         var existingInflowDeposit = db.FID_Treasury_Deposit.Where(x =>
-                            x.FormId == form.Id && x.CashflowType == Cashflow.INFLOW.ToString());
+                            x.FormId == form.Id && x.CashflowType == Cashflow.INFLOW.ToString()).ToList();
 
                         // delete from existing
                         var itemExistInGrid =
@@ -600,6 +600,13 @@ namespace xDC.Services.Form
 
                                     foundItem.ModifiedBy = currentUser;
                                     foundItem.ModifiedDate = DateTime.Now;
+                                }
+                                else
+                                {
+                                    db.FID_Treasury_Deposit.Add(FID_Treasury_Deposit_ObjMap(form.Id, Cashflow.INFLOW.ToString(), item, currentUser));
+                                    _auditService.FA_AddRow(form.Id, form.FormType,
+                                                    form.ValueDate, currentUser,
+                                                    $"{item.Bank}, {item.CashflowType}, {item.Dealer}, {item.AssetType}...");
                                 }
                             }
                             else
@@ -776,6 +783,13 @@ namespace xDC.Services.Form
                                     foundItem.ModifiedBy = currentUser;
                                     foundItem.ModifiedDate = DateTime.Now;
                                 }
+                                else
+                                {
+                                    db.FID_Treasury_Deposit.Add(FID_Treasury_Deposit_ObjMap(form.Id, Cashflow.OUTFLOW.ToString(), item, currentUser));
+                                    _auditService.FA_AddRow(form.Id, form.FormType,
+                                        form.ValueDate, currentUser,
+                                        $"{item.Bank}, {item.CashflowType}, {item.Dealer}, {item.AssetType}...");
+                                }
                             }
                             else
                             {
@@ -939,6 +953,13 @@ namespace xDC.Services.Form
                                     foundItem.ModifiedBy = currentUser;
                                     foundItem.ModifiedDate = DateTime.Now;
                                 }
+                                else
+                                {
+                                    db.FID_Treasury_MMI.Add(FID_Treasury_MMI_ObjMap(form.Id, Cashflow.INFLOW.ToString(), item, currentUser));
+                                    _auditService.FA_AddRow(form.Id, form.FormType,
+                                        form.ValueDate, currentUser,
+                                        $"{item.Issuer}, {item.CashflowType}, {item.Dealer}, {item.CashflowType}...");
+                                }
                             }
                             else
                             {
@@ -1101,6 +1122,13 @@ namespace xDC.Services.Form
 
                                     foundItem.ModifiedBy = currentUser;
                                     foundItem.ModifiedDate = DateTime.Now;
+                                }
+                                else
+                                {
+                                    db.FID_Treasury_MMI.Add(FID_Treasury_MMI_ObjMap(form.Id, Cashflow.OUTFLOW.ToString(), item, currentUser));
+                                    _auditService.FA_AddRow(form.Id, form.FormType,
+                                        form.ValueDate, currentUser,
+                                        $"{item.Issuer}, {item.CashflowType}, {item.Dealer}, {item.CashflowType}...");
                                 }
                             }
                             else

@@ -699,7 +699,8 @@
                                             repoTag: i.repoTag,
                                             contactPerson: i.contactPerson,
                                             notes: i.notes,
-                                            fcaAccount: i.fcaAccount
+                                            fcaAccount: i.fcaAccount,
+                                            manualCalc_P_Plus_I: false
                                         }).then(function () {
                                             dataSource.reload();
                                         })
@@ -730,6 +731,7 @@
                                     var dataStore = dataSource.store();
                                     dataStore._array.forEach(function (i) {
                                         if (!i.manualCalc_P_Plus_I) {
+                                            i.intProfitReceivable = treasury.Calc_I(i.principal, $currencySelectBox.option("value"), i.maturityDate, i.valueDate, i.ratePercent);
                                             i.principalIntProfitReceivable = treasury.Calc_P_Plus_I(i.principal, $currencySelectBox.option("value"), i.maturityDate, i.valueDate, i.ratePercent);
                                         }
                                     });
@@ -782,6 +784,7 @@
                                     var dataStore = dataSource.store();
                                     dataStore._array.forEach(function (i) {
                                         if (!i.manualCalc_P_Plus_I) {
+                                            i.intProfitReceivable = treasury.Calc_I(i.principal, $currencySelectBox.option("value"), i.maturityDate, i.valueDate, i.ratePercent);
                                             i.principalIntProfitReceivable = treasury.Calc_P_Plus_I(i.principal, $currencySelectBox.option("value"), i.maturityDate, i.valueDate, i.ratePercent);
                                         }
                                     });
