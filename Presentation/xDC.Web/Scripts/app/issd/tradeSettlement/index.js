@@ -74,7 +74,7 @@
             printPart: window.location.origin + "/api/issd/ts/generatePart",
             printConsolidated: window.location.origin + "/api/issd/ts/generateConsolidated",
             viewPrinted: window.location.origin + "/issd/TradeSettlement/Download/",
-            viewConsolidated: window.location.origin + "/issd/TradeSettlement/ConsolidatedView/",
+            viewConsolidated: window.location.origin + "/issd/TradeSettlement/ConsolidatedView",
             viewNew: window.location.origin + "/issd/TradeSettlement/New/",
             viewEdit: window.location.origin + "/issd/TradeSettlement/Edit/",
             viewForm: window.location.origin + "/issd/TradeSettlement/View/"
@@ -460,9 +460,7 @@
                             cssClass: "dx-datagrid-command-btn",
                             onClick: function (e) {
                                 app.openInNewTab(
-                                    referenceUrl.viewConsolidated
-                                    + moment(e.row.data.formDate).unix()
-                                    + "/" + e.row.data.currency);
+                                    referenceUrl.viewConsolidated + "?settlementDateEpoch=" + moment(e.row.data.formDate).unix() + "&currency=" + e.row.data.currency);
 
                                 e.event.preventDefault();
                             }

@@ -56,7 +56,7 @@ namespace xDC_Web.Controllers.Mvc
         }
 
         [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_View)]
-        [Route("TradeSettlement/ConsolidatedView/{settlementDateEpoch}/{currency}")]
+        [Route("TradeSettlement/ConsolidatedView")]
         public ActionResult TsForm_ConsolidatedView(long settlementDateEpoch, string currency)
         {
             try

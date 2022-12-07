@@ -5,39 +5,17 @@
         ts.setSideMenuItemActive("/issd/TradeSettlement");
         $('[data-toggle="tooltip"]').tooltip();
 
-        var $tabpanel,
+        var $tabpanel;
 
-            $equityGrid,
-            $openingBalanceGrid,
-
-            $bondGrid,
-            $cpGrid,
-            $notesPaperGrid,
-            $repoGrid,
-            $couponGrid,
-
-            $mtmGrid,
-            $fxSettlementGrid,
-
-            $altidGrid,
-
-            $feesGrid,
-            $cnGrid,
-            $othersGrid,
-            
-            $tradeSettlementForm,
-            $currencySelectBox,
-            $approverDropdown,
-            $printBtn;
-        
         //#endregion
 
         //#region Data Source & Functions
 
+
         var loadData = function () {
             return $.ajax({
                 dataType: "json",
-                url: window.location.origin + "/api/issd/ts/approvedTrades/" + window.location.pathname.split("/").pop().pop() + "/" + window.location.pathname.split("/").pop(),
+                url: ts.api.loadApprovedTrades(),
                 method: "get",
                 success: function (response) {
                     loadTabs(response);
@@ -1316,6 +1294,27 @@
             $tabpanel.option("selectedIndex", tabPanelItems[0]);
         }
 
+        var loadOpeningBalanceData = function () {
+            return $.ajax({
+                dataType: "json",
+                url: window.location.origin +
+                    "/api/issd/GetOpeningBalanceEdw/" +
+                    app.getUrlParameter("settlementDateEpoch") +
+                    "/" +
+                    app.getUrlParameter("currency"), 
+                method: "get",
+                success: function (response) {
+                    loadTabs(response);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    app.alertError(errorThrown + ": " + jqXHR.responseJSON);
+                },
+                complete: function (data) {
+                    //$selectApproverModal.modal("hide");
+                }
+            });
+        }
+
         //#endregion
 
         //#region Other Widgets
@@ -1367,6 +1366,7 @@
         //#region Immediate Invocation function
 
         loadData();
+        loadOpeningBalanceData();
 
         //#endregion
     });
