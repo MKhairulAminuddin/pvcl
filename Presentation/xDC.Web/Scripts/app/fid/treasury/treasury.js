@@ -23,10 +23,10 @@ var treasury = (function () {
                 /*var calc = math.parse(principal + '*' tenor + '/ 36000 *' + rate);
                 return calc.evaluate();*/
                 result = principal * tenor / 36000 * rate;
-                return Math.round(result.toPrecision(15) * 100) / 100;
+                return app.roundNumberV1(result, 2);
             default:
                 result = principal * tenor / 36500 * rate;
-                return Math.round(result.toPrecision(15) * 100) / 100 ;
+                return app.roundNumberV1(result, 2);
         }
     }
 
