@@ -53,7 +53,6 @@ GO
 INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (16, N'Settings - Approver Assignment', 2, 13)
 GO
 
-
 INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (17, N'FID', 1, 0)
 GO
 INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (18, N'Treasury Form - View', 2, 17)
@@ -66,7 +65,6 @@ INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Par
 GO
 INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (22, N'FCA Tagging Form - Edit', 2, 17)
 GO
-
 
 INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (23, N'ISSD', 1, 0)
 GO
@@ -81,8 +79,6 @@ GO
 INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (28, N'FCA Tagging Form - Edit', 2, 23)
 GO
 
-
-
 INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (29, N'AMSD', 1, 0)
 GO
 INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (30, N'Inflow Fund Form - View', 2, 29)
@@ -91,7 +87,6 @@ INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Par
 GO
 INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (32, N'Inflow Fund Form - Download', 2, 29)
 GO
-
 
 INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (33, N'Report', 1, 0)
 GO
@@ -103,6 +98,20 @@ INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Par
 GO
 INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (37, N'Report - Deal Cut Off 10 AM - Edit Closing Balance', 2, 33)
 GO
+
+
+INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (38, N'FID Dashboard', 2, 17)
+GO
+INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (39, N'ISSD Dashboard', 2, 23)
+GO
+INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (40, N'AMSD Dashboard', 2, 29)
+GO
+
+INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (41, N'Trade Settlement Form - Admin Edit', 2, 23)
+GO
+INSERT [dbo].[AspNetPermission] ([Id], [PermissionName], [PermissionLevel], [Parent]) VALUES (42, N'Inflow Fund Form - Admin Edit', 2, 29)
+GO
+
 
 SET IDENTITY_INSERT [dbo].[AspNetPermission] OFF
 GO

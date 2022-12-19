@@ -93,7 +93,8 @@
             {
                 caption: "Role ID",
                 dataField: "roleId",
-                visible: false
+                visible: false,
+                allowEditing: false,
             },
             {
                 caption: "Role Name",

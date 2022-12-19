@@ -5,14 +5,13 @@
 }
 
 <section class="content container-fluid">
-    @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.AMSD_InflowFundForm_Edit)
-        || User.IsInRole("Power User"))
+    @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.AMSD_Dashboard))
     {
         <div class="row">
             <div class="col-md-4">
                 <div class="box">
-                    <div class="box-header bg-navy">
-                        <i class="fa fa-money"></i><h3 class="box-title">Today's Inflow Funds</h3>
+                    <div class="box-header box-header-v1">
+                        <h3 class="box-title">Today's Inflow Funds</h3>
                     </div>
                     <div class="box-body">
                         @if (Model.IfAmountSummary != null)
@@ -46,8 +45,14 @@
             </div>
             <div class="col-md-4">
                 <div class="box">
-                    <div class="box-header bg-navy">
-                        <i class="fa fa-tasks"></i><h3 class="box-title">Today's Inflow Fund Forms Submission</h3>
+                    <div class="box-header box-header-v1">
+                        <h3 class="box-title">Today's Inflow Fund Forms Submission</h3>
+                        <div class="box-tools pull-right">
+                            @if (Model.IfFormSummary != null)
+                            {
+                                <span data-toggle="tooltip" title="" class="badge bg-blue-soft" data-original-title="3 New Messages">@Model.IfFormSummary.Count</span>
+                            }
+                        </div>
                     </div>
                     <div class="box-body">
                         @if (Model.IfFormSummary != null)
@@ -82,14 +87,13 @@
         </div>
     }
 
-    @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.ISSD_TradeSettlementForm_Edit)
-        || User.IsInRole("Power User"))
+    @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.ISSD_Dashboard))
     {
         <div class="row">
             <div class="col-md-4">
                 <div class="box">
-                    <div class="box-header bg-purple">
-                        <i class="fa fa-money"></i><h3 class="box-title">Today's Opening Balance</h3>
+                    <div class="box-header box-header-v1">
+                        <h3 class="box-title">Today's Opening Balance</h3>
                     </div>
                     <div class="box-body">
                         @if (Model.TsOpeningBalanceSummary != null)
@@ -125,8 +129,12 @@
             </div>
             <div class="col-md-4">
                 <div class="box">
-                    <div class="box-header bg-purple">
-                        <i class="fa fa-tasks"></i><h3 class="box-title">Today's Trade Settlement Forms Submission</h3>
+                    <div class="box-header box-header-v1">
+                        <h3 class="box-title">Today's Trade Settlement Forms Submission</h3>
+                        @if (Model.TsFormSummary != null)
+                        {
+                            <span data-toggle="tooltip" title="" class="badge bg-blue-soft" data-original-title="3 New Messages">@Model.TsFormSummary.Count</span>
+                        }
                     </div>
                     <div class="box-body">
                         @if (Model.TsFormSummary != null)
@@ -163,14 +171,17 @@
 
     }
 
-    @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.FID_TreasuryForm_Edit)
-        || User.IsInRole("Power User"))
+    @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.FID_Dashboard))
     {
         <div class="row">
             <div class="col-md-4">
                 <div class="box">
-                    <div class="box-header bg-blue">
-                        <i class="fa fa-tasks"></i><h3 class="box-title">Today's Treasury Forms Submission</h3>
+                    <div class="box-header box-header-v1">
+                        <h3 class="box-title">Today's Treasury Forms Submission</h3>
+                        @if (Model.TreasuryFormSummary != null)
+                        {
+                            <span data-toggle="tooltip" title="" class="badge bg-blue-soft" data-original-title="3 New Messages">@Model.TreasuryFormSummary.Count</span>
+                        }
                     </div>
                     <div class="box-body">
                         @if (Model.TreasuryFormSummary != null)

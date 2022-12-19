@@ -326,6 +326,11 @@ div .validation-summary-errors.text-danger {
     background-color: #f6f7f9;
 }
 
+.box-header.box-header-v1 {
+    background-color: transparent;
+    border-bottom: 1px solid #e9ebec;
+}
+
 .box-header>div {
     display: inline-block;
 }
@@ -424,6 +429,11 @@ div .validation-summary-errors.text-danger {
 .bg-dark {
     background: #121212;
     color: #FFFFFF;
+}
+
+.bg-blue-soft {
+    color: #3399FF;
+    background-color: #CCE5FF;
 }
 
 

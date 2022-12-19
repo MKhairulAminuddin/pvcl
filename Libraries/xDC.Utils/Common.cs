@@ -473,13 +473,16 @@ namespace xDC.Utils
             public const string Settings_ApproverAssignment = "Settings - Approver Assignment";
 
             public const string ISSD = "ISSD";
+            public const string ISSD_Dashboard = "ISSD Dashboard";
             public const string ISSD_TradeSettlementForm_View = "Trade Settlement Form - View";
             public const string ISSD_TradeSettlementForm_Edit = "Trade Settlement Form - Edit";
+            public const string ISSD_TradeSettlementForm_Admin_Edit = "Trade Settlement Form - Admin Edit";
             public const string ISSD_TradeSettlementForm_Download = "Trade Settlement Form - Download";
             public const string ISSD_FcaTaggingForm = "FCA Tagging Form - View";
             public const string ISSD_FcaTaggingForm_Edit = "FCA Tagging Form - Edit";
 
             public const string FID = "FID";
+            public const string FID_Dashboard = "FID Dashboard";
             public const string FID_TreasuryForm_View = "Treasury Form - View";
             public const string FID_TreasuryForm_Edit = "Treasury Form - Edit";
             public const string FID_TreasuryForm_Download = "Treasury Form - Download";
@@ -487,8 +490,10 @@ namespace xDC.Utils
             public const string FID_FcaTaggingForm_Edit = "FCA Tagging Form - Edit";
 
             public const string AMSD = "AMSD";
+            public const string AMSD_Dashboard = "AMSD Dashboard";
             public const string AMSD_InflowFundForm_View = "Inflow Fund Form - View";
             public const string AMSD_InflowFundForm_Edit = "Inflow Fund Form - Edit";
+            public const string AMSD_InflowFundForm_Admin_Edit = "Inflow Fund Form - Admin Edit";
             public const string AMSD_InflowFundForm_Download = "Inflow Fund Form - Download";
             public const string AMSD_InflowFundForm_PowerUser = "Inflow Fund Form - Power User";
 

@@ -8,7 +8,12 @@
             $printBtn,
             $showPendingAssignmentBtn = $("#showPendingAssignmentBtn"),
             $clearFilterBtn = $("#clearFilterBtn"),
-            $showTodayBtn = $("#showTodayBtn");
+            $showTodayBtn = $("#showTodayBtn"),
+            $showUsdBtn = $("#showUsdBtn"),
+            $showGbpBtn = $("#showGbpBtn"),
+            $showAudBtn = $("#showAudBtn"),
+            $showEurBtn = $("#showEurBtn"),
+            $showMyrBtn = $("#showMyrBtn");
 
         var referenceUrl = {
 
@@ -26,6 +31,46 @@
         //#endregion
 
         //#region Other Widgets
+
+        $showUsdBtn.dxButton({
+            onClick: function (e) {
+                $grid.filter([
+                    ["currency", "=", "USD"]
+                ]);
+            }
+        });
+
+        $showGbpBtn.dxButton({
+            onClick: function (e) {
+                $grid.filter([
+                    ["currency", "=", "GBP"]
+                ]);
+            }
+        });
+
+        $showAudBtn.dxButton({
+            onClick: function (e) {
+                $grid.filter([
+                    ["currency", "=", "AUD"]
+                ]);
+            }
+        });
+
+        $showEurBtn.dxButton({
+            onClick: function (e) {
+                $grid.filter([
+                    ["currency", "=", "EUR"]
+                ]);
+            }
+        });
+
+        $showMyrBtn.dxButton({
+            onClick: function (e) {
+                $grid.filter([
+                    ["currency", "=", "MYR"]
+                ]);
+            }
+        });
 
         $showPendingAssignmentBtn.dxButton({
             onClick: function (e) {

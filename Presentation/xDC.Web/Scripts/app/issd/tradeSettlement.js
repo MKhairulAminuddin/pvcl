@@ -9,7 +9,7 @@
 
     _ts.mvc = {
         printed: window.location.origin + "/issd/TradeSettlement/Download/",
-        print: window.location.origin + "/issd/Print"
+        print: window.location.origin + "/api/issd/ts/generatePart"
     };
 
     _ts.api = {
@@ -252,7 +252,7 @@
                     type: "POST",
                     url: _ts.mvc.print,
                     data: {
-                        id: formId,
+                        formId: formId,
                         isExportAsExcel: isExcel
                     },
                     dataType: "text",
@@ -295,7 +295,7 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "/issd/PrintConsolidated",
+                    url: "/api/issd/ts/generateConsolidated",
                     data: request,
                     dataType: "text",
                     success: function (data) {
@@ -319,7 +319,7 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "/issd/PrintConsolidated",
+                    url: "/api/issd/ts/generateConsolidated",
                     data: request,
                     dataType: "text",
                     success: function (data) {
