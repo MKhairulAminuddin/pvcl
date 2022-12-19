@@ -20,7 +20,9 @@ namespace xDC.Logging
             _errorLogger = new LoggerConfiguration()
                 .Enrich.WithExceptionDetails()
                 .WriteTo.File(new CompactJsonFormatter(), logPath, rollingInterval: RollingInterval.Day)
+#if DEBUG
                 .WriteTo.Seq("http://localhost:5341")
+#endif
                 .CreateLogger();
         }
 

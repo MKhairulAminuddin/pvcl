@@ -1,6 +1,6 @@
 /*!
  * 
- *               jsPDF AutoTable plugin v3.5.25
+ *               jsPDF AutoTable plugin v3.5.28
  *
  *               Copyright (c) 2022 Simon Bengtsson, https://github.com/simonbengtsson/jsPDF-AutoTable
  *               Licensed under the MIT License.
@@ -16,7 +16,7 @@
 		var a = typeof exports === 'object' ? factory((function webpackLoadOptionalExternalModule() { try { return require("jspdf"); } catch(e) {} }())) : factory(root["jspdf"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(typeof this !== 'undefined' ? this : window, function(__WEBPACK_EXTERNAL_MODULE__84__) {
+})(typeof globalThis !== 'undefined' ? globalThis : typeof this !== 'undefined' ? this : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : global , function(__WEBPACK_EXTERNAL_MODULE__84__) {
 return /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -573,6 +573,14 @@ var DocHandler = /** @class */ (function () {
             fontSize: jsPDFDocument.internal.getFontSize(),
             fontStyle: jsPDFDocument.internal.getFont().fontStyle,
             font: jsPDFDocument.internal.getFont().fontName,
+            // 0 for versions of jspdf without getLineWidth
+            lineWidth: jsPDFDocument.getLineWidth
+                ? this.jsPDFDocument.getLineWidth()
+                : 0,
+            // Black for versions of jspdf without getDrawColor
+            lineColor: jsPDFDocument.getDrawColor
+                ? this.jsPDFDocument.getDrawColor()
+                : 0,
         };
     }
     DocHandler.setDefaults = function (defaults, doc) {
@@ -2239,7 +2247,13 @@ function fitContent(table, doc) {
                 cell.text = ellipsize(cell.text, textSpace, cell.styles, doc, '');
             }
             else if (typeof cell.styles.overflow === 'function') {
-                cell.text = cell.styles.overflow(cell.text, textSpace);
+                var result = cell.styles.overflow(cell.text, textSpace);
+                if (typeof result === 'string') {
+                    cell.text = [result];
+                }
+                else {
+                    cell.text = result;
+                }
             }
             cell.contentHeight = cell.getContentHeight(doc.scaleFactor());
             var realContentHeight = cell.contentHeight / cell.rowSpan;
@@ -2348,7 +2362,6 @@ function autoTable(d, options) {
     var table = (0, tableCalculator_1.createTable)(d, input);
     (0, tableDrawer_1.drawTable)(d, table);
 }
-exports["default"] = autoTable;
 // Experimental export
 function __createTable(d, options) {
     var input = (0, inputParser_1.parseInput)(d, options);
@@ -2373,6 +2386,7 @@ catch (error) {
     // 1.5.3 so we need to silence potential errors to support using for example
     // the nodejs jspdf dist files with the exported applyPlugin
 }
+exports["default"] = autoTable;
 
 }();
 /******/ 	return __webpack_exports__;

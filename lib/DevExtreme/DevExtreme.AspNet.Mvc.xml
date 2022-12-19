@@ -328,6 +328,21 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.AccordionItemBuilder.Title(DevExtreme.AspNet.Mvc.JS)">
             <summary>Specifies text displayed for the UI component item title.</summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.AccordionItemBuilder.TitleTemplate(System.String)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.AccordionItemBuilder.TitleTemplate(DevExtreme.AspNet.Mvc.RazorBlock)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.AccordionItemBuilder.TitleTemplate(DevExtreme.AspNet.Mvc.TemplateName)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.AccordionItemBuilder.TitleTemplate(DevExtreme.AspNet.Mvc.JS)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.AccordionItemBuilder.TitleTemplate(System.Action)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.AccordionItemBuilder.Visible(System.Boolean)">
             <summary>Specifies whether or not a UI component item must be displayed.</summary>
         </member>
@@ -1790,6 +1805,12 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.AutocompleteBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.AutocompleteBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Mode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.AutocompleteBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.AutocompleteBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
             <summary></summary>
         </member>
@@ -2708,6 +2729,12 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.CalendarBuilder.ShowTodayButton(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.CalendarBuilder.ShowWeekNumbers(System.Boolean)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.CalendarBuilder.ShowWeekNumbers(DevExtreme.AspNet.Mvc.JS)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.CalendarBuilder.TabIndex(System.Int32)">
             <summary></summary>
         </member>
@@ -2724,6 +2751,9 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.CalendarBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.CalendarBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.CalendarBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
@@ -2745,6 +2775,9 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.CalendarBuilder.Visible(DevExtreme.AspNet.Mvc.JS)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.CalendarBuilder.WeekNumberRule(DevExtreme.AspNet.Mvc.WeekNumberRule)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.CalendarBuilder.Width(System.Double)">
@@ -2799,6 +2832,12 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.CheckBoxBuilder.ElementAttr(DevExtreme.AspNet.Mvc.JS)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.CheckBoxBuilder.EnableThreeStateBehavior(System.Boolean)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.CheckBoxBuilder.EnableThreeStateBehavior(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.CheckBoxBuilder.FocusStateEnabled(System.Boolean)">
@@ -2913,6 +2952,9 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.CheckBoxBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.CheckBoxBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.CheckBoxBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
@@ -3276,6 +3318,12 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ColorBoxBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.ColorBoxBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Mode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.ColorBoxBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ColorBoxBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
@@ -6014,12 +6062,6 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.DataGridRowDraggingBuilder.DropFeedbackMode(DevExtreme.AspNet.Mvc.DropFeedbackMode)">
             <summary></summary>
         </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.DataGridRowDraggingBuilder.Filter(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.DataGridRowDraggingBuilder.Filter(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.DataGridRowDraggingBuilder.Group(System.String)">
             <summary></summary>
         </member>
@@ -7094,6 +7136,12 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.DateBoxBuilder.TabIndex(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.DateBoxBuilder.TodayButtonText(System.String)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.DateBoxBuilder.TodayButtonText(DevExtreme.AspNet.Mvc.JS)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.DateBoxBuilder.Type(DevExtreme.AspNet.Mvc.DateBoxType)">
             <summary></summary>
         </member>
@@ -7113,6 +7161,12 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.DateBoxBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.DateBoxBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Mode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.DateBoxBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.DateBoxBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
@@ -9126,6 +9180,12 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.DropDownBoxBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.DropDownBoxBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Mode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.DropDownBoxBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.DropDownBoxBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
@@ -11993,6 +12053,21 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.FormItemLabelBuilder.ShowColon(DevExtreme.AspNet.Mvc.JS)">
             <summary>Specifies whether or not a colon is displayed at the end of the current label.</summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.FormItemLabelBuilder.Template(System.String)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.FormItemLabelBuilder.Template(DevExtreme.AspNet.Mvc.RazorBlock)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.FormItemLabelBuilder.Template(DevExtreme.AspNet.Mvc.TemplateName)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.FormItemLabelBuilder.Template(DevExtreme.AspNet.Mvc.JS)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.FormItemLabelBuilder.Template(System.Action)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.FormItemLabelBuilder.Text(System.String)">
             <summary>Specifies the label text.</summary>
         </member>
@@ -14339,6 +14414,9 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.HtmlEditorBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.HtmlEditorBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.HtmlEditorBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
             <summary></summary>
         </member>
@@ -15644,7 +15722,16 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.LoadPanelBuilder.Width(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.LoadPanelBuilder.WrapperAttr(System.String,System.Object)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.LoadPanelBuilder.WrapperAttr(System.Object)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.LoadPanelBuilder.WrapperAttr(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.LoadPanelBuilder.WrapperAttr(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
         <member name="T:DevExtreme.AspNet.Mvc.Builders.LookupBuilder">
@@ -16101,6 +16188,12 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.LookupBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.LookupBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Mode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.LookupBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.LookupBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
@@ -17180,294 +17273,6 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.MultiViewItemBuilder.Text(DevExtreme.AspNet.Mvc.JS)">
             <summary>Specifies text displayed for the UI component item.</summary>
         </member>
-        <member name="T:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder">
-            <summary>The NavBar is a UI component that navigates the application views.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.ID(System.String)">
-            <summary>Specifies an HTML id for the widget&#39;s root element.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.ID(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies a JS expression calculating an HTML id for the root element of the widget defined within a template.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.Option(System.String,System.Object)">
-            <summary>Specifies an option by its name.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.AccessKey(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.AccessKey(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.DataSource(System.Func{DevExtreme.AspNet.Mvc.Factories.DataSourceFactory,DevExtreme.AspNet.Mvc.Builders.OptionsOwnerBuilder})">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.DataSource(System.String,System.String[])">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.DataSource(System.Collections.IEnumerable,System.String[])">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.DataSource(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.DataSourceOptions(System.Action{DevExtreme.AspNet.Mvc.Builders.DataSources.DataSourceOptionsBuilder})">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.Disabled(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.Disabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.ElementAttr(System.String,System.Object)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.ElementAttr(System.Object)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.ElementAttr(System.Collections.Generic.Dictionary{System.String,System.Object})">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.ElementAttr(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.FocusStateEnabled(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.FocusStateEnabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.Height(System.Double)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.Height(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.Height(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.Hint(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.Hint(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.HoverStateEnabled(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.HoverStateEnabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.ItemHoldTimeout(System.Double)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.ItemHoldTimeout(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.Items(System.Action{DevExtreme.AspNet.Mvc.Factories.CollectionFactory{DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder}})">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.ItemTemplate(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.ItemTemplate(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.ItemTemplate(DevExtreme.AspNet.Mvc.TemplateName)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.ItemTemplate(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.ItemTemplate(System.Action)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.KeyExpr(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.KeyExpr(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.NoDataText(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.NoDataText(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnContentReady(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnContentReady(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnDisposing(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnDisposing(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnInitialized(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnInitialized(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnItemClick(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnItemClick(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnItemContextMenu(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnItemContextMenu(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnItemHold(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnItemHold(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnItemRendered(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnItemRendered(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnOptionChanged(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnOptionChanged(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnSelectionChanged(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.OnSelectionChanged(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.RepaintChangesOnly(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.RepaintChangesOnly(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.RtlEnabled(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.RtlEnabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.ScrollByContent(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.ScrollByContent(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.SelectedIndex(System.Int32)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.SelectedIndex(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.SelectedItem(System.Object)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.SelectedItemKeys(System.Collections.IEnumerable)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.SelectedItemKeys(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.SelectedItems(System.Collections.IEnumerable)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.SelectedItems(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.SelectionMode(DevExtreme.AspNet.Mvc.NavSelectionMode)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.TabIndex(System.Int32)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.TabIndex(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.Visible(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.Visible(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.Width(System.Double)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.Width(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarBuilder.Width(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="T:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Option(System.String,System.Object)">
-            <summary>Specifies an option by its name.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Badge(System.String)">
-            <summary>Specifies a badge text for the tab.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Badge(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies a badge text for the tab.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Disabled(System.Boolean)">
-            <summary>Specifies whether the UI component item responds to user interaction.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Disabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies whether the UI component item responds to user interaction.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Html(System.String)">
-            <summary>Specifies the HTML markup to be inserted into the item element.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Html(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies the HTML markup to be inserted into the item element.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Icon(System.String)">
-            <summary>Specifies the icon to be displayed on the tab.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Icon(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies the icon to be displayed on the tab.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Template(System.String)">
-            <summary>Specifies a template that should be used to render this item only.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Template(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary>Specifies a template that should be used to render this item only.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Template(DevExtreme.AspNet.Mvc.TemplateName)">
-            <summary>Specifies a template that should be used to render this item only.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Template(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies a template that should be used to render this item only.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Template(System.Action)">
-            <summary>Specifies a template that should be used to render this item only.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Text(System.String)">
-            <summary>Specifies text displayed for the UI component item.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Text(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies text displayed for the UI component item.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Visible(System.Boolean)">
-            <summary>Specifies whether or not a UI component item must be displayed.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.NavBarItemBuilder.Visible(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies whether or not a UI component item must be displayed.</summary>
-        </member>
         <member name="T:DevExtreme.AspNet.Mvc.Builders.NumberBoxBuilder">
             <summary>The NumberBox is a UI component that displays a numeric value and allows a user to modify it by typing in a value, and incrementing or decrementing it using the keyboard or mouse.</summary>
         </member>
@@ -17760,6 +17565,9 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.NumberBoxBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.NumberBoxBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.NumberBoxBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
@@ -19085,7 +18893,16 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverBuilder.Width(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverBuilder.WrapperAttr(System.String,System.Object)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverBuilder.WrapperAttr(System.Object)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverBuilder.WrapperAttr(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverBuilder.WrapperAttr(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
         <member name="T:DevExtreme.AspNet.Mvc.Builders.PopoverHideEventBuilder">
@@ -19130,53 +18947,80 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Option(System.String,System.Object)">
             <summary>Specifies an option by its name.</summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.CssClass(System.String)">
+            <summary>Specifies a CSS class to be applied to the item.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.CssClass(DevExtreme.AspNet.Mvc.JS)">
+            <summary>Specifies a CSS class to be applied to the item.</summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Disabled(System.Boolean)">
-            <summary></summary>
+            <summary>Specifies whether the UI component item responds to user interaction.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Disabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
+            <summary>Specifies whether the UI component item responds to user interaction.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Html(System.String)">
-            <summary></summary>
+            <summary>Specifies the HTML markup to be inserted into the item element.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Html(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
+            <summary>Specifies the HTML markup to be inserted into the item element.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.LocateInMenu(DevExtreme.AspNet.Mvc.ToolbarItemLocateInMenuMode)">
+            <summary>Specifies when to display an item in the toolbar&apos;s overflow menu.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Location(DevExtreme.AspNet.Mvc.ToolbarItemLocation)">
-            <summary></summary>
+            <summary>Specifies a location for the item on the toolbar.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.MenuItemTemplate(System.String)">
+            <summary>Specifies a template that should be used to render a menu item.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.MenuItemTemplate(DevExtreme.AspNet.Mvc.RazorBlock)">
+            <summary>Specifies a template that should be used to render a menu item.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.MenuItemTemplate(DevExtreme.AspNet.Mvc.TemplateName)">
+            <summary>Specifies a template that should be used to render a menu item.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.MenuItemTemplate(DevExtreme.AspNet.Mvc.JS)">
+            <summary>Specifies a template that should be used to render a menu item.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.MenuItemTemplate(System.Action)">
+            <summary>Specifies a template that should be used to render a menu item.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.ShowText(DevExtreme.AspNet.Mvc.ToolbarItemShowTextMode)">
+            <summary>Specifies when to display the text for the UI component item.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Template(System.String)">
-            <summary></summary>
+            <summary>Specifies a template that should be used to render this item only.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Template(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
+            <summary>Specifies a template that should be used to render this item only.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Template(DevExtreme.AspNet.Mvc.TemplateName)">
-            <summary></summary>
+            <summary>Specifies a template that should be used to render this item only.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Template(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
+            <summary>Specifies a template that should be used to render this item only.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Template(System.Action)">
-            <summary></summary>
+            <summary>Specifies a template that should be used to render this item only.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Text(System.String)">
-            <summary></summary>
+            <summary>Specifies text displayed for the UI component item.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Text(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
+            <summary>Specifies text displayed for the UI component item.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Toolbar(DevExtreme.AspNet.Mvc.Toolbar)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Visible(System.Boolean)">
-            <summary></summary>
+            <summary>Specifies whether or not a UI component item must be displayed.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Visible(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
+            <summary>Specifies whether or not a UI component item must be displayed.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopoverToolbarItemBuilder.Widget(System.Func{DevExtreme.AspNet.Mvc.Factories.ToolbarItemFactory,DevExtreme.AspNet.Mvc.Builders.WidgetBuilder})">
-            <summary></summary>
+            <summary>A UI component that presents a toolbar item. To configure it, use the options object.</summary>
         </member>
         <member name="T:DevExtreme.AspNet.Mvc.Builders.PopupAnimationBuilder">
             <summary></summary>
@@ -19508,7 +19352,16 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupBuilder.Width(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupBuilder.WrapperAttr(System.String,System.Object)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupBuilder.WrapperAttr(System.Object)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupBuilder.WrapperAttr(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupBuilder.WrapperAttr(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
         <member name="T:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder">
@@ -19517,53 +19370,80 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Option(System.String,System.Object)">
             <summary>Specifies an option by its name.</summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.CssClass(System.String)">
+            <summary>Specifies a CSS class to be applied to the item.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.CssClass(DevExtreme.AspNet.Mvc.JS)">
+            <summary>Specifies a CSS class to be applied to the item.</summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Disabled(System.Boolean)">
-            <summary></summary>
+            <summary>Specifies whether the UI component item responds to user interaction.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Disabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
+            <summary>Specifies whether the UI component item responds to user interaction.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Html(System.String)">
-            <summary></summary>
+            <summary>Specifies the HTML markup to be inserted into the item element.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Html(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
+            <summary>Specifies the HTML markup to be inserted into the item element.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.LocateInMenu(DevExtreme.AspNet.Mvc.ToolbarItemLocateInMenuMode)">
+            <summary>Specifies when to display an item in the toolbar&apos;s overflow menu.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Location(DevExtreme.AspNet.Mvc.ToolbarItemLocation)">
-            <summary></summary>
+            <summary>Specifies a location for the item on the toolbar.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.MenuItemTemplate(System.String)">
+            <summary>Specifies a template that should be used to render a menu item.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.MenuItemTemplate(DevExtreme.AspNet.Mvc.RazorBlock)">
+            <summary>Specifies a template that should be used to render a menu item.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.MenuItemTemplate(DevExtreme.AspNet.Mvc.TemplateName)">
+            <summary>Specifies a template that should be used to render a menu item.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.MenuItemTemplate(DevExtreme.AspNet.Mvc.JS)">
+            <summary>Specifies a template that should be used to render a menu item.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.MenuItemTemplate(System.Action)">
+            <summary>Specifies a template that should be used to render a menu item.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.ShowText(DevExtreme.AspNet.Mvc.ToolbarItemShowTextMode)">
+            <summary>Specifies when to display the text for the UI component item.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Template(System.String)">
-            <summary></summary>
+            <summary>Specifies a template that should be used to render this item only.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Template(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
+            <summary>Specifies a template that should be used to render this item only.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Template(DevExtreme.AspNet.Mvc.TemplateName)">
-            <summary></summary>
+            <summary>Specifies a template that should be used to render this item only.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Template(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
+            <summary>Specifies a template that should be used to render this item only.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Template(System.Action)">
-            <summary></summary>
+            <summary>Specifies a template that should be used to render this item only.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Text(System.String)">
-            <summary></summary>
+            <summary>Specifies text displayed for the UI component item.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Text(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
+            <summary>Specifies text displayed for the UI component item.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Toolbar(DevExtreme.AspNet.Mvc.Toolbar)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Visible(System.Boolean)">
-            <summary></summary>
+            <summary>Specifies whether or not a UI component item must be displayed.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Visible(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
+            <summary>Specifies whether or not a UI component item must be displayed.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PopupToolbarItemBuilder.Widget(System.Func{DevExtreme.AspNet.Mvc.Factories.ToolbarItemFactory,DevExtreme.AspNet.Mvc.Builders.WidgetBuilder})">
-            <summary></summary>
+            <summary>A UI component that presents a toolbar item. To configure it, use the options object.</summary>
         </member>
         <member name="T:DevExtreme.AspNet.Mvc.Builders.ProgressBarBuilder">
             <summary>The ProgressBar is a UI component that shows current progress.</summary>
@@ -19704,6 +19584,9 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ProgressBarBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.ProgressBarBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ProgressBarBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
@@ -19917,6 +19800,9 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.RadioGroupBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.RadioGroupBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.RadioGroupBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
@@ -20228,6 +20114,9 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.RangeSliderBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.RangeSliderBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.RangeSliderBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
             <summary></summary>
         </member>
@@ -20235,6 +20124,9 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.RangeSliderBuilder.Value(DevExtreme.AspNet.Mvc.JS)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.RangeSliderBuilder.ValueChangeMode(DevExtreme.AspNet.Mvc.ValueChangeMode)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.RangeSliderBuilder.Visible(System.Boolean)">
@@ -20439,6 +20331,9 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.RecurrenceEditorBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.RecurrenceEditorBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.RecurrenceEditorBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
@@ -23075,6 +22970,12 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.SelectBoxBuilder.Buttons(System.Action{DevExtreme.AspNet.Mvc.Factories.CollectionFactory{DevExtreme.AspNet.Mvc.Builders.TextEditorButtonBuilder}})">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.SelectBoxBuilder.CustomItemCreateEvent(System.String)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.SelectBoxBuilder.CustomItemCreateEvent(DevExtreme.AspNet.Mvc.JS)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.SelectBoxBuilder.DataSource(System.Func{DevExtreme.AspNet.Mvc.Factories.DataSourceFactory,DevExtreme.AspNet.Mvc.Builders.OptionsOwnerBuilder})">
             <summary></summary>
         </member>
@@ -23504,16 +23405,16 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.SelectBoxBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.SelectBoxBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Mode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.SelectBoxBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.SelectBoxBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.SelectBoxBuilder.Value(System.Object)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SelectBoxBuilder.ValueChangeEvent(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SelectBoxBuilder.ValueChangeEvent(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.SelectBoxBuilder.ValueExpr(System.String)">
@@ -23587,471 +23488,6 @@
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.SelectBoxItemBuilder.Visible(DevExtreme.AspNet.Mvc.JS)">
             <summary>Specifies whether or not a UI component item must be displayed.</summary>
-        </member>
-        <member name="T:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder">
-            <summary>The SlideOut UI component is a classic slide-out menu paired with a view. An end user opens the menu by swiping away the view.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ID(System.String)">
-            <summary>Specifies an HTML id for the widget&#39;s root element.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ID(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies a JS expression calculating an HTML id for the root element of the widget defined within a template.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.Option(System.String,System.Object)">
-            <summary>Specifies an option by its name.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ActiveStateEnabled(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ActiveStateEnabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ContentTemplate(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ContentTemplate(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ContentTemplate(DevExtreme.AspNet.Mvc.TemplateName)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ContentTemplate(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ContentTemplate(System.Action)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.DataSource(System.Func{DevExtreme.AspNet.Mvc.Factories.DataSourceFactory,DevExtreme.AspNet.Mvc.Builders.OptionsOwnerBuilder})">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.DataSource(System.String,System.String[])">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.DataSource(System.Collections.IEnumerable,System.String[])">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.DataSource(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.DataSourceOptions(System.Action{DevExtreme.AspNet.Mvc.Builders.DataSources.DataSourceOptionsBuilder})">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.Disabled(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.Disabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ElementAttr(System.String,System.Object)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ElementAttr(System.Object)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ElementAttr(System.Collections.Generic.Dictionary{System.String,System.Object})">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ElementAttr(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.Height(System.Double)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.Height(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.Height(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.Hint(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.Hint(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.HoverStateEnabled(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.HoverStateEnabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ItemHoldTimeout(System.Double)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ItemHoldTimeout(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.Items(System.Action{DevExtreme.AspNet.Mvc.Factories.CollectionFactory{DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder}})">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ItemTemplate(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ItemTemplate(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ItemTemplate(DevExtreme.AspNet.Mvc.TemplateName)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ItemTemplate(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.ItemTemplate(System.Action)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.MenuGrouped(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.MenuGrouped(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.MenuGroupTemplate(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.MenuGroupTemplate(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.MenuGroupTemplate(DevExtreme.AspNet.Mvc.TemplateName)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.MenuGroupTemplate(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.MenuGroupTemplate(System.Action)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.MenuItemTemplate(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.MenuItemTemplate(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.MenuItemTemplate(DevExtreme.AspNet.Mvc.TemplateName)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.MenuItemTemplate(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.MenuItemTemplate(System.Action)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.MenuPosition(DevExtreme.AspNet.Mvc.SlideOutMenuPosition)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.MenuVisible(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.MenuVisible(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.NoDataText(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.NoDataText(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnContentReady(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnContentReady(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnDisposing(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnDisposing(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnInitialized(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnInitialized(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnItemClick(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnItemClick(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnItemContextMenu(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnItemContextMenu(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnItemHold(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnItemHold(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnItemRendered(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnItemRendered(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnMenuGroupRendered(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnMenuGroupRendered(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnMenuItemRendered(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnMenuItemRendered(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnOptionChanged(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnOptionChanged(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnSelectionChanged(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.OnSelectionChanged(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.RtlEnabled(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.RtlEnabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.SelectedIndex(System.Int32)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.SelectedIndex(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.SelectedItem(System.Object)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.SwipeEnabled(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.SwipeEnabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.Visible(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.Visible(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.Width(System.Double)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.Width(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutBuilder.Width(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="T:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.Option(System.String,System.Object)">
-            <summary>Specifies an option by its name.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.Disabled(System.Boolean)">
-            <summary>Specifies whether the UI component item responds to user interaction.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.Disabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies whether the UI component item responds to user interaction.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.Html(System.String)">
-            <summary>Specifies the HTML markup to be inserted into the item element.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.Html(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies the HTML markup to be inserted into the item element.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.MenuTemplate(System.String)">
-            <summary>Specifies a template that should be used to render a menu item.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.MenuTemplate(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary>Specifies a template that should be used to render a menu item.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.MenuTemplate(DevExtreme.AspNet.Mvc.TemplateName)">
-            <summary>Specifies a template that should be used to render a menu item.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.MenuTemplate(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies a template that should be used to render a menu item.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.MenuTemplate(System.Action)">
-            <summary>Specifies a template that should be used to render a menu item.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.Template(System.String)">
-            <summary>Specifies a template that should be used to render this item only.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.Template(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary>Specifies a template that should be used to render this item only.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.Template(DevExtreme.AspNet.Mvc.TemplateName)">
-            <summary>Specifies a template that should be used to render this item only.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.Template(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies a template that should be used to render this item only.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.Template(System.Action)">
-            <summary>Specifies a template that should be used to render this item only.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.Text(System.String)">
-            <summary>Specifies text displayed for the UI component item.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.Text(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies text displayed for the UI component item.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.Visible(System.Boolean)">
-            <summary>Specifies whether or not a UI component item must be displayed.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutItemBuilder.Visible(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies whether or not a UI component item must be displayed.</summary>
-        </member>
-        <member name="T:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder">
-            <summary>The SlideOutView UI component is a classic slide-out menu paired with a view. This UI component is very similar to the SlideOut with only one difference - the SlideOut always contains the List in the slide-out menu, while the SlideOutView can hold any collection there.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.ID(System.String)">
-            <summary>Specifies an HTML id for the widget&#39;s root element.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.ID(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies a JS expression calculating an HTML id for the root element of the widget defined within a template.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.Option(System.String,System.Object)">
-            <summary>Specifies an option by its name.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.ActiveStateEnabled(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.ActiveStateEnabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.ContentTemplate(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.ContentTemplate(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.ContentTemplate(DevExtreme.AspNet.Mvc.TemplateName)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.ContentTemplate(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.ContentTemplate(System.Action)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.Disabled(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.Disabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.ElementAttr(System.String,System.Object)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.ElementAttr(System.Object)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.ElementAttr(System.Collections.Generic.Dictionary{System.String,System.Object})">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.ElementAttr(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.Height(System.Double)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.Height(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.Height(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.Hint(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.Hint(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.HoverStateEnabled(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.HoverStateEnabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.MenuPosition(DevExtreme.AspNet.Mvc.SlideOutMenuPosition)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.MenuTemplate(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.MenuTemplate(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.MenuTemplate(DevExtreme.AspNet.Mvc.TemplateName)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.MenuTemplate(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.MenuTemplate(System.Action)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.MenuVisible(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.MenuVisible(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.OnDisposing(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.OnDisposing(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.OnInitialized(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.OnInitialized(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.OnOptionChanged(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.OnOptionChanged(DevExtreme.AspNet.Mvc.RazorBlock)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.RtlEnabled(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.RtlEnabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.SwipeEnabled(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.SwipeEnabled(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.Visible(System.Boolean)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.Visible(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.Width(System.Double)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.Width(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.SlideOutViewBuilder.Width(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
         </member>
         <member name="T:DevExtreme.AspNet.Mvc.Builders.SliderBuilder">
             <summary>The Slider is a UI component that allows an end user to set a numeric value on a continuous range of possible values.</summary>
@@ -24230,6 +23666,9 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.SliderBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.SliderBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.SliderBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
             <summary></summary>
         </member>
@@ -24237,6 +23676,9 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.SliderBuilder.Value(DevExtreme.AspNet.Mvc.JS)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.SliderBuilder.ValueChangeMode(DevExtreme.AspNet.Mvc.ValueChangeMode)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.SliderBuilder.Visible(System.Boolean)">
@@ -24846,6 +24288,9 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.SwitchBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.SwitchBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.SwitchBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
@@ -25571,6 +25016,12 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TagBoxBuilder.Buttons(System.Action{DevExtreme.AspNet.Mvc.Factories.CollectionFactory{DevExtreme.AspNet.Mvc.Builders.TextEditorButtonBuilder}})">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.TagBoxBuilder.CustomItemCreateEvent(System.String)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.TagBoxBuilder.CustomItemCreateEvent(DevExtreme.AspNet.Mvc.JS)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TagBoxBuilder.DataSource(System.Func{DevExtreme.AspNet.Mvc.Factories.DataSourceFactory,DevExtreme.AspNet.Mvc.Builders.OptionsOwnerBuilder})">
             <summary></summary>
         </member>
@@ -26045,6 +25496,12 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TagBoxBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.TagBoxBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Mode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.TagBoxBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TagBoxBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
             <summary></summary>
         </member>
@@ -26393,6 +25850,9 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TextAreaBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.TextAreaBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TextAreaBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
             <summary></summary>
         </member>
@@ -26715,6 +26175,9 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TextBoxBuilder.ValidationMessageMode(DevExtreme.AspNet.Mvc.ValidationMessageMode)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.TextBoxBuilder.ValidationMessagePosition(DevExtreme.AspNet.Mvc.Position)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TextBoxBuilder.ValidationStatus(DevExtreme.AspNet.Mvc.ValidationStatus)">
@@ -27287,7 +26750,16 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ToastBuilder.Width(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.ToastBuilder.WrapperAttr(System.String,System.Object)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ToastBuilder.WrapperAttr(System.Object)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.ToastBuilder.WrapperAttr(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.ToastBuilder.WrapperAttr(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
         <member name="T:DevExtreme.AspNet.Mvc.Builders.ToolbarBuilder">
@@ -27384,6 +26856,12 @@
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ToolbarBuilder.MenuItemTemplate(System.Action)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.ToolbarBuilder.Multiline(System.Boolean)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.ToolbarBuilder.Multiline(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ToolbarBuilder.NoDataText(System.String)">
@@ -27779,7 +27257,16 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TooltipBuilder.Width(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.TooltipBuilder.WrapperAttr(System.String,System.Object)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TooltipBuilder.WrapperAttr(System.Object)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.TooltipBuilder.WrapperAttr(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.TooltipBuilder.WrapperAttr(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
         <member name="T:DevExtreme.AspNet.Mvc.Builders.TooltipHideEventBuilder">
@@ -29771,12 +29258,6 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TreeListRowDraggingBuilder.DropFeedbackMode(DevExtreme.AspNet.Mvc.DropFeedbackMode)">
             <summary></summary>
         </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.TreeListRowDraggingBuilder.Filter(System.String)">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.TreeListRowDraggingBuilder.Filter(DevExtreme.AspNet.Mvc.JS)">
-            <summary></summary>
-        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.TreeListRowDraggingBuilder.Group(System.String)">
             <summary></summary>
         </member>
@@ -30764,6 +30245,108 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ValidationSummaryItemBuilder.Visible(DevExtreme.AspNet.Mvc.JS)">
             <summary>Specifies whether or not a UI component item must be displayed.</summary>
         </member>
+        <member name="T:DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder.Option(System.String,System.Object)">
+            <summary>Specifies an option by its name.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder.EndValue(System.DateTime)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder.EndValue(System.Double)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder.EndValue(System.String)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder.EndValue(DevExtreme.AspNet.Mvc.JS)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder.Length(System.Action{DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder})">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder.Length(DevExtreme.AspNet.Mvc.VizTimeInterval)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder.Length(System.Double)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder.Length(DevExtreme.AspNet.Mvc.JS)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder.StartValue(System.DateTime)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder.StartValue(System.Double)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder.StartValue(System.String)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder.StartValue(DevExtreme.AspNet.Mvc.JS)">
+            <summary></summary>
+        </member>
+        <member name="T:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Option(System.String,System.Object)">
+            <summary>Specifies an option by its name.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Days(System.Double)">
+            <summary>Specifies the time interval measured in days. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Days(DevExtreme.AspNet.Mvc.JS)">
+            <summary>Specifies the time interval measured in days. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Hours(System.Double)">
+            <summary>Specifies the time interval measured in hours. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Hours(DevExtreme.AspNet.Mvc.JS)">
+            <summary>Specifies the time interval measured in hours. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Milliseconds(System.Double)">
+            <summary>Specifies the time interval measured in milliseconds. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Milliseconds(DevExtreme.AspNet.Mvc.JS)">
+            <summary>Specifies the time interval measured in milliseconds. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Minutes(System.Double)">
+            <summary>Specifies the time interval measured in minutes. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Minutes(DevExtreme.AspNet.Mvc.JS)">
+            <summary>Specifies the time interval measured in minutes. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Months(System.Double)">
+            <summary>Specifies the time interval measured in months. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Months(DevExtreme.AspNet.Mvc.JS)">
+            <summary>Specifies the time interval measured in months. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Quarters(System.Double)">
+            <summary>Specifies the time interval measured in quarters. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Quarters(DevExtreme.AspNet.Mvc.JS)">
+            <summary>Specifies the time interval measured in quarters. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Seconds(System.Double)">
+            <summary>Specifies the time interval measured in seconds. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Seconds(DevExtreme.AspNet.Mvc.JS)">
+            <summary>Specifies the time interval measured in seconds. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Weeks(System.Double)">
+            <summary>Specifies the time interval measured in weeks. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Weeks(DevExtreme.AspNet.Mvc.JS)">
+            <summary>Specifies the time interval measured in weeks. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Years(System.Double)">
+            <summary>Specifies the time interval measured in years. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VisualRangeLengthBuilder.Years(DevExtreme.AspNet.Mvc.JS)">
+            <summary>Specifies the time interval measured in years. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
+        </member>
         <member name="T:DevExtreme.AspNet.Mvc.Builders.VizFontBuilder">
             <summary>Font properties.</summary>
         </member>
@@ -30802,108 +30385,6 @@
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.VizFontBuilder.Weight(DevExtreme.AspNet.Mvc.JS)">
             <summary>Specifies font weight. Accepts values from 100 to 900 in increments of 100. Higher values increase boldness.</summary>
-        </member>
-        <member name="T:DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder">
-            <summary></summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder.Option(System.String,System.Object)">
-            <summary>Specifies an option by its name.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder.EndValue(System.DateTime)">
-            <summary>The range&apos;s end value.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder.EndValue(System.Double)">
-            <summary>The range&apos;s end value.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder.EndValue(System.String)">
-            <summary>The range&apos;s end value.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder.EndValue(DevExtreme.AspNet.Mvc.JS)">
-            <summary>The range&apos;s end value.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder.Length(System.Action{DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder})">
-            <summary>The range&apos;s length.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder.Length(DevExtreme.AspNet.Mvc.VizTimeInterval)">
-            <summary>The range&apos;s length.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder.Length(System.Double)">
-            <summary>The range&apos;s length.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder.Length(DevExtreme.AspNet.Mvc.JS)">
-            <summary>The range&apos;s length.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder.StartValue(System.DateTime)">
-            <summary>The range&apos;s start value.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder.StartValue(System.Double)">
-            <summary>The range&apos;s start value.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder.StartValue(System.String)">
-            <summary>The range&apos;s start value.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder.StartValue(DevExtreme.AspNet.Mvc.JS)">
-            <summary>The range&apos;s start value.</summary>
-        </member>
-        <member name="T:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder">
-            <summary>The range&apos;s length.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Option(System.String,System.Object)">
-            <summary>Specifies an option by its name.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Days(System.Double)">
-            <summary>Specifies the time interval measured in days. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Days(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies the time interval measured in days. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Hours(System.Double)">
-            <summary>Specifies the time interval measured in hours. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Hours(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies the time interval measured in hours. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Milliseconds(System.Double)">
-            <summary>Specifies the time interval measured in milliseconds. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Milliseconds(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies the time interval measured in milliseconds. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Minutes(System.Double)">
-            <summary>Specifies the time interval measured in minutes. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Minutes(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies the time interval measured in minutes. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Months(System.Double)">
-            <summary>Specifies the time interval measured in months. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Months(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies the time interval measured in months. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Quarters(System.Double)">
-            <summary>Specifies the time interval measured in quarters. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Quarters(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies the time interval measured in quarters. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Seconds(System.Double)">
-            <summary>Specifies the time interval measured in seconds. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Seconds(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies the time interval measured in seconds. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Weeks(System.Double)">
-            <summary>Specifies the time interval measured in weeks. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Weeks(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies the time interval measured in weeks. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Years(System.Double)">
-            <summary>Specifies the time interval measured in years. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.VizRangeLengthBuilder.Years(DevExtreme.AspNet.Mvc.JS)">
-            <summary>Specifies the time interval measured in years. Accepts integer values. Available only for an axis/scale that displays date-time values.</summary>
         </member>
         <member name="T:DevExtreme.AspNet.Mvc.Builders.VizScaleBreakBuilder">
             <summary>A class describing a scale break range. Inherited by scale breaks in the Chart and RangeSelector.</summary>
@@ -33053,7 +32534,7 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ChartArgumentAxisBuilder.VisualRange(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.ChartArgumentAxisBuilder.VisualRange(System.Action{DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder})">
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.ChartArgumentAxisBuilder.VisualRange(System.Action{DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder})">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ChartArgumentAxisBuilder.VisualRangeUpdateMode(DevExtreme.AspNet.Mvc.VisualRangeUpdateMode)">
@@ -33071,7 +32552,7 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ChartArgumentAxisBuilder.WholeRange(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.ChartArgumentAxisBuilder.WholeRange(System.Action{DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder})">
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.ChartArgumentAxisBuilder.WholeRange(System.Action{DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder})">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ChartArgumentAxisBuilder.Width(System.Double)">
@@ -38267,7 +37748,7 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ChartValueAxisBuilder.VisualRange(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.ChartValueAxisBuilder.VisualRange(System.Action{DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder})">
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.ChartValueAxisBuilder.VisualRange(System.Action{DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder})">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ChartValueAxisBuilder.VisualRangeUpdateMode(DevExtreme.AspNet.Mvc.VisualRangeUpdateMode)">
@@ -38285,7 +37766,7 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ChartValueAxisBuilder.WholeRange(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.ChartValueAxisBuilder.WholeRange(System.Action{DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder})">
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.ChartValueAxisBuilder.WholeRange(System.Action{DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder})">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.ChartValueAxisBuilder.Width(System.Double)">
@@ -48839,7 +48320,7 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PolarChartValueAxisBuilder.VisualRange(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.PolarChartValueAxisBuilder.VisualRange(System.Action{DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder})">
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PolarChartValueAxisBuilder.VisualRange(System.Action{DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder})">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PolarChartValueAxisBuilder.VisualRangeUpdateMode(DevExtreme.AspNet.Mvc.ValueAxisVisualRangeUpdateMode)">
@@ -48857,7 +48338,7 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PolarChartValueAxisBuilder.WholeRange(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.PolarChartValueAxisBuilder.WholeRange(System.Action{DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder})">
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.PolarChartValueAxisBuilder.WholeRange(System.Action{DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder})">
             <summary></summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.PolarChartValueAxisBuilder.Width(System.Double)">
@@ -49679,7 +49160,7 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.RangeSelectorBuilder.Value(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Builders.RangeSelectorBuilder.Value(System.Action{DevExtreme.AspNet.Mvc.Builders.VizRangeBuilder})">
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.RangeSelectorBuilder.Value(System.Action{DevExtreme.AspNet.Mvc.Builders.VisualRangeBuilder})">
             <summary></summary>
         </member>
         <member name="T:DevExtreme.AspNet.Mvc.Builders.RangeSelectorChartBuilder">
@@ -53144,7 +52625,19 @@
         <member name="M:DevExtreme.AspNet.Mvc.Builders.VectorMapControlBarBuilder.Opacity(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VectorMapControlBarBuilder.PanVisible(System.Boolean)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VectorMapControlBarBuilder.PanVisible(DevExtreme.AspNet.Mvc.JS)">
+            <summary></summary>
+        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Builders.VectorMapControlBarBuilder.VerticalAlignment(DevExtreme.AspNet.Mvc.VerticalEdge)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VectorMapControlBarBuilder.ZoomVisible(System.Boolean)">
+            <summary></summary>
+        </member>
+        <member name="M:DevExtreme.AspNet.Mvc.Builders.VectorMapControlBarBuilder.ZoomVisible(DevExtreme.AspNet.Mvc.JS)">
             <summary></summary>
         </member>
         <member name="T:DevExtreme.AspNet.Mvc.Builders.VectorMapExportBuilder">
@@ -54188,9 +53681,6 @@
         <member name="M:DevExtreme.AspNet.Mvc.Factories.WidgetFactory`1.MultiView">
             <summary>The MultiView is a UI component that contains several views. An end user navigates through the views by swiping them in the horizontal direction.</summary>
         </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Factories.WidgetFactory`1.NavBar">
-            <summary>The NavBar is a UI component that navigates the application views.</summary>
-        </member>
         <member name="M:DevExtreme.AspNet.Mvc.Factories.WidgetFactory`1.NumberBox">
             <summary>The NumberBox is a UI component that displays a numeric value and allows a user to modify it by typing in a value, and incrementing or decrementing it using the keyboard or mouse.</summary>
         </member>
@@ -54241,12 +53731,6 @@
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Factories.WidgetFactory`1.SelectBoxFor``1(System.Linq.Expressions.Expression{System.Func{`0,``0}})">
             <summary>The SelectBox UI component is an editor that allows an end user to select an item from a drop-down list.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Factories.WidgetFactory`1.SlideOut">
-            <summary>The SlideOut UI component is a classic slide-out menu paired with a view. An end user opens the menu by swiping away the view.</summary>
-        </member>
-        <member name="M:DevExtreme.AspNet.Mvc.Factories.WidgetFactory`1.SlideOutView">
-            <summary>The SlideOutView UI component is a classic slide-out menu paired with a view. This UI component is very similar to the SlideOut with only one difference - the SlideOut always contains the List in the slide-out menu, while the SlideOutView can hold any collection there.</summary>
         </member>
         <member name="M:DevExtreme.AspNet.Mvc.Factories.WidgetFactory`1.Slider">
             <summary>The Slider is a UI component that allows an end user to set a numeric value on a continuous range of possible values.</summary>

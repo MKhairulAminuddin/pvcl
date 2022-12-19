@@ -1,7 +1,7 @@
 /*!
 * DevExtreme (dx.messages.fr.js)
-* Version: 22.1.6
-* Build date: Tue Oct 18 2022
+* Version: 22.2.3
+* Build date: Mon Dec 05 2022
 *
 * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
 * Read about DevExtreme licensing here: https://js.devexpress.com/Licensing/
@@ -153,6 +153,8 @@
             "dxDataGrid-selectedRows": "Lignes s\xe9lectionn\xe9es",
             "dxDataGrid-exportSelectedRows": "Exporter les lignes s\xe9lectionn\xe9es",
             "dxDataGrid-exportAll": "Exporter tout",
+            "dxDataGrid-headerFilterLabel": "Filter options",
+            "dxDataGrid-headerFilterIndicatorLabel": "Show filter options for column '{0}'",
             "dxDataGrid-headerFilterEmptyValue": "(aucune valeur)",
             "dxDataGrid-headerFilterOK": "OK",
             "dxDataGrid-headerFilterCancel": "Annuler",
@@ -179,6 +181,10 @@
             "dxPager-infoText": "Page {0} sur {1} ({2} \xe9lements)",
             "dxPager-pagesCountText": "sur",
             "dxPager-pageSizesAllText": "Tous",
+            "dxPager-page": "Page {0}",
+            "dxPager-prevPage": "Previous Page",
+            "dxPager-nextPage": "Next Page",
+            "dxPager-ariaLabel": "Page Navigation",
             "dxPivotGrid-grandTotal": "Total g\xe9n\xe9ral",
             "dxPivotGrid-total": "Total {0}",
             "dxPivotGrid-fieldChooserTitle": "Liste des champs",

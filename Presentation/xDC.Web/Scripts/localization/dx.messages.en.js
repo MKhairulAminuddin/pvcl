@@ -1,7 +1,7 @@
 /*!
 * DevExtreme (dx.messages.en.js)
-* Version: 22.1.6
-* Build date: Tue Oct 18 2022
+* Version: 22.2.3
+* Build date: Mon Dec 05 2022
 *
 * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
 * Read about DevExtreme licensing here: https://js.devexpress.com/Licensing/
@@ -180,6 +180,7 @@
             "dxTreeList-editingAddRowToNode": "Add",
             "dxPager-infoText": "Page {0} of {1} ({2} items)",
             "dxPager-pagesCountText": "of",
+            "dxPager-pageSize": "Items per page: {0}",
             "dxPager-pageSizesAllText": "All",
             "dxPager-page": "Page {0}",
             "dxPager-prevPage": "Previous Page",

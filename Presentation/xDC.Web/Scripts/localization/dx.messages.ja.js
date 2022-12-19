@@ -1,7 +1,7 @@
 /*!
 * DevExtreme (dx.messages.ja.js)
-* Version: 22.1.6
-* Build date: Tue Oct 18 2022
+* Version: 22.2.3
+* Build date: Mon Dec 05 2022
 *
 * Copyright (c) 2012 - 2022 Developer Express Inc. ALL RIGHTS RESERVED
 * Read about DevExtreme licensing here: https://js.devexpress.com/Licensing/
@@ -151,8 +151,8 @@
             "dxDataGrid-exporting": "\u30a8\u30af\u30b9\u30dd\u30fc\u30c8...",
             "dxDataGrid-excelFormat": "Excel \u30d5\u30a1\u30a4\u30eb",
             "dxDataGrid-selectedRows": "\u9078\u629e\u3055\u308c\u305f\u884c",
-            "dxDataGrid-exportAll": "\u3059\u3079\u3066\u306e\u30c7\u30fc\u30bf\u306e\u30a8\u30af\u30b9\u30dd\u30fc\u30c8\u5148\uff1a{0}",
             "dxDataGrid-exportSelectedRows": "\u884c\u306e\u30a8\u30af\u30b9\u30dd\u30fc\u30c8\u5148\uff1a{0}",
+            "dxDataGrid-exportAll": "\u3059\u3079\u3066\u306e\u30c7\u30fc\u30bf\u306e\u30a8\u30af\u30b9\u30dd\u30fc\u30c8\u5148\uff1a{0}",
             "dxDataGrid-headerFilterLabel": "\u30d5\u30a3\u30eb\u30bf\u30aa\u30d7\u30b7\u30e7\u30f3",
             "dxDataGrid-headerFilterIndicatorLabel": "\u5217'{0}'\u306e\u30d5\u30a3\u30eb\u30bf\u30fc\u30aa\u30d7\u30b7\u30e7\u30f3\u3092\u8868\u793a\u3059\u308b",
             "dxDataGrid-headerFilterEmptyValue": "(\u7a7a\u767d)",
@@ -180,6 +180,7 @@
             "dxTreeList-editingAddRowToNode": "\u8ffd\u52a0",
             "dxPager-infoText": "\u30da\u30fc\u30b8 {0} / {1} ({2} \u30a2\u30a4\u30c6\u30e0)",
             "dxPager-pagesCountText": "/",
+            "dxPager-pageSize": "\u30da\u30fc\u30b8\u3042\u305f\u308a\u306e\u30a2\u30a4\u30c6\u30e0\u6570: {0}",
             "dxPager-pageSizesAllText": "\u3059\u3079\u3066",
             "dxPager-page": "\u30da\u30fc\u30b8 {0}",
             "dxPager-prevPage": "\u524d\u306e\u30da\u30fc\u30b8",
@@ -232,11 +233,11 @@
             "dxScheduler-switcherWeek": "\u9031\u30d3\u30e5\u30fc",
             "dxScheduler-switcherWorkWeek": "\u7a3c\u50cd\u9031\u30d3\u30e5\u30fc",
             "dxScheduler-switcherMonth": "\u6708\u30d3\u30e5\u30fc",
+            "dxScheduler-switcherAgenda": "\u4e88\u5b9a\u4e00\u89a7",
             "dxScheduler-switcherTimelineDay": "\u30bf\u30a4\u30e0\u30e9\u30a4\u30f3 \u65e5\u30d3\u30e5\u30fc",
             "dxScheduler-switcherTimelineWeek": "\u30bf\u30a4\u30e0\u30e9\u30a4\u30f3 \u9031\u30d3\u30e5\u30fc",
             "dxScheduler-switcherTimelineWorkWeek": "\u30bf\u30a4\u30e0\u30e9\u30a4\u30f3 \u7a3c\u50cd\u9031\u30d3\u30e5\u30fc",
             "dxScheduler-switcherTimelineMonth": "\u30bf\u30a4\u30e0\u30e9\u30a4\u30f3 \u6708\u30d3\u30e5\u30fc",
-            "dxScheduler-switcherAgenda": "\u4e88\u5b9a\u4e00\u89a7",
             "dxScheduler-recurrenceRepeatOnDate": "\u6b21\u306e\u65e5\u4ed8\u306b\u7d42\u4e86",
             "dxScheduler-recurrenceRepeatCount": "\u51fa\u73fe",
             "dxScheduler-allDay": "\u7d42\u65e5\u30a4\u30d9\u30f3\u30c8",
