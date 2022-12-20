@@ -203,8 +203,9 @@
 </section>
 
 
-@Html.Partial("TradeSettlement/_TsApprovalModal")
-@Html.Partial("TradeSettlement/_TsRejectionModal")
+@Html.Partial("_ApprovalModal")
+@Html.Partial("_RejectionModal")
+
 @Html.Partial("_WorkflowInfoModal")
 @Html.Partial("_ApprovalReassignModal")
 @Html.Partial("_AuditTrailModal")
@@ -218,6 +219,5 @@
 
 @section scripts
 {
-    <script src="~/Scripts/app/issd/tradeSettlement.js"></script>
-    <script src="~/Scripts/app/issd/tradeSettlement/partD/view.js"></script>
+    @Scripts.Render("~/bundles/issd/ts/partD/view");
 }

@@ -1,4 +1,4 @@
-﻿ @model xDC.Domain.Web.ISSD.TradeSettlementForm.TsForm
+﻿@model xDC.Domain.Web.ISSD.TradeSettlementForm.TsForm
 @{
     ViewBag.NewTitle = "Trade Settlement";
     ViewBag.Subtitle = "Part C - REPO";
@@ -117,6 +117,5 @@
 
 @section scripts
 {
-    <script src="~/Scripts/app/issd/tradeSettlement.js"></script>
-    <script src="~/Scripts/app/issd/tradeSettlement/partC/new.js"></script>
+    @Scripts.Render("~/bundles/issd/ts/partC/new");
 }

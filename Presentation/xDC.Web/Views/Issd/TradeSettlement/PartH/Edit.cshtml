@@ -91,60 +91,60 @@
                                 </div>
                                 <div class="col-md-4"></div>
                                 <div class="col-md-4">
-                                        <div class="dx-field">
-                                            <div class="dx-field-label">Status</div>
-                                            <div class="dx-field-value">
-                                                @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Status</div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().TextBoxFor(m => m.FormStatus)
                                                     .StylingMode(EditorStylingMode.Filled)
                                                     .ReadOnly(true))
-                                            </div>
                                         </div>
-                                        <div class="dx-field">
-                                            <div class="dx-field-label">Preparer</div>
-                                            <div class="dx-field-value">
-                                                @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Preparer</div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().TextBoxFor(m => m.PreparedBy)
                                                     .StylingMode(EditorStylingMode.Filled)
                                                     .ReadOnly(true))
-                                            </div>
                                         </div>
-                                        <div class="dx-field">
-                                            <div class="dx-field-label">Prepared Date</div>
-                                            <div class="dx-field-value">
-                                                @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Prepared Date</div>
+                                        <div class="dx-field-value">
+                                            @(Html.DevExtreme().DateBoxFor(m => m.PreparedDate)
                                                     .StylingMode(EditorStylingMode.Filled)
                                                     .DisplayFormat("dd/MM/yyyy hh:mm a")
                                                     .ReadOnly(true))
-                                            </div>
                                         </div>
-                                        @if (Model.IsApproved)
-                                        {
-                                            <div class="dx-field">
-                                                <div class="dx-field-label">Approved By</div>
-                                                <div class="dx-field-value">
-                                                    @(Html.DevExtreme().TextBoxFor(m => m.ApprovedBy)
+                                    </div>
+                                    @if (Model.IsApproved)
+                                    {
+                                        <div class="dx-field">
+                                            <div class="dx-field-label">Approved By</div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().TextBoxFor(m => m.ApprovedBy)
                                                         .StylingMode(EditorStylingMode.Filled)
                                                         .ReadOnly(true))
-                                                </div>
                                             </div>
-                                            <div class="dx-field">
-                                                <div class="dx-field-label">Approved Date</div>
-                                                <div class="dx-field-value">
-                                                    @(Html.DevExtreme().DateBoxFor(m => m.ApprovedDate)
+                                        </div>
+                                        <div class="dx-field">
+                                            <div class="dx-field-label">Approved Date</div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().DateBoxFor(m => m.ApprovedDate)
                                                         .StylingMode(EditorStylingMode.Filled)
                                                         .DisplayFormat("dd/MM/yyyy hh:mm a")
                                                         .ReadOnly(true))
-                                                </div>
                                             </div>
-                                            <div class="dx-field">
-                                                <div class="dx-field-label">Approval/Rejection Notes</div>
-                                                <div class="dx-field-value">
-                                                    @(Html.DevExtreme().TextAreaFor(m => m.ApprovalNote)
+                                        </div>
+                                        <div class="dx-field">
+                                            <div class="dx-field-label">Approval/Rejection Notes</div>
+                                            <div class="dx-field-value">
+                                                @(Html.DevExtreme().TextAreaFor(m => m.ApprovalNote)
                                                         .StylingMode(EditorStylingMode.Filled)
                                                         .ReadOnly(true))
-                                                </div>
                                             </div>
-                                        }
-                                    
+                                        </div>
+                                    }
+
                                     @if (Model.IsAdminEdited)
                                     {
                                         <div style="background: #FFEBEE; padding: 5px 0">
@@ -207,6 +207,5 @@
 
 @section scripts
 {
-    <script src="~/Scripts/app/issd/tradeSettlement.js"></script>
-    <script src="~/Scripts/app/issd/tradeSettlement/partH/edit.js"></script>
+    @Scripts.Render("~/bundles/issd/ts/partH/edit");
 }

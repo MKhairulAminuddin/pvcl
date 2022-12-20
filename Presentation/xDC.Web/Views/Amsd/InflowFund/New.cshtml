@@ -11,13 +11,12 @@
             <div class="col-md-12">
                 <div class="box box-solid">
                     <div class="box-header">
-                            @(Html.DevExtreme().Button()
+                        @(Html.DevExtreme().Button()
                             .Type(ButtonType.Back)
                             .StylingMode(ButtonStylingMode.Contained)
                             .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
                             )
-
-                            @(Html.DevExtreme().Button()
+                        @(Html.DevExtreme().Button()
                                 .ID("submitForApprovalBtn")
                                 .Text("Submit for Approval")
                                 .Icon("todo")
@@ -25,7 +24,7 @@
                                 .Type(ButtonType.Default)
                                 .StylingMode(ButtonStylingMode.Contained)
                                 )
-                            @(Html.DevExtreme().Button()
+                        @(Html.DevExtreme().Button()
                                 .ID("saveAsDraftBtn")
                                 .Text("Save")
                                 .Icon("save")
@@ -82,5 +81,5 @@
 
 @section scripts
 {
-    <script src="~/Scripts/app/amsd/inflowFund/new.js"></script>
+    @Scripts.Render("~/bundles/amsd/inflowFund/new")
 }

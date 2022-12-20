@@ -67,7 +67,6 @@
                             .Type(ButtonType.Default)
                             .StylingMode(ButtonStylingMode.Outlined)
                             )
-
                         @(Html.DevExtreme().Button()
                             .ID("showTodayBtn")
                             .Icon("fa fa-calendar-o")
@@ -104,5 +103,5 @@
 
 @section scripts
 {
-    <script src="~/Scripts/app/fid/fcaTagging/index.js"></script>
+    @Scripts.Render("~/bundles/fid/fcaTagging/index");
 }

@@ -67,7 +67,7 @@
 
 
                     </div>
-                    
+
                     <div class="right-container pull-right">
                         @(Html.DevExtreme().Button()
                             .ID("viewWorkflowBtn")
@@ -76,7 +76,6 @@
                             .Type(ButtonType.Normal)
                             .StylingMode(ButtonStylingMode.Contained)
                             )
-
                         @(Html.DevExtreme().Button()
                             .ID("viewAuditTrailBtn")
                             .Text("Audit Trail")
@@ -88,7 +87,7 @@
                         <div id="printBtn"></div>
                     </div>
 
-                    
+
 
                 </div>
                 <div class="box-body">
@@ -276,5 +275,5 @@
 
 @section scripts
 {
-    <script src="~/Scripts/app/amsd/inflowFund/view.js"></script>
+    @Scripts.Render("~/bundles/amsd/inflowFund/view")
 }

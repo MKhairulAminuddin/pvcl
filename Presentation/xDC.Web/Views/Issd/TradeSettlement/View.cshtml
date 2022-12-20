@@ -9,14 +9,14 @@
         <div class="col-md-12">
             <div class="box box-solid">
                 <div class="box-header">
-                        <div>
-                            @(Html.DevExtreme().Button()
+                    <div>
+                        @(Html.DevExtreme().Button()
                                 .Type(ButtonType.Back)
                                 .StylingMode(ButtonStylingMode.Contained)
                                 .OnClick(@<text> function(){ window.location = "@Url.Action("TradeSettlement", "Issd")"; } </text>)
                                 )
-                        </div>
-                        <div id="printBtn"></div>
+                    </div>
+                    <div id="printBtn"></div>
                 </div>
                 <div class="box-body">
                     <div class="dx-fieldset">
@@ -92,7 +92,7 @@
                                         </div>
                                     </div>
                                 }
-                                
+
                             </div>
                             <div class="col-md-8"></div>
                         </div>
@@ -122,7 +122,7 @@
                                         @(Html.DevExtreme().NumberBoxFor(m => m.ClosingBalance)
                                             .Format(x =>
                                             {
-                                                x.Precision(2); 
+                                                x.Precision(2);
                                                 x.Type(Format.FixedPoint);
                                             })
                                             .ID("closingBalance")
@@ -150,6 +150,5 @@
 
 @section scripts
 {
-    <script src="~/Scripts/app/issd/tradeSettlement.js"></script>
-    <script src="~/Scripts/app/issd/tradeSettlement/view.js"></script>
+    @Scripts.Render("~/bundles/issd/ts/view");
 }

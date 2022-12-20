@@ -6,43 +6,43 @@
 
 <section class="content-header content-toolbar">
     @*<div class="row">
-        <div class="col-md-3">
-            <div class="kf1-info-box">
-                <span class="kf1-info-box-icon kf1-bg-dark"><i class="fa fa-list"></i></span>
-                <div class="info-box-content">
-                    <span class="info-box-text">Today's Submission</span>
-                    <span class="info-box-number">@Model.CountTodaySubmission</span>
+            <div class="col-md-3">
+                <div class="kf1-info-box">
+                    <span class="kf1-info-box-icon kf1-bg-dark"><i class="fa fa-list"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Today's Submission</span>
+                        <span class="info-box-number">@Model.CountTodaySubmission</span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="kf1-info-box">
-                <span class="kf1-info-box-icon kf1-bg-orange"><i class="fa fa-clock-o"></i></span>
-                <div class="info-box-content">
-                    <span class="info-box-text">Pending Approval</span>
-                    <span class="info-box-number">@Model.CountTodayPendingApproval</span>
+            <div class="col-md-3">
+                <div class="kf1-info-box">
+                    <span class="kf1-info-box-icon kf1-bg-orange"><i class="fa fa-clock-o"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Pending Approval</span>
+                        <span class="info-box-number">@Model.CountTodayPendingApproval</span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="kf1-info-box">
-                <span class="kf1-info-box-icon kf1-bg-green"><i class="fa fa-thumbs-o-up"></i></span>
-                <div class="info-box-content">
-                    <span class="info-box-text">Approved</span>
-                    <span class="info-box-number">@Model.CountTodayApproved</span>
+            <div class="col-md-3">
+                <div class="kf1-info-box">
+                    <span class="kf1-info-box-icon kf1-bg-green"><i class="fa fa-thumbs-o-up"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Approved</span>
+                        <span class="info-box-number">@Model.CountTodayApproved</span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="kf1-info-box">
-                <span class="kf1-info-box-icon kf1-bg-red"><i class="fa fa-thumbs-o-down"></i></span>
-                <div class="info-box-content">
-                    <span class="info-box-text">Rejected</span>
-                    <span class="info-box-number">@Model.CountTodayRejected</span>
+            <div class="col-md-3">
+                <div class="kf1-info-box">
+                    <span class="kf1-info-box-icon kf1-bg-red"><i class="fa fa-thumbs-o-down"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Rejected</span>
+                        <span class="info-box-number">@Model.CountTodayRejected</span>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>*@
+        </div>*@
     <div class="row">
         <div class="col-md-6">
             <div class="left-container">
@@ -164,5 +164,5 @@
 
 @section scripts
 {
-    <script src="~/Scripts/app/issd/tradeSettlement/index.js"></script>
+    @Scripts.Render("~/bundles/issd/ts/index");
 }
