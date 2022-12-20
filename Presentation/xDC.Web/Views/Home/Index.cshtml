@@ -11,30 +11,28 @@
             <div class="col-md-4">
                 <div class="box">
                     <div class="box-header box-header-v1">
-                        <h3 class="box-title">Today's Inflow Funds</h3>
+                        <h3 class="box-title">Inflow Funds - @DateTime.Now.ToString("dd MMM yyyy")</h3>
                     </div>
                     <div class="box-body">
                         @if (Model.IfAmountSummary != null)
                         {
-                            <div class="table-responsive">
-                                <table class="table table-hover table-condensed table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th width="160px">Bank</th>
-                                            <th>Total Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var item in Model.IfAmountSummary)
-                                        {
-                                            <tr>
-                                                <td>@item.Bank</td>
-                                                <td>@item.TotalAmount.ToString("N2")</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+
+                            <ul class="products-list product-list-in-box">
+                                @foreach (var item in Model.IfAmountSummary)
+                                {
+                                    <li class="item">
+                                        <div class="kx-widget-if-1-icon">
+                                            <i class="fa fa-usd"></i>
+                                        </div>
+                                        <div class="kx-widget-if-1-bank">
+                                            <a href="javascript:void(0)" class="kx-widget-if-1-bank-title">
+                                                @item.Bank
+                                                <span class="label label-warning pull-right">RM @item.TotalAmount.ToString("N2")</span>
+                                            </a>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
                         }
                         else
                         {
@@ -131,10 +129,12 @@
                 <div class="box">
                     <div class="box-header box-header-v1">
                         <h3 class="box-title">Today's Trade Settlement Forms Submission</h3>
-                        @if (Model.TsFormSummary != null)
-                        {
-                            <span data-toggle="tooltip" title="" class="badge bg-blue-soft" data-original-title="3 New Messages">@Model.TsFormSummary.Count</span>
-                        }
+                        <div class="box-tools pull-right">
+                            @if (Model.TsFormSummary != null)
+                            {
+                                <span data-toggle="tooltip" title="" class="badge bg-blue-soft" data-original-title="3 New Messages">@Model.TsFormSummary.Count</span>
+                            }
+                        </div>
                     </div>
                     <div class="box-body">
                         @if (Model.TsFormSummary != null)
@@ -178,10 +178,12 @@
                 <div class="box">
                     <div class="box-header box-header-v1">
                         <h3 class="box-title">Today's Treasury Forms Submission</h3>
-                        @if (Model.TreasuryFormSummary != null)
-                        {
-                            <span data-toggle="tooltip" title="" class="badge bg-blue-soft" data-original-title="3 New Messages">@Model.TreasuryFormSummary.Count</span>
-                        }
+                        <div class="box-tools pull-right">
+                            @if (Model.TreasuryFormSummary != null)
+                            {
+                                <span data-toggle="tooltip" title="" class="badge bg-blue-soft" data-original-title="3 New Messages">@Model.TreasuryFormSummary.Count</span>
+                            }
+                        </div>
                     </div>
                     <div class="box-body">
                         @if (Model.TreasuryFormSummary != null)

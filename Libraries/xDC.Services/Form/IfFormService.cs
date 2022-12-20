@@ -398,8 +398,14 @@ namespace xDC.Services.Form
                     }
                     else
                     {
-                        existingForm.PreparedBy = currentUser != existingForm.PreparedBy ? currentUser : existingForm.PreparedBy;
-                        existingForm.PreparedDate = currentUser != existingForm.PreparedBy ? DateTime.Now : existingForm.PreparedDate;
+                        existingForm.PreparedBy = currentUser;
+                        existingForm.PreparedDate = DateTime.Now;
+                    }
+
+                    if (input.Approver != null)
+                    {
+                        existingForm.ApprovedBy = input.Approver;
+                        existingForm.FormStatus = FormStatus.PendingApproval;
                     }
 
                     var saveFormChanges = db.SaveChanges();
@@ -488,6 +494,7 @@ namespace xDC.Services.Form
                     {
                         Create(existingForm.Id, existingForm.FormType, existingForm.FormDate, existingForm.PreparedBy, existingForm.ApprovedBy, input.ApprovalNotes);
                     }
+
                     return formId;
                  }
             }
