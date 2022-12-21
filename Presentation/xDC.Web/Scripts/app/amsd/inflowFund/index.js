@@ -225,6 +225,7 @@
                     }
                 }
             },
+            remoteOperations: false,
             showRowLines: true,
             rowAlternationEnabled: false,
             showBorders: true,

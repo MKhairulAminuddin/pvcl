@@ -8,7 +8,7 @@
     @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.AMSD_Dashboard))
     {
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <div class="box">
                     <div class="box-header box-header-v1">
                         <h3 class="box-title">Inflow Funds - @DateTime.Now.ToString("dd MMM yyyy")</h3>
@@ -27,7 +27,7 @@
                                         <div class="kx-widget-if-1-bank">
                                             <a href="javascript:void(0)" class="kx-widget-if-1-bank-title">
                                                 @item.Bank
-                                                <span class="label label-warning pull-right">RM @item.TotalAmount.ToString("N2")</span>
+                                                <span class="pull-right" style="color: #34495E">RM @item.TotalAmount.ToString("N2")</span>
                                             </a>
                                         </div>
                                     </li>
@@ -41,10 +41,10 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <div class="box">
                     <div class="box-header box-header-v1">
-                        <h3 class="box-title">Today's Inflow Fund Forms Submission</h3>
+                        <h3 class="box-title">Inflow Fund Form Submissions - @DateTime.Now.ToString("dd MMM yyyy")</h3>
                         <div class="box-tools pull-right">
                             @if (Model.IfFormSummary != null)
                             {
@@ -88,35 +88,29 @@
     @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.ISSD_Dashboard))
     {
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <div class="box">
                     <div class="box-header box-header-v1">
-                        <h3 class="box-title">Today's Opening Balance</h3>
+                        <h3 class="box-title">Opening Balance - @DateTime.Now.ToString("dd MMM yyyy")</h3>
                     </div>
                     <div class="box-body">
                         @if (Model.TsOpeningBalanceSummary != null)
                         {
-                            <div class="table-responsive">
-                                <table class="table table-hover table-condensed table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th width="160px">Account</th>
-                                            <th width="120px">Currecy</th>
-                                            <th>Total Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var item in Model.TsOpeningBalanceSummary)
-                                        {
-                                            <tr>
-                                                <td>@item.Account</td>
-                                                <td>@item.Currency</td>
-                                                <td>@item.Amount.ToString("N2")</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                            <ul class="products-list product-list-in-box">
+                                @foreach (var item in Model.TsOpeningBalanceSummary)
+                                {
+                                    <li class="item">
+                                        @formatCurrencyIcon(item.Currency)
+
+                                        <div class="kx-widget-if-1-bank">
+                                            <a href="javascript:void(0)" class="kx-widget-if-1-bank-title">
+                                                @item.Account
+                                                <span class="pull-right" style="color: #34495E">RM @item.Amount.ToString("N2")</span>
+                                            </a>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
                         }
                         else
                         {
@@ -125,7 +119,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <div class="box">
                     <div class="box-header box-header-v1">
                         <h3 class="box-title">Today's Trade Settlement Forms Submission</h3>
@@ -174,10 +168,10 @@
     @if (xDC_Web.Extension.MenuSecurity.IsAuthenticatedAndAllowed(xDC.Utils.Common.PermissionKey.FID_Dashboard))
     {
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <div class="box">
                     <div class="box-header box-header-v1">
-                        <h3 class="box-title">Today's Treasury Forms Submission</h3>
+                        <h3 class="box-title">Treasury Forms Submission - @DateTime.Now.ToString("dd MMM yyyy")</h3>
                         <div class="box-tools pull-right">
                             @if (Model.TreasuryFormSummary != null)
                             {
@@ -242,6 +236,34 @@
         else
         {
             return new HtmlString(string.Format("<span><b>{0}</b></span>", value));
+        }
+    }
+
+    public static HtmlString formatCurrencyIcon(string value)
+    {
+        if (value == "MYR")
+        {
+            return new HtmlString(string.Format("<div class='kx-widget-if-icon' style='color:#E74C3C;background:#FFCDD2;'><span>{0}</span></div>", value));
+        }
+        else if (value == "USD")
+        {
+            return new HtmlString(string.Format("<div class='kx-widget-if-icon' style='color:#FFC107;background:#FFF59D;'><span>{0}</span></div>", value));
+        }
+        else if (value == "EUR")
+        {
+            return new HtmlString(string.Format("<div class='kx-widget-if-icon' style='color:#8E24AA;background:#B39DDB;'><span>{0}</span></div>", value));
+        }
+        else if (value == "GBP")
+        {
+            return new HtmlString(string.Format("<div class='kx-widget-if-icon' style='color:#388E3C;background:#A5D6A7;'><span>{0}</span></div>", value));
+        }
+        else if (value == "AUD")
+        {
+            return new HtmlString(string.Format("<div class='kx-widget-if-icon' style='color:#F4511E;background:#FFCCBC;'><span>{0}</span></div>", value));
+        }
+        else
+        {
+            return new HtmlString(string.Format("<div class='kx-widget-if-icon' style='color:#616161;background:#E0E0E0;'><span>{0}</span></div>", value));
         }
     }
 }

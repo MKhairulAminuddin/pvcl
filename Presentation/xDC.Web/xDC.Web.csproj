@@ -567,6 +567,7 @@
     <Content Include="Views\Audit\UserManagement.cshtml" />
     <Content Include="Views\Audit\RoleManagement.cshtml" />
     <Content Include="Views\Shared\_RetractSubmissionModal.cshtml" />
+    <Content Include="Views\Base\NoDbConnection.cshtml" />
     <None Include="Web.UAT.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -732,6 +733,7 @@
     <Compile Include="Extension\AdAuthentication.cs" />
     <Compile Include="Extension\CustomAttribute\KflowApiAuthorize.cs" />
     <Compile Include="Extension\CustomAttribute\KflowAuthorize.cs" />
+    <Compile Include="Extension\CustomAttribute\SqlExceptionFilter.cs" />
     <Compile Include="Extension\HandleAntiForgeryError.cs" />
     <Compile Include="Extension\MailMerge\HtmlContentGenerator.cs" />
     <Compile Include="Extension\MenuSecurity.cs" />
