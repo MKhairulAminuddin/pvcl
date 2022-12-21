@@ -495,7 +495,6 @@ namespace xDC.Utils
             public const string AMSD_InflowFundForm_Edit = "Inflow Fund Form - Edit";
             public const string AMSD_InflowFundForm_Admin_Edit = "Inflow Fund Form - Admin Edit";
             public const string AMSD_InflowFundForm_Download = "Inflow Fund Form - Download";
-            public const string AMSD_InflowFundForm_PowerUser = "Inflow Fund Form - Power User";
 
             public const string Report = "Report";
             public const string Report_DCO_MYR = "Report - Deal Cut Off MYR";
@@ -686,6 +685,7 @@ namespace xDC.Utils
 
         public static class FormActionType
         {
+            public const string CreateAsDraft = "CREATE AS DRAFT";
             public const string Create = "CREATE";
             public const string Modify = "MODIFY";
             public const string Delete = "DELETE";

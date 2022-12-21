@@ -19,6 +19,7 @@
                         @(Html.DevExtreme().Button()
                             .Type(ButtonType.Back)
                             .StylingMode(ButtonStylingMode.Contained)
+                            .Hint("Back to form listing")
                             .OnClick(@<text> function(){ window.location = "@Url.Action("Index", "Amsd")"; } </text>)
                             )
 
@@ -28,7 +29,7 @@
                                 .ID("editDraftForm")
                                 .Text("Edit")
                                 .Icon("fa fa-pencil-square-o")
-                                .Type(ButtonType.Normal)
+                                .Type(ButtonType.Default)
                                 .StylingMode(ButtonStylingMode.Contained)
                                 )
                         }

@@ -71,7 +71,7 @@ namespace xDC_Web.Controllers.Api
             return Request.CreateResponse(HttpStatusCode.Created, createdFormId);
         }
 
-        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit)]
+        [KflowApiAuthorize(PermissionKey.AMSD_InflowFundForm_Edit, PermissionKey.AMSD_InflowFundForm_Admin_Edit)]
         [HttpPost]
         [Route("InflowFund/Edit/{formId}")]
         public HttpResponseMessage InflowFund_EditForm(int formId, [FromBody] IfFormPage input)

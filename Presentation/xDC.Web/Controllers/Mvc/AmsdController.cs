@@ -51,7 +51,7 @@ namespace xDC_Web.Controllers.Mvc
             return View("InflowFund/New", model);
         }
 
-        [KflowAuthorize(Common.PermissionKey.AMSD_InflowFundForm_Edit)]
+        [KflowAuthorize(Common.PermissionKey.AMSD_InflowFundForm_Edit, Common.PermissionKey.AMSD_InflowFundForm_Admin_Edit)]
         [Route("InflowFund/Edit/{id}")]
         public ActionResult InflowFund_Edit(string id)
         {

@@ -131,6 +131,11 @@ namespace xDC.Services.Form
             _auditService.FA_Add(formId, formType, formDate, FormActionType.RequestApproval, preparer, $"Request Approval for {formType} form");
         }
 
+        public void CreateAsDraft(int formId, string formType, DateTime? formDate, string preparer)
+        {
+            _auditService.FA_Add(formId, formType, formDate, FormActionType.CreateAsDraft, preparer, $"Created an {formType} form as a Draft.");
+        }
+
         public void Delete(int formId, string formType, DateTime? formDate, string currentUser)
         {
             _auditService.FA_Add(formId, formType, formDate, FormActionType.Delete, currentUser, $"Deleted {formType} form");

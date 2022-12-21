@@ -136,7 +136,7 @@ namespace xDC.Services.Form
                             
                             EnableDraftButton = form.FormStatus == FormStatus.Draft,
                             EnableEditDraftBtn = form.FormStatus == FormStatus.Draft && form.PreparedBy == currentUser,
-                            EnableSaveAdminChanges = _roleService.IsUserHaveAccess(currentUser, PermissionKey.AMSD_InflowFundForm_PowerUser) && form.FormStatus == FormStatus.Approved,
+                            EnableSaveAdminChanges = _roleService.IsUserHaveAccess(currentUser, PermissionKey.AMSD_InflowFundForm_Admin_Edit) && form.FormStatus == FormStatus.Approved,
 
                             EnableApproveRejectBtn = form.ApprovedBy == currentUser && form.FormStatus == FormStatus.PendingApproval
                         };
@@ -192,7 +192,8 @@ namespace xDC.Services.Form
                             ApprovedBy = item.ApprovedBy,
                             ApprovedDate = item.ApprovedDate,
 
-                            EnableEdit = this.EnableEdit(item.FormStatus, currentUser, PermissionKey.AMSD_InflowFundForm_Edit),
+                            EnableEdit = this.EnableEdit(item.FormStatus, currentUser, PermissionKey.AMSD_InflowFundForm_Edit) ||
+                                            this.EnableEdit(item.FormStatus, currentUser, PermissionKey.AMSD_InflowFundForm_Admin_Edit),
                             EnableDelete = this.EnableDelete(item.FormStatus, item.ApprovedBy, currentUser, PermissionKey.AMSD_InflowFundForm_Edit),
                             EnablePrint = this.EnablePrint(currentUser, item.FormStatus, PermissionKey.AMSD_InflowFundForm_Download),
                             EnableRetractSubmission = this.EnableFormWithdrawal(currentUser, item.PreparedBy, item.FormStatus, PermissionKey.AMSD_InflowFundForm_Edit),
@@ -368,6 +369,11 @@ namespace xDC.Services.Form
                     if (ifForm.FormStatus == FormStatus.PendingApproval)
                     {
                         Create(ifForm.Id, ifForm.FormType, ifForm.FormDate, ifForm.PreparedBy, ifForm.ApprovedBy, input.ApprovalNotes);
+                    }
+
+                    if (ifForm.FormStatus == FormStatus.Draft)
+                    {
+                        CreateAsDraft(ifForm.Id, ifForm.FormType, ifForm.FormDate, currentUser);   
                     }
 
                     return ifForm.Id;

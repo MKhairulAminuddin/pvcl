@@ -32,6 +32,12 @@
                         .Type(ButtonType.Default)
                         .StylingMode(ButtonStylingMode.Contained)
                         )
+                    @(Html.DevExtreme().Button()
+                        .Text("Cancel")
+                        .Type(ButtonType.Normal)
+                        .StylingMode(ButtonStylingMode.Contained)
+                        .OnClick(@<text> function(){ $('#selectApproverModal').modal('hide'); } </text>)
+                        )
                 </div>
             </div>
         </div>

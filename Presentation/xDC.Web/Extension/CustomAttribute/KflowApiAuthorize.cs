@@ -13,10 +13,13 @@ namespace xDC_Web.Extension.CustomAttribute
 {
     public class KflowApiAuthorize : AuthorizeAttribute
     {
-        private readonly string _permissionName;
-        public KflowApiAuthorize(string PermissionName)
+        private List<string> _permissionNames = new();
+        public KflowApiAuthorize(params string[] PermissionName)
         {
-            _permissionName = PermissionName;
+            foreach (var item in PermissionName)
+            {
+                _permissionNames.Add(item);
+            }
         }
 
         protected override bool IsAuthorized(HttpActionContext actionContext)
@@ -28,9 +31,20 @@ namespace xDC_Web.Extension.CustomAttribute
             else
             {
                 IRoleManagementService _roleService = Startup.Container.GetInstance<IRoleManagementService>();
-                bool isAuthorized = _roleService.IsUserHaveAccess(actionContext.RequestContext.Principal.Identity.Name, _permissionName);
+                
+                var autorizationList = new List<bool>();
 
-                return isAuthorized;
+                foreach (var permissionName in _permissionNames)
+                {
+                    bool isAuthorized = _roleService.IsUserHaveAccess(actionContext.RequestContext.Principal.Identity.Name, permissionName);
+
+                    autorizationList.Add(isAuthorized);
+                }
+
+                var allowed = autorizationList.Any(x => x == true);
+
+
+                return allowed;
             }
             
         }

@@ -11,11 +11,14 @@ namespace xDC_Web.Extension.CustomAttribute
 {
     public class KflowAuthorize : AuthorizeAttribute
     {
-        private readonly string _permissionName;
+        private List<string> _permissionNames = new();
 
-        public KflowAuthorize(string PermissionName)
+        public KflowAuthorize(params string[] PermissionName)
         {
-            _permissionName = PermissionName;
+            foreach (var item in PermissionName)
+            {
+                _permissionNames.Add(item);
+            }
         }
 
         public override void OnAuthorization(AuthorizationContext filterContext)
@@ -24,9 +27,18 @@ namespace xDC_Web.Extension.CustomAttribute
             if (this.AuthorizeCore(filterContext.HttpContext))
             {
                 IRoleManagementService _roleService = Startup.Container.GetInstance<IRoleManagementService>();
-                bool isAuthorized = _roleService.IsUserHaveAccess(filterContext.HttpContext.User.Identity.Name, _permissionName);
+                var autorizationList = new List<bool>();
 
-                if (!isAuthorized)
+                foreach (var permissionName in _permissionNames)
+                {
+                    bool isAuthorized = _roleService.IsUserHaveAccess(filterContext.HttpContext.User.Identity.Name, permissionName);
+
+                    autorizationList.Add(isAuthorized);
+                }
+
+                var allowed = autorizationList.Any(x => x == true);
+
+                if (!allowed)
                 {
                     filterContext.Result = new RedirectResult("~/Base/NoPermission");
                 }
