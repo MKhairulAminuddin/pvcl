@@ -388,29 +388,51 @@ namespace xDC.Services.Form
                 using (var db = new kashflowDBEntities())
                 {
                     var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == req.Id);
+                    if (form == null) return false;
 
+                    // if power user editted
                     if (req.IsSaveAdminEdit)
                     {
                         form.AdminEditted = true;
                         form.AdminEdittedBy = currentUser;
                         form.AdminEdittedDate = DateTime.Now;
+                        _auditService.FA_AdminEdit(form.Id, form.FormType, form.SettlementDate, currentUser);
                     }
-
-                    if (req.IsSaveAsDraft)
+                    else
                     {
-                        form.PreparedBy = currentUser;
-                        form.PreparedDate = DateTime.Now;
+                        // resubmission - approved to pending approval
+                        if (form.FormStatus == FormStatus.Approved && !string.IsNullOrEmpty(req.Approver))
+                        {
+                            FormResubmission(form.Id, form.FormType, form.SettlementDate, form.PreparedBy, req.Approver, currentUser);
+                            form.PreparedBy = currentUser;
+                            form.PreparedDate = DateTime.Now;
+                            form.ApprovedBy = req.Approver;
+                            form.ApprovedDate = null;
+                            form.FormStatus = FormStatus.PendingApproval;
+                        }
+
+                        // submit draft for approval
+                        if (form.FormStatus == FormStatus.Draft && !string.IsNullOrEmpty(req.Approver))
+                        {
+                            form.PreparedBy = currentUser;
+                            form.PreparedDate = DateTime.Now;
+                            form.ApprovedBy = req.Approver;
+                            form.ApprovedDate = null;
+                            form.FormStatus = FormStatus.PendingApproval;
+                        }
+
+                        // from draft save to draft again
+                        if (form.FormStatus == FormStatus.Draft && string.IsNullOrEmpty(req.Approver))
+                        {
+                            form.PreparedBy = currentUser;
+                            form.PreparedDate = DateTime.Now;
+                        }
                     }
 
-                    if (req.Approver != null && form.FormStatus == FormStatus.Draft)
-                    {
-                        _auditService.FA_AssignApprover(form.Id, form.FormType, form.SettlementDate, currentUser,
-                            form.ApprovedBy, req.Approver);
+                    var saveFormChanges = db.SaveChanges();
+                    if (saveFormChanges < 1) return false;
 
-                        form.ApprovedBy = req.Approver;
-                        form.ApprovedDate = null; // empty the date as this is new submission
-                        form.FormStatus = FormStatus.PendingApproval;
-                    }
+
 
                     var formTradeItems = db.ISSD_TradeSettlement.Where(x => x.FormId == form.Id).ToList();
                     var cc_itemBeforeList = formTradeItems.ToList();
@@ -1377,18 +1399,15 @@ namespace xDC.Services.Form
                         }
                     }
 
-                    var formChangesSaved = db.SaveChanges();
+                    var saveFormItemsChanges = db.SaveChanges();
+                    if (saveFormItemsChanges < 1) return false;
 
-                    if (formChangesSaved > 0)
+                    if (form.FormStatus == FormStatus.PendingApproval && !string.IsNullOrEmpty(req.Approver) && !req.IsSaveAdminEdit)
                     {
-                        if (form.FormStatus == FormStatus.PendingApproval)
-                        {
-                            Create(form.Id, form.FormType, form.SettlementDate, form.PreparedBy, form.ApprovedBy, req.ApprovalNotes);
-                        }
-                        return true;
+                        Create(form.Id, form.FormType, form.SettlementDate, form.PreparedBy, form.ApprovedBy, req.ApprovalNotes);
                     }
 
-                    return false;
+                    return true;
                 }
             }
             catch (Exception ex)
@@ -1579,6 +1598,7 @@ namespace xDC.Services.Form
                         FormStatus = form.FormStatus,
                         SettlementDate = form.SettlementDate,
                         Currency = form.Currency,
+                        FormType = form.FormType,
 
                         PreparedBy = form.PreparedBy,
                         PreparedDate = form.PreparedDate,

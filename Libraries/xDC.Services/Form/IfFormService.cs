@@ -389,23 +389,43 @@ namespace xDC.Services.Form
                     var existingForm = db.AMSD_IF.FirstOrDefault(x => x.Id == formId);
                     if (existingForm == null) return 0;
 
+                    // if power user editted
                     if (input.IsSaveAdminEdit)
                     {
-                        existingForm.AdminEditted = true; ;
+                        existingForm.AdminEditted = true;
                         existingForm.AdminEdittedBy = currentUser;
                         existingForm.AdminEdittedDate = DateTime.Now;
                         _auditService.FA_AdminEdit(existingForm.Id, existingForm.FormType, existingForm.FormDate, currentUser);
                     }
                     else
                     {
-                        existingForm.PreparedBy = currentUser;
-                        existingForm.PreparedDate = DateTime.Now;
-                    }
+                        // resubmission - approved to pending approval
+                        if (existingForm.FormStatus == FormStatus.Approved && !string.IsNullOrEmpty(input.Approver))
+                        {
+                            FormResubmission(existingForm.Id, existingForm.FormType, existingForm.FormDate, existingForm.PreparedBy, input.Approver, currentUser);
+                            existingForm.PreparedBy = currentUser;
+                            existingForm.PreparedDate = DateTime.Now;
+                            existingForm.ApprovedBy = input.Approver;
+                            existingForm.ApprovedDate = null;
+                            existingForm.FormStatus = FormStatus.PendingApproval;
+                        }
 
-                    if (input.Approver != null)
-                    {
-                        existingForm.ApprovedBy = input.Approver;
-                        existingForm.FormStatus = FormStatus.PendingApproval;
+                        // submit draft for approval
+                        if (existingForm.FormStatus == FormStatus.Draft && !string.IsNullOrEmpty(input.Approver))
+                        {
+                            existingForm.PreparedBy = currentUser;
+                            existingForm.PreparedDate = DateTime.Now;
+                            existingForm.ApprovedBy = input.Approver;
+                            existingForm.ApprovedDate = null;
+                            existingForm.FormStatus = FormStatus.PendingApproval;
+                        }
+
+                        // from draft save to draft again
+                        if (existingForm.FormStatus == FormStatus.Draft && string.IsNullOrEmpty(input.Approver))
+                        {
+                            existingForm.PreparedBy = currentUser;
+                            existingForm.PreparedDate = DateTime.Now;
+                        }
                     }
 
                     var saveFormChanges = db.SaveChanges();
@@ -490,7 +510,7 @@ namespace xDC.Services.Form
                     var saveFormItemsChanges = db.SaveChanges();
                     if (saveFormItemsChanges < 1) return 0;
 
-                    if ((existingForm.FormStatus == FormStatus.PendingApproval) && input.Approver != null)
+                    if (existingForm.FormStatus == FormStatus.PendingApproval && !string.IsNullOrEmpty(input.Approver) && !input.IsSaveAdminEdit)
                     {
                         Create(existingForm.Id, existingForm.FormType, existingForm.FormDate, existingForm.PreparedBy, existingForm.ApprovedBy, input.ApprovalNotes);
                     }

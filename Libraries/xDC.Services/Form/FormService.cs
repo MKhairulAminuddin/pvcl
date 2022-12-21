@@ -242,5 +242,11 @@ namespace xDC.Services.Form
             _notifyService.NotifyApprover(formId, formType, currentUser, newApprover, "Reassign approver");
             _wfService.Reassign(formId, formType, currentUser, newApprover);
         }
+
+        public void FormResubmission(int formId, string formType, DateTime? formDate, string preparer, string approver, string currentUser)
+        {
+            _wfService.Resubmit(formId, formType, preparer, approver);
+            _auditService.FA_Add(formId, formType, formDate, FormActionType.Resubmit, currentUser, $"Resubmit {formType} form which has been approved before.");
+        }
     }
 }

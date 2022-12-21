@@ -18,10 +18,10 @@
 
         var referenceUrl = {
             submitEditRequest: window.location.origin + "/api/issd/ts/Edit",
-            submitEditResponse: window.location.origin + "/issd/TradeSettlement/PartA/View/",
+            submitEditResponse: window.location.origin + "/issd/TradeSettlement/View/",
 
             submitApprovalRequest: window.location.origin + "/api/issd/ts/Approval",
-            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartA/View/"
+            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/View/"
         };
 
         //#endregion

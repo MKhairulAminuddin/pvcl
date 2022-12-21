@@ -25,6 +25,7 @@ namespace xDC.Services.Workflow
 
         private readonly string Wf_PendingApproval = "Pending Approval";
         private readonly string Wf_ReassignApprover = "Reassign Approver";
+        private readonly string Wf_Resubmit = "Resubmit Form";
         private readonly string Wf_WithdrawSubmission = "Withdraw Submission";
         private readonly string Wf_Approved = "Approved";
         private readonly string Wf_Rejected = "Rejected";
@@ -109,6 +110,32 @@ namespace xDC.Services.Workflow
                         RequestTo = newApprover,
                         RecordedDate = DateTime.Now,
                         WorkflowStatus = Wf_ReassignApprover
+                    };
+
+                    db.Form_Workflow.Add(wf);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
+        public void Resubmit(int formId, string formType, string preparer, string newApprover)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var wf = new Form_Workflow()
+                    {
+                        FormId = formId,
+                        FormType = formType,
+                        RequestBy = preparer,
+                        RequestTo = newApprover,
+                        RecordedDate = DateTime.Now,
+                        WorkflowStatus = Wf_Resubmit
                     };
 
                     db.Form_Workflow.Add(wf);
