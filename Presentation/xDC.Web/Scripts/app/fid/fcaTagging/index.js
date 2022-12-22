@@ -289,9 +289,6 @@
                 showPageSizeSelector: true,
                 showInfo: true,
                 showNavigationButtons: true
-            },
-            filterPanel: {
-                visible: true
             }
         }).dxDataGrid("instance");
 

@@ -52,7 +52,7 @@
                 {
                     dataField: "currency",
                     caption: "Currency",
-                    groupIndex: 0
+                    //groupIndex: 0
                 },
                 {
                     dataField: "preparedBy",
@@ -258,9 +258,6 @@
                 showPageSizeSelector: true,
                 showInfo: true,
                 showNavigationButtons: true
-            },
-            filterPanel: {
-                visible: true
             }
         }).dxDataGrid("instance");
 

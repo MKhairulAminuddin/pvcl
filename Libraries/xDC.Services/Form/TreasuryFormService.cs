@@ -423,12 +423,22 @@ namespace xDC.Services.Form
                     var createFormItemsStatus = db.SaveChanges();
                     if (createFormItemsStatus < 1) return 0;
 
-
-                    _auditService.FA_Add(form.Id, form.FormType, form.ValueDate, FormActionType.Create, currentUser, $"Created an {form.FormType} form");
+                    if (createFormItemsStatus < 1)
+                    {
+                        // remove back since not success create form items
+                        db.FID_Treasury.Remove(form);
+                        db.SaveChanges();
+                        return 0;
+                    }
 
                     if (form.FormStatus == FormStatus.PendingApproval)
                     {
                         Create(form.Id, form.FormType, form.ValueDate, form.PreparedBy, form.ApprovedBy, input.ApprovalNotes);
+                    }
+
+                    if (form.FormStatus == FormStatus.Draft)
+                    {
+                        CreateAsDraft(form.Id, form.FormType, form.ValueDate, currentUser);
                     }
 
                     return form.Id;
@@ -448,18 +458,46 @@ namespace xDC.Services.Form
             {
                 using (var db = new kashflowDBEntities())
                 {
+                    #region Update Form Header
+
                     var form = db.FID_Treasury.FirstOrDefault(x => x.Id == formId);
                     if (form == null) return 0;
 
-                    form.PreparedBy = currentUser;
-                    form.PreparedDate = DateTime.Now;
-
-                    if (input.Approver != null)
+                    // resubmission - approved to pending approval
+                    if (form.FormStatus == FormStatus.Approved && !string.IsNullOrEmpty(input.Approver))
                     {
+                        FormResubmission(form.Id, form.FormType, form.ValueDate, form.PreparedBy, input.Approver, currentUser);
+                        form.PreparedBy = currentUser;
+                        form.PreparedDate = DateTime.Now;
                         form.ApprovedBy = input.Approver;
-                        form.ApprovedDate = null; // empty the date as this is new submission
+                        form.ApprovedDate = null;
                         form.FormStatus = FormStatus.PendingApproval;
                     }
+
+                    // submit draft for approval
+                    if (form.FormStatus == FormStatus.Draft && !string.IsNullOrEmpty(input.Approver))
+                    {
+                        form.PreparedBy = currentUser;
+                        form.PreparedDate = DateTime.Now;
+                        form.ApprovedBy = input.Approver;
+                        form.ApprovedDate = null;
+                        form.FormStatus = FormStatus.PendingApproval;
+                    }
+
+                    // from draft save to draft again
+                    if (form.FormStatus == FormStatus.Draft && string.IsNullOrEmpty(input.Approver))
+                    {
+                        form.PreparedBy = currentUser;
+                        form.PreparedDate = DateTime.Now;
+                    }
+
+                    var saveFormChanges = db.SaveChanges();
+                    if (saveFormChanges < 1) return 0;
+
+                    #endregion
+
+
+                    #region Update Form Items
 
                     if (input.InflowDeposit.Any())
                     {
@@ -1155,9 +1193,11 @@ namespace xDC.Services.Form
 
                     var saveChangesStatus = db.SaveChanges();
                     if (saveChangesStatus < 1) return 0;
-                    
 
-                    if ((form.FormStatus == FormStatus.PendingApproval) && input.Approver != null)
+                    #endregion
+
+
+                    if ((form.FormStatus == FormStatus.PendingApproval) && !string.IsNullOrEmpty(input.Approver))
                     {
                         Create(form.Id, form.FormType, form.ValueDate, form.PreparedBy, form.ApprovedBy, input.ApprovalNotes);
                     }
