@@ -13,6 +13,6 @@ namespace xDC.Services.FileGenerator
     {
         IWorkbook GenerateWorkbook(DateTime? selectedDate, bool viewApproved);
         string GenerateFile(DateTime selectedDate, bool isExportAsExcel, bool viewApproved);
-        ExportedFile GenFile(string generatedFileName);
+        ExportedFile GenFile(string generatedFileName, bool isGenCnEmailTemplate = false);
     }
 }

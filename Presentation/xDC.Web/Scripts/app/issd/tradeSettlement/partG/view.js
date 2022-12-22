@@ -24,8 +24,8 @@
             submitApprovalRequest: window.location.origin + "/api/issd/ts/Approval",
             submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartG/View/",
 
-            generateCnEmail: window.location.origin + "/issd/TradeSettlement/GenerateCnEmail",
-            retrieveCnEmail: window.location.origin + "/issd/TradeSettlement/RetrieveCnEmail?referenceId="
+            generateCnEmail: window.location.origin + "/api/issd/ts/GenerateCnEmail",
+            retrieveCnEmail: window.location.origin + "/issd/TradeSettlement/RetrieveCnEmail/"
         };
 
         //#endregion

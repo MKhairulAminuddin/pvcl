@@ -52,6 +52,6 @@ namespace xDC.Services.Form
         bool ReassignApproverForm(int formId, string newApprover, string currentUser);
 
         string GenExportFormId(int formId, string currentUser, bool isExportToExcel);
-        ExportedFile GetGeneratedForm(string generatedFileId);
+        ExportedFile GetGeneratedForm(string generatedFileId, bool isGenCnEmailTemplate = false);
     }
 }

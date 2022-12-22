@@ -850,7 +850,7 @@ namespace xDC.Services.FileGenerator
                 }
                 else
                 {
-                    return null;
+                    return new List<MailboxAddress>();
                 }
             }
         }

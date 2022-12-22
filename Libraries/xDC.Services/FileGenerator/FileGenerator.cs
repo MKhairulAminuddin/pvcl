@@ -11,7 +11,7 @@ namespace xDC.Services.FileGenerator
 {
     public class FileGenerator
     {
-        public ExportedFile GenFile(string generatedFileName)
+        public ExportedFile GenFile(string generatedFileName, bool isGenCnEmailTemplate = false)
         {
             try
             {
@@ -19,7 +19,17 @@ namespace xDC.Services.FileGenerator
                 var tempFolder = Config.TempFolderPath;
                 generatedFileName = generatedFileName.Replace("\"", "");
 
-                var filePath = Directory.GetFiles(tempFolder, generatedFileName + "*").SingleOrDefault();
+                var filePath = string.Empty;
+                if (isGenCnEmailTemplate)
+                {
+                    tempFolder += generatedFileName;
+                    filePath = Directory.GetFiles(tempFolder, "*").SingleOrDefault();
+                }
+                else
+                {
+                    filePath = Directory.GetFiles(tempFolder, generatedFileName + "*").SingleOrDefault();
+                }
+
                 if (!string.IsNullOrEmpty(filePath))
                 {
                     using (var fileStream = new FileStream(filePath, FileMode.Open))

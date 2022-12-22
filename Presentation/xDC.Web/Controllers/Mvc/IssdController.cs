@@ -109,7 +109,7 @@ namespace xDC_Web.Controllers.Mvc
             }
         }
 
-        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
+        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit, Common.PermissionKey.ISSD_TradeSettlementForm_Admin_Edit)]
         [Route("TradeSettlement/Edit/{formId}")]
         public ActionResult TsForm_EditView(int formId)
         {
@@ -224,36 +224,18 @@ namespace xDC_Web.Controllers.Mvc
 
         #region Generate CN Email
 
-        [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
-        [HttpPost]
-        [Route("TradeSettlement/GenerateCnEmail")]
-        public ActionResult GenerateCnEmail(int formId)
-        {
-            var userEmail = string.Empty;
-
-            var findUser = _userService.GetUser(User.Identity.Name);
-            if (findUser != null)
-            {
-                userEmail = findUser.Email;
-            }
-
-            var referenceId = _tsFormService.GenCnMailId(formId, userEmail);
-
-            return Content(referenceId);
-        }
 
         [KflowAuthorize(Common.PermissionKey.ISSD_TradeSettlementForm_Edit)]
-        [Route("TradeSettlement/RetrieveCnEmail")]
+        [Route("TradeSettlement/RetrieveCnEmail/{referenceId}")]
         public ActionResult RetrieveCnEmail(string referenceId)
         {
             // stream out the contents - don't need to dispose because File() does it for you
-            var file = _tsFormService.GetGeneratedForm(referenceId);
+            var file = _tsFormService.GetGeneratedForm(referenceId, true);
 
             if (file != null)
             {
-                var responseHeaderValue = $"attachment; filename=Query Email - {DateTime.Now:ddMMyyyyhhmm}.eml";
-                Response.AddHeader("Content-Disposition", responseHeaderValue);
-                return File(file.FileBytes, "application/vnd.ms-outlook");
+                Response.AddHeader("Content-Disposition", $"attachment; filename=Query Email - {DateTime.Now:ddMMyyyyhhmm}.eml");
+                return File(file.FileBytes, Common.ConvertIndexToContentType(13));
             }
             else
             {

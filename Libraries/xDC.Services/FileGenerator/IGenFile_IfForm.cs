@@ -11,6 +11,6 @@ namespace xDC.Services.FileGenerator
     public interface IGenFile_IfForm
     {
         string GenId_IfForm(int formId, string currentUser, bool isExportAsExcel);
-        ExportedFile GenFile(string generatedFileName);
+        ExportedFile GenFile(string generatedFileName, bool isGenCnEmailTemplate = false);
     }
 }

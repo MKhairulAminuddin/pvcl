@@ -48,6 +48,6 @@ namespace xDC.Services.Form
         string GenCnMailId(int formId, string senderEmail);
         string GenExportFormId(int formId, string currentUser, bool isExportToExcel);
         string GenExportConsolidatedFormId(DateTime settlementDate, string currency, string currentUser, bool isExportToExcel);
-        ExportedFile GetGeneratedForm(string generatedFileId);
+        ExportedFile GetGeneratedForm(string generatedFileId, bool isGenCnEmailTemplate = false);
     }
 }

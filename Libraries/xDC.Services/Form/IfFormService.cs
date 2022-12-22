@@ -630,9 +630,9 @@ namespace xDC.Services.Form
             return _genFile.GenId_IfForm(formId, currentUser, isExportToExcel);
         }
 
-        public ExportedFile GetGeneratedForm(string generatedFileId)
+        public ExportedFile GetGeneratedForm(string generatedFileId, bool isGenCnEmailTemplate = false)
         {
-            return _genFile.GenFile(generatedFileId);
+            return _genFile.GenFile(generatedFileId, isGenCnEmailTemplate);
         }
 
         #endregion

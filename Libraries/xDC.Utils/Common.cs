@@ -182,6 +182,8 @@ namespace xDC.Utils
                     return "application/pdf";
                 case 12:
                     return "text/html";
+                case 13:
+                    return "application/vnd.ms-outlook";
             }
             return String.Empty;
         }

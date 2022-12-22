@@ -182,7 +182,8 @@ namespace xDC.Services.Form
                             ApprovedBy = item.ApprovedBy,
                             ApprovedDate = item.ApprovedDate,
 
-                            EnableEdit = EnableEdit(item.FormStatus, currentUser, PermissionKey.ISSD_TradeSettlementForm_Edit),
+                            EnableEdit = EnableEdit(item.FormStatus, currentUser, PermissionKey.ISSD_TradeSettlementForm_Edit) ||
+                                            this.EnableEdit(item.FormStatus, currentUser, PermissionKey.ISSD_TradeSettlementForm_Admin_Edit),
                             EnableDelete = EnableDelete(item.FormStatus, item.ApprovedBy, currentUser, PermissionKey.ISSD_TradeSettlementForm_Edit),
                             EnablePrint = EnablePrint(currentUser, item.FormStatus, PermissionKey.ISSD_TradeSettlementForm_Download),
                             EnableRetractSubmission = EnableFormWithdrawal(currentUser, item.PreparedBy, item.FormStatus, PermissionKey.ISSD_TradeSettlementForm_Edit),
@@ -279,6 +280,8 @@ namespace xDC.Services.Form
             {
                 using (var db = new kashflowDBEntities())
                 {
+                    #region Create Form Header
+
                     var form = new ISSD_FormHeader()
                     {
                         FormType = FormTypeMapping(req.FormType),
@@ -292,86 +295,99 @@ namespace xDC.Services.Form
 
                     db.ISSD_FormHeader.Add(form);
                     var formCreated = db.SaveChanges();
+                    if (formCreated < 1) return false;
 
-                    if (formCreated > 0)
+                    #endregion
+
+                    #region Create Form Items
+
+                    var newTrades = new List<ISSD_TradeSettlement>();
+
+                    if (req.Equity.Any())
                     {
-                        var newTrades = new List<ISSD_TradeSettlement>();
-
-                        if (req.Equity.Any())
-                        {
-                            NewTsObjMapping(req.Equity, form.Id, TsItemCategory.Equity, req.Currency, currentUser, ref newTrades);
-                        }
-
-                        if (req.Bond.Any())
-                        {
-                            NewTsObjMapping(req.Bond, form.Id, TsItemCategory.Bond, req.Currency, currentUser, ref newTrades);
-                        }
-
-                        if (req.Cp.Any())
-                        {
-                            NewTsObjMapping(req.Cp, form.Id, TsItemCategory.Cp, req.Currency, currentUser, ref newTrades);
-                        }
-
-                        if (req.NotesPaper.Any())
-                        {
-                            NewTsObjMapping(req.NotesPaper, form.Id, TsItemCategory.NotesPapers, req.Currency, currentUser, ref newTrades);
-                        }
-
-                        if (req.Repo.Any())
-                        {
-                            NewTsObjMapping(req.Repo, form.Id, TsItemCategory.Repo, req.Currency, currentUser, ref newTrades);
-                        }
-
-                        if (req.Coupon.Any())
-                        {
-                            NewTsObjMapping(req.Coupon, form.Id, TsItemCategory.Coupon, req.Currency, currentUser, ref newTrades);
-                        }
-
-                        if (req.Fees.Any())
-                        {
-                            NewTsObjMapping(req.Fees, form.Id, TsItemCategory.Fees, req.Currency, currentUser, ref newTrades);
-                        }
-
-                        if (req.Mtm.Any())
-                        {
-                            NewTsObjMapping(req.Mtm, form.Id, TsItemCategory.Mtm, req.Currency, currentUser, ref newTrades);
-                        }
-
-                        if (req.FxSettlement.Any())
-                        {
-                            NewTsObjMapping(req.FxSettlement, form.Id, TsItemCategory.Fx, req.Currency, currentUser, ref newTrades);
-                        }
-
-                        if (req.ContributionCredited.Any())
-                        {
-                            NewTsObjMapping(req.ContributionCredited, form.Id, TsItemCategory.Cn, req.Currency, currentUser, ref newTrades);
-                        }
-
-                        if (req.Altid.Any())
-                        {
-                            NewTsObjMapping(req.Altid, form.Id, TsItemCategory.Altid, req.Currency, currentUser, ref newTrades);
-                        }
-
-                        if (req.Others.Any())
-                        {
-                            NewTsObjMapping(req.Others, form.Id, TsItemCategory.Others, req.Currency, currentUser, ref newTrades);
-                        }
-
-                        db.ISSD_TradeSettlement.AddRange(newTrades);
-                        var createdFormItems = db.SaveChanges();
-
-                        if (createdFormItems > 0)
-                        {
-                            createdFormId = form.Id;
-                            if (form.FormStatus == FormStatus.PendingApproval)
-                            {
-                                Create(form.Id, form.FormType, form.SettlementDate, form.PreparedBy, form.ApprovedBy, req.ApprovalNotes);
-                            }
-                            return true;
-                        }
+                        NewTsObjMapping(req.Equity, form.Id, TsItemCategory.Equity, req.Currency, currentUser, ref newTrades);
                     }
 
-                    return false;
+                    if (req.Bond.Any())
+                    {
+                        NewTsObjMapping(req.Bond, form.Id, TsItemCategory.Bond, req.Currency, currentUser, ref newTrades);
+                    }
+
+                    if (req.Cp.Any())
+                    {
+                        NewTsObjMapping(req.Cp, form.Id, TsItemCategory.Cp, req.Currency, currentUser, ref newTrades);
+                    }
+
+                    if (req.NotesPaper.Any())
+                    {
+                        NewTsObjMapping(req.NotesPaper, form.Id, TsItemCategory.NotesPapers, req.Currency, currentUser, ref newTrades);
+                    }
+
+                    if (req.Repo.Any())
+                    {
+                        NewTsObjMapping(req.Repo, form.Id, TsItemCategory.Repo, req.Currency, currentUser, ref newTrades);
+                    }
+
+                    if (req.Coupon.Any())
+                    {
+                        NewTsObjMapping(req.Coupon, form.Id, TsItemCategory.Coupon, req.Currency, currentUser, ref newTrades);
+                    }
+
+                    if (req.Fees.Any())
+                    {
+                        NewTsObjMapping(req.Fees, form.Id, TsItemCategory.Fees, req.Currency, currentUser, ref newTrades);
+                    }
+
+                    if (req.Mtm.Any())
+                    {
+                        NewTsObjMapping(req.Mtm, form.Id, TsItemCategory.Mtm, req.Currency, currentUser, ref newTrades);
+                    }
+
+                    if (req.FxSettlement.Any())
+                    {
+                        NewTsObjMapping(req.FxSettlement, form.Id, TsItemCategory.Fx, req.Currency, currentUser, ref newTrades);
+                    }
+
+                    if (req.ContributionCredited.Any())
+                    {
+                        NewTsObjMapping(req.ContributionCredited, form.Id, TsItemCategory.Cn, req.Currency, currentUser, ref newTrades);
+                    }
+
+                    if (req.Altid.Any())
+                    {
+                        NewTsObjMapping(req.Altid, form.Id, TsItemCategory.Altid, req.Currency, currentUser, ref newTrades);
+                    }
+
+                    if (req.Others.Any())
+                    {
+                        NewTsObjMapping(req.Others, form.Id, TsItemCategory.Others, req.Currency, currentUser, ref newTrades);
+                    }
+
+                    db.ISSD_TradeSettlement.AddRange(newTrades);
+                    var createdFormItems = db.SaveChanges();
+
+                    if (createdFormItems < 1)
+                    {
+                        // remove back entire form since not success create form items
+                        db.ISSD_FormHeader.Remove(form);
+                        db.SaveChanges();
+                        return false;
+                    }
+
+                    #endregion
+
+                    if (form.FormStatus == FormStatus.PendingApproval)
+                    {
+                        Create(form.Id, form.FormType, form.SettlementDate, form.PreparedBy, form.ApprovedBy, req.ApprovalNotes);
+                    }
+
+                    if (form.FormStatus == FormStatus.Draft)
+                    {
+                        CreateAsDraft(form.Id, form.FormType, form.SettlementDate, currentUser);
+                    }
+
+                    createdFormId = form.Id;
+                    return true;
                 }
             }
             catch (Exception ex)
@@ -387,6 +403,9 @@ namespace xDC.Services.Form
             {
                 using (var db = new kashflowDBEntities())
                 {
+
+                    #region Update Form header
+
                     var form = db.ISSD_FormHeader.FirstOrDefault(x => x.Id == req.Id);
                     if (form == null) return false;
 
@@ -433,6 +452,9 @@ namespace xDC.Services.Form
                     if (saveFormChanges < 1) return false;
 
 
+                    #endregion
+
+                    #region Update Form Details
 
                     var formTradeItems = db.ISSD_TradeSettlement.Where(x => x.FormId == form.Id).ToList();
                     var cc_itemBeforeList = formTradeItems.ToList();
@@ -484,6 +506,14 @@ namespace xDC.Services.Form
                                         foundItem.Maturity.ToString(), item.Maturity.ToString(), "Equity - Maturity (+)");
 
                                     foundItem.Maturity = item.Maturity;
+                                }
+
+                                if (foundItem.Purchase != item.Purchase)
+                                {
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                        foundItem.Purchase.ToString(), item.Purchase.ToString(), "Equity - Purchase (-)");
+
+                                    foundItem.Purchase = item.Purchase;
                                 }
 
                                 if (foundItem.AmountPlus != item.AmountPlus)
@@ -573,6 +603,14 @@ namespace xDC.Services.Form
                                         foundItem.Maturity.ToString(), item.Maturity.ToString(), "BOND - Maturity (+)");
 
                                     foundItem.Maturity = item.Maturity;
+                                }
+
+                                if (foundItem.Purchase != item.Purchase)
+                                {
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                        foundItem.Purchase.ToString(), item.Purchase.ToString(), "BOND - Purchase (-)");
+
+                                    foundItem.Purchase = item.Purchase;
                                 }
 
                                 if (foundItem.AmountPlus != item.AmountPlus)
@@ -672,6 +710,14 @@ namespace xDC.Services.Form
                                     foundItem.Maturity = item.Maturity;
                                 }
 
+                                if (foundItem.Purchase != item.Purchase)
+                                {
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                        foundItem.Purchase.ToString(), item.Purchase.ToString(), "CP - Purchase (-)");
+
+                                    foundItem.Purchase = item.Purchase;
+                                }
+
                                 if (foundItem.AmountPlus != item.AmountPlus)
                                 {
                                     _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
@@ -759,6 +805,14 @@ namespace xDC.Services.Form
                                         foundItem.Maturity.ToString(), item.Maturity.ToString(), "Notes & Paper - Maturity (+)");
 
                                     foundItem.Maturity = item.Maturity;
+                                }
+
+                                if (foundItem.Purchase != item.Purchase)
+                                {
+                                    _auditService.FA_EditRow(form.Id, form.FormType, form.SettlementDate, currentUser,
+                                        foundItem.Purchase.ToString(), item.Purchase.ToString(), "Notes & Paper - Purchase (-)");
+
+                                    foundItem.Purchase = item.Purchase;
                                 }
 
                                 if (foundItem.AmountPlus != item.AmountPlus)
@@ -1402,6 +1456,8 @@ namespace xDC.Services.Form
                     var saveFormItemsChanges = db.SaveChanges();
                     if (saveFormItemsChanges < 1) return false;
 
+                    #endregion
+
                     if (form.FormStatus == FormStatus.PendingApproval && !string.IsNullOrEmpty(req.Approver) && !req.IsSaveAdminEdit)
                     {
                         Create(form.Id, form.FormType, form.SettlementDate, form.PreparedBy, form.ApprovedBy, req.ApprovalNotes);
@@ -1616,7 +1672,7 @@ namespace xDC.Services.Form
                         EnableSubmitForApproval = EnableApprovalSubmission(form.FormStatus, form.ApprovedBy, currentUser, PermissionKey.ISSD_TradeSettlementForm_Edit),
 
                         EnableDraftButton = EnableSaveAsDraft(currentUser, form.FormStatus, form.PreparedBy, form.ApprovedBy),
-                        EnableSaveAdminChanges = false, // TODO: Admin Changes
+                        EnableSaveAdminChanges = _roleService.IsUserHaveAccess(currentUser, PermissionKey.ISSD_TradeSettlementForm_Admin_Edit) && form.FormStatus == FormStatus.Approved,
                     };
 
                     return outputForm;
@@ -1926,9 +1982,9 @@ namespace xDC.Services.Form
             return _genFile.Gen_CnEmailFile(formId, senderEmail);
         }
 
-        public ExportedFile GetGeneratedForm(string generatedFileId)
+        public ExportedFile GetGeneratedForm(string generatedFileId, bool isGenCnEmailTemplate = false)
         {
-            return _genFile.GenFile(generatedFileId);
+            return _genFile.GenFile(generatedFileId, isGenCnEmailTemplate);
         }
 
         #region Private Functions

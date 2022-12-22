@@ -14,6 +14,7 @@ using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
 using xDC.Services.FileGenerator;
 using xDC.Services.Form;
+using xDC.Services.Membership;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.ViewModels;
@@ -30,6 +31,7 @@ namespace xDC_Web.Controllers.Api
 
         private readonly ITsFormService _tsFormService = Startup.Container.GetInstance<ITsFormService>();
         private readonly IFcaTaggingFormService _fcaTaggingFormService = Startup.Container.GetInstance<IFcaTaggingFormService>();
+        private readonly IUserManagementService _userService = Startup.Container.GetInstance<IUserManagementService>();
 
 
         #endregion
@@ -174,6 +176,24 @@ namespace xDC_Web.Controllers.Api
             return Request.CreateResponse(HttpStatusCode.Created, generatedDoc);
         }
 
+        [Route("ts/GenerateCnEmail")]
+        [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_Edit)]
+        [HttpPost]
+        public HttpResponseMessage GenerateCnEmail([FromBody] TsGenerateFileRequest req)
+        {
+            var userEmail = string.Empty;
+
+            var findUser = _userService.GetUser(User.Identity.Name);
+            if (findUser != null)
+            {
+                userEmail = findUser.Email;
+            }
+
+            var referenceId = _tsFormService.GenCnMailId(req.formId, userEmail);
+
+            return Request.CreateResponse(HttpStatusCode.Created, referenceId);
+        }
+
         #endregion
 
         #region Trade Settlement Form
@@ -202,7 +222,7 @@ namespace xDC_Web.Controllers.Api
             }
         }
 
-        [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_Edit)]
+        [KflowApiAuthorize(PermissionKey.ISSD_TradeSettlementForm_Edit, PermissionKey.ISSD_TradeSettlementForm_Admin_Edit)]
         [HttpPost]
         [Route("ts/Edit")]
         public HttpResponseMessage TS_EditForm([FromBody] TsCreateNewFormRequest req)

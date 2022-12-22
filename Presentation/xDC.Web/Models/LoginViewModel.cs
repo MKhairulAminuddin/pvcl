@@ -4,9 +4,14 @@ namespace xDC_Web.Models
 {
     public class LoginViewModel
     {
+        private string _Username;
+
         [Required]
         [Display(Name = "Username")]
-        public string Username { get; set; }
+        public string Username { 
+            get { return _Username; }
+            set { _Username = value.Trim(); }
+        }
 
         [Required]
         [DataType(DataType.Password)]
