@@ -22,7 +22,7 @@
             adminEdit: window.location.origin + "/issd/TradeSettlement/PartG/Edit/",
 
             submitApprovalRequest: window.location.origin + "/api/issd/ts/Approval",
-            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartG/View/",
+            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/View/",
 
             generateCnEmail: window.location.origin + "/api/issd/ts/GenerateCnEmail",
             retrieveCnEmail: window.location.origin + "/issd/TradeSettlement/RetrieveCnEmail/"

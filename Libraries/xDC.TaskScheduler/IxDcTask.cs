@@ -15,6 +15,5 @@ namespace xDC.TaskScheduler
         void TForm_FetchAssetType();
 
         void SyncKwapAdData();
-        void SyncUserProfileWithAdData();
     }
 }

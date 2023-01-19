@@ -207,9 +207,43 @@ namespace xDC.TaskScheduler
                 {
                     if (adUserList.Count > 0)
                     {
+                        // truncate existing AD accounts in database and refill with latest one
                         db.Database.ExecuteSqlCommand("TRUNCATE TABLE [AspNetActiveDirectoryUsers]");
                         db.AspNetActiveDirectoryUsers.AddRange(adUserList);
                         db.SaveChanges();
+
+                        // update user profile
+                        var applicationUsers = db.AspNetUsers.ToList();
+                        foreach (var appUser in applicationUsers)
+                        {
+                            var adInformation = db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == appUser.UserName);
+                            if (adInformation != null)
+                            {
+                                appUser.Email = adInformation.Email;
+                                appUser.Department = adInformation.Department;
+                                appUser.Title = adInformation.Title;
+                                appUser.FullName = adInformation.DisplayName;
+                                appUser.TelephoneNumber = adInformation.TelNo;
+                            }
+                        }
+                        db.SaveChanges();
+
+
+                        // update user profile
+                        var approverDetails = db.Config_Approver.ToList();
+                        foreach (var approver in approverDetails)
+                        {
+                            var adInformation = db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == approver.Username);
+                            if (adInformation != null)
+                            {
+                                approver.Email = adInformation.Email;
+                                approver.Department = adInformation.Department;
+                                approver.Title = adInformation.Title;
+                            }
+                        }
+                        db.SaveChanges();
+
+
                     }
                 }
             }
@@ -224,40 +258,6 @@ namespace xDC.TaskScheduler
 
         }
 
-        public void SyncUserProfileWithAdData()
-        {
-            try
-            {
-                Logger.LogInfo("Scheduler - SyncUserProfileWithAdData started");
-
-                using (var db = new kashflowDBEntities())
-                {
-                    var applicationUsers = db.AspNetUsers.ToList();
-
-                    foreach (var appUser in applicationUsers)
-                    {
-                        var adInformation = db.AspNetActiveDirectoryUsers.FirstOrDefault(x => x.Username == appUser.UserName);
-                        if (adInformation != null)
-                        {
-                            appUser.Email = adInformation.Email;
-                            appUser.Department = adInformation.Department;
-                            appUser.Title = adInformation.Title;
-                            appUser.FullName = adInformation.DisplayName;
-                            appUser.TelephoneNumber = adInformation.TelNo;
-                        }
-                    }
-
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex.Message);
-            }
-            finally
-            {
-                Logger.LogInfo("Scheduler - SyncUserProfileWithAdData ended");
-            }
-        }
 
         #endregion
 

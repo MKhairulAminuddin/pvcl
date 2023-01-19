@@ -20,7 +20,7 @@
             adminEdit: window.location.origin + "/issd/TradeSettlement/PartF/Edit/",
 
             submitApprovalRequest: window.location.origin + "/api/issd/ts/Approval",
-            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/PartC/View/"
+            submitApprovalResponse: window.location.origin + "/issd/TradeSettlement/View/"
         };
 
         //#endregion

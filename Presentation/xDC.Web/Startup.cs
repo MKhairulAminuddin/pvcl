@@ -55,6 +55,7 @@ namespace xDC_Web
             container.Register<INotificationService, NotificationService>();
             container.Register<IEmailNotification, EmailNotification>();
             container.Register<IInAppNotification, InAppNotification>();
+            container.Register<IxDcTask, xDcTask>();
             Container = container;
             container.Verify();
 
@@ -92,7 +93,6 @@ namespace xDC_Web
         private void RegisterTaskScheduler()
         {
             RecurringJob.AddOrUpdate("Sync AD", () => new xDcTask().SyncKwapAdData(), Cron.Daily, TimeZoneInfo.Local);
-            RecurringJob.AddOrUpdate("Sync User Profile with AD", () => new xDcTask().SyncUserProfileWithAdData(), Cron.Weekly, TimeZoneInfo.Local);
 
             RecurringJob.AddOrUpdate("ISSD TS - Currency", () => new xDcTask().TsForm_FetchNewCurrency(), Cron.Daily, TimeZoneInfo.Local);
             RecurringJob.AddOrUpdate("FID Treasury - Asset Type", () => new xDcTask().TForm_FetchAssetType(), Cron.Daily, TimeZoneInfo.Local);

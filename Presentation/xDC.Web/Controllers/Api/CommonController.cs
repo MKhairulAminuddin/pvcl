@@ -1,23 +1,20 @@
-﻿using System;
+﻿using DevExtreme.AspNet.Data;
+using DevExtreme.AspNet.Mvc;
+using Hangfire;
+using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http;
-using DevExtreme.AspNet.Data;
-using DevExtreme.AspNet.Mvc;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
+using xDC.Domain.WebApi.Administration;
 using xDC.Infrastructure.Application;
 using xDC.Logging;
-using xDC.Services;
+using xDC.TaskScheduler;
 using xDC.Utils;
-using xDC_Web.Models;
-using System.Data.Entity;
 using xDC_Web.ViewModels.DealCutOff;
-using xDC.Services.Audit;
-using xDC.Services.Form;
 
 namespace xDC_Web.Controllers.Api
 {
@@ -26,6 +23,8 @@ namespace xDC_Web.Controllers.Api
     public class CommonController : ApiController
     {
         #region Fields
+
+        private readonly IxDcTask _xdcTask = Startup.Container.GetInstance<IxDcTask>();
 
 
         #endregion
@@ -66,6 +65,69 @@ namespace xDC_Web.Controllers.Api
 
                     return Request.CreateResponse(DataSourceLoader.Load(result, loadOptions));
                 }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("GetActiveDirectoryUser")]
+        public HttpResponseMessage GetActiveDirectoryUsers([FromBody] UserDetailReq req, DataSourceLoadOptions loadOptions)
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var result = db.AspNetActiveDirectoryUsers
+                        .Where(x => x.Title != null && x.Email == req.Email).FirstOrDefault();
+
+                    if (result != null)
+                    {
+                        var respObj = new UserDetailRes()
+                        {
+                            Username = result.Username,
+                            Email = result.Email,
+                            Department = result.Department,
+                            AdType = result.AdType,
+                            DisplayName = result.DisplayName,
+                            DistinguishedName = result.DistinguishedName,
+                            Office = result.Office,
+                            TelNo = result.TelNo,
+                            Title = result.Title,
+                            AdAccountChangedDate = result.AdAccountChanged.HasValue ? result.AdAccountChanged.Value.ToString("dd-MM-yyyy hh:mm tt") : null,
+                            LastBadPasswordAttemptDate = result.LastBadPasswordAttempt.HasValue ? result.LastBadPasswordAttempt.Value.ToString("dd-MM-yyyy hh:mm tt") : null,
+                            LastLogonDate = result.LastLogon.HasValue ? result.LastLogon.Value.ToString("dd-MM-yyyy hh:mm tt") : null,
+                            AdAccountCreatedDate = result.AdAccountCreated.HasValue ? result.AdAccountCreated.Value.ToString("dd-MM-yyyy hh:mm tt") : null,
+                            LastPasswordSetDate = result.LastPasswordSet.HasValue ? result.LastPasswordSet.Value.ToString("dd-MM-yyyy hh:mm tt") : null,
+                        };
+
+
+                        return Request.CreateResponse(respObj);
+                    }
+                    else
+                    {
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, "User not exist!");
+                    }
+
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("SyncActiveDirectory")]
+        public HttpResponseMessage SyncActiveDirectory()
+        {
+            try
+            {
+                BackgroundJob.Enqueue(() => _xdcTask.SyncKwapAdData());
+                return Request.CreateResponse(HttpStatusCode.OK);
             }
             catch (Exception ex)
             {

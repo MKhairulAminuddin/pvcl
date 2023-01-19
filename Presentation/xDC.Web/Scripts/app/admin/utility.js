@@ -6,7 +6,7 @@
             loadUrl: "../api/common/GetActiveDirectoryUsers"
         });
 
-        var $emailPicker = $("#emailPicker").dxSelectBox({
+        var $emailPicker1 = $("#emailPicker1").dxSelectBox({
             dataSource: aduserStores,
             displayExpr: "email",
             valueExpr: "email",
@@ -20,7 +20,7 @@
             onClick: function (e) {
 
                 var data = {
-                    emailRecipient: $emailPicker.option("value")
+                    emailRecipient: $emailPicker1.option("value")
                 };
 
                 $.ajax({
@@ -40,80 +40,54 @@
         }).dxButton("instance");
 
 
-        var $adGrid = $("#activeDirectoryGrid").dxDataGrid({
-            dataSource: DevExpress.data.AspNet.createStore({
-                key: "username",
-                loadUrl: "../api/common/GetActiveDirectoryUsers"
-            }),
-            columns: [
-                {
-                    dataField: "username",
-                    caption: "Username",
-                    sortOrder: "asc"
-                },
-                {
-                    dataField: "email",
-                    caption: "Email"
-                },
-                {
-                    dataField: "displayName",
-                    caption: "Display Name"
-                },
-                {
-                    dataField: "title",
-                    caption: "Title"
-                },
-                {
-                    dataField: "department",
-                    caption: "Department"
-                },
-                {
-                    dataField: "telNo",
-                    caption: "Tel. No"
-                },
-                {
-                    dataField: "office",
-                    caption: "Base Office"
-                },
-                {
-                    dataField: "distinguishedName",
-                    caption: "Distinguished Name",
-                    dataType: "string"
-                },
-                {
-                    dataField: "adAccountCreated",
-                    caption: "AD Account Created",
-                    dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm"
-                },
-                {
-                    dataField: "adAccountChanged",
-                    caption: "AD Account Changed",
-                    dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm",
-                    sortOrder: "desc"
-                },
-                {
-                    dataField: "lastBadPasswordAttempt",
-                    caption: "Last Bad Password Attempt",
-                    dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm"
-                },
-                {
-                    dataField: "lastLogon",
-                    caption: "Last Logon",
-                    dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm"
-                },
-                {
-                    dataField: "lastPasswordSet",
-                    caption: "Last Password Set",
-                    dataType: "datetime",
-                    format: "dd/MM/yyyy HH:mm"
-                }
-            ]
-        }).dxDataGrid("instance");
+        var $emailPicker2 = $("#emailPicker2").dxSelectBox({
+            dataSource: aduserStores,
+            displayExpr: "email",
+            valueExpr: "email",
+            searchEnabled: true,
+            onValueChanged(data) {
 
-        $adGrid.option(dxGridUtils.viewOnlyGridConfig);
+                $.ajax({
+                    dataType: 'json',
+                    url: "../api/common/GetActiveDirectoryUser",
+                    method: 'POST',
+                    data: {
+                        "email": data.value
+                    }
+                }).done(function (response) {
+                    $form.option('formData', response);
+
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    app.alertError(textStatus + ': ' + errorThrown);
+
+                });
+            }
+        }).dxSelectBox("instance");
+
+        var $form = $('#selectedUserDetails').dxForm({
+            readOnly: false,
+            showColonAfterLabel: true,
+            minColWidth: 300,
+            colCount: 2
+        }).dxForm("instance");
+
+        var $syncAdBtn = $("#SyncAdBtn").dxButton({
+            icon: "fa fa-refresh",
+            stylingMode: "contained",
+            text: "Sync AD",
+            type: "normal",
+            onClick: function (e) {
+                app.toast("Sync in progress... chillax and wait for it to complete in 5 minutes");
+
+                $.ajax({
+                    dataType: 'json',
+                    url: "../api/common/SyncActiveDirectory",
+                    method: 'GET',
+                });
+
+            }
+        }).dxButton("instance");
+
+
     });
 }(window.jQuery, window, document));

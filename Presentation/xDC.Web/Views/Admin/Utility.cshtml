@@ -25,7 +25,7 @@
 
 <section class="content container-fluid">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <div class="box box-solid">
                 <div class="box-header">
                     <div class="box-title">SMTP Server Test</div>
@@ -35,10 +35,10 @@
                 <div class="box-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <p>Enable Notification</p>
+                            <p>Receipient</p>
                         </div>
                         <div class="col-md-6">
-                            <div id="emailPicker"></div>
+                            <div id="emailPicker1"></div>
                         </div>
                     </div>
                 </div>
@@ -49,21 +49,44 @@
                 </div>
             </div>
 
+        </div>
+        <div class="col-md-6">
             <div class="box box-solid">
                 <div class="box-header">
-                    <div class="box-title">Active Directory Users (Extracted by system every week)</div>
+                    <div class="box-title">Active Directory Users</div>
+                    <div class="pull-right">
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Email ID</p>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="emailPicker2"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="selectedUserDetails"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box box-solid">
+                <div class="box-header">
+                    <div class="box-title">Active Directory Sync</div>
                     <div class="pull-right">
                     </div>
                 </div>
                 <div class="box-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <div id="activeDirectoryGrid"></div>
+                            <div id="SyncAdBtn"></div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </section>
