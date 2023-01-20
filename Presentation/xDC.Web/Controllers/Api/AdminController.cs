@@ -63,10 +63,10 @@ namespace xDC_Web.Controllers.Api
                 
 
             var isUserExist = _userMgmtService.IsUserExist(userVm.UserName);
-            if (!isUserExist) return Request.CreateResponse(HttpStatusCode.BadRequest, "User already exist!");
+            if (isUserExist) return Request.CreateResponse(HttpStatusCode.BadRequest, "User already exist!");
 
             var isUserExistInAd = _userMgmtService.IsUserExistInAd(userVm.UserName);
-            if (isUserExistInAd) return Request.CreateResponse(HttpStatusCode.BadRequest, "User not exist in KWAP AD!");
+            if (!isUserExistInAd) return Request.CreateResponse(HttpStatusCode.BadRequest, "User not exist in KWAP AD!");
 
             var result = _userMgmtService.InsertUser(userVm.UserName, userVm.RoleName, userVm.Locked, User.Identity.Name);
             if (!result) return Request.CreateResponse(HttpStatusCode.BadRequest, "System failed to create new user!");

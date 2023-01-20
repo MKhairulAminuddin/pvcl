@@ -62,13 +62,12 @@ namespace xDC_Web
             // Hangfire Setup
             app.UseHangfireAspNet(GetHangfireServers);
             app.UseHangfireDashboard();
-            /*
-                        #if DEBUG
-                                    Console.WriteLine("Mode=Debug");
-                        #else
+
+#if DEBUG
+            Console.WriteLine("Mode=Debug");
+#else
                             RegisterTaskScheduler();
-                        #endif*/
-            RegisterTaskScheduler();
+#endif
 
         }
 
