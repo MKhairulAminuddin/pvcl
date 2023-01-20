@@ -1,11 +1,10 @@
 ﻿using Serilog;
 using Serilog.Events;
-using System;
-using System.Data.SqlClient;
 using Serilog.Exceptions;
-using xDC.Utils;
-using System.Diagnostics;
 using Serilog.Formatting.Compact;
+using Serilog.Formatting.Json;
+using System;
+using xDC.Utils;
 
 namespace xDC.Logging
 {
@@ -15,14 +14,15 @@ namespace xDC.Logging
 
         static Logger()
         {
-            var logPath = !string.IsNullOrEmpty(Config.LoggerFilePathFormat) ? Config.LoggerFilePathFormat : "~/log-.txt";
+            var logPath = !string.IsNullOrEmpty(Config.LoggerFilePathFormat) ? Config.LoggerFilePathFormat + "log-.txt" : "~/log-.txt";
+            var errorFilteredLogPath = !string.IsNullOrEmpty(Config.LoggerFilePathFormat) ? Config.LoggerFilePathFormat + "errorlog-.json" : "~/errorlog-.json";
 
             _errorLogger = new LoggerConfiguration()
                 .Enrich.WithExceptionDetails()
-                .WriteTo.File(new CompactJsonFormatter(), logPath, rollingInterval: RollingInterval.Day)
-#if DEBUG
-                .WriteTo.Seq("http://localhost:5341")
-#endif
+                .WriteTo.Console()
+                .WriteTo.File(new JsonFormatter(), errorFilteredLogPath, restrictedToMinimumLevel: LogEventLevel.Warning, rollingInterval: RollingInterval.Day)
+                .WriteTo.File(logPath, rollingInterval: RollingInterval.Day)
+                .MinimumLevel.Debug()
                 .CreateLogger();
         }
 

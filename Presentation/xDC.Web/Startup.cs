@@ -62,13 +62,13 @@ namespace xDC_Web
             // Hangfire Setup
             app.UseHangfireAspNet(GetHangfireServers);
             app.UseHangfireDashboard();
-
-            #if DEBUG
-                        Console.WriteLine("Mode=Debug");
-            #else
-                RegisterTaskScheduler();
-            #endif
-
+            /*
+                        #if DEBUG
+                                    Console.WriteLine("Mode=Debug");
+                        #else
+                            RegisterTaskScheduler();
+                        #endif*/
+            RegisterTaskScheduler();
 
         }
 
@@ -97,7 +97,9 @@ namespace xDC_Web
             RecurringJob.AddOrUpdate("ISSD TS - Currency", () => new xDcTask().TsForm_FetchNewCurrency(), Cron.Daily, TimeZoneInfo.Local);
             RecurringJob.AddOrUpdate("FID Treasury - Asset Type", () => new xDcTask().TForm_FetchAssetType(), Cron.Daily, TimeZoneInfo.Local);
 
-            //RecurringJob.AddOrUpdate("[Notification] FCA Tagging to ISSD", () => new xDcTask().NotifyIssd_OnFcaTagged(), Cron.Minutely, TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate("Clean Temp Folder", () => new xDcTask().ClearTempFolder(), Cron.Weekly, TimeZoneInfo.Local);
+
+            RecurringJob.AddOrUpdate("[Notification] FCA Tagging to ISSD", () => new xDcTask().NotifyIssd_OnFcaTagged(), "*/5 * * * *", TimeZoneInfo.Local);
         }
     }
 }

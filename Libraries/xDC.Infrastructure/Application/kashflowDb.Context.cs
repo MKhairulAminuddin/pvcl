@@ -54,5 +54,6 @@ namespace xDC.Infrastructure.Application
         public virtual DbSet<Audit_UserAccess> Audit_UserAccess { get; set; }
         public virtual DbSet<Audit_RoleManagement> Audit_RoleManagement { get; set; }
         public virtual DbSet<Audit_UserManagement> Audit_UserManagement { get; set; }
+        public virtual DbSet<App_TsFcaTaggingQueue> App_TsFcaTaggingQueue { get; set; }
     }
 }

@@ -36,6 +36,7 @@
         <EntityTypeShape EntityType="kashflowDbModel.Audit_UserAccess" Width="1.5" PointX="9.375" PointY="13.75" />
         <EntityTypeShape EntityType="kashflowDbModel.Audit_RoleManagement" Width="1.5" PointX="10.375" PointY="0.75" />
         <EntityTypeShape EntityType="kashflowDbModel.Audit_UserManagement" Width="1.5" PointX="12.375" PointY="0.75" />
+        <EntityTypeShape EntityType="kashflowDbModel.App_TsFcaTaggingQueue" Width="1.5" PointX="14.375" PointY="0.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

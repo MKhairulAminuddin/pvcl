@@ -18,6 +18,7 @@ using xDC.Logging;
 using xDC.Services;
 using xDC.Services.Audit;
 using xDC.Services.Form;
+using xDC.Services.Notification;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.ViewModels;
@@ -35,6 +36,7 @@ namespace xDC_Web.Controllers.Api
 
         private readonly ITreasuryFormService _tFormService = Startup.Container.GetInstance<ITreasuryFormService>();
         private readonly IFcaTaggingFormService _fcaTaggingFormService = Startup.Container.GetInstance<IFcaTaggingFormService>();
+        private readonly IEmailNotification _emailNotification = Startup.Container.GetInstance<IEmailNotification>();
 
         #endregion
 
@@ -110,11 +112,15 @@ namespace xDC_Web.Controllers.Api
                 Validate(existingRecord);
 
                 if (!ModelState.IsValid)
+                {
                     return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
-
-                db.SaveChanges();
-
-                return Request.CreateResponse(HttpStatusCode.OK);
+                }
+                else
+                {
+                    db.SaveChanges();
+                    _emailNotification.FcaTaggingQueue(existingRecord);
+                    return Request.CreateResponse(HttpStatusCode.OK);
+                }    
             }
 
         }

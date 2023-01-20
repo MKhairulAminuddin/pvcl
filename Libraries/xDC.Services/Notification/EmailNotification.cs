@@ -1,7 +1,9 @@
-﻿using MailKit.Net.Smtp;
+﻿using MailKit;
+using MailKit.Net.Smtp;
 using MimeKit;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -1458,6 +1460,210 @@ namespace xDC.Services.Notification
                 Logger.LogError(ex);
             }
         }
+
+        #endregion
+
+        #region Private Method - FCA Tagging
+
+        public void  FcaTaggingQueue(ISSD_TradeSettlement issdTaggedItem)
+        {
+            try
+            {
+                var taggedItem = new App_TsFcaTaggingQueue()
+                {
+                    TradeId = issdTaggedItem.Id,
+                    FormId = issdTaggedItem.FormId,
+                    CreatedDate = DateTime.Now,
+                };
+
+                using (var db = new kashflowDBEntities())
+                {
+                    db.App_TsFcaTaggingQueue.Add(taggedItem);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
+        public void OnFcaTagging()
+        {
+            try
+            {
+                using (var db = new kashflowDBEntities())
+                {
+                    var isNotifyEnabled = EnableNotification(EmailNotiKey.Enable_ISSD_FcaTagging);
+
+                    if (isNotifyEnabled)
+                    {
+                        var receipients = ReceipientsFromConfig(EmailNotiKey.ISSD_FcaTagging);
+
+                        if (receipients.Any())
+                        {
+                            var issdTaggedItems = new List<ISSD_TradeSettlement>();
+                            var queue = db.App_TsFcaTaggingQueue.ToList();
+
+                            foreach (var item in db.App_TsFcaTaggingQueue.ToList())
+                            {
+                                var foundItem = db.ISSD_TradeSettlement.FirstOrDefault(x => x.Id == item.TradeId);
+                                if (foundItem != null)
+                                {
+                                    issdTaggedItems.Add(foundItem);
+                                }
+                            }
+
+                            if (issdTaggedItems.Any())
+                            {
+                                var message = new MimeMessage()
+                                {
+                                    Sender = new MailboxAddress(Config.SmtpSenderAccountName, Config.SmtpSenderAccount),
+                                    Subject = $"{SubjectAppend}{Config.NotiFcaTaggingIssdEmailSubject}"
+                                };
+
+                                foreach (var toEmail in receipients)
+                                {
+                                    message.To.Add(toEmail);
+                                }
+
+                                var bodyBuilder = new StringBuilder();
+                                var root = AppDomain.CurrentDomain.BaseDirectory;
+                                using (var reader = new System.IO.StreamReader(root + @"/App_Data/EmailTemplates/FcaTaggingStatus_ToISSD.html"))
+                                {
+                                    string readFile = reader.ReadToEnd();
+                                    string StrContent = string.Empty;
+                                    StrContent = readFile;
+                                    StrContent = StrContent.Replace("[Message]", "Below Trade Settlement items has been tagged with Bank code.");
+                                    StrContent = StrContent.Replace("[FcaTaggingTable]", FcaTaggingTable(issdTaggedItems));
+                                    bodyBuilder.Append(StrContent);
+                                }
+
+                                message.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                                {
+                                    Text = bodyBuilder.ToString()
+                                };
+
+                                SendEmail(message);
+
+                                // clear queue
+                                db.Database.ExecuteSqlCommand("TRUNCATE TABLE [App_TsFcaTaggingQueue]");
+                                db.SaveChanges();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
+            }
+        }
+
+        private string FcaTaggingTable(List<ISSD_TradeSettlement> tradeSettlementItems)
+        {
+            using (var db = new kashflowDBEntities())
+            {
+                var Ids = tradeSettlementItems.Select(x => x.FormId).Distinct().ToList();
+                var forms = db.ISSD_FormHeader.Where(x => Ids.Contains(x.Id)).ToList();
+
+                if (forms.Any())
+                {
+                    var fcaTable = new StringBuilder();
+
+                    foreach (var f in forms)
+                    {
+                        fcaTable.AppendLine("<br/><b>" + f.FormType + " </b><br/>");
+
+                        using (var table = new Common.Table(fcaTable))
+                        {
+                            using (var row = table.AddHeaderRow("#5B8EFB", "white"))
+                            {
+                                row.AddCell("Settlement Date");
+                                row.AddCell("Currency");
+                                row.AddCell("Type");
+                                row.AddCell("Code");
+                                row.AddCell("Stock Code");
+
+                                if (Common.TsItemMapAmountColumn(tradeSettlementItems.FirstOrDefault(x => x.FormId == f.Id)?.InstrumentType) == 1)
+                                {
+                                    row.AddCell("Maturity (+)");
+                                    row.AddCell("Sales (+)");
+                                    row.AddCell("Purchase (-)");
+                                }
+                                else if (Common.TsItemMapAmountColumn(tradeSettlementItems.FirstOrDefault(x => x.FormId == f.Id)?.InstrumentType) == 2)
+                                {
+                                    row.AddCell("1st Leg (+)");
+                                    row.AddCell("2nd Leg (-)");
+                                }
+                                else if (Common.TsItemMapAmountColumn(tradeSettlementItems.FirstOrDefault(x => x.FormId == f.Id)?.InstrumentType) == 3)
+                                {
+                                    row.AddCell("Amount (+)");
+                                    row.AddCell("Amount (-)");
+                                }
+                                else if (Common.TsItemMapAmountColumn(tradeSettlementItems.FirstOrDefault(x => x.FormId == f.Id)?.InstrumentType) == 4)
+                                {
+                                    row.AddCell("Amount (+)");
+                                }
+
+                                row.AddCell("Inflow");
+                                row.AddCell("Outflow");
+                                row.AddCell("Tagged By");
+                                row.AddCell("Tagged Datetime");
+                            }
+
+                            foreach (var ts in tradeSettlementItems.Where(x => x.FormId == f.Id))
+                            {
+                                using (var row = table.AddRow())
+                                {
+                                    row.AddCell(f.SettlementDate?.ToString("dd/MM/yyyy"));
+                                    row.AddCell(f.Currency);
+                                    row.AddCell(ts.InstrumentType);
+                                    row.AddCell(ts.InstrumentCode);
+                                    row.AddCell(ts.StockCode);
+
+                                    if (Common.TsItemMapAmountColumn(ts.InstrumentType) == 1)
+                                    {
+                                        row.AddCell(ts.Maturity.ToString("N"));
+                                        row.AddCell(ts.Sales.ToString("N"));
+                                        row.AddCell(ts.Purchase.ToString("N"));
+                                    }
+                                    else if (Common.TsItemMapAmountColumn(ts.InstrumentType) == 2)
+                                    {
+                                        row.AddCell(ts.FirstLeg.ToString("N"));
+                                        row.AddCell(ts.SecondLeg.ToString("N"));
+                                    }
+                                    else if (Common.TsItemMapAmountColumn(ts.InstrumentType) == 3)
+                                    {
+                                        row.AddCell(ts.AmountPlus.ToString("N"));
+                                        row.AddCell(ts.AmountMinus.ToString("N"));
+                                    }
+                                    else if (Common.TsItemMapAmountColumn(ts.InstrumentType) == 4)
+                                    {
+                                        row.AddCell(ts.AmountPlus.ToString("N"));
+                                    }
+
+                                    row.AddCell(ts.InflowTo);
+                                    row.AddCell(ts.OutflowFrom);
+                                    row.AddCell(ts.AssignedBy);
+                                    row.AddCell(ts.AssignedDate?.ToString("dd/MM/yyyy HH:mm"));
+                                }
+                            }
+
+                        }
+                    }
+
+                    return fcaTable.ToString();
+                }
+                else
+                {
+                    return string.Empty;
+                }
+
+            }
+
+        }
+
 
         #endregion
     }

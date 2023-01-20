@@ -10,10 +10,11 @@ namespace xDC.TaskScheduler
     public interface IxDcTask
     {
         void TsForm_FetchNewCurrency();
-        void NotifyIssd_OnFcaTagged();
 
         void TForm_FetchAssetType();
 
         void SyncKwapAdData();
+
+        void ClearTempFolder();
     }
 }

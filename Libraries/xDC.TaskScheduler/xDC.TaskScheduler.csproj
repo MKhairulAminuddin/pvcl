@@ -70,6 +70,10 @@
       <Project>{6522dc6d-0ba9-4d84-944e-0127e120e3b1}</Project>
       <Name>xDC.Logging</Name>
     </ProjectReference>
+    <ProjectReference Include="..\xDC.Services\xDC.Services.csproj">
+      <Project>{2743CD31-64AE-483D-8B52-02AE6F2550DC}</Project>
+      <Name>xDC.Services</Name>
+    </ProjectReference>
     <ProjectReference Include="..\xDC.Utils\xDC.Utils.csproj">
       <Project>{87fa4c9c-f3bf-4cd4-83f2-0be4d31674e5}</Project>
       <Name>xDC.Utils</Name>
