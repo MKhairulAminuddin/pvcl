@@ -288,7 +288,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.outflowFrom == 0) {
+                                        if (options.data.outflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
@@ -463,7 +463,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.outflowFrom == 0) {
+                                        if (options.data.outflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
@@ -630,7 +630,7 @@
                                         allowClearing: true
                                     },
                                     cellTemplate: function (container, options) {
-                                        if (options.data.outflowFrom == 0) {
+                                        if (options.data.outflowAmount == 0) {
                                             container.addClass("dxDataGrid-cell-grey");
                                         }
                                         $("<span>" + ((options.data.outflowFrom == null) ? "" : options.data.outflowFrom) + "</span>").appendTo(container);
