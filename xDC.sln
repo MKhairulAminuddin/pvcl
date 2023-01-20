@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{71
 		Database\AMSD_IF.sql = Database\AMSD_IF.sql
 		Database\AMSD_IF_Item.sql = Database\AMSD_IF_Item.sql
 		Database\App_Notification.sql = Database\App_Notification.sql
+		Database\App_TsFcaTagging.sql = Database\App_TsFcaTagging.sql
 		Database\AspNetActiveDirectoryUsers.sql = Database\AspNetActiveDirectoryUsers.sql
 		Database\AspNetAuth.sql = Database\AspNetAuth.sql
 		Database\AspNet_Permissions.sql = Database\AspNet_Permissions.sql
