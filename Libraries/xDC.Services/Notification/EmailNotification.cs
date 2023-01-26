@@ -1478,6 +1478,14 @@ namespace xDC.Services.Notification
 
                 using (var db = new kashflowDBEntities())
                 {
+                    var checkForSimilarRecordInQ = db.App_TsFcaTaggingQueue
+                        .Where(x => x.TradeId == taggedItem.TradeId && x.FormId == taggedItem.FormId);
+
+                    if (checkForSimilarRecordInQ.Any())
+                    {
+                        db.App_TsFcaTaggingQueue.RemoveRange(checkForSimilarRecordInQ);
+                    }
+
                     db.App_TsFcaTaggingQueue.Add(taggedItem);
                     db.SaveChanges();
                 }

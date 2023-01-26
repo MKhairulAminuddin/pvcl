@@ -12,9 +12,9 @@ using System.Web.Http;
 using xDC.Domain.WebApi.Forms;
 using xDC.Domain.WebApi.Forms.TradeSettlement;
 using xDC.Infrastructure.Application;
-using xDC.Services.FileGenerator;
 using xDC.Services.Form;
 using xDC.Services.Membership;
+using xDC.Services.Notification;
 using xDC.Utils;
 using xDC_Web.Extension.CustomAttribute;
 using xDC_Web.ViewModels;
@@ -32,6 +32,7 @@ namespace xDC_Web.Controllers.Api
         private readonly ITsFormService _tsFormService = Startup.Container.GetInstance<ITsFormService>();
         private readonly IFcaTaggingFormService _fcaTaggingFormService = Startup.Container.GetInstance<IFcaTaggingFormService>();
         private readonly IUserManagementService _userService = Startup.Container.GetInstance<IUserManagementService>();
+        private readonly IEmailNotification _emailNotification = Startup.Container.GetInstance<IEmailNotification>();
 
 
         #endregion
@@ -712,11 +713,15 @@ namespace xDC_Web.Controllers.Api
                 Validate(existingRecord);
 
                 if (!ModelState.IsValid)
+                {
                     return Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState);
-
-                db.SaveChanges();
-
-                return Request.CreateResponse(HttpStatusCode.OK);
+                }
+                else
+                {
+                    db.SaveChanges();
+                    _emailNotification.FcaTaggingQueue(existingRecord);
+                    return Request.CreateResponse(HttpStatusCode.OK);
+                }
             }
 
         }
